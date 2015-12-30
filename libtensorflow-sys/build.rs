@@ -83,6 +83,26 @@ fn log_env_var(log: &mut Write, var: &str) -> Result<(), io::Error> {
   }
 }
 
+fn find_header(name: &str) -> Option<PathBuf> {
+  let cpath_str = match env::var("CPATH") {
+    Ok(s) => s,
+    Err(_) => "".to_string(),
+  } + ":/usr/include:/usr/local/include";
+  for s in cpath_str.split(":") {
+    if s != "" {
+      let full = Path::new(s).join(name);
+      let exists = match fs::metadata(&full) {
+        Ok(m) => m.is_file(),
+        Err(_) => false,
+      };
+      if exists {
+        return Some(full);
+      }
+    }
+  }
+  None
+}
+
 fn main() {
   let out_dir_str = env::var("OUT_DIR").unwrap();
   let out_dir = Path::new(&out_dir_str);
@@ -112,7 +132,11 @@ fn main() {
   let mut bindings = bindgen::builder();
   bindings.forbid_unknown_types();
 
-  let tf_header = tensorflow_dir.join("tensorflow/core/public/tensor_c_api.h");
+  log_env_var(&mut log, "CPATH").unwrap();
+  let tf_header = match find_header("tensor_c_api.h") {
+    Some(p) => p,
+    None => panic!("Unable to find tensor_c_api.h"),
+  };
   let tf_lib_dir = lib_file_path.parent().unwrap();
 
   bindings.link("tensorflow");
