@@ -1,0 +1,7 @@
+[package]
+name = "tensorflow"
+version = "0.1.0"
+authors = ["Adam Crume <acrume@google.com>"]
+
+[dependencies]
+libtensorflow-sys = { path = "libtensorflow-sys" }

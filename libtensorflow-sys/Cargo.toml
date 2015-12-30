@@ -1,0 +1,11 @@
+[package]
+name = "libtensorflow-sys"
+version = "0.1.0"
+authors = ["Adam Crume <acrume@google.com>"]
+build = "build.rs"
+
+[dependencies]
+libc = "0.1"
+
+[build-dependencies]
+bindgen = "0.15"
