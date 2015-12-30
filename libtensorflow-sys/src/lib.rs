@@ -7,7 +7,7 @@ extern crate libc;
 
 use libc::size_t;
 
-include!(concat!(env!("OUT_DIR"), "/lib/ffi.rs"));
+include!(concat!(env!("OUT_DIR"), "/ffi.rs"));
 
 #[cfg(test)]
 mod tests {

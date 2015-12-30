@@ -40,16 +40,13 @@ fn find_header(name: &str) -> Option<PathBuf> {
 fn main() {
   let out_dir_str = env::var("OUT_DIR").unwrap();
   let out_dir = Path::new(&out_dir_str);
-  let lib_dir = out_dir.join("lib/");
-  let dest_path = lib_dir.join("ffi.rs");
+  let dest_path = out_dir.join("ffi.rs");
   let log_path = out_dir.join("build.log");
 
   let mut log = match File::create(&log_path) {
     Ok(f) => f,
     Err(_) => panic!(format!("Unable to open file {}", log_path.to_str().unwrap())),
   };
-
-  let _ = fs::create_dir(&lib_dir);
 
   let mut bindings = bindgen::builder();
   bindings.forbid_unknown_types();
