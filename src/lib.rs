@@ -125,6 +125,10 @@ impl Status {
       Code::from_int(tf::TF_GetCode(self.inner))
     }
   }
+
+  pub fn is_ok(&self) -> bool {
+    self.code() == Code::Ok
+  }
 }
 
 impl Display for Status {
@@ -168,6 +172,14 @@ impl Session {
     };
     (session, status)
   }
+
+  pub fn close(&mut self) -> Status {
+    let status = Status::new();
+    unsafe {
+      tf::TF_CloseSession(self.inner, status.inner);
+    }
+    status
+  }
 }
 
 impl Drop for Session {
@@ -186,12 +198,25 @@ impl Drop for Session {
 mod tests {
   use super::*;
 
-  #[test]
-  fn smoke() {
+  fn create_session() -> Session {
     let options = SessionOptions::new();
     match Session::new(&options) {
-      (Some(_), status) => assert_eq!(status.code(), Code::Ok),
+      (Some(session), status) => {
+        assert_eq!(status.code(), Code::Ok);
+        session
+      },
       (None, status) => panic!("Creating session failed with status: {}", status),
     }
+  }
+
+  #[test]
+  fn smoke() {
+    create_session();
+  }
+
+  #[test]
+  fn test_close() {
+    let status = create_session().close();
+    assert!(status.is_ok());
   }
 }
