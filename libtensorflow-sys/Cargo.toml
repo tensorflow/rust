@@ -5,7 +5,7 @@ authors = ["Adam Crume <acrume@google.com>"]
 build = "build.rs"
 
 [dependencies]
-libc = "0.1"
+libc = "^0.2"
 
 [build-dependencies]
-bindgen = "0.15"
+bindgen = "^0.15"

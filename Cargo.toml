@@ -9,5 +9,5 @@ readme = "README.md"
 repository = "https://github.com/google/tensorflow-rust"
 
 [dependencies]
-libc = "0.1"
+libc = "^0.2"
 libtensorflow-sys = { path = "libtensorflow-sys" }
