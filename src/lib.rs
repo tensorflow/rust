@@ -181,17 +181,16 @@ pub struct Session {
 }
 
 impl Session {
-  pub fn new(options: &SessionOptions) -> (Option<Self>, Status) {
+  pub fn new(options: &SessionOptions) -> Result<Self> {
     let status = Status::new();
     let inner = unsafe { tf::TF_NewSession(options.inner, status.inner) };
-    let session = if inner.is_null() {
-      None
+    if inner.is_null() {
+      Err(status)
     } else {
-      Some(Session {
+      Ok(Session {
         inner: inner,
       })
-    };
-    (session, status)
+    }
   }
 
   pub fn close(&mut self) -> Status {
@@ -215,6 +214,10 @@ impl Drop for Session {
 
 ////////////////////////
 
+pub type Result<T> = std::result::Result<T, Status>;
+
+////////////////////////
+
 #[cfg(test)]
 mod tests {
   use super::*;
@@ -222,11 +225,8 @@ mod tests {
   fn create_session() -> Session {
     let options = SessionOptions::new();
     match Session::new(&options) {
-      (Some(session), status) => {
-        assert_eq!(status.code(), Code::Ok);
-        session
-      },
-      (None, status) => panic!("Creating session failed with status: {}", status),
+      Ok(session) => session,
+      Err(status) => panic!("Creating session failed with status: {}", status),
     }
   }
 
