@@ -11,6 +11,9 @@ use std::ops::Drop;
 
 use libtensorflow_sys as tf;
 
+mod buffer;
+pub use buffer::Buffer;
+
 ////////////////////////
 
 fn check_not_null<T>(p: *mut T) -> *mut T {
