@@ -223,6 +223,117 @@ pub type Result<T> = std::result::Result<T, Status>;
 
 ////////////////////////
 
+trait TensorType: Default + Clone {
+  // TODO: Use associated constants when/if available
+  fn data_type() -> DataType;
+}
+
+macro_rules! tensor_type {
+  ($rust_type:ident, $tensor_type:ident) => {
+    impl TensorType for $rust_type {
+      fn data_type() -> DataType {
+        DataType::$tensor_type
+      }
+    }
+  }
+}
+
+tensor_type!(f32, Float);
+tensor_type!(f64, Double);
+tensor_type!(i32, Int32);
+tensor_type!(u8, UInt8);
+tensor_type!(i16, Int16);
+tensor_type!(i8, Int8);
+// TODO: provide type for String
+// TODO: provide type for Complex
+tensor_type!(i64, Int64);
+tensor_type!(bool, Bool);
+// TODO: provide type for QInt8
+// TODO: provide type for QUInt8
+// TODO: provide type for QInt32
+// TODO: provide type for BFloat16
+// TODO: provide type for QInt16
+// TODO: provide type for QUInt16
+
+////////////////////////
+
+pub struct Tensor<T> {
+  inner: *mut tf::TF_Tensor,
+  data: Buffer<T>,
+  dims: Vec<u64>,
+}
+
+extern "C" fn noop_deallocator(_data: *mut ::libc::c_void,
+                               _len: ::libc::size_t,
+                               _arg: *mut ::libc::c_void)-> () {
+}
+
+// TODO: Replace with Iterator::product once that's stable
+fn product(values: &[u64]) -> u64 {
+  let mut product = 1;
+  for v in values.iter() {
+    product *= *v;
+  }
+  product
+}
+
+impl<T: TensorType> Tensor<T> {
+  pub fn new(dims: &[u64]) -> Self {
+    let total = product(dims);
+    let data = <Buffer<T>>::new(total as usize);
+    // Guaranteed safe to unwrap, because the only way for it to fail is for the
+    // length of the buffer not to match the dimensions, and we created it with
+    // exactly the right size.
+    Self::new_with_buffer(dims, data).unwrap()
+  }
+
+  pub fn new_with_buffer(dims: &[u64], data: Buffer<T>) -> Option<Self> {
+    let total = product(dims);
+    if total != data.len() as u64 {
+      return None
+    }
+    let inner = unsafe {
+      tf::TF_NewTensor(T::data_type().to_int(),
+                       dims.as_ptr() as *mut i64,
+                       dims.len() as i32,
+                       data.as_ptr() as *mut libc::c_void,
+                       data.len(),
+                       Some(noop_deallocator),
+                       std::ptr::null_mut())
+    };
+    let mut dims_vec = Vec::new();
+    // TODO: Use extend_from_slice once we're on Rust 1.6
+    dims_vec.extend(dims.iter());
+    Some(Tensor {
+      inner: inner,
+      data: data,
+      dims: dims_vec,
+    })
+  }
+
+  pub fn data(&self) -> &Buffer<T> {
+    &self.data
+  }
+
+  pub fn data_mut(&mut self) -> &mut Buffer<T> {
+    &mut self.data
+  }
+
+  pub fn dims(&self) -> &[u64] {
+    &self.dims
+  }
+}
+
+impl<T> Drop for Tensor<T> {
+  fn drop(&mut self) {
+    unsafe {
+      tf::TF_DeleteTensor(self.inner);
+    }
+  }
+}
+
+////////////////////////
+
 #[cfg(test)]
 mod tests {
   use super::*;
@@ -244,5 +355,12 @@ mod tests {
   fn test_close() {
     let status = create_session().close();
     assert!(status.is_ok());
+  }
+
+  #[test]
+  fn test_tensor() {
+    let mut tensor = <Tensor<f32>>::new(&[2, 3]);
+    assert_eq!(tensor.data().len(), 6);
+    tensor.data_mut()[0] = 1.0;
   }
 }
