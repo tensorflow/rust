@@ -10,7 +10,7 @@ repository = "https://github.com/google/tensorflow-rust"
 
 [dependencies]
 libc = "^0.2"
-libtensorflow-sys = { path = "libtensorflow-sys" }
+libtensorflow-sys = { version = "0.0.1", path = "libtensorflow-sys" }
 
 [features]
 default = []
