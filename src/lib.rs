@@ -1,3 +1,5 @@
+#![cfg(feature = "tensorflow_unstable")]
+
 extern crate libc;
 extern crate libtensorflow_sys;
 
