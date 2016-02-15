@@ -4,7 +4,10 @@ extern crate libc;
 extern crate libtensorflow_sys;
 
 use std::ffi::CStr;
+use std::ffi::CString;
+use std::ffi::NulError;
 use std::fmt;
+use std::fmt::Debug;
 use std::fmt::Display;
 use std::fmt::Formatter;
 use std::ops::Drop;
@@ -170,10 +173,48 @@ impl Display for Status {
   }
 }
 
+impl Debug for Status {
+  fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+    unsafe {
+      try!(write!(f, "{{inner:{:?}, ", self.inner));
+      try!(write!(f, "{}: ", self.code()));
+      let msg = match CStr::from_ptr(tf::TF_Message(self.inner)).to_str() {
+        Ok(s) => s,
+        Err(_) => "<invalid UTF-8 in message>",
+      };
+      try!(f.write_str(msg));
+      try!(write!(f, "}}"));
+      Ok(())
+    }
+  }
+}
+
 ////////////////////////
 
 pub struct SessionOptions {
   inner: *mut tf::TF_SessionOptions,
+}
+
+impl SessionOptions {
+  pub fn set_target(&mut self, target: &str) -> std::result::Result<(), NulError> {
+    let cstr = try!(CString::new(target));
+    unsafe {
+      tf::TF_SetTarget(self.inner, cstr.as_ptr());
+    }
+    Ok(())
+  }
+
+  pub fn set_config(&mut self, config: &[u8]) -> Result<()> {
+    let status = Status::new();
+    unsafe {
+      tf::TF_SetConfig(self.inner, config.as_ptr() as *const libc::c_void, config.len(), status.inner);
+    }
+    if status.is_ok() {
+      Ok(())
+    } else {
+      Err(status)
+    }
+  }
 }
 
 impl_new!(SessionOptions, TF_NewSessionOptions);
@@ -362,5 +403,18 @@ mod tests {
     let mut tensor = <Tensor<f32>>::new(&[2, 3]);
     assert_eq!(tensor.data().len(), 6);
     tensor.data_mut()[0] = 1.0;
+  }
+
+  #[test]
+  fn test_set_target() {
+    let mut options = SessionOptions::new();
+    options.set_target("local").unwrap();
+  }
+
+  #[test]
+  fn test_set_config() {
+    let mut options = SessionOptions::new();
+    // An empty array is a valid proto, since all fields are optional.
+    options.set_config(&vec![]).unwrap();
   }
 }
