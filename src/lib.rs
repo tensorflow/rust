@@ -246,6 +246,14 @@ impl Session {
     }
     status
   }
+
+  pub fn extend_graph(&mut self, proto: &[u8]) -> Status {
+    let status = Status::new();
+    unsafe {
+      tf::TF_ExtendGraph(self.inner, proto.as_ptr() as *const libc::c_void, proto.len(), status.inner);
+    }
+    status
+  }
 }
 
 impl Drop for Session {
@@ -416,5 +424,13 @@ mod tests {
     let mut options = SessionOptions::new();
     // An empty array is a valid proto, since all fields are optional.
     options.set_config(&vec![]).unwrap();
+  }
+
+  #[test]
+  fn test_extend_graph() {
+    let mut session = create_session();
+    // An empty array is a valid proto, since all fields are optional.
+    let status = session.extend_graph(&vec![]);
+    assert!(status.is_ok());
   }
 }
