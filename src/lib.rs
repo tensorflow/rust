@@ -149,6 +149,12 @@ impl_new!(Status, TF_NewStatus);
 impl_drop!(Status, TF_DeleteStatus);
 
 impl Status {
+  pub fn new_set(code: Code, msg: &str) -> std::result::Result<Status, NulError> {
+    let status = Status::new();
+    try!(status.set(code, msg));
+    Ok(status)
+  }
+
   pub fn code(&self) -> Code {
     unsafe {
       Code::from_int(tf::TF_GetCode(self.inner))
@@ -157,6 +163,14 @@ impl Status {
 
   pub fn is_ok(&self) -> bool {
     self.code() == Code::Ok
+  }
+
+  pub fn set(&mut self, code: Code, msg: &str) -> std::result::Result<(), NulError> {
+    let message = try!(CString::new(msg)).as_ptr();
+    unsafe {
+      tf::TF_SetStatus(self.inner, code.to_int(), message);
+    }
+    Ok(())
   }
 }
 
