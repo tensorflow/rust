@@ -150,7 +150,7 @@ impl_drop!(Status, TF_DeleteStatus);
 
 impl Status {
   pub fn new_set(code: Code, msg: &str) -> std::result::Result<Status, NulError> {
-    let status = Status::new();
+    let mut status = Status::new();
     try!(status.set(code, msg));
     Ok(status)
   }
