@@ -12,6 +12,7 @@ use std::fmt;
 use std::fmt::Debug;
 use std::fmt::Display;
 use std::fmt::Formatter;
+use std::marker;
 use std::mem;
 use std::ops::Drop;
 use std::os::raw;
@@ -296,6 +297,46 @@ impl Session {
     }
     status
   }
+
+  pub fn run(&mut self, step: &mut Step) -> Status {
+    // Copy the input tensors because TF_Run consumes them.
+    let mut input_tensors = Vec::with_capacity(step.input_tensors.len());
+    for &input_tensor in &step.input_tensors {
+      let input_tensor = input_tensor as *const tf::TF_Tensor;
+      unsafe {
+        let mut dims = Vec::with_capacity(tf::TF_NumDims(input_tensor) as usize);
+        for i in 0..dims.capacity() {
+          dims.push(tf::TF_Dim(input_tensor, i as i32));
+        }
+        input_tensors.push(tf::TF_NewTensor(
+          tf::TF_TensorType(input_tensor),
+          dims.as_ptr() as *mut i64,
+          dims.len() as libc::c_int,
+          tf::TF_TensorData(input_tensor),
+          tf::TF_TensorByteSize(input_tensor),
+          Some(noop_deallocator),
+          std::ptr::null_mut()));
+      }
+    }
+
+    let status = Status::new();
+    unsafe {
+      tf::TF_Run(
+        self.inner,
+        std::ptr::null(),
+        step.input_name_ptrs.as_mut_ptr(),
+        input_tensors.as_mut_ptr(),
+        input_tensors.len() as raw::c_int,
+        step.output_name_ptrs.as_mut_ptr(),
+        step.output_tensors.as_mut_ptr(),
+        step.output_tensors.len() as raw::c_int,
+        step.target_name_ptrs.as_mut_ptr(),
+        step.target_name_ptrs.len() as raw::c_int,
+        std::ptr::null_mut(),
+        status.inner);
+    };
+    status
+  }
 }
 
 impl Drop for Session {
@@ -305,6 +346,104 @@ impl Drop for Session {
       tf::TF_DeleteSession(self.inner, status.inner);
     }
     // TODO: What do we do with the status?
+  }
+}
+
+pub struct Step<'l> {
+  input_name_ptrs: Vec<*const raw::c_char>,
+  input_name_c_strings: Vec<CString>,
+  input_tensors: Vec<*mut tf::TF_Tensor>,
+
+  output_name_ptrs: Vec<*const raw::c_char>,
+  output_name_c_strings: Vec<CString>,
+  output_tensors: Vec<*mut tf::TF_Tensor>,
+
+  target_name_ptrs: Vec<*const raw::c_char>,
+  target_name_c_strings: Vec<CString>,
+
+  phantom: marker::PhantomData<&'l ()>,
+}
+
+impl<'l> Step<'l> {
+  pub fn new() -> Self {
+    Step {
+      input_name_ptrs: vec![],
+      input_name_c_strings: vec![],
+      input_tensors: vec![],
+
+      output_name_ptrs: vec![],
+      output_name_c_strings: vec![],
+      output_tensors: vec![],
+
+      target_name_ptrs: vec![],
+      target_name_c_strings: vec![],
+
+      phantom: marker::PhantomData,
+    }
+  }
+
+  pub fn feed<T>(&mut self, name: &str, tensor: &'l Tensor<T>) -> std::result::Result<(), NulError> {
+    let c_string = try!(CString::new(name));
+    self.input_name_ptrs.push(c_string.as_ptr());
+    self.input_name_c_strings.push(c_string);
+    self.input_tensors.push(tensor.inner);
+    Ok(())
+  }
+
+  pub fn fetch(&mut self, name: &str) -> std::result::Result<usize, NulError> {
+    let c_string = try!(CString::new(name));
+    self.output_name_ptrs.push(c_string.as_ptr());
+    self.output_name_c_strings.push(c_string);
+    self.output_tensors.push(std::ptr::null_mut());
+    Ok(self.output_tensors.len() - 1)
+  }
+
+  pub fn take_output<T: TensorType>(&mut self, output_idx: usize) -> Option<Tensor<T>> {
+    if output_idx >= self.output_tensors.len() {
+      return None;
+    }
+    if self.output_tensors[output_idx].is_null() {
+      return None;
+    }
+    let ret = unsafe {
+      Tensor::from_tf_tensor(self.output_tensors[output_idx])
+    };
+    if ret.is_some() {
+      self.output_tensors[output_idx] = std::ptr::null_mut();
+    }
+    ret
+  }
+
+  pub fn add_target(&mut self, name: &str) -> std::result::Result<(), NulError> {
+    let c_string = try!(CString::new(name));
+    self.target_name_ptrs.push(c_string.as_ptr());
+    self.target_name_c_strings.push(c_string);
+    Ok(())
+  }
+
+  pub fn get_output_data_type(&self, output_idx: usize) -> Option<DataType> {
+    if output_idx >= self.output_tensors.len() {
+      return None;
+    }
+    if self.output_tensors[output_idx].is_null() {
+      return None;
+    }
+    unsafe {
+      Some(DataType::from_int(mem::transmute(tf::TF_TensorType(self.output_tensors[output_idx]))))
+    }
+  }
+}
+
+impl<'l> Drop for Step<'l> {
+  fn drop(&mut self) {
+    for &tensor in &self.output_tensors {
+      // TODO: Is TF_DeleteTensor NULL safe?
+      if !tensor.is_null() {
+        unsafe {
+          tf::TF_DeleteTensor(tensor);
+        }
+      }
+    }
   }
 }
 
@@ -434,6 +573,22 @@ impl<T: TensorType> Tensor<T> {
   /// Returns the tensor's dimensions.
   pub fn dims(&self) -> &[u64] {
     &self.dims
+  }
+
+  unsafe fn from_tf_tensor(tensor: *mut tf::TF_Tensor) -> Option<Self> {
+    if DataType::from_int(mem::transmute(tf::TF_TensorType(tensor))) != T::data_type() {
+      return None;
+    }
+    let mut dims = Vec::with_capacity(tf::TF_NumDims(tensor) as usize);
+    for i in 0..dims.capacity() {
+      dims.push(tf::TF_Dim(tensor, i as raw::c_int) as u64);
+    }
+    let data = Buffer::from_ptr(tf::TF_TensorData(tensor) as *mut T, product(&dims) as usize);
+    Some(Tensor {
+      inner: tensor,
+      data: data,
+      dims: dims
+    })
   }
 }
 
