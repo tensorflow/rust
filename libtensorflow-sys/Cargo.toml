@@ -12,4 +12,4 @@ repository = "https://github.com/google/tensorflow-rust"
 libc = "^0.2"
 
 [build-dependencies]
-bindgen = "^0.15"
+bindgen = "^0.16"

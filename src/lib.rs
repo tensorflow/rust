@@ -10,7 +10,9 @@ use std::fmt;
 use std::fmt::Debug;
 use std::fmt::Display;
 use std::fmt::Formatter;
+use std::mem;
 use std::ops::Drop;
+use std::os::raw;
 
 use libtensorflow_sys as tf;
 
@@ -60,13 +62,13 @@ macro_rules! c_enum {
   ($enum_name:ident { $($name:ident = $num:expr),* }) => {
     #[derive(PartialEq,Eq,PartialOrd,Ord,Debug)]
     pub enum $enum_name {
-      UnrecognizedEnumValue(::libc::c_uint),
+      UnrecognizedEnumValue(raw::c_uint),
       $($name),*
     }
 
     impl $enum_name {
       #[allow(dead_code)]
-      fn from_int(value: ::libc::c_uint) -> $enum_name {
+      fn from_int(value: raw::c_uint) -> $enum_name {
         match value {
           $($num => $enum_name::$name,)*
           c => $enum_name::UnrecognizedEnumValue(c),
@@ -74,7 +76,7 @@ macro_rules! c_enum {
       }
 
       #[allow(dead_code)]
-      fn to_int(&self) -> ::libc::c_uint {
+      fn to_int(&self) -> raw::c_uint {
         match self {
           &$enum_name::UnrecognizedEnumValue(c) => c,
           $(&$enum_name::$name => $num),*
@@ -157,7 +159,7 @@ impl Status {
 
   pub fn code(&self) -> Code {
     unsafe {
-      Code::from_int(tf::TF_GetCode(self.inner))
+      Code::from_int(tf::TF_GetCode(self.inner) as u32)
     }
   }
 
@@ -168,7 +170,7 @@ impl Status {
   pub fn set(&mut self, code: Code, msg: &str) -> std::result::Result<(), NulError> {
     let message = try!(CString::new(msg)).as_ptr();
     unsafe {
-      tf::TF_SetStatus(self.inner, code.to_int(), message);
+      tf::TF_SetStatus(self.inner, mem::transmute(code.to_int()), message);
     }
     Ok(())
   }
@@ -221,7 +223,7 @@ impl SessionOptions {
   pub fn set_config(&mut self, config: &[u8]) -> Result<()> {
     let status = Status::new();
     unsafe {
-      tf::TF_SetConfig(self.inner, config.as_ptr() as *const libc::c_void, config.len(), status.inner);
+      tf::TF_SetConfig(self.inner, config.as_ptr() as *const raw::c_void, config.len(), status.inner);
     }
     if status.is_ok() {
       Ok(())
@@ -264,7 +266,7 @@ impl Session {
   pub fn extend_graph(&mut self, proto: &[u8]) -> Status {
     let status = Status::new();
     unsafe {
-      tf::TF_ExtendGraph(self.inner, proto.as_ptr() as *const libc::c_void, proto.len(), status.inner);
+      tf::TF_ExtendGraph(self.inner, proto.as_ptr() as *const raw::c_void, proto.len(), status.inner);
     }
     status
   }
@@ -286,7 +288,7 @@ pub type Result<T> = std::result::Result<T, Status>;
 
 ////////////////////////
 
-trait TensorType: Default + Clone {
+pub trait TensorType: Default + Clone {
   // TODO: Use associated constants when/if available
   fn data_type() -> DataType;
 }
@@ -326,9 +328,9 @@ pub struct Tensor<T> {
   dims: Vec<u64>,
 }
 
-extern "C" fn noop_deallocator(_data: *mut ::libc::c_void,
+unsafe extern "C" fn noop_deallocator(_data: *mut raw::c_void,
                                _len: ::libc::size_t,
-                               _arg: *mut ::libc::c_void)-> () {
+                               _arg: *mut raw::c_void)-> () {
 }
 
 // TODO: Replace with Iterator::product once that's stable
@@ -356,10 +358,10 @@ impl<T: TensorType> Tensor<T> {
       return None
     }
     let inner = unsafe {
-      tf::TF_NewTensor(T::data_type().to_int(),
+      tf::TF_NewTensor(mem::transmute(T::data_type().to_int()),
                        dims.as_ptr() as *mut i64,
                        dims.len() as i32,
-                       data.as_ptr() as *mut libc::c_void,
+                       data.as_ptr() as *mut raw::c_void,
                        data.len(),
                        Some(noop_deallocator),
                        std::ptr::null_mut())
