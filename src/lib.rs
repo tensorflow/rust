@@ -1,3 +1,4 @@
+// -*-  indent-tabs-mode:nil; tab-width:2;  -*-
 #![cfg(feature = "tensorflow_unstable")]
 
 extern crate libc;
