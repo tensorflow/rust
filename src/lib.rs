@@ -1,4 +1,5 @@
 // -*-  indent-tabs-mode:nil; tab-width:2;  -*-
+//! This crate provides Rust bindings for the [TensorFlow](https://www.tensorflow.org) machine learning library.
 #![cfg(feature = "tensorflow_unstable")]
 
 extern crate libc;
@@ -30,8 +31,9 @@ fn check_not_null<T>(p: *mut T) -> *mut T {
 ////////////////////////
 
 macro_rules! impl_new {
-  ($name: ident, $call:ident) => {
+  ($name: ident, $call:ident, $doc:expr) => {
     impl $name {
+      #[doc = $doc]
       pub fn new() -> Self {
         unsafe {
           $name {
@@ -60,7 +62,8 @@ macro_rules! impl_drop {
 ////////////////////////
 
 macro_rules! c_enum {
-  ($enum_name:ident { $($name:ident = $num:expr),* }) => {
+  ($doc:expr, $enum_name:ident { $($name:ident = $num:expr),* }) => {
+    #[doc = $doc]
     #[derive(PartialEq,Eq,PartialOrd,Ord,Debug)]
     pub enum $enum_name {
       UnrecognizedEnumValue(raw::c_uint),
@@ -94,14 +97,14 @@ macro_rules! c_enum {
       }
     }
   };
-  ($enum_name:ident { $($name:ident = $num:expr,)* }) => {
-    c_enum!($enum_name { $($name = $num),* });
+  ($doc:expr, $enum_name:ident { $($name:ident = $num:expr,)* }) => {
+    c_enum!($doc, $enum_name { $($name = $num),* });
   }
 }
 
 ////////////////////////
 
-c_enum!(Code {
+c_enum!("Error values that can be returned.", Code {
   Ok = 0,
   Cancelled = 1,
   Unknown = 2,
@@ -123,7 +126,7 @@ c_enum!(Code {
 
 ////////////////////////
 
-c_enum!(DataType {
+c_enum!("Type of a single tensor element.", DataType {
   Float = 1,
   Double = 2,
   Int32 = 3,
@@ -144,30 +147,35 @@ c_enum!(DataType {
 
 ////////////////////////
 
+/// Holds error information.  It either has an OK code, or else an error code with an associated error message.
 pub struct Status {
   inner: *mut tf::TF_Status,
 }
 
-impl_new!(Status, TF_NewStatus);
+impl_new!(Status, TF_NewStatus, "Creates a status with `Code::Ok` and no message.");
 impl_drop!(Status, TF_DeleteStatus);
 
 impl Status {
+  /// Creates a status and sets its code and message.
   pub fn new_set(code: Code, msg: &str) -> std::result::Result<Status, NulError> {
     let mut status = Status::new();
     try!(status.set(code, msg));
     Ok(status)
   }
 
+  /// Returns the status's code.
   pub fn code(&self) -> Code {
     unsafe {
       Code::from_int(tf::TF_GetCode(self.inner) as u32)
     }
   }
 
+  /// Returns true if the status's code is `Code::Ok`.
   pub fn is_ok(&self) -> bool {
     self.code() == Code::Ok
   }
 
+  /// Sets the code and message.
   pub fn set(&mut self, code: Code, msg: &str) -> std::result::Result<(), NulError> {
     let message = try!(CString::new(msg)).as_ptr();
     unsafe {
@@ -208,11 +216,20 @@ impl Debug for Status {
 
 ////////////////////////
 
+/// Options that can be passed during session creation.
 pub struct SessionOptions {
   inner: *mut tf::TF_SessionOptions,
 }
 
 impl SessionOptions {
+  /// Set the target.
+  ///
+  /// `target` can be empty, a single entry, or a comma separated list of entries.
+  /// Each entry is in one of the following formats :
+  ///
+  /// - "local"
+  /// - ip:port
+  /// - host:port
   pub fn set_target(&mut self, target: &str) -> std::result::Result<(), NulError> {
     let cstr = try!(CString::new(target));
     unsafe {
@@ -221,6 +238,10 @@ impl SessionOptions {
     Ok(())
   }
 
+  /// Set the config.
+  ///
+  /// `config` should be a serialized brain.ConfigProto proto.
+  /// Returns an error if config was not parsed successfully as a ConfigProto.
   pub fn set_config(&mut self, config: &[u8]) -> Result<()> {
     let status = Status::new();
     unsafe {
@@ -234,16 +255,18 @@ impl SessionOptions {
   }
 }
 
-impl_new!(SessionOptions, TF_NewSessionOptions);
+impl_new!(SessionOptions, TF_NewSessionOptions, "Creates a blank set of options.");
 impl_drop!(SessionOptions, TF_DeleteSessionOptions);
 
 ////////////////////////
 
+/// Manages a single graph and execution.
 pub struct Session {
   inner: *mut tf::TF_Session,
 }
 
 impl Session {
+  /// Creates a session.
   pub fn new(options: &SessionOptions) -> Result<Self> {
     let status = Status::new();
     let inner = unsafe { tf::TF_NewSession(options.inner, status.inner) };
@@ -256,6 +279,7 @@ impl Session {
     }
   }
 
+  /// Closes the session.
   pub fn close(&mut self) -> Status {
     let status = Status::new();
     unsafe {
@@ -264,6 +288,7 @@ impl Session {
     status
   }
 
+  /// Treat `proto` as a serialized `GraphDef` and add the nodes in that `GraphDef` to the graph for the session.
   pub fn extend_graph(&mut self, proto: &[u8]) -> Status {
     let status = Status::new();
     unsafe {
@@ -285,12 +310,15 @@ impl Drop for Session {
 
 ////////////////////////
 
+/// Convenience type for `Result` with `Status` as the error type.
 pub type Result<T> = std::result::Result<T, Status>;
 
 ////////////////////////
 
+/// A Rust type that maps to a `DataType`.
 pub trait TensorType: Default + Clone {
   // TODO: Use associated constants when/if available
+  /// Returns the DataType that corresponds to this type.
   fn data_type() -> DataType;
 }
 
@@ -323,6 +351,18 @@ tensor_type!(bool, Bool);
 
 ////////////////////////
 
+/// Holds a multi-dimensional array of elements of a single data type.
+///
+/// For all types other than strings, the data buffer stores elements
+/// in row major order.  E.g. if data is treated as a vector of `T`:
+///
+/// ```text
+///   element 0:   index (0, ..., 0)
+///   element 1:   index (0, ..., 1)
+///   ...
+/// ```
+///
+/// The layout for strings is currently undefined.
 pub struct Tensor<T> {
   inner: *mut tf::TF_Tensor,
   data: Buffer<T>,
@@ -344,6 +384,9 @@ fn product(values: &[u64]) -> u64 {
 }
 
 impl<T: TensorType> Tensor<T> {
+  /// Creates a new tensor.
+  ///
+  /// The data is initialized to zeros.
   pub fn new(dims: &[u64]) -> Self {
     let total = product(dims);
     let data = <Buffer<T>>::new(total as usize);
@@ -353,6 +396,7 @@ impl<T: TensorType> Tensor<T> {
     Self::new_with_buffer(dims, data).unwrap()
   }
 
+  /// Creates a new tensor from existing data.
   pub fn new_with_buffer(dims: &[u64], data: Buffer<T>) -> Option<Self> {
     let total = product(dims);
     if total != data.len() as u64 {
@@ -377,14 +421,17 @@ impl<T: TensorType> Tensor<T> {
     })
   }
 
+  /// Returns the tensor's data.
   pub fn data(&self) -> &Buffer<T> {
     &self.data
   }
 
+  /// Returns the tensor's data.
   pub fn data_mut(&mut self) -> &mut Buffer<T> {
     &mut self.data
   }
 
+  /// Returns the tensor's dimensions.
   pub fn dims(&self) -> &[u64] {
     &self.dims
   }

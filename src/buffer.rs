@@ -15,8 +15,8 @@ use std::ops::RangeTo;
 use std::slice;
 
 /// Fixed-length heap-allocated vector.
-/// This is basically a Box<[T]>, except that that type can't actually be constructed.
-/// Furthermore, [T; N] can't be constructed if N is not a compile-time constant.
+/// This is basically a `Box<[T]>`, except that that type can't actually be constructed.
+/// Furthermore, `[T; N]` can't be constructed if N is not a compile-time constant.
 #[derive(Debug)]
 pub struct Buffer<T> {
   ptr: *mut T,
@@ -25,6 +25,9 @@ pub struct Buffer<T> {
 }
 
 impl<T: Default> Buffer<T> {
+  /// Creates a new buffer initialized to zeros.
+  ///
+  /// `len` is the number of elements.
   pub fn new(len: usize) -> Self {
     let mut b = unsafe {
       Buffer::new_uninitialized(len)
@@ -38,6 +41,10 @@ impl<T: Default> Buffer<T> {
 }
 
 impl<T> Buffer<T> {
+  /// Creates a new uninitialized buffer.
+  ///
+  /// `len` is the number of elements.
+  /// The caller is responsible for initializing the data.
   pub unsafe fn new_uninitialized(len: usize) -> Self {
     let elem_size = mem::size_of::<T>();
     let alloc_size = len * elem_size;
@@ -54,6 +61,10 @@ impl<T> Buffer<T> {
     }
   }
 
+  /// Creates a buffer from data owned by the C API.
+  ///
+  /// `len` is the number of elements.
+  /// The underlying data is *not* freed when the buffer is destroyed.
   pub unsafe fn from_ptr(ptr: *mut T, len: usize) -> Self {
     Buffer {
       ptr: ptr,
