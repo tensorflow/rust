@@ -298,6 +298,7 @@ impl Session {
     status
   }
 
+  /// Runs the graph, feeding the inputs and then fetching the outputs requested in the step.
   pub fn run(&mut self, step: &mut Step) -> Status {
     // Copy the input tensors because TF_Run consumes them.
     let mut input_tensors = Vec::with_capacity(step.input_tensors.len());
@@ -349,6 +350,11 @@ impl Drop for Session {
   }
 }
 
+/// Manages the inputs and outputs for a single execution of a graph.
+///
+/// Typical usage involves creating an instance of this struct,
+/// adding some inputs to it, requesting some outputs, passing it to `Session::run`
+/// and then taking the outputs out of it.
 pub struct Step<'l> {
   input_name_ptrs: Vec<*const raw::c_char>,
   input_name_c_strings: Vec<CString>,
@@ -365,6 +371,7 @@ pub struct Step<'l> {
 }
 
 impl<'l> Step<'l> {
+  /// Creates a Step.
   pub fn new() -> Self {
     Step {
       input_name_ptrs: vec![],
@@ -382,7 +389,8 @@ impl<'l> Step<'l> {
     }
   }
 
-  pub fn feed<T>(&mut self, name: &str, tensor: &'l Tensor<T>) -> std::result::Result<(), NulError> {
+  /// Adds an input to be fed to the graph.
+  pub fn add_input<T>(&mut self, name: &str, tensor: &'l Tensor<T>) -> std::result::Result<(), NulError> {
     let c_string = try!(CString::new(name));
     self.input_name_ptrs.push(c_string.as_ptr());
     self.input_name_c_strings.push(c_string);
@@ -390,7 +398,9 @@ impl<'l> Step<'l> {
     Ok(())
   }
 
-  pub fn fetch(&mut self, name: &str) -> std::result::Result<usize, NulError> {
+  /// Requests that an output is fetched from the graph after running this step.
+  /// Returns an index that you can then use to fetch this output from the step after running it.
+  pub fn request_output(&mut self, name: &str) -> std::result::Result<usize, NulError> {
     let c_string = try!(CString::new(name));
     self.output_name_ptrs.push(c_string.as_ptr());
     self.output_name_c_strings.push(c_string);
@@ -398,22 +408,36 @@ impl<'l> Step<'l> {
     Ok(self.output_tensors.len() - 1)
   }
 
-  pub fn take_output<T: TensorType>(&mut self, output_idx: usize) -> Option<Tensor<T>> {
+  /// Extracts a tensor output given an index. A given index can only be extracted once per `Session::run`.
+  /// Returns an error if output_idx is out of range, output is unavailable or the
+  /// requested type does not match the type of the actual tensor.
+  pub fn take_output<T: TensorType>(&mut self, output_idx: usize) -> Result<Tensor<T>> {
     if output_idx >= self.output_tensors.len() {
-      return None;
+      return Err(Status::new_set(Code::OutOfRange,
+        &format!("Requested output index is out of range: {} vs {}",
+          output_idx,
+          self.output_tensors.len())).unwrap());
     }
     if self.output_tensors[output_idx].is_null() {
-      return None;
+      return Err(Status::new_set(Code::Unavailable,
+        "Output not available. Either it was already taken, or this step \
+        has not been sucessfully run yet.").unwrap());
     }
-    let ret = unsafe {
-      Tensor::from_tf_tensor(self.output_tensors[output_idx])
+    let actual_data_type = self.get_output_data_type(output_idx).unwrap();
+    if actual_data_type != T::data_type() {
+      return Err(Status::new_set(Code::InvalidArgument,
+        &format!("Requested tensor type does not match actual tensor type: {} vs {}",
+          actual_data_type,
+          T::data_type())).unwrap());
+    }
+    let tensor = unsafe {
+      Tensor::from_tf_tensor(self.output_tensors[output_idx]).unwrap()
     };
-    if ret.is_some() {
-      self.output_tensors[output_idx] = std::ptr::null_mut();
-    }
-    ret
+    self.output_tensors[output_idx] = std::ptr::null_mut();
+    Ok(tensor)
   }
 
+  /// Adds a target node to be executed when running the graph.
   pub fn add_target(&mut self, name: &str) -> std::result::Result<(), NulError> {
     let c_string = try!(CString::new(name));
     self.target_name_ptrs.push(c_string.as_ptr());
@@ -421,6 +445,8 @@ impl<'l> Step<'l> {
     Ok(())
   }
 
+  /// Retuns the type of the tensor given an index.
+  /// Returns `None` if the index is out of range or the output is not yet available.
   pub fn get_output_data_type(&self, output_idx: usize) -> Option<DataType> {
     if output_idx >= self.output_tensors.len() {
       return None;
@@ -575,6 +601,7 @@ impl<T: TensorType> Tensor<T> {
     &self.dims
   }
 
+  // Wraps a TF_Tensor. Returns None if types don't match.
   unsafe fn from_tf_tensor(tensor: *mut tf::TF_Tensor) -> Option<Self> {
     if DataType::from_int(mem::transmute(tf::TF_TensorType(tensor))) != T::data_type() {
       return None;
@@ -651,5 +678,36 @@ mod tests {
     // An empty array is a valid proto, since all fields are optional.
     let status = session.extend_graph(&vec![]);
     assert!(status.is_ok());
+  }
+
+  #[test]
+  fn test_run() {
+    // Graph is just y = 2 * x
+    let graph_proto = vec![
+      0x0a, 0x2a, 0x0a, 0x01, 0x78, 0x12, 0x0b, 0x50, 0x6c, 0x61, 0x63, 0x65, 0x68, 0x6f, 0x6c, 0x64,
+      0x65, 0x72, 0x2a, 0x0b, 0x0a, 0x05, 0x64, 0x74, 0x79, 0x70, 0x65, 0x12, 0x02, 0x30, 0x01, 0x2a,
+      0x0b, 0x0a, 0x05, 0x73, 0x68, 0x61, 0x70, 0x65, 0x12, 0x02, 0x3a, 0x00, 0x0a, 0x30, 0x0a, 0x03,
+      0x79, 0x2f, 0x79, 0x12, 0x05, 0x43, 0x6f, 0x6e, 0x73, 0x74, 0x2a, 0x0b, 0x0a, 0x05, 0x64, 0x74,
+      0x79, 0x70, 0x65, 0x12, 0x02, 0x30, 0x01, 0x2a, 0x15, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65,
+      0x12, 0x0c, 0x42, 0x0a, 0x08, 0x01, 0x12, 0x00, 0x2a, 0x04, 0x00, 0x00, 0x00, 0x40, 0x0a, 0x19,
+      0x0a, 0x01, 0x79, 0x12, 0x03, 0x4d, 0x75, 0x6c, 0x1a, 0x01, 0x78, 0x1a, 0x03, 0x79, 0x2f, 0x79,
+      0x2a, 0x07, 0x0a, 0x01, 0x54, 0x12, 0x02, 0x30, 0x01
+    ];
+    let mut session = create_session();
+    let status = session.extend_graph(&graph_proto);
+    assert!(status.is_ok());
+    let mut x = <Tensor<f32>>::new(&[2]);
+    x.data_mut()[0] = 2.0;
+    x.data_mut()[1] = 3.0;
+    let mut step = Step::new();
+    step.add_input("x:0", &x).unwrap();
+    let output_ix = step.request_output("y:0").unwrap();
+    let result = session.run(&mut step);
+    assert!(result.is_ok(), "{}", result);
+    let output_tensor = step.take_output::<f32>(output_ix).unwrap();
+    let data = output_tensor.data();
+    assert_eq!(data.len(), 2);
+    assert_eq!(data[0], 4.0);
+    assert_eq!(data[1], 6.0);
   }
 }
