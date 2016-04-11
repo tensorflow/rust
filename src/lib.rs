@@ -320,6 +320,9 @@ impl Session {
       }
     }
 
+    // In case we're running it a second time and not all outputs were taken out.
+    step.drop_output_tensors();
+
     let status = Status::new();
     unsafe {
       tf::TF_Run(
@@ -458,10 +461,8 @@ impl<'l> Step<'l> {
       Some(DataType::from_int(mem::transmute(tf::TF_TensorType(self.output_tensors[output_idx]))))
     }
   }
-}
 
-impl<'l> Drop for Step<'l> {
-  fn drop(&mut self) {
+  fn drop_output_tensors(&mut self) {
     for &tensor in &self.output_tensors {
       // TODO: Is TF_DeleteTensor NULL safe?
       if !tensor.is_null() {
@@ -470,6 +471,12 @@ impl<'l> Drop for Step<'l> {
         }
       }
     }
+  }
+}
+
+impl<'l> Drop for Step<'l> {
+  fn drop(&mut self) {
+    self.drop_output_tensors();
   }
 }
 
