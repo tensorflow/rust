@@ -12,6 +12,7 @@ use std::fmt;
 use std::fmt::Debug;
 use std::fmt::Display;
 use std::fmt::Formatter;
+use std::marker;
 use std::mem;
 use std::ops::Drop;
 use std::os::raw;
@@ -296,6 +297,50 @@ impl Session {
     }
     status
   }
+
+  /// Runs the graph, feeding the inputs and then fetching the outputs requested in the step.
+  pub fn run(&mut self, step: &mut Step) -> Status {
+    // Copy the input tensors because TF_Run consumes them.
+    let mut input_tensors = Vec::with_capacity(step.input_tensors.len());
+    for &input_tensor in &step.input_tensors {
+      let input_tensor = input_tensor as *const tf::TF_Tensor;
+      unsafe {
+        let mut dims = Vec::with_capacity(tf::TF_NumDims(input_tensor) as usize);
+        for i in 0..dims.capacity() {
+          dims.push(tf::TF_Dim(input_tensor, i as i32));
+        }
+        input_tensors.push(tf::TF_NewTensor(
+          tf::TF_TensorType(input_tensor),
+          dims.as_ptr() as *mut i64,
+          dims.len() as libc::c_int,
+          tf::TF_TensorData(input_tensor),
+          tf::TF_TensorByteSize(input_tensor),
+          Some(noop_deallocator),
+          std::ptr::null_mut()));
+      }
+    }
+
+    // In case we're running it a second time and not all outputs were taken out.
+    step.drop_output_tensors();
+
+    let status = Status::new();
+    unsafe {
+      tf::TF_Run(
+        self.inner,
+        std::ptr::null(),
+        step.input_name_ptrs.as_mut_ptr(),
+        input_tensors.as_mut_ptr(),
+        input_tensors.len() as raw::c_int,
+        step.output_name_ptrs.as_mut_ptr(),
+        step.output_tensors.as_mut_ptr(),
+        step.output_tensors.len() as raw::c_int,
+        step.target_name_ptrs.as_mut_ptr(),
+        step.target_name_ptrs.len() as raw::c_int,
+        std::ptr::null_mut(),
+        status.inner);
+    };
+    status
+  }
 }
 
 impl Drop for Session {
@@ -305,6 +350,133 @@ impl Drop for Session {
       tf::TF_DeleteSession(self.inner, status.inner);
     }
     // TODO: What do we do with the status?
+  }
+}
+
+/// Manages the inputs and outputs for a single execution of a graph.
+///
+/// Typical usage involves creating an instance of this struct,
+/// adding some inputs to it, requesting some outputs, passing it to `Session::run`
+/// and then taking the outputs out of it.
+pub struct Step<'l> {
+  input_name_ptrs: Vec<*const raw::c_char>,
+  input_name_c_strings: Vec<CString>,
+  input_tensors: Vec<*mut tf::TF_Tensor>,
+
+  output_name_ptrs: Vec<*const raw::c_char>,
+  output_name_c_strings: Vec<CString>,
+  output_tensors: Vec<*mut tf::TF_Tensor>,
+
+  target_name_ptrs: Vec<*const raw::c_char>,
+  target_name_c_strings: Vec<CString>,
+
+  phantom: marker::PhantomData<&'l ()>,
+}
+
+impl<'l> Step<'l> {
+  /// Creates a Step.
+  pub fn new() -> Self {
+    Step {
+      input_name_ptrs: vec![],
+      input_name_c_strings: vec![],
+      input_tensors: vec![],
+
+      output_name_ptrs: vec![],
+      output_name_c_strings: vec![],
+      output_tensors: vec![],
+
+      target_name_ptrs: vec![],
+      target_name_c_strings: vec![],
+
+      phantom: marker::PhantomData,
+    }
+  }
+
+  /// Adds an input to be fed to the graph.
+  pub fn add_input<T>(&mut self, name: &str, tensor: &'l Tensor<T>) -> std::result::Result<(), NulError> {
+    let c_string = try!(CString::new(name));
+    self.input_name_ptrs.push(c_string.as_ptr());
+    self.input_name_c_strings.push(c_string);
+    self.input_tensors.push(tensor.inner);
+    Ok(())
+  }
+
+  /// Requests that an output is fetched from the graph after running this step.
+  /// Returns an index that you can then use to fetch this output from the step after running it.
+  pub fn request_output(&mut self, name: &str) -> std::result::Result<usize, NulError> {
+    let c_string = try!(CString::new(name));
+    self.output_name_ptrs.push(c_string.as_ptr());
+    self.output_name_c_strings.push(c_string);
+    self.output_tensors.push(std::ptr::null_mut());
+    Ok(self.output_tensors.len() - 1)
+  }
+
+  /// Extracts a tensor output given an index. A given index can only be extracted once per `Session::run`.
+  /// Returns an error if output_idx is out of range, output is unavailable or the
+  /// requested type does not match the type of the actual tensor.
+  pub fn take_output<T: TensorType>(&mut self, output_idx: usize) -> Result<Tensor<T>> {
+    if output_idx >= self.output_tensors.len() {
+      return Err(Status::new_set(Code::OutOfRange,
+        &format!("Requested output index is out of range: {} vs {}",
+          output_idx,
+          self.output_tensors.len())).unwrap());
+    }
+    if self.output_tensors[output_idx].is_null() {
+      return Err(Status::new_set(Code::Unavailable,
+        "Output not available. Either it was already taken, or this step \
+        has not been sucessfully run yet.").unwrap());
+    }
+    let actual_data_type = self.get_output_data_type(output_idx).unwrap();
+    if actual_data_type != T::data_type() {
+      return Err(Status::new_set(Code::InvalidArgument,
+        &format!("Requested tensor type does not match actual tensor type: {} vs {}",
+          actual_data_type,
+          T::data_type())).unwrap());
+    }
+    let tensor = unsafe {
+      Tensor::from_tf_tensor(self.output_tensors[output_idx]).unwrap()
+    };
+    self.output_tensors[output_idx] = std::ptr::null_mut();
+    Ok(tensor)
+  }
+
+  /// Adds a target node to be executed when running the graph.
+  pub fn add_target(&mut self, name: &str) -> std::result::Result<(), NulError> {
+    let c_string = try!(CString::new(name));
+    self.target_name_ptrs.push(c_string.as_ptr());
+    self.target_name_c_strings.push(c_string);
+    Ok(())
+  }
+
+  /// Retuns the type of the tensor given an index.
+  /// Returns `None` if the index is out of range or the output is not yet available.
+  pub fn get_output_data_type(&self, output_idx: usize) -> Option<DataType> {
+    if output_idx >= self.output_tensors.len() {
+      return None;
+    }
+    if self.output_tensors[output_idx].is_null() {
+      return None;
+    }
+    unsafe {
+      Some(DataType::from_int(mem::transmute(tf::TF_TensorType(self.output_tensors[output_idx]))))
+    }
+  }
+
+  fn drop_output_tensors(&mut self) {
+    for &tensor in &self.output_tensors {
+      // TODO: Is TF_DeleteTensor NULL safe?
+      if !tensor.is_null() {
+        unsafe {
+          tf::TF_DeleteTensor(tensor);
+        }
+      }
+    }
+  }
+}
+
+impl<'l> Drop for Step<'l> {
+  fn drop(&mut self) {
+    self.drop_output_tensors();
   }
 }
 
@@ -435,6 +607,23 @@ impl<T: TensorType> Tensor<T> {
   pub fn dims(&self) -> &[u64] {
     &self.dims
   }
+
+  // Wraps a TF_Tensor. Returns None if types don't match.
+  unsafe fn from_tf_tensor(tensor: *mut tf::TF_Tensor) -> Option<Self> {
+    if DataType::from_int(mem::transmute(tf::TF_TensorType(tensor))) != T::data_type() {
+      return None;
+    }
+    let mut dims = Vec::with_capacity(tf::TF_NumDims(tensor) as usize);
+    for i in 0..dims.capacity() {
+      dims.push(tf::TF_Dim(tensor, i as raw::c_int) as u64);
+    }
+    let data = Buffer::from_ptr(tf::TF_TensorData(tensor) as *mut T, product(&dims) as usize);
+    Some(Tensor {
+      inner: tensor,
+      data: data,
+      dims: dims
+    })
+  }
 }
 
 impl<T> Drop for Tensor<T> {
@@ -496,5 +685,36 @@ mod tests {
     // An empty array is a valid proto, since all fields are optional.
     let status = session.extend_graph(&vec![]);
     assert!(status.is_ok());
+  }
+
+  #[test]
+  fn test_run() {
+    // Graph is just y = 2 * x
+    let graph_proto = vec![
+      0x0a, 0x2a, 0x0a, 0x01, 0x78, 0x12, 0x0b, 0x50, 0x6c, 0x61, 0x63, 0x65, 0x68, 0x6f, 0x6c, 0x64,
+      0x65, 0x72, 0x2a, 0x0b, 0x0a, 0x05, 0x64, 0x74, 0x79, 0x70, 0x65, 0x12, 0x02, 0x30, 0x01, 0x2a,
+      0x0b, 0x0a, 0x05, 0x73, 0x68, 0x61, 0x70, 0x65, 0x12, 0x02, 0x3a, 0x00, 0x0a, 0x30, 0x0a, 0x03,
+      0x79, 0x2f, 0x79, 0x12, 0x05, 0x43, 0x6f, 0x6e, 0x73, 0x74, 0x2a, 0x0b, 0x0a, 0x05, 0x64, 0x74,
+      0x79, 0x70, 0x65, 0x12, 0x02, 0x30, 0x01, 0x2a, 0x15, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65,
+      0x12, 0x0c, 0x42, 0x0a, 0x08, 0x01, 0x12, 0x00, 0x2a, 0x04, 0x00, 0x00, 0x00, 0x40, 0x0a, 0x19,
+      0x0a, 0x01, 0x79, 0x12, 0x03, 0x4d, 0x75, 0x6c, 0x1a, 0x01, 0x78, 0x1a, 0x03, 0x79, 0x2f, 0x79,
+      0x2a, 0x07, 0x0a, 0x01, 0x54, 0x12, 0x02, 0x30, 0x01
+    ];
+    let mut session = create_session();
+    let status = session.extend_graph(&graph_proto);
+    assert!(status.is_ok());
+    let mut x = <Tensor<f32>>::new(&[2]);
+    x.data_mut()[0] = 2.0;
+    x.data_mut()[1] = 3.0;
+    let mut step = Step::new();
+    step.add_input("x:0", &x).unwrap();
+    let output_ix = step.request_output("y:0").unwrap();
+    let result = session.run(&mut step);
+    assert!(result.is_ok(), "{}", result);
+    let output_tensor = step.take_output::<f32>(output_ix).unwrap();
+    let data = output_tensor.data();
+    assert_eq!(data.len(), 2);
+    assert_eq!(data[0], 4.0);
+    assert_eq!(data[1], 6.0);
   }
 }
