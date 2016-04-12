@@ -176,6 +176,14 @@ impl Status {
     self.code() == Code::Ok
   }
 
+  fn as_result(self) -> Result<()> {
+    if self.is_ok() {
+      Ok(())
+    } else {
+      Err(self)
+    }
+  }
+
   /// Sets the code and message.
   pub fn set(&mut self, code: Code, msg: &str) -> std::result::Result<(), NulError> {
     let message = try!(CString::new(msg)).as_ptr();
@@ -281,25 +289,25 @@ impl Session {
   }
 
   /// Closes the session.
-  pub fn close(&mut self) -> Status {
+  pub fn close(&mut self) -> Result<()> {
     let status = Status::new();
     unsafe {
       tf::TF_CloseSession(self.inner, status.inner);
     }
-    status
+    status.as_result()
   }
 
   /// Treat `proto` as a serialized `GraphDef` and add the nodes in that `GraphDef` to the graph for the session.
-  pub fn extend_graph(&mut self, proto: &[u8]) -> Status {
+  pub fn extend_graph(&mut self, proto: &[u8]) -> Result<()> {
     let status = Status::new();
     unsafe {
       tf::TF_ExtendGraph(self.inner, proto.as_ptr() as *const raw::c_void, proto.len(), status.inner);
     }
-    status
+    status.as_result()
   }
 
   /// Runs the graph, feeding the inputs and then fetching the outputs requested in the step.
-  pub fn run(&mut self, step: &mut Step) -> Status {
+  pub fn run(&mut self, step: &mut Step) -> Result<()> {
     // Copy the input tensors because TF_Run consumes them.
     let mut input_tensors = Vec::with_capacity(step.input_tensors.len());
     for &input_tensor in &step.input_tensors {
@@ -339,7 +347,7 @@ impl Session {
         std::ptr::null_mut(),
         status.inner);
     };
-    status
+    status.as_result()
   }
 }
 
@@ -709,8 +717,7 @@ mod tests {
     let mut step = Step::new();
     step.add_input("x:0", &x).unwrap();
     let output_ix = step.request_output("y:0").unwrap();
-    let result = session.run(&mut step);
-    assert!(result.is_ok(), "{}", result);
+    session.run(&mut step).unwrap();
     let output_tensor = step.take_output::<f32>(output_ix).unwrap();
     let data = output_tensor.data();
     assert_eq!(data.len(), 2);
