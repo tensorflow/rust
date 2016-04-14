@@ -22,6 +22,8 @@ use libtensorflow_sys as tf;
 mod buffer;
 pub use buffer::Buffer;
 
+pub mod expr;
+
 ////////////////////////
 
 fn check_not_null<T>(p: *mut T) -> *mut T {
@@ -496,7 +498,7 @@ pub type Result<T> = std::result::Result<T, Status>;
 ////////////////////////
 
 /// A Rust type that maps to a `DataType`.
-pub trait TensorType: Default + Clone {
+pub trait TensorType: Default + Clone + Display + Debug + 'static {
   // TODO: Use associated constants when/if available
   /// Returns the DataType that corresponds to this type.
   fn data_type() -> DataType;
