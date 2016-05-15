@@ -188,9 +188,9 @@ impl Status {
 
   /// Sets the code and message.
   pub fn set(&mut self, code: Code, msg: &str) -> std::result::Result<(), NulError> {
-    let message = try!(CString::new(msg)).as_ptr();
+    let message = try!(CString::new(msg));
     unsafe {
-      tf::TF_SetStatus(self.inner, mem::transmute(code.to_int()), message);
+      tf::TF_SetStatus(self.inner, mem::transmute(code.to_int()), message.as_ptr());
     }
     Ok(())
   }
