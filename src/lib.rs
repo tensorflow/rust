@@ -225,6 +225,12 @@ impl Debug for Status {
   }
 }
 
+impl From<NulError> for Status {
+  fn from(_e: NulError) -> Self {
+    Status::new_set(Code::InvalidArgument, "String contained NUL byte").unwrap()
+  }
+}
+
 ////////////////////////
 
 /// Options that can be passed during session creation.
@@ -642,6 +648,32 @@ impl<T> Drop for Tensor<T> {
       tf::TF_DeleteTensor(self.inner);
     }
   }
+}
+
+////////////////////////
+
+/// Dynamically loaded plugins.
+/// The C API doesn't provide a way to unload libraries, so nothing happens when this goes out of scope.
+pub struct Library {
+  inner: *mut tf::TF_Library,
+}
+
+impl Library {
+  /// Loads a library.
+  pub fn load(library_filename: &str) -> Result<Self> {
+    let c_filename = try!(CString::new(library_filename));
+    let status = Status::new();
+    let inner = unsafe { tf::TF_LoadLibrary(c_filename.as_ptr(), status.inner) };
+    if inner.is_null() {
+      Err(status)
+    } else {
+      Ok(Library {
+        inner: inner,
+      })
+    }
+  }
+
+  // TODO: Implement TF_GetOpList once we can deserialize protos.
 }
 
 ////////////////////////
