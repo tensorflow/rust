@@ -3,6 +3,8 @@
 use libc;
 use std::borrow::Borrow;
 use std::borrow::BorrowMut;
+use std::cmp;
+use std::ffi::CStr;
 use std::mem;
 use std::ops::Deref;
 use std::ops::DerefMut;
@@ -12,6 +14,7 @@ use std::ops::Range;
 use std::ops::RangeFrom;
 use std::ops::RangeFull;
 use std::ops::RangeTo;
+use std::ptr;
 use std::slice;
 
 /// Fixed-length heap-allocated vector.
@@ -48,14 +51,18 @@ impl<T> Buffer<T> {
   pub unsafe fn new_uninitialized(len: usize) -> Self {
     let elem_size = mem::size_of::<T>();
     let alloc_size = len * elem_size;
-    let align = mem::align_of::<T>();
+    let align = cmp::max(mem::align_of::<T>(), mem::size_of::<*const libc::c_void>());
+    // posix_memalign requires the alignment to be at least sizeof(void*).
     // TODO: Use alloc::heap::allocate once it's stable, or at least libc::aligned_alloc once it exists
-    let ptr = libc::memalign(align, alloc_size) as *mut T;
-    if ptr.is_null() {
-      panic!("Failed to allocate. Out of memory?");
+    let mut ptr = ptr::null::<libc::c_void>() as *mut libc::c_void;
+    let err = libc::posix_memalign(&mut ptr, align, alloc_size);
+    if err != 0 {
+      let c_msg = libc::strerror(err);
+      let msg = CStr::from_ptr(c_msg);
+      panic!("Failed to allocate: {}", msg.to_str().unwrap());
     }
     Buffer {
-      ptr: ptr,
+      ptr: ptr as *mut T,
       length: len,
       owned: true,
     }
