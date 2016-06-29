@@ -530,12 +530,34 @@ tensor_type!(i8, Int8);
 // TODO: provide type for Complex
 tensor_type!(i64, Int64);
 tensor_type!(bool, Bool);
-// TODO: provide type for QInt8
-// TODO: provide type for QUInt8
-// TODO: provide type for QInt32
 // TODO: provide type for BFloat16
-// TODO: provide type for QInt16
-// TODO: provide type for QUInt16
+
+macro_rules! q_type {
+  ($rust_type:ident, $q_type:ident) => {
+    #[derive(Clone,Default,Debug,Eq,PartialEq,Ord,PartialOrd)]
+    pub struct $q_type($rust_type);
+
+    impl Display for $q_type {
+      fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        <$rust_type as Display>::fmt(&self.0, f)
+      }
+    }
+
+    impl From<$rust_type> for $q_type {
+      fn from(x: $rust_type) -> Self {
+        $q_type(x)
+      }
+    }
+
+    tensor_type!($q_type, $q_type);
+  }
+}
+
+q_type!(i8, QInt8);
+q_type!(u8, QUInt8);
+q_type!(i16, QInt16);
+q_type!(u16, QUInt16);
+q_type!(i32, QInt32);
 
 ////////////////////////
 
