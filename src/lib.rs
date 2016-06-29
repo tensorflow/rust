@@ -527,7 +527,7 @@ tensor_type!(u8, UInt8);
 tensor_type!(i16, Int16);
 tensor_type!(i8, Int8);
 // TODO: provide type for String
-// TODO: provide type for Complex
+// TODO: provide type for Complex. Pending impl of Default: https://github.com/rust-num/num/issues/198
 tensor_type!(i64, Int64);
 tensor_type!(bool, Bool);
 // TODO: provide type for BFloat16
