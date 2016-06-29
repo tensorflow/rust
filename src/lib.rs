@@ -599,13 +599,10 @@ impl<T: TensorType> Tensor<T> {
                        Some(noop_deallocator),
                        std::ptr::null_mut())
     };
-    let mut dims_vec = Vec::new();
-    // TODO: Use extend_from_slice once we're on Rust 1.6
-    dims_vec.extend(dims.iter());
     Some(Tensor {
       inner: inner,
       data: data,
-      dims: dims_vec,
+      dims: Vec::from(dims),
     })
   }
 
