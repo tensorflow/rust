@@ -9,9 +9,8 @@ readme = "README.md"
 repository = "https://github.com/google/tensorflow-rust"
 
 [dependencies]
-libc = "^0.2"
-libtensorflow-sys = { version = "0.0.1", path = "libtensorflow-sys" }
+libc = "0.2"
+tensorflow-sys = { version = "0.4", path = "tensorflow-sys" }
 
 [features]
-default = []
 tensorflow_unstable = []
