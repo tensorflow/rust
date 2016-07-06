@@ -1,4 +1,3 @@
 *~
 Cargo.lock
-/target
-/libtensorflow-sys/target
+target
