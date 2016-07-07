@@ -3,21 +3,19 @@
 #![cfg(feature = "tensorflow_unstable")]
 
 extern crate libc;
-extern crate libtensorflow_sys;
+extern crate tensorflow_sys as tf;
 
+use libc::{c_char, c_int, c_uint, c_void, size_t};
 use std::ffi::CStr;
 use std::ffi::CString;
 use std::ffi::NulError;
-use std::fmt;
 use std::fmt::Debug;
 use std::fmt::Display;
 use std::fmt::Formatter;
+use std::fmt;
 use std::marker;
 use std::mem;
 use std::ops::Drop;
-use std::os::raw;
-
-use libtensorflow_sys as tf;
 
 mod buffer;
 pub use buffer::Buffer;
@@ -69,13 +67,13 @@ macro_rules! c_enum {
     #[doc = $doc]
     #[derive(PartialEq,Eq,PartialOrd,Ord,Debug)]
     pub enum $enum_name {
-      UnrecognizedEnumValue(raw::c_uint),
+      UnrecognizedEnumValue(c_uint),
       $($name),*
     }
 
     impl $enum_name {
       #[allow(dead_code)]
-      fn from_int(value: raw::c_uint) -> $enum_name {
+      fn from_int(value: c_uint) -> $enum_name {
         match value {
           $($num => $enum_name::$name,)*
           c => $enum_name::UnrecognizedEnumValue(c),
@@ -83,7 +81,7 @@ macro_rules! c_enum {
       }
 
       #[allow(dead_code)]
-      fn to_int(&self) -> raw::c_uint {
+      fn to_int(&self) -> c_uint {
         match self {
           &$enum_name::UnrecognizedEnumValue(c) => c,
           $(&$enum_name::$name => $num),*
@@ -262,7 +260,7 @@ impl SessionOptions {
   pub fn set_config(&mut self, config: &[u8]) -> Result<()> {
     let status = Status::new();
     unsafe {
-      tf::TF_SetConfig(self.inner, config.as_ptr() as *const raw::c_void, config.len(), status.inner);
+      tf::TF_SetConfig(self.inner, config.as_ptr() as *const _, config.len(), status.inner);
     }
     if status.is_ok() {
       Ok(())
@@ -309,7 +307,7 @@ impl Session {
   pub fn extend_graph(&mut self, proto: &[u8]) -> Result<()> {
     let status = Status::new();
     unsafe {
-      tf::TF_ExtendGraph(self.inner, proto.as_ptr() as *const raw::c_void, proto.len(), status.inner);
+      tf::TF_ExtendGraph(self.inner, proto.as_ptr() as *const _, proto.len(), status.inner);
     }
     status.as_result()
   }
@@ -323,16 +321,15 @@ impl Session {
       unsafe {
         let mut dims = Vec::with_capacity(tf::TF_NumDims(input_tensor) as usize);
         for i in 0..dims.capacity() {
-          dims.push(tf::TF_Dim(input_tensor, i as i32));
+          dims.push(tf::TF_Dim(input_tensor, i as c_int));
         }
-        input_tensors.push(tf::TF_NewTensor(
-          tf::TF_TensorType(input_tensor),
-          dims.as_ptr() as *mut i64,
-          dims.len() as libc::c_int,
-          tf::TF_TensorData(input_tensor),
-          tf::TF_TensorByteSize(input_tensor),
-          Some(noop_deallocator),
-          std::ptr::null_mut()));
+        input_tensors.push(tf::TF_NewTensor(tf::TF_TensorType(input_tensor),
+                                            dims.as_mut_ptr(),
+                                            dims.len() as c_int,
+                                            tf::TF_TensorData(input_tensor),
+                                            tf::TF_TensorByteSize(input_tensor),
+                                            Some(noop_deallocator),
+                                            std::ptr::null_mut()));
       }
     }
 
@@ -346,12 +343,12 @@ impl Session {
         std::ptr::null(),
         step.input_name_ptrs.as_mut_ptr(),
         input_tensors.as_mut_ptr(),
-        input_tensors.len() as raw::c_int,
+        input_tensors.len() as c_int,
         step.output_name_ptrs.as_mut_ptr(),
         step.output_tensors.as_mut_ptr(),
-        step.output_tensors.len() as raw::c_int,
+        step.output_tensors.len() as c_int,
         step.target_name_ptrs.as_mut_ptr(),
-        step.target_name_ptrs.len() as raw::c_int,
+        step.target_name_ptrs.len() as c_int,
         std::ptr::null_mut(),
         status.inner);
     };
@@ -375,15 +372,15 @@ impl Drop for Session {
 /// adding some inputs to it, requesting some outputs, passing it to `Session::run`
 /// and then taking the outputs out of it.
 pub struct Step<'l> {
-  input_name_ptrs: Vec<*const raw::c_char>,
+  input_name_ptrs: Vec<*const c_char>,
   input_name_c_strings: Vec<CString>,
   input_tensors: Vec<*mut tf::TF_Tensor>,
 
-  output_name_ptrs: Vec<*const raw::c_char>,
+  output_name_ptrs: Vec<*const c_char>,
   output_name_c_strings: Vec<CString>,
   output_tensors: Vec<*mut tf::TF_Tensor>,
 
-  target_name_ptrs: Vec<*const raw::c_char>,
+  target_name_ptrs: Vec<*const c_char>,
   target_name_c_strings: Vec<CString>,
 
   phantom: marker::PhantomData<&'l ()>,
@@ -579,10 +576,7 @@ pub struct Tensor<T> {
   dims: Vec<u64>,
 }
 
-unsafe extern "C" fn noop_deallocator(_data: *mut raw::c_void,
-                               _len: ::libc::size_t,
-                               _arg: *mut raw::c_void)-> () {
-}
+unsafe extern "C" fn noop_deallocator(_: *mut c_void, _: size_t, _: *mut c_void) -> () {}
 
 // TODO: Replace with Iterator::product once that's stable
 fn product(values: &[u64]) -> u64 {
@@ -614,9 +608,9 @@ impl<T: TensorType> Tensor<T> {
     }
     let inner = unsafe {
       tf::TF_NewTensor(mem::transmute(T::data_type().to_int()),
-                       dims.as_ptr() as *mut i64,
-                       dims.len() as i32,
-                       data.as_ptr() as *mut raw::c_void,
+                       dims.as_ptr() as *mut _,
+                       dims.len() as c_int,
+                       data.as_ptr() as *mut _,
                        data.len(),
                        Some(noop_deallocator),
                        std::ptr::null_mut())
@@ -650,9 +644,9 @@ impl<T: TensorType> Tensor<T> {
     }
     let mut dims = Vec::with_capacity(tf::TF_NumDims(tensor) as usize);
     for i in 0..dims.capacity() {
-      dims.push(tf::TF_Dim(tensor, i as raw::c_int) as u64);
+      dims.push(tf::TF_Dim(tensor, i as c_int) as u64);
     }
-    let data = Buffer::from_ptr(tf::TF_TensorData(tensor) as *mut T, product(&dims) as usize);
+    let data = Buffer::from_ptr(tf::TF_TensorData(tensor) as *mut _, product(&dims) as usize);
     Some(Tensor {
       inner: tensor,
       data: data,
