@@ -1,0 +1,31 @@
+language: rust
+sudo: false
+
+cache: cargo
+rust: nightly
+
+install:
+  - export CC="gcc-4.9" CXX="g++-4.9"
+  - source travis-ci/install.sh
+
+script:
+  - cargo test -vv -j 1
+  - cd tensorflow-sys && cargo test -vv -j 1
+
+after_success:
+  - travis-ci/documentation.sh
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+
+    packages:
+      - g++-4.9
+      - gcc-4.9
+      - oracle-java8-installer
+      - python-numpy
+      - swig
+
+notifications:
+  email: false
