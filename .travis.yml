@@ -9,7 +9,7 @@ install:
   - source travis-ci/install.sh
 
 script:
-  - cargo test -vv -j 1
+  - cargo test -vv -j 1 --features tensorflow_unstable
   - cd tensorflow-sys && cargo test -vv -j 1
 
 after_success:
