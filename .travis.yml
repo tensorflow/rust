@@ -1,7 +1,11 @@
 language: rust
 sudo: false
 
-cache: cargo
+cache:
+  cargo: true
+  directories:
+    - $HOME/.cache/bazel
+
 rust: nightly
 
 install:
