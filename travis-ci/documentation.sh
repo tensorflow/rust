@@ -20,7 +20,6 @@ HTML="<!DOCTYPE html>
 <meta http-equiv='refresh' content='0; url=${URL}'>
 <script>window.location='${URL}'</script>"
 
-cargo doc --features tensorflow_unstable ${CARGO_FLAGS}
 echo "${HTML}" > target/doc/index.html
 
 export PYTHONUSERBASE="${HOME}/.local"

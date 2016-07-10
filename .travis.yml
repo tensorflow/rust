@@ -18,7 +18,9 @@ install:
 
 script:
   - cargo test -vv -j 1 --features tensorflow_unstable
+  - cargo doc -vv --features tensorflow_unstable
   - (cd tensorflow-sys && cargo test -vv -j 1)
+  - (cd tensorflow-sys && cargo doc -vv)
 
 after_success:
   - travis-ci/documentation.sh
