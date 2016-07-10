@@ -13,7 +13,7 @@ if [ -z "${CRATE_NAME}" ]; then
   CRATE_NAME=$(echo ${TRAVIS_REPO_SLUG} | cut -d '/' -f 2 | sed 's/-/_/g')
 fi
 
-URL="${CRATE_NAME}/index.html"
+URL="tensorflow/index.html"
 
 HTML="<!DOCTYPE html>
 <link rel='canonical' href='${URL}'>
