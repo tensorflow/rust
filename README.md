@@ -56,5 +56,6 @@ This is not an official Google product.
 
 ##For more information
 
+* [API docs](https://google.github.io/tensorflow-rust)
 * [TensorFlow website](http://tensorflow.org)
 * [TensorFlow GitHub page](https://github.com/tensorflow/tensorflow)
