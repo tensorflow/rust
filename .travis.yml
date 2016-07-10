@@ -8,10 +8,6 @@ cache:
 
 rust: nightly
 
-before_install:
-  - openssl aes-256-cbc -K $encrypted_a0be6b989bf3_key -iv $encrypted_a0be6b989bf3_iv -in travis-ci/travis_rsa.enc -out ~/.ssh/id_rsa -d
-  - chmod 600 ~/.ssh/id_rsa
-
 install:
   - export CC="gcc-4.9" CXX="g++-4.9"
   - source travis-ci/install.sh
@@ -21,9 +17,6 @@ script:
   - cargo doc -vv --features tensorflow_unstable
   - (cd tensorflow-sys && cargo test -vv -j 1)
   - (cd tensorflow-sys && cargo doc -vv)
-
-after_success:
-  - travis-ci/documentation.sh
 
 addons:
   apt:
