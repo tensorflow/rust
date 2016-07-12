@@ -2,7 +2,7 @@
 name = "tensorflow"
 version = "0.0.2"
 authors = ["Adam Crume <acrume@google.com>"]
-description = "Rust language bindings for TensorFlow.  This project is still under active development and not yet ready for widespread use."
+description = "Rust language bindings for TensorFlow."
 license = "Apache-2.0"
 keywords = ["TensorFlow", "bindings"]
 readme = "README.md"
