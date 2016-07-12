@@ -8,7 +8,7 @@ authors = [
 ]
 description = "The package provides bindings to TensorFlow."
 documentation = "https://google.github.io/tensorflow-rust"
-homepage = "https://github.com/google/tensorflow-rust/tensorflow-sys"
+homepage = "https://github.com/google/tensorflow-rust"
 repository = "https://github.com/google/tensorflow-rust"
 build = "build.rs"
 links = "tensorflow"
