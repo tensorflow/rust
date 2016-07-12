@@ -1,4 +1,8 @@
 // -*-  indent-tabs-mode:nil; tab-width:2;  -*-
+//! This module builds computation graphs.
+//!
+//! This module is unfinished.
+
 use std::convert::From;
 use std::fmt::Debug;
 use std::fmt::Display;
@@ -10,6 +14,8 @@ use std::rc::Rc;
 use super::Buffer;
 use super::TensorType;
 
+/// Denotes operator precedence.
+/// Used for displaying expressions as strings.
 #[derive(Ord,PartialOrd,Eq,PartialEq,Debug)]
 pub enum OpLevel {
   Add,
@@ -20,6 +26,10 @@ pub enum OpLevel {
 
 ////////////////////////
 
+/// A node in an expression tree, which is a thin wrapper around an ExprImpl.
+///
+/// This is separate from ExprImpl because we want expressions to be wrapped in an Rc,
+/// and we can't directly implement std::ops::Add, etc., for Rc<E: ExprImpl<T>>.
 #[derive(Debug)]
 pub struct Expr<T: TensorType> {
   expr: Rc<ExprImpl<T>>,
@@ -41,7 +51,10 @@ impl<T: TensorType> From<T> for Expr<T> {
 
 ////////////////////////
 
+/// Trait implemented by all expression types.
+/// Most users will want to store an Expr instead.
 pub trait ExprImpl<T: TensorType>: Display + Debug {
+  /// Returns the precedence level for this operator.
   fn op_level(&self) -> OpLevel;
 }
 
@@ -54,7 +67,8 @@ impl<T: TensorType> ExprImpl<T> for T {
 ////////////////////////
 
 macro_rules! impl_bin_op {
-  ($name:ident, $fn_name:ident, $op:expr, $op_level:ident, $assoc:expr) => {
+  ($name:ident, $fn_name:ident, $op:expr, $op_level:ident, $assoc:expr, $doc:expr) => {
+    #[doc = $doc]
     #[derive(Debug)]
     pub struct $name<T: TensorType> {
       left: Expr<T>,
@@ -116,14 +130,15 @@ macro_rules! impl_bin_op {
   }
 }
 
-impl_bin_op!(Add, add, "+", Add, true);
-impl_bin_op!(Sub, sub, "-", Add, false);
-impl_bin_op!(Mul, mul, "*", Mul, true);
-impl_bin_op!(Div, div, "/", Mul, false);
-impl_bin_op!(Rem, rem, "%", Mul, false);
+impl_bin_op!(Add, add, "+", Add, true, "Expression resulting from adding two subexpressions.");
+impl_bin_op!(Sub, sub, "-", Add, false, "Expression resulting from subtracting two subexpressions.");
+impl_bin_op!(Mul, mul, "*", Mul, true, "Expression resulting from multiplying two subexpressions.");
+impl_bin_op!(Div, div, "/", Mul, false, "Expression resulting from dividing two subexpressions.");
+impl_bin_op!(Rem, rem, "%", Mul, false, "Expression resulting from taking a modulus.");
 
 ////////////////////////
 
+/// Expression resulting from negation of an expression.
 #[derive(Debug)]
 pub struct Neg<T: TensorType> {
   expr: Expr<T>,
@@ -160,6 +175,7 @@ impl<T: TensorType> ExprImpl<T> for Neg<T> {
 
 ////////////////////////
 
+/// Expression for a variable.
 #[derive(Debug)]
 pub struct Variable<T: TensorType> {
   initial_value: Buffer<T>,
@@ -191,6 +207,7 @@ impl<T: TensorType> ExprImpl<T> for Variable<T> {
 
 ////////////////////////
 
+/// Expression for a placeholder.
 #[derive(Debug)]
 pub struct Placeholder<T: TensorType> {
   shape: Vec<u64>,
