@@ -1,9 +1,9 @@
 [package]
 name = "libtensorflow-sys"
-version = "0.0.1"
+version = "0.0.2"
 authors = ["Adam Crume <acrume@google.com>"]
 build = "build.rs"
-description = "Low-level Rust language bindings for TensorFlow.  This project is still under active development and not yet ready for widespread use."
+description = "This crate has been deprecated in favor of tensorflow-sys. Please use it instead."
 license = "Apache-2.0"
 keywords = ["TensorFlow", "bindings"]
 repository = "https://github.com/google/tensorflow-rust"
