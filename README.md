@@ -1,7 +1,7 @@
 #TensorFlow Rust
 [![Version](https://img.shields.io/crates/v/tensorflow.svg)](https://crates.io/crates/tensorflow)
 [![Status](https://travis-ci.org/google/tensorflow-rust.svg?branch=master)](https://travis-ci.org/google/tensorflow-rust)
-
+[![Chat on irc] (https://img.shields.io/badge/chat-on%20mozilla%20rust--machine--learning-brightgreen.svg)](irc://irc.mozilla.org/rust-machine-learning)
 TensorFlow Rust provides [Rust](https://www.rust-lang.org) language bindings for
 [TensorFlow](http://tensorflow.org).
 
