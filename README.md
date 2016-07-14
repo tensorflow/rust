@@ -52,6 +52,10 @@ use. See http://doc.crates.io/manifest.html#the-features-section.
 This project is not directly affiliated with the TensorFlow project, although we
 do intend to communicate and cooperate with them.
 
+Developers and users are welcome to join
+[#tensorflow-rust](http://chat.mibbit.com/?server=irc.mozilla.org&channel=%23tensorflow-rust)
+on irc.mozilla.org.
+
 See [CONTRIBUTING.md](CONTRIBUTING.md) for information on how to contribute code.
 
 This is not an official Google product.
