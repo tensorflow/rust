@@ -63,6 +63,19 @@ macro_rules! impl_drop {
 
 ////////////////////////
 
+/// Will panic if `msg` contains an embedded 0 byte.
+macro_rules! invalid_arg {
+  ($fmt:expr) => {
+    Status::new_set(Code::InvalidArgument, $fmt).unwrap()
+  };
+  ($fmt:expr, $($arg:tt)*) => ({
+    let msg = format!($fmt, $($arg)*);
+    Status::new_set(Code::InvalidArgument, &msg).unwrap()
+  });
+}
+
+////////////////////////
+
 macro_rules! c_enum {
   ($doc:expr, $enum_name:ident { $($name:ident = $num:expr),* }) => {
     #[doc = $doc]
@@ -226,7 +239,7 @@ impl Debug for Status {
 
 impl From<NulError> for Status {
   fn from(_e: NulError) -> Self {
-    Status::new_set(Code::InvalidArgument, "String contained NUL byte").unwrap()
+    invalid_arg!("String contained NUL byte")
   }
 }
 
@@ -457,10 +470,10 @@ impl<'l> Step<'l> {
     }
     let actual_data_type = self.get_output_data_type(output_idx).unwrap();
     if actual_data_type != T::data_type() {
-      return Err(Status::new_set(Code::InvalidArgument,
-        &format!("Requested tensor type does not match actual tensor type: {} vs {}",
-          actual_data_type,
-          T::data_type())).unwrap());
+      return Err(invalid_arg!(
+        "Requested tensor type does not match actual tensor type: {} vs {}",
+        actual_data_type,
+        T::data_type()));
     }
     let tensor = unsafe {
       Tensor::from_tf_tensor(self.output_tensors[output_idx]).unwrap()
@@ -617,10 +630,10 @@ impl<T: TensorType> Tensor<T> {
   }
 
   /// Creates a new tensor from existing data.
-  pub fn new_with_buffer(dims: &[u64], data: Buffer<T>) -> Option<Self> {
+  pub fn new_with_buffer(dims: &[u64], data: Buffer<T>) -> Result<Self> {
     let total = product(dims);
     if total != data.len() as u64 {
-      return None
+      return Err(invalid_arg!("Dimensions {:?} do not match buffer length {}", dims, data.len()));
     }
     let inner = unsafe {
       tf::TF_NewTensor(mem::transmute(T::data_type().to_int()),
@@ -631,7 +644,7 @@ impl<T: TensorType> Tensor<T> {
                        Some(noop_deallocator),
                        std::ptr::null_mut())
     };
-    Some(Tensor {
+    Ok(Tensor {
       inner: inner,
       data: data,
       dims: Vec::from(dims),
