@@ -6,6 +6,7 @@ extern crate libc;
 extern crate tensorflow_sys as tf;
 
 use libc::{c_char, c_int, c_uint, c_void, size_t};
+use std::error::Error;
 use std::ffi::CStr;
 use std::ffi::CString;
 use std::ffi::NulError;
@@ -226,6 +227,21 @@ impl Debug for Status {
 impl From<NulError> for Status {
   fn from(_e: NulError) -> Self {
     Status::new_set(Code::InvalidArgument, "String contained NUL byte").unwrap()
+  }
+}
+
+impl Error for Status {
+  fn description(&self) -> &str {
+    unsafe {
+      match CStr::from_ptr(tf::TF_Message(self.inner)).to_str() {
+        Ok(s) => s,
+        Err(_) => "<invalid UTF-8 in message>",
+      }
+    }
+  }
+
+  fn cause(&self) -> Option<&Error> {
+    None
   }
 }
 
