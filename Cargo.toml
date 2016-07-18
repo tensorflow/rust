@@ -17,3 +17,5 @@ random = "0.12"
 
 [features]
 tensorflow_unstable = []
+
+[workspace]
