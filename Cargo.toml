@@ -12,5 +12,8 @@ repository = "https://github.com/google/tensorflow-rust"
 libc = "0.2"
 tensorflow-sys = { version = "0.4", path = "tensorflow-sys" }
 
+[dev-dependencies]
+random = "0.12"
+
 [features]
 tensorflow_unstable = []
