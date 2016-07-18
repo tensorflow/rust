@@ -16,6 +16,8 @@ use std::fmt::Formatter;
 use std::fmt;
 use std::marker;
 use std::mem;
+use std::ops::Deref;
+use std::ops::DerefMut;
 use std::ops::Drop;
 
 mod buffer;
@@ -689,6 +691,22 @@ impl<T> Drop for Tensor<T> {
     unsafe {
       tf::TF_DeleteTensor(self.inner);
     }
+  }
+}
+
+impl<T> Deref for Tensor<T> {
+  type Target = Buffer<T>;
+
+  #[inline]
+  fn deref(&self) -> &Buffer<T> {
+    &self.data
+  }
+}
+
+impl<T> DerefMut for Tensor<T> {
+  #[inline]
+  fn deref_mut<'a>(&'a mut self) -> &'a mut Buffer<T> {
+    &mut self.data
   }
 }
 

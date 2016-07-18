@@ -42,15 +42,11 @@ fn run() -> Result<(), Box<Error>> {
   let num_points = 100;
   let steps = 201;
   let mut rand = random::default();
-  let mut x_tensor = Tensor::new(&[num_points as u64]);
-  let mut y_tensor = Tensor::new(&[num_points as u64]);
-  {
-    let mut x = x_tensor.data_mut();
-    let mut y = y_tensor.data_mut();
-    for i in 0..num_points {
-      x[i] = (2.0 * rand.read::<f64>() - 1.0) as f32;
-      y[i] = w * x[i] + b;
-    }
+  let mut x = Tensor::new(&[num_points as u64]);
+  let mut y = Tensor::new(&[num_points as u64]);
+  for i in 0..num_points {
+    x[i] = (2.0 * rand.read::<f64>() - 1.0) as f32;
+    y[i] = w * x[i] + b;
   }
 
   // Load the computation graph defined by regression.py.
@@ -61,15 +57,15 @@ fn run() -> Result<(), Box<Error>> {
 
   // Load the test data into the session.
   let mut init_step = Step::new();
-  try!(init_step.add_input("x", &x_tensor));
-  try!(init_step.add_input("y", &y_tensor));
+  try!(init_step.add_input("x", &x));
+  try!(init_step.add_input("y", &y));
   try!(init_step.add_target("init"));
   try!(session.run(&mut init_step));
 
   // Train the model.
   let mut train_step = Step::new();
-  try!(train_step.add_input("x", &x_tensor));
-  try!(train_step.add_input("y", &y_tensor));
+  try!(train_step.add_input("x", &x));
+  try!(train_step.add_input("y", &y));
   try!(train_step.add_target("train"));
   for _ in 0..steps {
     try!(session.run(&mut train_step));
