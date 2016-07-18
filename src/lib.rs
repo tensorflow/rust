@@ -1,6 +1,5 @@
 // -*-  indent-tabs-mode:nil; tab-width:2;  -*-
 //! This crate provides Rust bindings for the [TensorFlow](https://www.tensorflow.org) machine learning library.
-#![cfg(feature = "tensorflow_unstable")]
 
 extern crate libc;
 extern crate tensorflow_sys as tf;

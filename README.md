@@ -28,20 +28,13 @@ and $TENSORFLOW_SRC/bazel-bin/tensorflow to LD_LIBRARY_PATH.
 You may need to run `ldconfig` to reset `ld`'s cache after copying libtensorflow.so.
 
 Now run `cargo build` as usual.
-To include the unstable API (which is currently the entire API), use `--features tensorflow_unstable`.
+To include the especially unstable API (which is currently the `expr` module),
+use `--features tensorflow_unstable`.
 
 ## FAQs
 
-#### Why are the docs empty?
-Run `cargo doc --features tensorflow_unstable`.
-See below.
-
-#### Why are no tests running?
-Run `cargo test --features tensorflow_unstable`.
-See below.
-
-#### Why does the compiler say that none of the API exists?
-The unstable parts of the API (which is currently the entire API) are
+#### Why does the compiler say that parts of the API don't exist?
+The especially unstable parts of the API (which is currently the `expr` modul) are
 feature-gated behind the feature `tensorflow_unstable` to prevent accidental
 use. See http://doc.crates.io/manifest.html#the-features-section.
 (We would prefer using an `#[unstable]` attribute, but that

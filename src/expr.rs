@@ -2,6 +2,7 @@
 //! This module builds computation graphs.
 //!
 //! This module is unfinished.
+#![cfg(feature = "tensorflow_unstable")]
 
 use std::convert::From;
 use std::fmt::Debug;
