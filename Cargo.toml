@@ -10,7 +10,7 @@ repository = "https://github.com/google/tensorflow-rust"
 
 [dependencies]
 libc = "0.2"
-tensorflow-sys = { version = "0.4", path = "tensorflow-sys" }
+tensorflow-sys = { version = "0.4.1", path = "tensorflow-sys" }
 
 [dev-dependencies]
 random = "0.12"

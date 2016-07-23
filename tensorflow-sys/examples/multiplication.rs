@@ -1,7 +1,7 @@
 extern crate libc;
 extern crate tensorflow_sys as ffi;
 
-use libc::{c_int, c_longlong, c_void, size_t};
+use libc::{c_int, c_void, int64_t, size_t};
 use std::ffi::{CStr, CString};
 use std::path::Path;
 
@@ -40,20 +40,20 @@ fn main() {
 
         let name = CString::new("a").unwrap();
         let mut data = vec![1f32, 2.0, 3.0];
-        let mut dims = vec![data.len() as c_longlong];
-        let tensor = nonnull!(ffi::TF_NewTensor(ffi::TF_FLOAT, dims.as_mut_ptr(),
-                                                dims.len() as c_int, data.as_mut_ptr() as *mut _,
-                                                data.len() as size_t, Some(noop), null_mut()));
+        let dims = vec![data.len() as int64_t];
+        let tensor = nonnull!(ffi::TF_NewTensor(ffi::TF_FLOAT, dims.as_ptr(), dims.len() as c_int,
+                                                data.as_mut_ptr() as *mut _, data.len() as size_t,
+                                                Some(noop), null_mut()));
 
         input_names.push(name.as_ptr());
         inputs.push(tensor);
 
         let name = CString::new("b").unwrap();
         let mut data = vec![4f32, 5.0, 6.0];
-        let mut dims = vec![data.len() as c_longlong];
-        let tensor = nonnull!(ffi::TF_NewTensor(ffi::TF_FLOAT, dims.as_mut_ptr(),
-                                                dims.len() as c_int, data.as_mut_ptr() as *mut _,
-                                                data.len() as size_t, Some(noop), null_mut()));
+        let dims = vec![data.len() as int64_t];
+        let tensor = nonnull!(ffi::TF_NewTensor(ffi::TF_FLOAT, dims.as_ptr(), dims.len() as c_int,
+                                                data.as_mut_ptr() as *mut _, data.len() as size_t,
+                                                Some(noop), null_mut()));
 
         input_names.push(name.as_ptr());
         inputs.push(tensor);
