@@ -354,7 +354,7 @@ impl Session {
           dims.push(tf::TF_Dim(input_tensor, i as c_int));
         }
         input_tensors.push(tf::TF_NewTensor(tf::TF_TensorType(input_tensor),
-                                            dims.as_mut_ptr(),
+                                            dims.as_ptr(),
                                             dims.len() as c_int,
                                             tf::TF_TensorData(input_tensor),
                                             tf::TF_TensorByteSize(input_tensor),
@@ -638,7 +638,7 @@ impl<T: TensorType> Tensor<T> {
     }
     let inner = unsafe {
       tf::TF_NewTensor(mem::transmute(T::data_type().to_int()),
-                       dims.as_ptr() as *mut _,
+                       dims.as_ptr() as *const _,
                        dims.len() as c_int,
                        data.as_ptr() as *mut _,
                        data.len(),
