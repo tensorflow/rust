@@ -90,8 +90,7 @@ impl<T> Drop for Buffer<T> {
       // because T may not implement Drop, but may contain a type that does.
       unsafe {
         for x in self.iter_mut() {
-          // TODO: use std::ptr::drop_in_place
-          mem::drop(mem::replace(x, mem::uninitialized()));
+          ptr::drop_in_place(x)
         }
         libc::free(self.ptr as *mut libc::c_void);
       }
