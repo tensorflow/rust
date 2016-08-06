@@ -2,9 +2,11 @@
 //! This crate provides Rust bindings for the [TensorFlow](https://www.tensorflow.org) machine learning library.
 
 extern crate libc;
+extern crate num;
 extern crate tensorflow_sys as tf;
 
 use libc::{c_char, c_int, c_uint, c_void, size_t};
+use num::Complex;
 use std::error::Error;
 use std::ffi::CStr;
 use std::ffi::CString;
@@ -150,7 +152,7 @@ c_enum!("Type of a single tensor element.", DataType {
   Int16 = 5,
   Int8 = 6,
   String = 7,
-  Complex = 8,
+  Complex64 = 8,
   Int64 = 9,
   Bool = 10,
   QInt8 = 11,
@@ -159,6 +161,9 @@ c_enum!("Type of a single tensor element.", DataType {
   BFloat16 = 14,
   QInt16 = 15,
   QUInt16 = 16,
+  UInt16 = 17,
+  Complex128 = 18,
+  Half = 19,
 });
 
 ////////////////////////
@@ -538,7 +543,7 @@ pub trait TensorType: Default + Clone + Display + Debug + 'static {
 }
 
 macro_rules! tensor_type {
-  ($rust_type:ident, $tensor_type:ident) => {
+  ($rust_type:ty, $tensor_type:ident) => {
     impl TensorType for $rust_type {
       fn data_type() -> DataType {
         DataType::$tensor_type
@@ -554,7 +559,8 @@ tensor_type!(u8, UInt8);
 tensor_type!(i16, Int16);
 tensor_type!(i8, Int8);
 // TODO: provide type for String
-// TODO: provide type for Complex. Pending impl of Default: https://github.com/rust-num/num/issues/198
+tensor_type!(Complex<f32>, Complex64);
+tensor_type!(Complex<f64>, Complex128);
 tensor_type!(i64, Int64);
 tensor_type!(bool, Bool);
 // TODO: provide type for BFloat16
