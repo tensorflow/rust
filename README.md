@@ -31,6 +31,10 @@ Now run `cargo build` as usual.
 To include the especially unstable API (which is currently the `expr` module),
 use `--features tensorflow_unstable`.
 
+## RFCs
+RFCs are [issues tagged with RFC](https://github.com/google/tensorflow-rust/labels/rfc).
+Check them out and comment. Discussions are welcome. After all, thats what a Request For Comment is for!
+
 ## FAQs
 
 #### Why does the compiler say that parts of the API don't exist?
