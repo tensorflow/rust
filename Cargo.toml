@@ -1,6 +1,6 @@
 [package]
 name = "tensorflow"
-version = "0.0.3"
+version = "0.0.4"
 authors = ["Adam Crume <acrume@google.com>"]
 description = "Rust language bindings for TensorFlow."
 license = "Apache-2.0"
