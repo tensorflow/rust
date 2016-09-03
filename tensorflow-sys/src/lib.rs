@@ -6,7 +6,7 @@
 
 extern crate libc;
 
-use libc::{c_char, c_int, c_void, int64_t, size_t};
+use libc::{c_char, c_uchar, c_int, c_void, int64_t, size_t, c_float};
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
@@ -68,6 +68,7 @@ pub use TF_DataType::*;
 pub enum TF_Library {}
 
 #[derive(Clone, Copy, Debug)]
+#[deprecated(since="0.5.0", note="Use TF_SessionWithGraph instead.")]
 pub enum TF_Session {}
 
 #[derive(Clone, Copy, Debug)]
@@ -78,6 +79,25 @@ pub enum TF_Status {}
 
 #[derive(Clone, Copy, Debug)]
 pub enum TF_Tensor {}
+
+#[derive(Clone, Copy, Debug)]
+pub enum TF_Graph {}
+
+#[derive(Clone, Copy, Debug)]
+pub enum TF_NodeDescription {}
+
+#[derive(Clone, Copy, Debug)]
+pub enum TF_Node {}
+
+#[derive(Clone, Copy, Debug)]
+#[repr(C)]
+pub struct TF_Port {
+    pub node: *mut TF_Node,
+    pub index: c_int,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub enum TF_SessionWithGraph {}
 
 extern "C" {
     pub fn TF_NewBuffer() -> *mut TF_Buffer;
@@ -92,21 +112,37 @@ extern "C" {
 }
 
 extern "C" {
+    #[allow(deprecated)]
+    #[deprecated(since="0.5.0", note="Use TF_NewSessionWithGraph instead.")]
     pub fn TF_NewSession(options: *const TF_SessionOptions, status: *mut TF_Status)
                          -> *mut TF_Session;
+    #[allow(deprecated)]
+    #[deprecated(since="0.5.0", note="Use TF_DeleteSessionWithGraph instead.")]
     pub fn TF_DeleteSession(session: *mut TF_Session, status: *mut TF_Status);
+    pub fn TF_Reset(opt: *const TF_SessionOptions, containers: *const *const c_char,
+                    ncontainers: c_int, status: *mut TF_Status);
+    #[allow(deprecated)]
+    #[deprecated(since="0.5.0", note="Use TF_CloseSessionWithGraph instead.")]
     pub fn TF_CloseSession(session: *mut TF_Session, status: *mut TF_Status);
+    #[allow(deprecated)]
+    #[deprecated(since="0.5.0", note="Use TF_SessionWithGraph API instead.")]
     pub fn TF_ExtendGraph(session: *mut TF_Session, proto: *const c_void, length: size_t,
                           status: *mut TF_Status);
+    #[allow(deprecated)]
+    #[deprecated(since="0.5.0", note="Use TF_SessionRun instead.")]
     pub fn TF_Run(session: *mut TF_Session, run_options: *const TF_Buffer,
                   input_names: *mut *const c_char, inputs: *mut *mut TF_Tensor, ninputs: c_int,
                   output_names: *mut *const c_char, outputs: *mut *mut TF_Tensor, noutputs: c_int,
                   target_names: *mut *const c_char, ntargets: c_int, run_metadata: *mut TF_Buffer,
                   status: *mut TF_Status);
+    #[allow(deprecated)]
+    #[deprecated(since="0.5.0", note="Use TF_SessionPRunSetup instead.")]
     pub fn TF_PRunSetup(session: *mut TF_Session, input_names: *mut *const c_char, ninputs: c_int,
                         output_names: *mut *const c_char, noutputs: c_int,
                         target_names: *mut *const c_char, ntargets: c_int,
                         handle: *mut *const c_char, status: *mut TF_Status);
+    #[allow(deprecated)]
+    #[deprecated(since="0.5.0", note="Use TF_SessionPRun instead.")]
     pub fn TF_PRun(session: *mut TF_Session, handle: *const c_char,
                    input_names: *mut *const c_char, inputs: *mut *mut TF_Tensor, ninputs: c_int,
                    output_names: *mut *const c_char, outputs: *mut *mut TF_Tensor, noutputs: c_int,
@@ -142,4 +178,199 @@ extern "C" {
     pub fn TF_Dim(tensor: *const TF_Tensor, index: c_int) -> int64_t;
     pub fn TF_TensorByteSize(tensor: *const TF_Tensor) -> size_t;
     pub fn TF_TensorData(tensor: *const TF_Tensor) -> *mut c_void;
+}
+
+extern "C" {
+    pub fn TF_NewGraph() -> *mut TF_Graph;
+    pub fn TF_DeleteGraph(graph: *mut TF_Graph);
+    pub fn TF_NewNode(
+        graph: *mut TF_Graph,
+        op_type: *const c_char,
+        node_name: *const c_char) -> *mut TF_NodeDescription;
+    pub fn TF_SetDevice(desc: *mut TF_NodeDescription, device: *const c_char);
+    pub fn TF_AddInput(desc: *mut TF_NodeDescription, input: TF_Port);
+    pub fn TF_AddInputList(
+        desc: *mut TF_NodeDescription,
+        inputs: *const TF_Port,
+        num_inputs: c_int);
+    pub fn TF_AddControlInput(desc: *mut TF_NodeDescription, input: *mut TF_Node);
+    pub fn TF_SetAttrString(
+        desc: *mut TF_NodeDescription,
+        attr_name: *const c_char,
+        value: *const c_void,
+        length: c_int);
+    pub fn TF_SetAttrStringList(
+        desc: *mut TF_NodeDescription,
+        attr_name: *const c_char,
+        values: *const *const c_void,
+        lengths: *const c_int,
+        num_values: c_int);
+    pub fn TF_SetAttrInt(
+        desc: *mut TF_NodeDescription,
+        attr_name: *const c_char,
+        value: int64_t);
+    pub fn TF_SetAttrIntList(
+        desc: *mut TF_NodeDescription,
+        attr_name: *const c_char,
+        values: *const int64_t,
+        num_values: c_int);
+    pub fn TF_SetAttrFloat(
+        desc: *mut TF_NodeDescription,
+        attr_name: *const c_char,
+        value: c_float);
+    pub fn TF_SetAttrFloatList(
+        desc: *mut TF_NodeDescription,
+        attr_name: *const c_char,
+        values: *const c_float,
+        num_values: c_int);
+    pub fn TF_SetAttrBool(
+        desc: *mut TF_NodeDescription,
+        attr_name: *const c_char,
+        value: c_uchar);
+    pub fn TF_SetAttrBoolList(
+        desc: *mut TF_NodeDescription,
+        attr_name: *const c_char,
+        values: *const c_uchar,
+        num_values: c_int);
+    pub fn TF_SetAttrType(
+        desc: *mut TF_NodeDescription,
+        attr_name: *const c_char,
+        value: TF_DataType);
+    pub fn TF_SetAttrTypeList(
+        desc: *mut TF_NodeDescription,
+        attr_name: *const c_char,
+        values: *const TF_DataType,
+        num_values: c_int);
+    pub fn TF_SetAttrShape(
+        desc: *mut TF_NodeDescription,
+        attr_name: *const c_char,
+        dims: *const int64_t,
+        num_dims: c_int);
+    pub fn TF_SetAttrShapeList(
+        desc: *mut TF_NodeDescription,
+        attr_name: *const c_char,
+        dims: *const *const int64_t,
+        num_dims: *const c_int,
+        num_shapes: c_int);
+    pub fn TF_SetAttrTensorShapeProto(
+        desc: *mut TF_NodeDescription,
+        attr_name: *const c_char,
+        proto: *const c_void,
+        proto_len: c_int,
+        status: *mut TF_Status);
+    pub fn TF_SetAttrTensorShapeProtoList(
+        desc: *mut TF_NodeDescription,
+        attr_name: *const c_char,
+        protos: *const *const c_void,
+        proto_lens: *const c_int,
+        num_shapes: c_int,
+        status: *mut TF_Status);
+    pub fn TF_SetAttrTensor(
+        desc: *mut TF_NodeDescription,
+        attr_name: *const c_char,
+        value: *mut TF_Tensor,
+        status: *mut TF_Status);
+    pub fn TF_SetAttrTensorList(
+        desc: *mut TF_NodeDescription,
+        attr_name: *const c_char,
+        values: *const *mut TF_Tensor,
+        num_values: c_int,
+        status: *mut TF_Status);
+    pub fn TF_SetAttrToAttrValueProto(
+        desc: *mut TF_NodeDescription,
+        attr_name: *const c_char,
+        proto: *const c_void,
+        proto_len: size_t,
+        status: *mut TF_Status);
+    pub fn TF_FinishNode(desc: *mut TF_NodeDescription, status: *mut TF_Status) -> *mut TF_Node;
+    pub fn TF_NodeName(node: *mut TF_Node) -> *const c_char;
+    pub fn TF_NodeOpType(node: *mut TF_Node) -> *const c_char;
+    pub fn TF_NodeDevice(node: *mut TF_Node) -> *const c_char;
+    pub fn TF_NodeNumOutputs(node: *mut TF_Node) -> c_int;
+    pub fn TF_NodeOutputType(node_out: TF_Port) -> TF_DataType;
+    pub fn TF_NodeOutputListLength(
+        node: *mut TF_Node,
+        arg_name: *const c_char,
+        status: *mut TF_Status) -> c_int;
+    pub fn TF_NodeNumInputs(node: *mut TF_Node) -> c_int;
+    pub fn TF_NodeInputType(node_in: TF_Port) -> TF_DataType;
+    pub fn TF_NodeInputListLength(
+        node: *mut TF_Node,
+        arg_name: *const c_char,
+        status: *mut TF_Status) -> c_int;
+    pub fn TF_NodeInput(node_in: TF_Port) -> TF_Port;
+    pub fn TF_NodeOutputNumConsumers(node_out: TF_Port) -> c_int;
+    pub fn TF_NodeOutputConsumers(
+        node_out: TF_Port,
+        consumers: *mut TF_Port,
+        max_consumers: c_int) -> c_int;
+    pub fn TF_NodeNumControlInputs(node: *mut TF_Node) -> c_int;
+    pub fn TF_NodeGetControlInputs(
+        node: *mut TF_Node,
+        control_inputs: *mut *mut TF_Node,
+        max_control_inputs: c_int) -> c_int;
+    pub fn TF_NodeNumControlOutputs(node: *mut TF_Node) -> c_int;
+    pub fn TF_NodeGetControlOutputs(
+        node: *mut TF_Node,
+        control_outputs: *mut *mut TF_Node,
+        max_control_outputs: c_int) -> c_int;
+    pub fn TF_NodeGetAttrValueProto(
+        node: *mut TF_Node,
+        attr_name: *const c_char,
+        output_attr_value: *mut TF_Buffer,
+        status: *mut TF_Status);
+    pub fn TF_GraphNodeByName(graph: *mut TF_Graph, node_name: *const c_char) -> *mut TF_Node;
+    pub fn TF_GraphNextNode(graph: *mut TF_Graph, pos: *mut size_t) -> *mut TF_Node;
+    pub fn TF_GraphToGraphDef(
+        graph: *mut TF_Graph,
+        output_graph_def: *mut TF_Buffer,
+        status: *mut TF_Status);
+    pub fn TF_NodeToNodeDef(
+        node: *mut TF_Node,
+        output_node_def: *mut TF_Buffer,
+        status: *mut TF_Status);
+}
+
+extern "C" {
+    pub fn TF_NewSessionWithGraph(
+        graph: *mut TF_Graph,
+        opts: *const TF_SessionOptions,
+        status: *mut TF_Status) -> *mut TF_SessionWithGraph;
+    pub fn TF_CloseSessionWithGraph(session: *mut TF_SessionWithGraph, status: *mut TF_Status);
+    pub fn TF_DeleteSessionWithGraph(session: *mut TF_SessionWithGraph, status: *mut TF_Status);
+    pub fn TF_SessionRun(
+        session: *mut TF_SessionWithGraph,
+        run_options: *const TF_Buffer,
+        inputs: *const TF_Port,
+        input_values: *const *mut TF_Tensor,
+        ninputs: c_int,
+        outputs: *const *mut TF_Port,
+        output_values: *mut *mut TF_Tensor,
+        noutputs: c_int,
+        target_nodes: *const *const TF_Node,
+        ntargets: c_int,
+        run_metadata: *mut TF_Buffer,
+        status: *mut TF_Status);
+    pub fn TF_SessionPRunSetup(
+        session: *mut TF_SessionWithGraph,
+        inputs: *const TF_Port,
+        ninputs: c_int,
+        outputs: *const TF_Port,
+        noutputs: c_int,
+        target_nodes: *const *const TF_Node,
+        ntargets: c_int,
+        handle: *const *const c_char,
+        status: *mut TF_Status);
+    pub fn TF_SessionPRun(
+        session: *mut TF_SessionWithGraph,
+        handle: *const c_char,
+        inputs: *const TF_Port,
+        input_values: *const *mut TF_Tensor,
+        ninputs: c_int,
+        outputs: *const TF_Port,
+        output_values: *mut *mut TF_Tensor,
+        noutputs: c_int,
+        target_nodes: *const *const TF_Node,
+        ntargets: c_int,
+        status: *mut TF_Status);
 }

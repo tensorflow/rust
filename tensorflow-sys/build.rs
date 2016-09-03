@@ -7,7 +7,7 @@ use std::{env, fs};
 const LIBRARY: &'static str = "tensorflow";
 const REPOSITORY: &'static str = "https://github.com/tensorflow/tensorflow.git";
 const TARGET: &'static str = "libtensorflow.so";
-const VERSION: &'static str = "0.9.0";
+const VERSION: &'static str = "0.10.0rc0";
 
 macro_rules! get(($name:expr) => (ok!(env::var($name))));
 macro_rules! ok(($expression:expr) => ($expression.unwrap()));
