@@ -24,6 +24,9 @@ use std::ops::Drop;
 mod buffer;
 pub use buffer::Buffer;
 
+mod graph;
+pub use graph::*;
+
 pub mod expr;
 
 ////////////////////////
@@ -80,7 +83,7 @@ macro_rules! invalid_arg {
 ////////////////////////
 
 macro_rules! c_enum {
-  ($doc:expr, $enum_name:ident { $($name:ident = $num:expr),* }) => {
+  ($doc:expr, $c_name:ident, $enum_name:ident { $($name:ident = $num:expr),* }) => {
     #[doc = $doc]
     #[derive(PartialEq,Eq,PartialOrd,Ord,Debug)]
     pub enum $enum_name {
@@ -104,6 +107,18 @@ macro_rules! c_enum {
           $(&$enum_name::$name => $num),*
         }
       }
+
+      #[allow(dead_code)]
+      fn to_c(&self) -> tf::$c_name {
+        unsafe {
+          ::std::mem::transmute(self.to_int())
+        }
+      }
+
+      #[allow(dead_code)]
+      fn from_c(value: tf::$c_name) -> $enum_name {
+        $enum_name::from_int(value as c_uint)
+      }
     }
 
     impl ::std::fmt::Display for $enum_name {
@@ -115,14 +130,14 @@ macro_rules! c_enum {
       }
     }
   };
-  ($doc:expr, $enum_name:ident { $($name:ident = $num:expr,)* }) => {
-    c_enum!($doc, $enum_name { $($name = $num),* });
+  ($doc:expr, $c_name:ident, $enum_name:ident { $($name:ident = $num:expr,)* }) => {
+    c_enum!($doc, $c_name, $enum_name { $($name = $num),* });
   }
 }
 
 ////////////////////////
 
-c_enum!("Error values that can be returned.", Code {
+c_enum!("Error values that can be returned.", TF_Code, Code {
   Ok = 0,
   Cancelled = 1,
   Unknown = 2,
@@ -144,7 +159,7 @@ c_enum!("Error values that can be returned.", Code {
 
 ////////////////////////
 
-c_enum!("Type of a single tensor element.", DataType {
+c_enum!("Type of a single tensor element.", TF_DataType, DataType {
   Float = 1,
   Double = 2,
   Int32 = 3,
@@ -208,7 +223,7 @@ impl Status {
   pub fn set(&mut self, code: Code, msg: &str) -> std::result::Result<(), NulError> {
     let message = try!(CString::new(msg));
     unsafe {
-      tf::TF_SetStatus(self.inner, mem::transmute(code.to_int()), message.as_ptr());
+      tf::TF_SetStatus(self.inner, code.to_c(), message.as_ptr());
     }
     Ok(())
   }
@@ -499,6 +514,7 @@ impl<'l> Step<'l> {
   /// Retuns the type of the tensor given an index.
   /// Returns `None` if the index is out of range or the output is not yet available.
   pub fn get_output_data_type(&self, output_idx: usize) -> Option<DataType> {
+    // TODO: rename to output_data_type()
     if output_idx >= self.output_tensors.len() {
       return None;
     }
@@ -506,7 +522,7 @@ impl<'l> Step<'l> {
       return None;
     }
     unsafe {
-      Some(DataType::from_int(mem::transmute(tf::TF_TensorType(self.output_tensors[output_idx]))))
+      Some(DataType::from_c(tf::TF_TensorType(self.output_tensors[output_idx])))
     }
   }
 
@@ -614,6 +630,7 @@ pub struct Tensor<T: TensorType> {
   inner: *mut tf::TF_Tensor,
   data: Buffer<T>,
   dims: Vec<u64>,
+  owned: bool,
 }
 
 unsafe extern "C" fn noop_deallocator(_: *mut c_void, _: size_t, _: *mut c_void) -> () {}
@@ -647,7 +664,7 @@ impl<T: TensorType> Tensor<T> {
       return Err(invalid_arg!("Dimensions {:?} do not match buffer length {}", dims, data.len()));
     }
     let inner = unsafe {
-      tf::TF_NewTensor(mem::transmute(T::data_type().to_int()),
+      tf::TF_NewTensor(T::data_type().to_c(),
                        dims.as_ptr() as *const _,
                        dims.len() as c_int,
                        data.as_ptr() as *mut _,
@@ -659,6 +676,7 @@ impl<T: TensorType> Tensor<T> {
       inner: inner,
       data: data,
       dims: Vec::from(dims),
+      owned: true,
     })
   }
 
@@ -679,7 +697,7 @@ impl<T: TensorType> Tensor<T> {
 
   // Wraps a TF_Tensor. Returns None if types don't match.
   unsafe fn from_tf_tensor(tensor: *mut tf::TF_Tensor) -> Option<Self> {
-    if DataType::from_int(mem::transmute(tf::TF_TensorType(tensor))) != T::data_type() {
+    if DataType::from_c(tf::TF_TensorType(tensor)) != T::data_type() {
       return None;
     }
     let mut dims = Vec::with_capacity(tf::TF_NumDims(tensor) as usize);
@@ -690,15 +708,29 @@ impl<T: TensorType> Tensor<T> {
     Some(Tensor {
       inner: tensor,
       data: data,
-      dims: dims
+      dims: dims,
+      owned: true,
     })
+  }
+
+  /// The caller is responsible for deleting the tensor.
+  unsafe fn into_ptr(mut self) -> *mut tf::TF_Tensor {
+    // Prevent buffer from being freed.
+    let mut data = Buffer::null();
+    mem::swap(&mut self.data, &mut data);
+    data.into_ptr();
+    // This flag is used by drop.
+    self.owned = false;
+    self.inner
   }
 }
 
 impl<T: TensorType> Drop for Tensor<T> {
   fn drop(&mut self) {
-    unsafe {
-      tf::TF_DeleteTensor(self.inner);
+    if self.owned {
+      unsafe {
+        tf::TF_DeleteTensor(self.inner);
+      }
     }
   }
 }
