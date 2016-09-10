@@ -10,7 +10,7 @@ This project is still under active development and not yet ready for widespread 
 ## Building
 
 Install [TensorFlow from source](https://www.tensorflow.org/versions/master/get_started/os_setup.html#source).
-The Python/pip steps are not necesary, but building `tensorflow:libtensorflow.so` is.
+The Python/pip steps are not necessary, but building `tensorflow:libtensorflow.so` is.
 
 In short:
 
