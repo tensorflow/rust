@@ -441,7 +441,7 @@ impl<'l> Step<'l> {
   }
 
   /// Adds an input to be fed to the graph.
-  pub fn add_input<T>(&mut self, name: &str, tensor: &'l Tensor<T>) -> std::result::Result<(), NulError> {
+  pub fn add_input<T: TensorType>(&mut self, name: &str, tensor: &'l Tensor<T>) -> std::result::Result<(), NulError> {
     let c_string = try!(CString::new(name));
     self.input_name_ptrs.push(c_string.as_ptr());
     self.input_name_c_strings.push(c_string);
@@ -536,7 +536,11 @@ pub type Result<T> = std::result::Result<T, Status>;
 ////////////////////////
 
 /// A Rust type that maps to a `DataType`.
-pub trait TensorType: Default + Clone + Display + Debug + 'static {
+///
+/// Currently, all implementors must *not* implement Drop (or transitively contain
+/// anything that does) and must be bit-for-bit compatible with the corresponding C
+/// type. Clients must not implement this trait.
+pub trait TensorType: Default + Clone + Copy + Display + Debug + 'static {
   // TODO: Use associated constants when/if available
   /// Returns the DataType that corresponds to this type.
   fn data_type() -> DataType;
@@ -567,7 +571,7 @@ tensor_type!(bool, Bool);
 
 macro_rules! q_type {
   ($rust_type:ident, $q_type:ident) => {
-    #[derive(Clone,Default,Debug,Eq,PartialEq,Ord,PartialOrd)]
+    #[derive(Clone,Copy,Default,Debug,Eq,PartialEq,Ord,PartialOrd)]
     pub struct $q_type($rust_type);
 
     impl Display for $q_type {
@@ -606,7 +610,7 @@ q_type!(i32, QInt32);
 /// ```
 ///
 /// The layout for strings is currently undefined.
-pub struct Tensor<T> {
+pub struct Tensor<T: TensorType> {
   inner: *mut tf::TF_Tensor,
   data: Buffer<T>,
   dims: Vec<u64>,
@@ -691,7 +695,7 @@ impl<T: TensorType> Tensor<T> {
   }
 }
 
-impl<T> Drop for Tensor<T> {
+impl<T: TensorType> Drop for Tensor<T> {
   fn drop(&mut self) {
     unsafe {
       tf::TF_DeleteTensor(self.inner);
@@ -699,7 +703,7 @@ impl<T> Drop for Tensor<T> {
   }
 }
 
-impl<T> Deref for Tensor<T> {
+impl<T: TensorType> Deref for Tensor<T> {
   type Target = Buffer<T>;
 
   #[inline]
@@ -708,7 +712,7 @@ impl<T> Deref for Tensor<T> {
   }
 }
 
-impl<T> DerefMut for Tensor<T> {
+impl<T: TensorType> DerefMut for Tensor<T> {
   #[inline]
   fn deref_mut<'a>(&'a mut self) -> &'a mut Buffer<T> {
     &mut self.data

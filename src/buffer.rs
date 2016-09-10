@@ -16,18 +16,19 @@ use std::ops::RangeFull;
 use std::ops::RangeTo;
 use std::ptr;
 use std::slice;
+use super::TensorType;
 
 /// Fixed-length heap-allocated vector.
 /// This is basically a `Box<[T]>`, except that that type can't actually be constructed.
 /// Furthermore, `[T; N]` can't be constructed if N is not a compile-time constant.
 #[derive(Debug)]
-pub struct Buffer<T> {
+pub struct Buffer<T: TensorType> {
   ptr: *mut T,
   length: usize,
   owned: bool,
 }
 
-impl<T: Default> Buffer<T> {
+impl<T: TensorType> Buffer<T> {
   /// Creates a new buffer initialized to zeros.
   ///
   /// `len` is the number of elements.
@@ -43,7 +44,7 @@ impl<T: Default> Buffer<T> {
   }
 }
 
-impl<T> Buffer<T> {
+impl<T: TensorType> Buffer<T> {
   /// Creates a new uninitialized buffer.
   ///
   /// `len` is the number of elements.
@@ -81,24 +82,17 @@ impl<T> Buffer<T> {
   }
 }
 
-impl<T> Drop for Buffer<T> {
+impl<T: TensorType> Drop for Buffer<T> {
   fn drop(&mut self) {
     if self.owned {
-      // It would be nice to skip the loop entirely if std::intrinsics::needs_drop() returns false,
-      // but it's not stable, and the docs say it probably never will be.
-      // Note that checking to see if T implements Drop is not sufficient,
-      // because T may not implement Drop, but may contain a type that does.
       unsafe {
-        for x in self.iter_mut() {
-          ptr::drop_in_place(x)
-        }
         libc::free(self.ptr as *mut libc::c_void);
       }
     }
   }
 }
 
-impl<T> AsRef<[T]> for Buffer<T> {
+impl<T: TensorType> AsRef<[T]> for Buffer<T> {
   #[inline]
   fn as_ref(&self) -> &[T] {
     unsafe {
@@ -107,7 +101,7 @@ impl<T> AsRef<[T]> for Buffer<T> {
   }
 }
 
-impl<T> AsMut<[T]> for Buffer<T> {
+impl<T: TensorType> AsMut<[T]> for Buffer<T> {
   #[inline]
   fn as_mut(&mut self) -> &mut [T] {
     unsafe {
@@ -116,7 +110,7 @@ impl<T> AsMut<[T]> for Buffer<T> {
   }
 }
 
-impl<T> Deref for Buffer<T> {
+impl<T: TensorType> Deref for Buffer<T> {
   type Target = [T];
 
   #[inline]
@@ -125,28 +119,28 @@ impl<T> Deref for Buffer<T> {
   }
 }
 
-impl<T> DerefMut for Buffer<T> {
+impl<T: TensorType> DerefMut for Buffer<T> {
   #[inline]
   fn deref_mut<'a>(&'a mut self) -> &'a mut [T] {
     self.as_mut()
   }
 }
 
-impl<T> Borrow<[T]> for Buffer<T> {
+impl<T: TensorType> Borrow<[T]> for Buffer<T> {
   #[inline]
   fn borrow(&self) -> &[T] {
     self.as_ref()
   }
 }
 
-impl<T> BorrowMut<[T]> for Buffer<T> {
+impl<T: TensorType> BorrowMut<[T]> for Buffer<T> {
   #[inline]
   fn borrow_mut(&mut self) -> &mut [T] {
     self.as_mut()
   }
 }
 
-impl<T: Clone> Clone for Buffer<T> where T: Clone {
+impl<T: TensorType> Clone for Buffer<T> where T: Clone {
   #[inline]
   fn clone(&self) -> Buffer<T> {
     let mut b = unsafe {
@@ -169,7 +163,7 @@ impl<T: Clone> Clone for Buffer<T> where T: Clone {
   }
 }
 
-impl<T> Index<usize> for Buffer<T> {
+impl<T: TensorType> Index<usize> for Buffer<T> {
   type Output = T;
 
   #[inline]
@@ -181,7 +175,7 @@ impl<T> Index<usize> for Buffer<T> {
   }
 }
 
-impl<T> IndexMut<usize> for Buffer<T> {
+impl<T: TensorType> IndexMut<usize> for Buffer<T> {
   #[inline]
   fn index_mut(&mut self, index: usize) -> &mut T {
     assert!(index < self.length, "index = {}, length = {}", index, self.length);
@@ -191,7 +185,7 @@ impl<T> IndexMut<usize> for Buffer<T> {
   }
 }
 
-impl<T> Index<Range<usize>> for Buffer<T> {
+impl<T: TensorType> Index<Range<usize>> for Buffer<T> {
   type Output = [T];
 
   #[inline]
@@ -204,7 +198,7 @@ impl<T> Index<Range<usize>> for Buffer<T> {
   }
 }
 
-impl<T> IndexMut<Range<usize>> for Buffer<T> {
+impl<T: TensorType> IndexMut<Range<usize>> for Buffer<T> {
   #[inline]
   fn index_mut(&mut self, index: Range<usize>) -> &mut [T] {
     assert!(index.start <= index.end, "index.start = {}, index.end = {}", index.start, index.end);
@@ -215,7 +209,7 @@ impl<T> IndexMut<Range<usize>> for Buffer<T> {
   }
 }
 
-impl<T> Index<RangeTo<usize>> for Buffer<T> {
+impl<T: TensorType> Index<RangeTo<usize>> for Buffer<T> {
   type Output = [T];
 
   #[inline]
@@ -227,7 +221,7 @@ impl<T> Index<RangeTo<usize>> for Buffer<T> {
   }
 }
 
-impl<T> IndexMut<RangeTo<usize>> for Buffer<T> {
+impl<T: TensorType> IndexMut<RangeTo<usize>> for Buffer<T> {
   #[inline]
   fn index_mut(&mut self, index: RangeTo<usize>) -> &mut [T] {
     assert!(index.end <= self.length, "index.end = {}, length = {}", index.end, self.length);
@@ -237,7 +231,7 @@ impl<T> IndexMut<RangeTo<usize>> for Buffer<T> {
   }
 }
 
-impl<T> Index<RangeFrom<usize>> for Buffer<T> {
+impl<T: TensorType> Index<RangeFrom<usize>> for Buffer<T> {
   type Output = [T];
 
   #[inline]
@@ -249,7 +243,7 @@ impl<T> Index<RangeFrom<usize>> for Buffer<T> {
   }
 }
 
-impl<T> IndexMut<RangeFrom<usize>> for Buffer<T> {
+impl<T: TensorType> IndexMut<RangeFrom<usize>> for Buffer<T> {
   #[inline]
   fn index_mut(&mut self, index: RangeFrom<usize>) -> &mut [T] {
     assert!(index.start <= self.length, "index.start = {}, length = {}", index.start, self.length);
@@ -259,7 +253,7 @@ impl<T> IndexMut<RangeFrom<usize>> for Buffer<T> {
   }
 }
 
-impl<T> Index<RangeFull> for Buffer<T> {
+impl<T: TensorType> Index<RangeFull> for Buffer<T> {
   type Output = [T];
 
   #[inline]
@@ -270,7 +264,7 @@ impl<T> Index<RangeFull> for Buffer<T> {
   }
 }
 
-impl<T> IndexMut<RangeFull> for Buffer<T> {
+impl<T: TensorType> IndexMut<RangeFull> for Buffer<T> {
   #[inline]
   fn index_mut(&mut self, _: RangeFull) -> &mut [T] {
     unsafe {
