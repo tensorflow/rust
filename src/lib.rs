@@ -472,7 +472,7 @@ impl<'l> Step<'l> {
     if self.output_tensors[output_idx].is_null() {
       return Err(Status::new_set(Code::Unavailable,
         "Output not available. Either it was already taken, or this step \
-        has not been sucessfully run yet.").unwrap());
+        has not been successfully run yet.").unwrap());
     }
     let actual_data_type = self.get_output_data_type(output_idx).unwrap();
     if actual_data_type != T::data_type() {
