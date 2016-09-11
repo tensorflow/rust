@@ -344,7 +344,7 @@ extern "C" {
         inputs: *const TF_Port,
         input_values: *const *mut TF_Tensor,
         ninputs: c_int,
-        outputs: *const *mut TF_Port,
+        outputs: *const TF_Port,
         output_values: *mut *mut TF_Tensor,
         noutputs: c_int,
         target_nodes: *const *const TF_Node,
