@@ -511,13 +511,14 @@ impl<'l> Step<'l> {
   }
 
   fn drop_output_tensors(&mut self) {
-    for &tensor in &self.output_tensors {
+    for mut tensor in &mut self.output_tensors {
       // TODO: Is TF_DeleteTensor NULL safe?
       if !tensor.is_null() {
         unsafe {
-          tf::TF_DeleteTensor(tensor);
+          tf::TF_DeleteTensor(*tensor);
         }
       }
+      *tensor = std::ptr::null_mut();
     }
   }
 }
