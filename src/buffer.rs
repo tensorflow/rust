@@ -21,6 +21,7 @@ use std::ops::RangeFull;
 use std::ops::RangeTo;
 use std::ptr;
 use std::slice;
+use super::BufferTrait;
 use super::TensorType;
 
 /// Fixed-length heap-allocated vector.
@@ -110,6 +111,24 @@ impl<T: TensorType> Buffer<T> {
     unsafe {
       (*self.inner).length
     }
+  }
+}
+
+impl<T: TensorType> BufferTrait for Buffer<T> {
+  fn is_owned(&self) -> bool {
+    self.owned
+  }
+
+  fn set_owned(&mut self, owned: bool) {
+    self.owned = owned;
+  }
+
+  fn inner(&self) -> *const tf::TF_Buffer {
+    self.inner
+  }
+
+  fn inner_mut(&mut self) -> *mut tf::TF_Buffer {
+    self.inner
   }
 }
 

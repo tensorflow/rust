@@ -619,6 +619,10 @@ pub struct Tensor<T: TensorType> {
 
 unsafe extern "C" fn noop_deallocator(_: *mut c_void, _: size_t, _: *mut c_void) -> () {}
 
+unsafe extern "C" fn deallocator(_: *mut c_void, _: size_t, buffer: *mut c_void) -> () {
+  tf::TF_DeleteBuffer(buffer as *mut tf::TF_Buffer);
+}
+
 // TODO: Replace with Iterator::product once that's stable
 fn product(values: &[u64]) -> u64 {
   let mut product = 1;
@@ -642,25 +646,27 @@ impl<T: TensorType> Tensor<T> {
   }
 
   /// Creates a new tensor from existing data.
-  pub fn new_with_buffer(dims: &[u64], data: Buffer<T>) -> Result<Self> {
+  pub fn new_with_buffer(dims: &[u64], mut data: Buffer<T>) -> Result<Self> {
     let total = product(dims);
     if total != data.len() as u64 {
       return Err(invalid_arg!("Dimensions {:?} do not match buffer length {}", dims, data.len()));
     }
-    let inner = unsafe {
-      tf::TF_NewTensor(mem::transmute(T::data_type().to_int()),
+    unsafe {
+      // Be careful.  TF_NewTensor may copy the data and deallocate the original buffer.
+      let inner = tf::TF_NewTensor(mem::transmute(T::data_type().to_int()),
                        dims.as_ptr() as *const _,
                        dims.len() as c_int,
                        data.as_ptr() as *mut _,
                        data.len() * mem::size_of::<T>(),
-                       Some(noop_deallocator),
-                       std::ptr::null_mut())
-    };
-    Ok(Tensor {
-      inner: inner,
-      data: data,
-      dims: Vec::from(dims),
-    })
+                       Some(if data.is_owned() {deallocator} else {noop_deallocator}),
+                       if data.is_owned() {data.inner_mut() as *mut _} else {std::ptr::null_mut()});
+      data.set_owned(false);
+      Ok(Tensor {
+        inner: inner,
+        data: Buffer::from_ptr(tf::TF_TensorData(inner) as *mut T, total as usize),
+        dims: Vec::from(dims),
+      })
+    }
   }
 
   /// Returns the tensor's data.
@@ -744,6 +750,16 @@ impl Library {
   }
 
   // TODO: Implement TF_GetOpList once we can deserialize protos.
+}
+
+////////////////////////
+
+/// This exposes Buffer behavior without making it public.
+trait BufferTrait {
+  fn is_owned(&self) -> bool;
+  fn set_owned(&mut self, owned: bool);
+  fn inner(&self) -> *const tf::TF_Buffer;
+  fn inner_mut(&mut self) -> *mut tf::TF_Buffer;
 }
 
 ////////////////////////
