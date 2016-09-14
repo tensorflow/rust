@@ -723,10 +723,6 @@ impl<T: TensorType> Tensor<T> {
 
   /// The caller is responsible for deleting the tensor.
   unsafe fn into_ptr(mut self) -> *mut tf::TF_Tensor {
-    // Prevent buffer from being freed.
-    let mut data = Buffer::null();
-    mem::swap(&mut self.data, &mut data);
-    data.into_ptr();
     // This flag is used by drop.
     self.owned = false;
     self.inner
