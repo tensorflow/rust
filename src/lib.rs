@@ -652,7 +652,7 @@ impl<T: TensorType> Tensor<T> {
                        dims.as_ptr() as *const _,
                        dims.len() as c_int,
                        data.as_ptr() as *mut _,
-                       data.len(),
+                       data.len() * mem::size_of::<T>(),
                        Some(noop_deallocator),
                        std::ptr::null_mut())
     };
