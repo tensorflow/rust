@@ -625,7 +625,7 @@ mod tests {
   use super::super::DataType;
 
   fn add_node(g: &mut Graph) {
-    let node = g.new_node("Variable", "foo").unwrap();
+    g.new_node("Variable", "foo").unwrap();
   }
   
   #[test]
