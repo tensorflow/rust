@@ -19,6 +19,7 @@ use super::DataType;
 use super::Status;
 use super::Result;
 use super::Tensor;
+use super::TensorType;
 
 #[derive(Debug)]
 struct GraphLifetime;
@@ -544,7 +545,7 @@ impl<'a> NodeDescription<'a> {
     status.as_result()
   }
 
-  pub fn set_attr_tensor(&mut self, attr_name: &str, value: Tensor<u8>) -> Result<()> {
+  pub fn set_attr_tensor<T: TensorType>(&mut self, attr_name: &str, value: Tensor<T>) -> Result<()> {
     let c_attr_name = try!(CString::new(attr_name));
     let status = Status::new();
     unsafe {
