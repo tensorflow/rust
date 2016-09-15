@@ -16,6 +16,8 @@ use std::str::Utf8Error;
 use std::sync::Arc;
 use super::Buffer;
 use super::DataType;
+use super::GraphTrait;
+use super::NodeTrait;
 use super::Status;
 use super::Result;
 use super::Tensor;
@@ -110,6 +112,12 @@ impl Graph {
         Err(status)
       }
     }
+  }
+}
+
+impl GraphTrait for Graph {
+  fn inner(&self) -> *mut tf::TF_Graph {
+    self.gimpl.inner
   }
 }
 
@@ -321,6 +329,12 @@ impl Node {
         Err(status)
       }
     }
+  }
+}
+
+impl NodeTrait for Node {
+  fn inner(&self) -> *mut tf::TF_Node {
+    self.inner
   }
 }
 

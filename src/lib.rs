@@ -21,11 +21,29 @@ use std::ops::Deref;
 use std::ops::DerefMut;
 use std::ops::Drop;
 
+////////////////////////
+
+/// Will panic if `msg` contains an embedded 0 byte.
+macro_rules! invalid_arg {
+  ($fmt:expr) => {
+    Status::new_set(Code::InvalidArgument, $fmt).unwrap()
+  };
+  ($fmt:expr, $($arg:tt)*) => ({
+    let msg = format!($fmt, $($arg)*);
+    Status::new_set(Code::InvalidArgument, &msg).unwrap()
+  });
+}
+
+////////////////////////
+
 mod buffer;
 pub use buffer::Buffer;
 
 mod graph;
 pub use graph::*;
+
+mod session;
+pub use session::*;
 
 pub mod expr;
 
@@ -65,19 +83,6 @@ macro_rules! impl_drop {
       }
     }
   }
-}
-
-////////////////////////
-
-/// Will panic if `msg` contains an embedded 0 byte.
-macro_rules! invalid_arg {
-  ($fmt:expr) => {
-    Status::new_set(Code::InvalidArgument, $fmt).unwrap()
-  };
-  ($fmt:expr, $($arg:tt)*) => ({
-    let msg = format!($fmt, $($arg)*);
-    Status::new_set(Code::InvalidArgument, &msg).unwrap()
-  });
 }
 
 ////////////////////////
@@ -789,6 +794,17 @@ trait BufferTrait {
   fn set_owned(&mut self, owned: bool);
   fn inner(&self) -> *const tf::TF_Buffer;
   fn inner_mut(&mut self) -> *mut tf::TF_Buffer;
+}
+
+/// This exposes Graph behavior without making it public.
+trait GraphTrait {
+  fn inner(&self) -> *mut tf::TF_Graph;
+}
+
+
+/// This exposes Node behavior without making it public.
+trait NodeTrait {
+  fn inner(&self) -> *mut tf::TF_Node;
 }
 
 ////////////////////////
