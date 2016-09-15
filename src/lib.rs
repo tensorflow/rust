@@ -331,10 +331,13 @@ impl_drop!(SessionOptions, TF_DeleteSessionOptions);
 ////////////////////////
 
 /// Manages a single graph and execution.
+#[deprecated(note="Use SessionWithGraph instead.")]
+#[allow(deprecated)]
 pub struct Session {
   inner: *mut tf::TF_Session,
 }
 
+#[allow(deprecated)]
 impl Session {
   /// Creates a session.
   pub fn new(options: &SessionOptions) -> Result<Self> {
@@ -411,6 +414,7 @@ impl Session {
   }
 }
 
+#[allow(deprecated)]
 impl Drop for Session {
   fn drop(&mut self) {
     let status = Status::new();
@@ -813,6 +817,7 @@ trait NodeTrait {
 mod tests {
   use super::*;
 
+  #[allow(deprecated)]
   fn create_session() -> Session {
     let options = SessionOptions::new();
     match Session::new(&options) {

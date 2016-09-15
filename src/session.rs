@@ -18,6 +18,8 @@ use super::Tensor;
 use super::TensorType;
 
 /// Manages a single graph and execution.
+///
+/// This will be renamed to Session once the old API goes away.
 pub struct SessionWithGraph {
   inner: *mut tf::TF_SessionWithGraph,
 }
@@ -114,6 +116,8 @@ pub struct OutputToken {
 /// Typical usage involves creating an instance of this struct,
 /// adding some inputs to it, requesting some outputs, passing it to `Session::run`
 /// and then taking the outputs out of it.
+///
+/// This will be renamed to Step once the old API goes away.
 pub struct StepWithGraph<'l> {
   input_ports: Vec<tf::TF_Port>,
   input_tensors: Vec<*mut tf::TF_Tensor>,
