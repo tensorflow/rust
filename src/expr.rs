@@ -80,7 +80,7 @@ impl<T: TensorType> ExprImpl<T> for T {
     vec![]
   }
 
-  fn create_node(&self, graph: &mut Graph, children: &[Rc<Node>], id_gen: &mut FnMut() -> String) -> Result<Node, Status> {
+  fn create_node(&self, graph: &mut Graph, _children: &[Rc<Node>], id_gen: &mut FnMut() -> String) -> Result<Node, Status> {
     let mut nd = try!(graph.new_node("Const", &id_gen()));
     try!(nd.set_attr_type("dtype", DataType::Float));
     let mut value = Tensor::new(&[1]);
@@ -261,7 +261,7 @@ impl<T: TensorType> ExprImpl<T> for Variable<T> {
     vec![]
   }
 
-  fn create_node(&self, graph: &mut Graph, children: &[Rc<Node>], id_gen: &mut FnMut() -> String) -> Result<Node, Status> {
+  fn create_node(&self, graph: &mut Graph, _children: &[Rc<Node>], _id_gen: &mut FnMut() -> String) -> Result<Node, Status> {
     let mut nd = try!(graph.new_node("Variable", &self.name));
     nd.set_attr_type("dtype", DataType::Float).unwrap();
     nd.set_attr_shape("shape", &vec![]).unwrap();
@@ -310,7 +310,7 @@ impl<T: TensorType> ExprImpl<T> for Placeholder<T> {
     vec![]
   }
 
-  fn create_node(&self, graph: &mut Graph, children: &[Rc<Node>], id_gen: &mut FnMut() -> String) -> Result<Node, Status> {
+  fn create_node(&self, graph: &mut Graph, _children: &[Rc<Node>], _id_gen: &mut FnMut() -> String) -> Result<Node, Status> {
     let mut nd = try!(graph.new_node("Placeholder", &self.name));
     nd.set_attr_type("dtype", DataType::Float).unwrap();
     nd.set_attr_shape("shape", &vec![]).unwrap();
@@ -380,19 +380,19 @@ impl<'l> Compiler<'l> {
   }
 
   pub fn compile(&mut self, expr: Box<AnyExpr>) -> Result<Rc<Node>, Status> {
-    let mut childNodes = vec![];
+    let mut child_nodes = vec![];
     for child in expr.children() {
       let key = Key(child.clone_box());
       // The result is mapped separately from the match statement below to avoid
       // reference lifetime isues.
       let value = self.nodes.get(&key).map(|v| v.clone());
-      childNodes.push(match value {
+      child_nodes.push(match value {
         Some(v) => v,
         None => try!(self.compile(child)),
       });
     }
     let mut next_id = self.next_id;
-    let result = expr.create_node(self.graph, &childNodes, &mut || {
+    let result = expr.create_node(self.graph, &child_nodes, &mut || {
       let id = format!("node_{}", next_id);
       next_id += 1;
       id
