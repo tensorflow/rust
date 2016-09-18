@@ -2,11 +2,11 @@
 //! This crate provides Rust bindings for the [TensorFlow](https://www.tensorflow.org) machine learning library.
 
 extern crate libc;
-extern crate num;
+extern crate num_complex;
 extern crate tensorflow_sys as tf;
 
 use libc::{c_char, c_int, c_uint, c_void, size_t};
-use num::Complex;
+use num_complex::Complex;
 use std::error::Error;
 use std::ffi::CStr;
 use std::ffi::CString;
@@ -487,7 +487,7 @@ impl<'l> Step<'l> {
     if self.output_tensors[output_idx].is_null() {
       return Err(Status::new_set(Code::Unavailable,
         "Output not available. Either it was already taken, or this step \
-        has not been sucessfully run yet.").unwrap());
+        has not been successfully run yet.").unwrap());
     }
     let actual_data_type = self.get_output_data_type(output_idx).unwrap();
     if actual_data_type != T::data_type() {
@@ -527,13 +527,14 @@ impl<'l> Step<'l> {
   }
 
   fn drop_output_tensors(&mut self) {
-    for &tensor in &self.output_tensors {
+    for mut tensor in &mut self.output_tensors {
       // TODO: Is TF_DeleteTensor NULL safe?
       if !tensor.is_null() {
         unsafe {
-          tf::TF_DeleteTensor(tensor);
+          tf::TF_DeleteTensor(*tensor);
         }
       }
+      *tensor = std::ptr::null_mut();
     }
   }
 }
@@ -635,6 +636,10 @@ pub struct Tensor<T: TensorType> {
 
 unsafe extern "C" fn noop_deallocator(_: *mut c_void, _: size_t, _: *mut c_void) -> () {}
 
+unsafe extern "C" fn deallocator(_: *mut c_void, _: size_t, buffer: *mut c_void) -> () {
+  tf::TF_DeleteBuffer(buffer as *mut tf::TF_Buffer);
+}
+
 // TODO: Replace with Iterator::product once that's stable
 fn product(values: &[u64]) -> u64 {
   let mut product = 1;
@@ -658,26 +663,29 @@ impl<T: TensorType> Tensor<T> {
   }
 
   /// Creates a new tensor from existing data.
-  pub fn new_with_buffer(dims: &[u64], data: Buffer<T>) -> Result<Self> {
+  pub fn new_with_buffer(dims: &[u64], mut data: Buffer<T>) -> Result<Self> {
     let total = product(dims);
     if total != data.len() as u64 {
       return Err(invalid_arg!("Dimensions {:?} do not match buffer length {}", dims, data.len()));
     }
-    let inner = unsafe {
-      tf::TF_NewTensor(T::data_type().to_c(),
-                       dims.as_ptr() as *const _,
-                       dims.len() as c_int,
-                       data.as_ptr() as *mut _,
-                       data.len(),
-                       Some(noop_deallocator),
-                       std::ptr::null_mut())
-    };
-    Ok(Tensor {
-      inner: inner,
-      data: data,
-      dims: Vec::from(dims),
-      owned: true,
-    })
+    unsafe {
+      // Be careful.  TF_NewTensor may copy the data and deallocate the original buffer.
+      let inner = tf::TF_NewTensor(
+        T::data_type().to_c(),
+        dims.as_ptr() as *const _,
+        dims.len() as c_int,
+        data.as_ptr() as *mut _,
+        data.len() * mem::size_of::<T>(),
+        Some(if data.is_owned() {deallocator} else {noop_deallocator}),
+        if data.is_owned() {data.inner_mut() as *mut _} else {std::ptr::null_mut()});
+      data.set_owned(false);
+      Ok(Tensor {
+        inner: inner,
+        data: Buffer::from_ptr(tf::TF_TensorData(inner) as *mut T, total as usize),
+        dims: Vec::from(dims),
+        owned: true,
+      })
+    }
   }
 
   /// Returns the tensor's data.
@@ -775,6 +783,16 @@ impl Library {
   }
 
   // TODO: Implement TF_GetOpList once we can deserialize protos.
+}
+
+////////////////////////
+
+/// This exposes Buffer behavior without making it public.
+trait BufferTrait {
+  fn is_owned(&self) -> bool;
+  fn set_owned(&mut self, owned: bool);
+  fn inner(&self) -> *const tf::TF_Buffer;
+  fn inner_mut(&mut self) -> *mut tf::TF_Buffer;
 }
 
 ////////////////////////
