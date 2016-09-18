@@ -4,15 +4,25 @@
 //! This module is unfinished.
 #![cfg(feature = "tensorflow_unstable")]
 
+use std::cmp::Eq;
+use std::collections::HashMap;
 use std::convert::From;
 use std::fmt::Debug;
 use std::fmt::Display;
 use std::fmt::Error;
 use std::fmt::Formatter;
+use std::hash::Hash;
+use std::hash::Hasher;
 use std::marker::PhantomData;
 use std::ops;
 use std::rc::Rc;
 use super::Buffer;
+use super::DataType;
+use super::Graph;
+use super::Node;
+use super::Port;
+use super::Status;
+use super::Tensor;
 use super::TensorType;
 
 /// Denotes operator precedence.
@@ -31,7 +41,7 @@ pub enum OpLevel {
 ///
 /// This is separate from ExprImpl because we want expressions to be wrapped in an Rc,
 /// and we can't directly implement std::ops::Add, etc., for Rc<E: ExprImpl<T>>.
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 pub struct Expr<T: TensorType> {
   expr: Rc<ExprImpl<T>>,
 }
@@ -57,18 +67,33 @@ impl<T: TensorType> From<T> for Expr<T> {
 pub trait ExprImpl<T: TensorType>: Display + Debug {
   /// Returns the precedence level for this operator.
   fn op_level(&self) -> OpLevel;
+  fn children(&self) -> Vec<Box<AnyExpr>>; // TODO: return an iterator
+  fn create_node(&self, graph: &mut Graph, children: &[Rc<Node>], id_gen: &mut FnMut() -> String) -> Result<Node, Status>;
 }
 
 impl<T: TensorType> ExprImpl<T> for T {
   fn op_level(&self) -> OpLevel {
     OpLevel::Atom
   }
+
+  fn children(&self) -> Vec<Box<AnyExpr>> {
+    vec![]
+  }
+
+  fn create_node(&self, graph: &mut Graph, children: &[Rc<Node>], id_gen: &mut FnMut() -> String) -> Result<Node, Status> {
+    let mut nd = try!(graph.new_node("Const", &id_gen()));
+    try!(nd.set_attr_type("dtype", DataType::Float));
+    let mut value = Tensor::new(&[1]);
+    value[0] = *self;
+    try!(nd.set_attr_tensor("value", value));
+    nd.finish()
+  }
 }
 
 ////////////////////////
 
 macro_rules! impl_bin_op {
-  ($name:ident, $fn_name:ident, $op:expr, $op_level:ident, $assoc:expr, $doc:expr) => {
+  ($name:ident, $fn_name:ident, $op:expr, $op_level:ident, $assoc:expr, $tf_op:expr, $doc:expr) => {
     #[doc = $doc]
     #[derive(Debug)]
     pub struct $name<T: TensorType> {
@@ -127,15 +152,26 @@ macro_rules! impl_bin_op {
       fn op_level(&self) -> OpLevel {
         OpLevel::$op_level
       }
+
+      fn children(&self) -> Vec<Box<AnyExpr>> {
+        vec![Box::new(self.left.clone()), Box::new(self.right.clone())]
+      }
+
+      fn create_node(&self, graph: &mut Graph, children: &[Rc<Node>], id_gen: &mut FnMut() -> String) -> Result<Node, Status> {
+        let mut nd = try!(graph.new_node($tf_op, &id_gen()));
+        nd.add_input(Port {node: &children[0], index: 0});
+        nd.add_input(Port {node: &children[1], index: 0});
+        nd.finish()
+      }
     }
   }
 }
 
-impl_bin_op!(Add, add, "+", Add, true, "Expression resulting from adding two subexpressions.");
-impl_bin_op!(Sub, sub, "-", Add, false, "Expression resulting from subtracting two subexpressions.");
-impl_bin_op!(Mul, mul, "*", Mul, true, "Expression resulting from multiplying two subexpressions.");
-impl_bin_op!(Div, div, "/", Mul, false, "Expression resulting from dividing two subexpressions.");
-impl_bin_op!(Rem, rem, "%", Mul, false, "Expression resulting from taking a modulus.");
+impl_bin_op!(Add, add, "+", Add, true, "Add", "Expression resulting from adding two subexpressions.");
+impl_bin_op!(Sub, sub, "-", Add, false, "Sub", "Expression resulting from subtracting two subexpressions.");
+impl_bin_op!(Mul, mul, "*", Mul, true, "Mul", "Expression resulting from multiplying two subexpressions.");
+impl_bin_op!(Div, div, "/", Mul, false, "Div", "Expression resulting from dividing two subexpressions.");
+impl_bin_op!(Rem, rem, "%", Mul, false, "Mod", "Expression resulting from taking a modulus.");
 
 ////////////////////////
 
@@ -172,6 +208,16 @@ impl<T: TensorType> ExprImpl<T> for Neg<T> {
   fn op_level(&self) -> OpLevel {
     OpLevel::Unary
   }
+
+  fn children(&self) -> Vec<Box<AnyExpr>> {
+    vec![Box::new(self.expr.clone())]
+  }
+
+  fn create_node(&self, graph: &mut Graph, children: &[Rc<Node>], id_gen: &mut FnMut() -> String) -> Result<Node, Status> {
+    let mut nd = try!(graph.new_node("Neg", &id_gen()));
+    nd.add_input(Port {node: &children[0], index: 0});
+    nd.finish()
+  }
 }
 
 ////////////////////////
@@ -185,11 +231,17 @@ pub struct Variable<T: TensorType> {
 }
 
 impl<T: TensorType> Variable<T> {
-  pub fn new(initial_value: Buffer<T>, shape: &[u64], name: &str) -> Self {
+  fn new(initial_value: Buffer<T>, shape: &[u64], name: &str) -> Self {
     Variable {
       initial_value: initial_value,
       shape: Vec::from(shape),
       name: name.to_string(),
+    }
+  }
+
+  pub fn new_expr(initial_value: Buffer<T>, shape: &[u64], name: &str) -> Expr<T> {
+    Expr {
+      expr: Rc::new(Variable::new(initial_value, shape, name))
     }
   }
 }
@@ -204,6 +256,17 @@ impl<T: TensorType> ExprImpl<T> for Variable<T> {
   fn op_level(&self) -> OpLevel {
     OpLevel::Atom
   }
+
+  fn children(&self) -> Vec<Box<AnyExpr>> {
+    vec![]
+  }
+
+  fn create_node(&self, graph: &mut Graph, children: &[Rc<Node>], id_gen: &mut FnMut() -> String) -> Result<Node, Status> {
+    let mut nd = try!(graph.new_node("Variable", &self.name));
+    nd.set_attr_type("dtype", DataType::Float).unwrap();
+    nd.set_attr_shape("shape", &vec![]).unwrap();
+    nd.finish()
+  }
 }
 
 ////////////////////////
@@ -217,11 +280,17 @@ pub struct Placeholder<T: TensorType> {
 }
 
 impl<T: TensorType> Placeholder<T> {
-  pub fn new(shape: &[u64], name: &str) -> Self {
+  fn new(shape: &[u64], name: &str) -> Self {
     Placeholder {
       shape: Vec::from(shape),
       name: name.to_string(),
       phantom: PhantomData,
+    }
+  }
+
+  pub fn new_expr(shape: &[u64], name: &str) -> Expr<T> {
+    Expr {
+      expr: Rc::new(Placeholder::new(shape, name))
     }
   }
 }
@@ -236,6 +305,103 @@ impl<T: TensorType> ExprImpl<T> for Placeholder<T> {
   fn op_level(&self) -> OpLevel {
     OpLevel::Atom
   }
+
+  fn children(&self) -> Vec<Box<AnyExpr>> {
+    vec![]
+  }
+
+  fn create_node(&self, graph: &mut Graph, children: &[Rc<Node>], id_gen: &mut FnMut() -> String) -> Result<Node, Status> {
+    let mut nd = try!(graph.new_node("Placeholder", &self.name));
+    nd.set_attr_type("dtype", DataType::Float).unwrap();
+    nd.set_attr_shape("shape", &vec![]).unwrap();
+    nd.finish()
+  }
+}
+
+////////////////////////
+
+// TODO: See if we can make this private.
+pub trait AnyExpr {
+  fn key(&self) -> *const ();
+  fn children(&self) -> Vec<Box<AnyExpr>>; // TODO: return an iterator
+  fn create_node(&self, graph: &mut Graph, children: &[Rc<Node>], id_gen: &mut FnMut() -> String) -> Result<Node, Status>;
+  fn clone_box(&self) -> Box<AnyExpr>;
+}
+
+impl<T: TensorType> AnyExpr for Expr<T> {
+  fn key(&self) -> *const () {
+    self.expr.as_ref() as *const ExprImpl<T> as *const ()
+  }
+
+  fn children(&self) -> Vec<Box<AnyExpr>> {
+    self.expr.children()
+  }
+
+  fn create_node(&self, graph: &mut Graph, children: &[Rc<Node>], id_gen: &mut FnMut() -> String) -> Result<Node, Status> {
+    self.expr.create_node(graph, children, id_gen)
+  }
+
+  fn clone_box(&self) -> Box<AnyExpr> {
+    Box::new(self.clone())
+  }
+}
+
+struct Key(Box<AnyExpr>);
+
+impl PartialEq for Key {
+  fn eq(&self, other: &Key) -> bool {
+    self.0.key() == other.0.key()
+  }
+}
+
+impl Eq for Key {
+}
+
+impl Hash for Key {
+  fn hash<H>(&self, state: &mut H) where H: Hasher {
+    state.write_isize(self.0.key() as isize)
+  }
+}
+
+
+pub struct Compiler<'l> {
+  graph: &'l mut Graph,
+  nodes: HashMap<Key, Rc<Node>>,
+  next_id: i32,
+}
+
+impl<'l> Compiler<'l> {
+  pub fn new(graph: &'l mut Graph) -> Self {
+    Compiler {
+      graph: graph,
+      nodes: HashMap::new(),
+      next_id: 0,
+    }
+  }
+
+  pub fn compile(&mut self, expr: Box<AnyExpr>) -> Result<Rc<Node>, Status> {
+    let mut childNodes = vec![];
+    for child in expr.children() {
+      let key = Key(child.clone_box());
+      // The result is mapped separately from the match statement below to avoid
+      // reference lifetime isues.
+      let value = self.nodes.get(&key).map(|v| v.clone());
+      childNodes.push(match value {
+        Some(v) => v,
+        None => try!(self.compile(child)),
+      });
+    }
+    let mut next_id = self.next_id;
+    let result = expr.create_node(self.graph, &childNodes, &mut || {
+      let id = format!("node_{}", next_id);
+      next_id += 1;
+      id
+    });
+    self.next_id = next_id;
+    let node = Rc::new(try!(result));
+    self.nodes.insert(Key(expr), node.clone());
+    Ok(node)
+  }
 }
 
 ////////////////////////
@@ -244,6 +410,7 @@ impl<T: TensorType> ExprImpl<T> for Placeholder<T> {
 mod tests {
   use super::*;
   use super::super::Buffer;
+  use super::super::Graph;
 
   #[test]
   fn test_display() {
@@ -275,5 +442,15 @@ mod tests {
     assert_eq!("x", format!("{}", <Variable<f32>>::new(buf, &vec![2, 3], "x")));
 
     assert_eq!("x", format!("{}", <Placeholder<f32>>::new(&vec![2, 3], "x")));
+  }
+
+  #[test]
+  fn test_compile() {
+    let mut g = Graph::new();
+    let buf = Buffer::new(6);
+    let w = <Variable<f32>>::new_expr(buf, &vec![2, 3], "w");
+    let x = <Placeholder<f32>>::new_expr(&vec![2, 3], "x");
+    let mut compiler = Compiler::new(&mut g);
+    compiler.compile(Box::new(x * w.clone() / w.clone() % w.clone() + w.clone() - w)).unwrap();
   }
 }
