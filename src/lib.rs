@@ -2,11 +2,11 @@
 //! This crate provides Rust bindings for the [TensorFlow](https://www.tensorflow.org) machine learning library.
 
 extern crate libc;
-extern crate num;
+extern crate num_complex;
 extern crate tensorflow_sys as tf;
 
 use libc::{c_char, c_int, c_uint, c_void, size_t};
-use num::Complex;
+use num_complex::Complex;
 use std::error::Error;
 use std::ffi::CStr;
 use std::ffi::CString;
