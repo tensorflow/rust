@@ -29,6 +29,7 @@ use super::TensorType;
 /// Used for displaying expressions as strings.
 #[derive(Ord,PartialOrd,Eq,PartialEq,Debug)]
 pub enum OpLevel {
+  Assign,
   Add,
   Mul,
   Unary,
@@ -320,6 +321,54 @@ impl<T: TensorType> ExprImpl<T> for Placeholder<T> {
 
 ////////////////////////
 
+/// Expression that assigns a value to a variable.
+#[derive(Debug)]
+pub struct Assign<T: TensorType> {
+  variable: Expr<T>,
+  value: Expr<T>,
+}
+
+impl<T: TensorType> Assign<T> {
+  fn new(variable: Expr<T>, value: Expr<T>) -> Self {
+    Assign {
+      variable: variable,
+      value: value,
+    }
+  }
+
+  /// Creates an expression that assigns `value` to `variable`.
+  pub fn new_expr(variable: Expr<T>, value: Expr<T>) -> Expr<T> {
+    Expr {
+      expr: Rc::new(Assign::new(variable, value))
+    }
+  }
+}
+
+impl<T: TensorType> Display for Assign<T> {
+  fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+    write!(f, "{} = {}", self.variable, self.value)
+  }
+}
+
+impl<T: TensorType> ExprImpl<T> for Assign<T> {
+  fn op_level(&self) -> OpLevel {
+    OpLevel::Assign
+  }
+
+  fn children(&self) -> Vec<Box<AnyExpr>> {
+    vec![Box::new(self.variable.clone()), Box::new(self.value.clone())]
+  }
+
+  fn create_node(&self, graph: &mut Graph, children: &[Rc<Node>], id_gen: &mut FnMut() -> String) -> Result<Node, Status> {
+    let mut nd = try!(graph.new_node("Assign", &id_gen()));
+    nd.add_input(Port {node: &children[0], index: 0});
+    nd.add_input(Port {node: &children[1], index: 0});
+    nd.finish()
+  }
+}
+
+////////////////////////
+
 // TODO: See if we can make this private.
 pub trait AnyExpr {
   fn key(&self) -> *const ();
@@ -442,6 +491,9 @@ mod tests {
     assert_eq!("x", format!("{}", <Variable<f32>>::new(buf, &vec![2, 3], "x")));
 
     assert_eq!("x", format!("{}", <Placeholder<f32>>::new(&vec![2, 3], "x")));
+
+    assert_eq!("x = 1 + 2", format!("{}", Assign::new(
+      <Placeholder<f32>>::new_expr(&vec![2, 3], "x"), Expr::from(1.0f32) + 2.0f32)));
   }
 
   #[test]
@@ -451,6 +503,8 @@ mod tests {
     let w = <Variable<f32>>::new_expr(buf, &vec![2, 3], "w");
     let x = <Placeholder<f32>>::new_expr(&vec![2, 3], "x");
     let mut compiler = Compiler::new(&mut g);
-    compiler.compile(Box::new(x * w.clone() / w.clone() % w.clone() + w.clone() - w)).unwrap();
+    compiler.compile(Box::new(x * w.clone() / w.clone() % w.clone() + w.clone() - w.clone())).unwrap();
+    let one = Expr::from(1.0f32);
+    compiler.compile(Box::new(Assign::new_expr(w, one))).unwrap();
   }
 }

@@ -15,6 +15,7 @@ use std::ffi::NulError;
 use std::str::Utf8Error;
 use std::sync::Arc;
 use super::Buffer;
+use super::Code;
 use super::DataType;
 use super::GraphTrait;
 use super::NodeTrait;
@@ -90,6 +91,14 @@ impl Graph {
           gimpl: self.gimpl.clone(),
         }))
       }
+    }
+  }
+
+  /// Like `node_by_name`, except that failure to find the node is considered an error.
+  pub fn node_by_name_required(&self, node_name: &str) -> std::result::Result<Node, Status> {
+    match try!(self.node_by_name(node_name)) {
+      Some(node) => Ok(node),
+      None => Err(Status::new_set(Code::Unavailable, &format!("Node {:?} not found", node_name)).unwrap()),
     }
   }
 
