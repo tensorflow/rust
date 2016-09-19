@@ -16,7 +16,6 @@ use std::hash::Hasher;
 use std::marker::PhantomData;
 use std::ops;
 use std::rc::Rc;
-use super::Buffer;
 use super::DataType;
 use super::Graph;
 use super::Node;
@@ -226,23 +225,23 @@ impl<T: TensorType> ExprImpl<T> for Neg<T> {
 /// Expression for a variable.
 #[derive(Debug)]
 pub struct Variable<T: TensorType> {
-  initial_value: Buffer<T>,
   shape: Vec<u64>,
   name: String,
+  phantom: PhantomData<T>,
 }
 
 impl<T: TensorType> Variable<T> {
-  fn new(initial_value: Buffer<T>, shape: &[u64], name: &str) -> Self {
+  fn new(shape: &[u64], name: &str) -> Self {
     Variable {
-      initial_value: initial_value,
       shape: Vec::from(shape),
       name: name.to_string(),
+      phantom: PhantomData,
     }
   }
 
-  pub fn new_expr(initial_value: Buffer<T>, shape: &[u64], name: &str) -> Expr<T> {
+  pub fn new_expr(shape: &[u64], name: &str) -> Expr<T> {
     Expr {
-      expr: Rc::new(Variable::new(initial_value, shape, name))
+      expr: Rc::new(Variable::new(shape, name))
     }
   }
 }
@@ -458,7 +457,6 @@ impl<'l> Compiler<'l> {
 #[cfg(test)]
 mod tests {
   use super::*;
-  use super::super::Buffer;
   use super::super::Graph;
 
   #[test]
@@ -487,8 +485,7 @@ mod tests {
     assert_eq!("-(-1)", format!("{}", -(-Expr::from(1))));
     assert_eq!("-(1 + 2)", format!("{}", -(Expr::from(1) + 2)));
 
-    let buf = Buffer::new(6);
-    assert_eq!("x", format!("{}", <Variable<f32>>::new(buf, &vec![2, 3], "x")));
+    assert_eq!("x", format!("{}", <Variable<f32>>::new(&vec![2, 3], "x")));
 
     assert_eq!("x", format!("{}", <Placeholder<f32>>::new(&vec![2, 3], "x")));
 
@@ -499,8 +496,7 @@ mod tests {
   #[test]
   fn test_compile() {
     let mut g = Graph::new();
-    let buf = Buffer::new(6);
-    let w = <Variable<f32>>::new_expr(buf, &vec![2, 3], "w");
+    let w = <Variable<f32>>::new_expr(&vec![2, 3], "w");
     let x = <Placeholder<f32>>::new_expr(&vec![2, 3], "x");
     let mut compiler = Compiler::new(&mut g);
     compiler.compile(Box::new(x * w.clone() / w.clone() % w.clone() + w.clone() - w.clone())).unwrap();
