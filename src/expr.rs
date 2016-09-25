@@ -427,7 +427,11 @@ impl<'l> Compiler<'l> {
     }
   }
 
-  pub fn compile(&mut self, expr: Box<AnyExpr>) -> Result<Rc<Node>, Status> {
+  pub fn compile<T: TensorType>(&mut self, expr: Expr<T>) -> Result<Rc<Node>, Status> {
+    self.compile_any(Box::new(expr))
+  }
+
+  pub fn compile_any(&mut self, expr: Box<AnyExpr>) -> Result<Rc<Node>, Status> {
     let mut child_nodes = vec![];
     for child in expr.children() {
       let key = Key(child.clone_box());
@@ -436,7 +440,7 @@ impl<'l> Compiler<'l> {
       let value = self.nodes.get(&key).map(|v| v.clone());
       child_nodes.push(match value {
         Some(v) => v,
-        None => try!(self.compile(child)),
+        None => try!(self.compile_any(child)),
       });
     }
     let mut next_id = self.next_id;
@@ -499,8 +503,8 @@ mod tests {
     let w = <Variable<f32>>::new_expr(&vec![2, 3], "w");
     let x = <Placeholder<f32>>::new_expr(&vec![2, 3], "x");
     let mut compiler = Compiler::new(&mut g);
-    compiler.compile(Box::new(x * w.clone() / w.clone() % w.clone() + w.clone() - w.clone())).unwrap();
+    compiler.compile(x * w.clone() / w.clone() % w.clone() + w.clone() - w.clone()).unwrap();
     let one = Expr::from(1.0f32);
-    compiler.compile(Box::new(Assign::new_expr(w, one))).unwrap();
+    compiler.compile(Assign::new_expr(w, one)).unwrap();
   }
 }
