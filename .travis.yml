@@ -14,6 +14,8 @@ install:
 
 script:
   - cargo test -vv -j 1 --features tensorflow_unstable
+  - cargo run --example regression
+  - cargo run --features tensorflow_unstable --example expressions
   - cargo doc -vv --features tensorflow_unstable
   - (cd tensorflow-sys && cargo test -vv -j 1)
   - (cd tensorflow-sys && cargo doc -vv)
