@@ -18,7 +18,7 @@ use std::ops;
 use std::rc::Rc;
 use super::DataType;
 use super::Graph;
-use super::Node;
+use super::Operation;
 use super::Port;
 use super::Status;
 use super::Tensor;
@@ -37,7 +37,7 @@ pub enum OpLevel {
 
 ////////////////////////
 
-/// A node in an expression tree, which is a thin wrapper around an ExprImpl.
+/// A operation in an expression tree, which is a thin wrapper around an ExprImpl.
 ///
 /// This is separate from ExprImpl because we want expressions to be wrapped in an Rc,
 /// and we can't directly implement std::ops::Add, etc., for Rc<E: ExprImpl<T>>.
@@ -68,7 +68,7 @@ pub trait ExprImpl<T: TensorType>: Display + Debug {
   /// Returns the precedence level for this operator.
   fn op_level(&self) -> OpLevel;
   fn children(&self) -> Vec<Box<AnyExpr>>; // TODO: return an iterator
-  fn create_node(&self, graph: &mut Graph, children: &[Rc<Node>], id_gen: &mut FnMut() -> String) -> Result<Node, Status>;
+  fn create_operation(&self, graph: &mut Graph, children: &[Rc<Operation>], id_gen: &mut FnMut() -> String) -> Result<Operation, Status>;
 }
 
 impl<T: TensorType> ExprImpl<T> for T {
@@ -80,8 +80,8 @@ impl<T: TensorType> ExprImpl<T> for T {
     vec![]
   }
 
-  fn create_node(&self, graph: &mut Graph, _children: &[Rc<Node>], id_gen: &mut FnMut() -> String) -> Result<Node, Status> {
-    let mut nd = try!(graph.new_node("Const", &id_gen()));
+  fn create_operation(&self, graph: &mut Graph, _children: &[Rc<Operation>], id_gen: &mut FnMut() -> String) -> Result<Operation, Status> {
+    let mut nd = try!(graph.new_operation("Const", &id_gen()));
     try!(nd.set_attr_type("dtype", DataType::Float));
     let mut value = Tensor::new(&[1]);
     value[0] = *self;
@@ -157,10 +157,10 @@ macro_rules! impl_bin_op {
         vec![Box::new(self.left.clone()), Box::new(self.right.clone())]
       }
 
-      fn create_node(&self, graph: &mut Graph, children: &[Rc<Node>], id_gen: &mut FnMut() -> String) -> Result<Node, Status> {
-        let mut nd = try!(graph.new_node($tf_op, &id_gen()));
-        nd.add_input(Port {node: &children[0], index: 0});
-        nd.add_input(Port {node: &children[1], index: 0});
+      fn create_operation(&self, graph: &mut Graph, children: &[Rc<Operation>], id_gen: &mut FnMut() -> String) -> Result<Operation, Status> {
+        let mut nd = try!(graph.new_operation($tf_op, &id_gen()));
+        nd.add_input(Port {operation: &children[0], index: 0});
+        nd.add_input(Port {operation: &children[1], index: 0});
         nd.finish()
       }
     }
@@ -213,9 +213,9 @@ impl<T: TensorType> ExprImpl<T> for Neg<T> {
     vec![Box::new(self.expr.clone())]
   }
 
-  fn create_node(&self, graph: &mut Graph, children: &[Rc<Node>], id_gen: &mut FnMut() -> String) -> Result<Node, Status> {
-    let mut nd = try!(graph.new_node("Neg", &id_gen()));
-    nd.add_input(Port {node: &children[0], index: 0});
+  fn create_operation(&self, graph: &mut Graph, children: &[Rc<Operation>], id_gen: &mut FnMut() -> String) -> Result<Operation, Status> {
+    let mut nd = try!(graph.new_operation("Neg", &id_gen()));
+    nd.add_input(Port {operation: &children[0], index: 0});
     nd.finish()
   }
 }
@@ -261,8 +261,8 @@ impl<T: TensorType> ExprImpl<T> for Variable<T> {
     vec![]
   }
 
-  fn create_node(&self, graph: &mut Graph, _children: &[Rc<Node>], _id_gen: &mut FnMut() -> String) -> Result<Node, Status> {
-    let mut nd = try!(graph.new_node("Variable", &self.name));
+  fn create_operation(&self, graph: &mut Graph, _children: &[Rc<Operation>], _id_gen: &mut FnMut() -> String) -> Result<Operation, Status> {
+    let mut nd = try!(graph.new_operation("Variable", &self.name));
     nd.set_attr_type("dtype", DataType::Float).unwrap();
     nd.set_attr_shape("shape", &vec![]).unwrap();
     nd.finish()
@@ -310,8 +310,8 @@ impl<T: TensorType> ExprImpl<T> for Placeholder<T> {
     vec![]
   }
 
-  fn create_node(&self, graph: &mut Graph, _children: &[Rc<Node>], _id_gen: &mut FnMut() -> String) -> Result<Node, Status> {
-    let mut nd = try!(graph.new_node("Placeholder", &self.name));
+  fn create_operation(&self, graph: &mut Graph, _children: &[Rc<Operation>], _id_gen: &mut FnMut() -> String) -> Result<Operation, Status> {
+    let mut nd = try!(graph.new_operation("Placeholder", &self.name));
     nd.set_attr_type("dtype", DataType::Float).unwrap();
     nd.set_attr_shape("shape", &vec![]).unwrap();
     nd.finish()
@@ -358,10 +358,10 @@ impl<T: TensorType> ExprImpl<T> for Assign<T> {
     vec![Box::new(self.variable.clone()), Box::new(self.value.clone())]
   }
 
-  fn create_node(&self, graph: &mut Graph, children: &[Rc<Node>], id_gen: &mut FnMut() -> String) -> Result<Node, Status> {
-    let mut nd = try!(graph.new_node("Assign", &id_gen()));
-    nd.add_input(Port {node: &children[0], index: 0});
-    nd.add_input(Port {node: &children[1], index: 0});
+  fn create_operation(&self, graph: &mut Graph, children: &[Rc<Operation>], id_gen: &mut FnMut() -> String) -> Result<Operation, Status> {
+    let mut nd = try!(graph.new_operation("Assign", &id_gen()));
+    nd.add_input(Port {operation: &children[0], index: 0});
+    nd.add_input(Port {operation: &children[1], index: 0});
     nd.finish()
   }
 }
@@ -372,7 +372,7 @@ impl<T: TensorType> ExprImpl<T> for Assign<T> {
 pub trait AnyExpr {
   fn key(&self) -> *const ();
   fn children(&self) -> Vec<Box<AnyExpr>>; // TODO: return an iterator
-  fn create_node(&self, graph: &mut Graph, children: &[Rc<Node>], id_gen: &mut FnMut() -> String) -> Result<Node, Status>;
+  fn create_operation(&self, graph: &mut Graph, children: &[Rc<Operation>], id_gen: &mut FnMut() -> String) -> Result<Operation, Status>;
   fn clone_box(&self) -> Box<AnyExpr>;
 }
 
@@ -385,8 +385,8 @@ impl<T: TensorType> AnyExpr for Expr<T> {
     self.expr.children()
   }
 
-  fn create_node(&self, graph: &mut Graph, children: &[Rc<Node>], id_gen: &mut FnMut() -> String) -> Result<Node, Status> {
-    self.expr.create_node(graph, children, id_gen)
+  fn create_operation(&self, graph: &mut Graph, children: &[Rc<Operation>], id_gen: &mut FnMut() -> String) -> Result<Operation, Status> {
+    self.expr.create_operation(graph, children, id_gen)
   }
 
   fn clone_box(&self) -> Box<AnyExpr> {
@@ -414,7 +414,7 @@ impl Hash for Key {
 
 pub struct Compiler<'l> {
   graph: &'l mut Graph,
-  nodes: HashMap<Key, Rc<Node>>,
+  operations: HashMap<Key, Rc<Operation>>,
   next_id: i32,
 }
 
@@ -422,37 +422,37 @@ impl<'l> Compiler<'l> {
   pub fn new(graph: &'l mut Graph) -> Self {
     Compiler {
       graph: graph,
-      nodes: HashMap::new(),
+      operations: HashMap::new(),
       next_id: 0,
     }
   }
 
-  pub fn compile<T: TensorType>(&mut self, expr: Expr<T>) -> Result<Rc<Node>, Status> {
+  pub fn compile<T: TensorType>(&mut self, expr: Expr<T>) -> Result<Rc<Operation>, Status> {
     self.compile_any(Box::new(expr))
   }
 
-  pub fn compile_any(&mut self, expr: Box<AnyExpr>) -> Result<Rc<Node>, Status> {
-    let mut child_nodes = vec![];
+  pub fn compile_any(&mut self, expr: Box<AnyExpr>) -> Result<Rc<Operation>, Status> {
+    let mut child_operations = vec![];
     for child in expr.children() {
       let key = Key(child.clone_box());
       // The result is mapped separately from the match statement below to avoid
       // reference lifetime isues.
-      let value = self.nodes.get(&key).map(|v| v.clone());
-      child_nodes.push(match value {
+      let value = self.operations.get(&key).map(|v| v.clone());
+      child_operations.push(match value {
         Some(v) => v,
         None => try!(self.compile_any(child)),
       });
     }
     let mut next_id = self.next_id;
-    let result = expr.create_node(self.graph, &child_nodes, &mut || {
-      let id = format!("node_{}", next_id);
+    let result = expr.create_operation(self.graph, &child_operations, &mut || {
+      let id = format!("operation_{}", next_id);
       next_id += 1;
       id
     });
     self.next_id = next_id;
-    let node = Rc::new(try!(result));
-    self.nodes.insert(Key(expr), node.clone());
-    Ok(node)
+    let operation = Rc::new(try!(result));
+    self.operations.insert(Key(expr), operation.clone());
+    Ok(operation)
   }
 }
 

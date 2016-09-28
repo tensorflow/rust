@@ -361,7 +361,7 @@ impl Session {
     status.as_result()
   }
 
-  /// Treat `proto` as a serialized `GraphDef` and add the nodes in that `GraphDef` to the graph for the session.
+  /// Treat `proto` as a serialized `GraphDef` and add the operations in that `GraphDef` to the graph for the session.
   pub fn extend_graph(&mut self, proto: &[u8]) -> Result<()> {
     let status = Status::new();
     unsafe {
@@ -512,7 +512,7 @@ impl<'l> Step<'l> {
     Ok(tensor)
   }
 
-  /// Adds a target node to be executed when running the graph.
+  /// Adds a target operation to be executed when running the graph.
   pub fn add_target(&mut self, name: &str) -> std::result::Result<(), NulError> {
     let c_string = try!(CString::new(name));
     self.target_name_ptrs.push(c_string.as_ptr());
@@ -806,9 +806,9 @@ trait GraphTrait {
 }
 
 
-/// This exposes Node behavior without making it public.
-trait NodeTrait {
-  fn inner(&self) -> *mut tf::TF_Node;
+/// This exposes Operation behavior without making it public.
+trait OperationTrait {
+  fn inner(&self) -> *mut tf::TF_Operation;
 }
 
 ////////////////////////

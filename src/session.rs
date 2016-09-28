@@ -9,8 +9,8 @@ use super::Code;
 use super::DataType;
 use super::Graph;
 use super::GraphTrait;
-use super::Node;
-use super::NodeTrait;
+use super::Operation;
+use super::OperationTrait;
 use super::Result;
 use super::SessionOptions;
 use super::Status;
@@ -84,8 +84,8 @@ impl SessionWithGraph {
         step.output_ports.as_ptr(),
         step.output_tensors.as_mut_ptr(),
         step.output_tensors.len() as c_int,
-        step.target_nodes.as_mut_ptr(),
-        step.target_nodes.len() as c_int,
+        step.target_operations.as_mut_ptr(),
+        step.target_operations.len() as c_int,
         ptr::null_mut(),
         status.inner);
     };
@@ -125,7 +125,7 @@ pub struct StepWithGraph<'l> {
   output_ports: Vec<tf::TF_Port>,
   output_tensors: Vec<*mut tf::TF_Tensor>,
 
-  target_nodes: Vec<*const tf::TF_Node>,
+  target_operations: Vec<*const tf::TF_Operation>,
 
   phantom: marker::PhantomData<&'l ()>,
 }
@@ -140,16 +140,16 @@ impl<'l> StepWithGraph<'l> {
       output_ports: vec![],
       output_tensors: vec![],
 
-      target_nodes: vec![],
+      target_operations: vec![],
 
       phantom: marker::PhantomData,
     }
   }
 
   /// Adds an input to be fed to the graph.
-  pub fn add_input<T: TensorType>(&mut self, node: &Node, index: c_int, tensor: &'l Tensor<T>) {
+  pub fn add_input<T: TensorType>(&mut self, operation: &Operation, index: c_int, tensor: &'l Tensor<T>) {
     self.input_ports.push(tf::TF_Port{
-      node: node.inner(),
+      operation: operation.inner(),
       index: index,
     });
     self.input_tensors.push(tensor.inner);
@@ -157,9 +157,9 @@ impl<'l> StepWithGraph<'l> {
 
   /// Requests that an output is fetched from the graph after running this step.
   /// Returns an index that you can then use to fetch this output from the step after running it.
-  pub fn request_output(&mut self, node: &Node, index: c_int) -> OutputToken {
+  pub fn request_output(&mut self, operation: &Operation, index: c_int) -> OutputToken {
     self.output_ports.push(tf::TF_Port{
-      node: node.inner(),
+      operation: operation.inner(),
       index: index,
     });
     self.output_tensors.push(ptr::null_mut());
@@ -198,9 +198,9 @@ impl<'l> StepWithGraph<'l> {
     Ok(tensor)
   }
 
-  /// Adds a target node to be executed when running the graph.
-  pub fn add_target(&mut self, node: &Node) {
-    self.target_nodes.push(node.inner());
+  /// Adds a target operation to be executed when running the graph.
+  pub fn add_target(&mut self, operation: &Operation) {
+    self.target_operations.push(operation.inner());
   }
 
   /// Retuns the type of the tensor given an index.
@@ -244,15 +244,15 @@ mod tests {
   use super::*;
   use super::super::DataType;
   use super::super::Graph;
-  use super::super::Node;
+  use super::super::Operation;
   use super::super::Port;
   use super::super::SessionOptions;
   use super::super::Tensor;
 
-  fn create_session() -> (SessionWithGraph, Node, Node) {
+  fn create_session() -> (SessionWithGraph, Operation, Operation) {
     let mut g = Graph::new();
     let two = {
-      let mut nd = g.new_node("Const", "two").unwrap();
+      let mut nd = g.new_operation("Const", "two").unwrap();
       nd.set_attr_type("dtype", DataType::Float).unwrap();
       let mut value = Tensor::new(&[1]);
       value[0] = 2.0f32;
@@ -260,15 +260,15 @@ mod tests {
       nd.finish().unwrap()
     };
     let x = {
-      let mut nd = g.new_node("Placeholder", "x").unwrap();
+      let mut nd = g.new_operation("Placeholder", "x").unwrap();
       nd.set_attr_type("dtype", DataType::Float).unwrap();
       nd.set_attr_shape("shape", &vec![]).unwrap();
       nd.finish().unwrap()
     };
     let y = {
-      let mut nd = g.new_node("Mul", "y").unwrap();
-      nd.add_input(Port {node: &two, index: 0});
-      nd.add_input(Port {node: &x, index: 0});
+      let mut nd = g.new_operation("Mul", "y").unwrap();
+      nd.add_input(Port {operation: &two, index: 0});
+      nd.add_input(Port {operation: &x, index: 0});
       nd.finish().unwrap()
     };
     let options = SessionOptions::new();
@@ -292,13 +292,13 @@ mod tests {
 
   #[test]
   fn test_run() {
-    let (mut session, x_node, y_node) = create_session();
+    let (mut session, x_operation, y_operation) = create_session();
     let mut x = <Tensor<f32>>::new(&[2]);
     x[0] = 2.0;
     x[1] = 3.0;
     let mut step = StepWithGraph::new();
-    step.add_input(&x_node, 0, &x);
-    let output_token = step.request_output(&y_node, 0);
+    step.add_input(&x_operation, 0, &x);
+    let output_token = step.request_output(&y_operation, 0);
     session.run(&mut step).unwrap();
     let output_tensor = step.take_output::<f32>(output_token).unwrap();
     let data = output_tensor.data();

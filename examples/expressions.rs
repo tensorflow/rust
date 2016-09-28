@@ -65,7 +65,7 @@ fn run() -> Result<(), Box<Error>> {
     let x_expr = <Placeholder<f32>>::new_expr(&vec![2], "x");
     try!(compiler.compile(x_expr * 2.0f32 + 1.0f32))
   };
-  let x_node = try!(g.node_by_name_required("x"));
+  let x_node = try!(g.operation_by_name_required("x"));
   // This is another valid way to get x_node and y_node:
   // let (x_node, y_node) = {
   //   let mut compiler = Compiler::new(&mut g);

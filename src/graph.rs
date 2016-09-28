@@ -18,7 +18,7 @@ use super::Buffer;
 use super::Code;
 use super::DataType;
 use super::GraphTrait;
-use super::NodeTrait;
+use super::OperationTrait;
 use super::Status;
 use super::Result;
 use super::Tensor;
@@ -64,46 +64,46 @@ impl Graph {
     }
   }
 
-  /// Node will only be added to graph when finish_node() is called
-  /// (assuming finish_node() does not return an error).  graph must
-  /// not be deleted until after finish_node() is called.
-  pub fn new_node(&mut self, op_type: &str, node_name: &str) -> std::result::Result<NodeDescription, NulError> {
+  /// Operation will only be added to graph when finish_operation() is called
+  /// (assuming finish_operation() does not return an error).  graph must
+  /// not be deleted until after finish_operation() is called.
+  pub fn new_operation(&mut self, op_type: &str, operation_name: &str) -> std::result::Result<OperationDescription, NulError> {
     let c_op_type = try!(CString::new(op_type));
-    let c_node_name = try!(CString::new(node_name));
+    let c_operation_name = try!(CString::new(operation_name));
     unsafe {
-      Ok(NodeDescription{
-        inner: tf::TF_NewNode(self.gimpl.inner, c_op_type.as_ptr(), c_node_name.as_ptr()),
+      Ok(OperationDescription{
+        inner: tf::TF_NewOperation(self.gimpl.inner, c_op_type.as_ptr(), c_operation_name.as_ptr()),
         graph: self,
         finished: false,
       })
     }
   }
 
-  pub fn node_by_name(&self, node_name: &str) -> std::result::Result<Option<Node>, NulError> {
-    let c_node_name = try!(CString::new(node_name));
+  pub fn operation_by_name(&self, operation_name: &str) -> std::result::Result<Option<Operation>, NulError> {
+    let c_operation_name = try!(CString::new(operation_name));
     unsafe {
-      let node = tf::TF_GraphNodeByName(self.gimpl.inner, c_node_name.as_ptr());
-      if node.is_null() {
+      let operation = tf::TF_GraphOperationByName(self.gimpl.inner, c_operation_name.as_ptr());
+      if operation.is_null() {
         Ok(None)
       } else {
-        Ok(Some(Node {
-          inner: node,
+        Ok(Some(Operation {
+          inner: operation,
           gimpl: self.gimpl.clone(),
         }))
       }
     }
   }
 
-  /// Like `node_by_name`, except that failure to find the node is considered an error.
-  pub fn node_by_name_required(&self, node_name: &str) -> std::result::Result<Node, Status> {
-    match try!(self.node_by_name(node_name)) {
-      Some(node) => Ok(node),
-      None => Err(Status::new_set(Code::Unavailable, &format!("Node {:?} not found", node_name)).unwrap()),
+  /// Like `operation_by_name`, except that failure to find the operation is considered an error.
+  pub fn operation_by_name_required(&self, operation_name: &str) -> std::result::Result<Operation, Status> {
+    match try!(self.operation_by_name(operation_name)) {
+      Some(operation) => Ok(operation),
+      None => Err(Status::new_set(Code::Unavailable, &format!("Operation {:?} not found", operation_name)).unwrap()),
     }
   }
 
-  pub fn node_iter<'a>(&'a self) -> NodeIter<'a> {
-    NodeIter {
+  pub fn operation_iter<'a>(&'a self) -> OperationIter<'a> {
+    OperationIter {
       graph: &self,
       pos: 0,
     }
@@ -132,24 +132,24 @@ impl GraphTrait for Graph {
 
 ////////////////////////
 
-pub struct NodeIter<'a> {
+pub struct OperationIter<'a> {
   // We could just have a gimpl field, but keeping a reference to the Graph
   // means that the graph can't be modified while iterating through it.
   graph: &'a Graph,
   pos: size_t,
 }
 
-impl<'a> Iterator for NodeIter<'a> {
-  type Item = Node;
+impl<'a> Iterator for OperationIter<'a> {
+  type Item = Operation;
 
   fn next(&mut self) -> Option<Self::Item> {
     unsafe {
-      let node = tf::TF_GraphNextNode(self.graph.gimpl.inner, &mut self.pos as *mut size_t);
-      if node.is_null() {
+      let operation = tf::TF_GraphNextOperation(self.graph.gimpl.inner, &mut self.pos as *mut size_t);
+      if operation.is_null() {
         None
       } else {
-        Some(Node {
-          inner: node,
+        Some(Operation {
+          inner: operation,
           gimpl: self.graph.gimpl.clone(),
         })
       }
@@ -160,39 +160,39 @@ impl<'a> Iterator for NodeIter<'a> {
 ////////////////////////
 
 #[derive(Debug)]
-pub struct Node {
-  inner: *mut tf::TF_Node,
+pub struct Operation {
+  inner: *mut tf::TF_Operation,
   gimpl: Arc<GraphImpl>,
 }
 
-impl Node {
+impl Operation {
   pub fn name(&self) -> std::result::Result<String, Utf8Error> {
     unsafe {
-      CStr::from_ptr(tf::TF_NodeName(self.inner)).to_str().map(|x| x.to_string())
+      CStr::from_ptr(tf::TF_OperationName(self.inner)).to_str().map(|x| x.to_string())
     }
   }
 
   pub fn op_type(&self) -> std::result::Result<String, Utf8Error> {
     unsafe {
-      CStr::from_ptr(tf::TF_NodeOpType(self.inner)).to_str().map(|x| x.to_string())
+      CStr::from_ptr(tf::TF_OperationOpType(self.inner)).to_str().map(|x| x.to_string())
     }
   }
 
   pub fn device(&self) -> std::result::Result<String, Utf8Error> {
     unsafe {
-      CStr::from_ptr(tf::TF_NodeOpType(self.inner)).to_str().map(|x| x.to_string())
+      CStr::from_ptr(tf::TF_OperationOpType(self.inner)).to_str().map(|x| x.to_string())
     }
   }
 
   pub fn num_outputs(&self) -> usize {
     unsafe {
-      tf::TF_NodeNumOutputs(self.inner) as usize
+      tf::TF_OperationNumOutputs(self.inner) as usize
     }
   }
 
   pub fn output_type(&self, index: usize) -> DataType {
     unsafe {
-      DataType::from_c(tf::TF_NodeOutputType(tf::TF_Port{node: self.inner, index: index as c_int}))
+      DataType::from_c(tf::TF_OperationOutputType(tf::TF_Port{operation: self.inner, index: index as c_int}))
     }
   }
 
@@ -200,7 +200,7 @@ impl Node {
     let c_arg_name = try!(CString::new(arg_name));
     let status = Status::new();
     let length = unsafe {
-      tf::TF_NodeOutputListLength(self.inner, c_arg_name.as_ptr(), status.inner)
+      tf::TF_OperationOutputListLength(self.inner, c_arg_name.as_ptr(), status.inner)
     };
     if status.is_ok() {
       Ok(length as usize)
@@ -211,13 +211,13 @@ impl Node {
 
   pub fn num_inputs(&self) -> usize {
     unsafe {
-      tf::TF_NodeNumInputs(self.inner) as usize
+      tf::TF_OperationNumInputs(self.inner) as usize
     }
   }
 
   pub fn input_type(&self, index: usize) -> DataType {
     unsafe {
-      DataType::from_c(tf::TF_NodeInputType(tf::TF_Port{node: self.inner, index: index as c_int}))
+      DataType::from_c(tf::TF_OperationInputType(tf::TF_Port{operation: self.inner, index: index as c_int}))
     }
   }
 
@@ -225,7 +225,7 @@ impl Node {
     let c_arg_name = try!(CString::new(arg_name));
     let status = Status::new();
     let length = unsafe {
-      tf::TF_NodeInputListLength(self.inner, c_arg_name.as_ptr(), status.inner)
+      tf::TF_OperationInputListLength(self.inner, c_arg_name.as_ptr(), status.inner)
     };
     if status.is_ok() {
       Ok(length as usize)
@@ -234,11 +234,11 @@ impl Node {
     }
   }
 
-  pub fn input(&self, index: usize) -> (Node, usize) {
+  pub fn input(&self, index: usize) -> (Operation, usize) {
     unsafe {
-      let port = tf::TF_NodeInput(tf::TF_Port{node: self.inner, index: index as c_int});
-      (Node {
-        inner: port.node,
+      let port = tf::TF_OperationInput(tf::TF_Port{operation: self.inner, index: index as c_int});
+      (Operation {
+        inner: port.operation,
         gimpl: self.gimpl.clone(),
       }, port.index as usize)
     }
@@ -246,63 +246,63 @@ impl Node {
 
   pub fn output_num_consumers(&self, index: usize) -> usize {
     unsafe {
-      tf::TF_NodeOutputNumConsumers(tf::TF_Port{node: self.inner, index: index as c_int}) as usize
+      tf::TF_OperationOutputNumConsumers(tf::TF_Port{operation: self.inner, index: index as c_int}) as usize
     }
   }
 
-  pub fn output_consumers(&self, index: usize) -> Vec<(Node, usize)> {
+  pub fn output_consumers(&self, index: usize) -> Vec<(Operation, usize)> {
     unsafe {
-      let num_consumers = tf::TF_NodeOutputNumConsumers(tf::TF_Port{node: self.inner, index: index as c_int});
+      let num_consumers = tf::TF_OperationOutputNumConsumers(tf::TF_Port{operation: self.inner, index: index as c_int});
       let mut vec = <Vec<tf::TF_Port>>::with_capacity(num_consumers as usize);
-      let len = tf::TF_NodeOutputConsumers(
-        tf::TF_Port{node: self.inner, index: index as c_int},
+      let len = tf::TF_OperationOutputConsumers(
+        tf::TF_Port{operation: self.inner, index: index as c_int},
         vec.as_mut_ptr(),
         vec.len() as c_int);
       vec.set_len(len as usize);
       vec.into_iter().map(
-        |port| (Node {inner: port.node, gimpl: self.gimpl.clone()}, port.index as usize)
+        |port| (Operation {inner: port.operation, gimpl: self.gimpl.clone()}, port.index as usize)
           ).collect()
     }
   }
 
   pub fn num_control_inputs(&self) -> usize {
     unsafe {
-      tf::TF_NodeNumControlInputs(self.inner) as usize
+      tf::TF_OperationNumControlInputs(self.inner) as usize
     }
   }
 
-  pub fn control_inputs(&self) -> Vec<Node> {
+  pub fn control_inputs(&self) -> Vec<Operation> {
     unsafe {
-      let num_consumers = tf::TF_NodeNumControlInputs(self.inner);
-      let mut vec = <Vec<*mut tf::TF_Node>>::with_capacity(num_consumers as usize);
-      let len = tf::TF_NodeGetControlInputs(
+      let num_consumers = tf::TF_OperationNumControlInputs(self.inner);
+      let mut vec = <Vec<*mut tf::TF_Operation>>::with_capacity(num_consumers as usize);
+      let len = tf::TF_OperationGetControlInputs(
         self.inner,
         vec.as_mut_ptr(),
         vec.len() as c_int);
       vec.set_len(len as usize);
       vec.into_iter().map(
-        |node| Node {inner: node, gimpl: self.gimpl.clone()}
+        |operation| Operation {inner: operation, gimpl: self.gimpl.clone()}
           ).collect()
     }
   }
 
   pub fn num_control_outputs(&self) -> usize {
     unsafe {
-      tf::TF_NodeNumControlOutputs(self.inner) as usize
+      tf::TF_OperationNumControlOutputs(self.inner) as usize
     }
   }
 
-  pub fn control_outputs(&self) -> Vec<Node> {
+  pub fn control_outputs(&self) -> Vec<Operation> {
     unsafe {
-      let num_consumers = tf::TF_NodeNumControlOutputs(self.inner);
-      let mut vec = <Vec<*mut tf::TF_Node>>::with_capacity(num_consumers as usize);
-      let len = tf::TF_NodeGetControlOutputs(
+      let num_consumers = tf::TF_OperationNumControlOutputs(self.inner);
+      let mut vec = <Vec<*mut tf::TF_Operation>>::with_capacity(num_consumers as usize);
+      let len = tf::TF_OperationGetControlOutputs(
         self.inner,
         vec.as_mut_ptr(),
         vec.len() as c_int);
       vec.set_len(len as usize);
       vec.into_iter().map(
-        |node| Node {inner: node, gimpl: self.gimpl.clone()}
+        |operation| Operation {inner: operation, gimpl: self.gimpl.clone()}
           ).collect()
     }
   }
@@ -312,7 +312,7 @@ impl Node {
     unsafe {
       let status = Status::new();
       let buffer = tf::TF_NewBuffer();
-      tf::TF_NodeGetAttrValueProto(
+      tf::TF_OperationGetAttrValueProto(
         self.inner,
         c_attr_name.as_ptr(),
         buffer,
@@ -326,11 +326,11 @@ impl Node {
     }
   }
 
-  pub fn node_def(&self) -> Result<Buffer<u8>> {
+  pub fn operation_def(&self) -> Result<Buffer<u8>> {
     let status = Status::new();
     unsafe {
       let c_buffer = tf::TF_NewBuffer();
-      tf::TF_NodeToNodeDef(self.inner, c_buffer, status.inner);
+      tf::TF_OperationToOperationDef(self.inner, c_buffer, status.inner);
       if status.is_ok() {
         Ok(Buffer::from_c(c_buffer, true))
       } else {
@@ -341,8 +341,8 @@ impl Node {
   }
 }
 
-impl NodeTrait for Node {
-  fn inner(&self) -> *mut tf::TF_Node {
+impl OperationTrait for Operation {
+  fn inner(&self) -> *mut tf::TF_Operation {
     self.inner
   }
 }
@@ -351,14 +351,14 @@ impl NodeTrait for Node {
 
 #[derive(Debug,Copy,Clone)]
 pub struct Port<'a> {
-  pub node: &'a Node,
+  pub operation: &'a Operation,
   pub index: c_int,
 }
 
 impl<'a> Port<'a> {
   fn to_c(&self) -> tf::TF_Port {
     tf::TF_Port {
-      node: self.node.inner,
+      operation: self.operation.inner,
       index: self.index,
     }
   }
@@ -367,23 +367,23 @@ impl<'a> Port<'a> {
 ////////////////////////
 
 #[derive(Debug)]
-pub struct NodeDescription<'a> {
-  inner: *mut tf::TF_NodeDescription,
-  // This keeps self from outliving the Graph, which is required by the docs on TF_NewNode.
+pub struct OperationDescription<'a> {
+  inner: *mut tf::TF_OperationDescription,
+  // This keeps self from outliving the Graph, which is required by the docs on TF_NewOperation.
   graph: &'a Graph,
   finished: bool,
 }
 
-impl<'a> NodeDescription<'a> {
-  pub fn finish(mut self) -> Result<Node> {
+impl<'a> OperationDescription<'a> {
+  pub fn finish(mut self) -> Result<Operation> {
     self.finished = true; // used by the drop code
     let status = Status::new();
-    let node = unsafe {
-      tf::TF_FinishNode(self.inner, status.inner)
+    let operation = unsafe {
+      tf::TF_FinishOperation(self.inner, status.inner)
     };
     if status.is_ok() {
-      Ok(Node{
-        inner: node,
+      Ok(Operation{
+        inner: operation,
         gimpl: self.graph.gimpl.clone(),
       })
     } else {
@@ -412,7 +412,7 @@ impl<'a> NodeDescription<'a> {
     }
   }
 
-  pub fn add_control_input(&mut self, input: &Node) {
+  pub fn add_control_input(&mut self, input: &Operation) {
     unsafe {
       tf::TF_AddControlInput(self.inner, input.inner);
     }
@@ -611,15 +611,15 @@ impl<'a> NodeDescription<'a> {
   }
 }
 
-impl<'a> Drop for NodeDescription<'a> {
+impl<'a> Drop for OperationDescription<'a> {
   fn drop(&mut self) {
     if !self.finished {
       unsafe {
-        // TF_NewNode requires us to make sure TF_FinishNode is called before the
-        // graph is deleted.  Combined with guaranteeing that NodeDescription does
+        // TF_NewOperation requires us to make sure TF_FinishOperation is called before the
+        // graph is deleted.  Combined with guaranteeing that OperationDescription does
         // not outlive Graph, this ensures that the contract is held.
         let status = tf::TF_NewStatus();
-        tf::TF_FinishNode(self.inner, status);
+        tf::TF_FinishOperation(self.inner, status);
         tf::TF_DeleteStatus(status);
       }
     }
@@ -633,25 +633,25 @@ mod tests {
   use super::*;
   use super::super::DataType;
 
-  fn add_node(g: &mut Graph) {
-    g.new_node("Variable", "foo").unwrap();
+  fn add_operation(g: &mut Graph) {
+    g.new_operation("Variable", "foo").unwrap();
   }
   
   #[test]
   fn smoke() {
     let mut g = Graph::new();
-    add_node(&mut g);
-    let node = {
-      let mut nd = g.new_node("Variable", "foo").unwrap();
+    add_operation(&mut g);
+    let operation = {
+      let mut nd = g.new_operation("Variable", "foo").unwrap();
       nd.set_attr_type("dtype", DataType::Float).unwrap();
       nd.set_attr_shape("shape", &vec![]).unwrap();
       nd.finish().unwrap()
     };
-    let mut nd2 = g.new_node("Variable", "foo2").unwrap();
+    let mut nd2 = g.new_operation("Variable", "foo2").unwrap();
     nd2.set_attr_type("dtype", DataType::Float).unwrap();
     nd2.set_attr_shape("shape", &vec![]).unwrap();
-    let node2 = nd2.finish().unwrap();
-    assert_eq!("foo", node.name().unwrap());
-    assert_eq!("foo2", node2.name().unwrap());
+    let operation2 = nd2.finish().unwrap();
+    assert_eq!("foo", operation.name().unwrap());
+    assert_eq!("foo2", operation2.name().unwrap());
   }
 }
