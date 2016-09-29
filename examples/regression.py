@@ -15,5 +15,5 @@ train = optimizer.minimize(loss, name='train')
 init = tf.initialize_variables(tf.all_variables(), name='init')
 
 definition = tf.Session().graph_def
-directory = 'regression-model'
+directory = 'examples/regression-model'
 tf.train.write_graph(definition, directory, 'model.pb', as_text=False)
