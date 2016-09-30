@@ -30,7 +30,7 @@ fn main() {
 }
 
 fn run() -> Result<(), Box<Error>> {
-  let filename = "regression-model/model.pb"; // y = w * x + b
+  let filename = "examples/regression-model/model.pb"; // y = w * x + b
   if !Path::new(filename).exists() {
     return Err(Box::new(Status::new_set(Code::NotFound, &format!(
       "Run 'python regression.py' to generate {} and try again.", filename)).unwrap()));
