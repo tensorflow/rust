@@ -2,15 +2,35 @@
 [![Version](https://img.shields.io/crates/v/tensorflow.svg)](https://crates.io/crates/tensorflow)
 [![Status](https://travis-ci.org/google/tensorflow-rust.svg?branch=master)](https://travis-ci.org/google/tensorflow-rust)
 
-TensorFlow Rust provides [Rust](https://www.rust-lang.org) language bindings for
-[TensorFlow](http://tensorflow.org).
+TensorFlow Rust provides idiomatic [Rust](https://www.rust-lang.org) language
+bindings for [TensorFlow](http://tensorflow.org).
 
-This project is still under active development and not yet ready for widespread use.
+This project is still under active development and not guaranteed to have a
+stable API. This is especially true because the TensorFlow C API used by this
+project has not yet stabilized.
 
 ## Building
 
+If you only intend to use TensorFlow from within Rust, then you don't need to
+build TensorFlow manually and can follow the automatic steps. If you do need to
+use TensorFlow outside of Rust, the manual steps will provide you with a
+TensorFlow header file and shared library that can be used by other languages.
+
+### Automatically building TensorFlow
+
+[Install Bazel](http://bazel.io/docs/install.html).
+Then run `cargo build -j 1`. Since TensorFlow is built during this process, and
+the TensorFlow build is very memory intensive, we recommend using the `-j 1`
+flag which tells cargo to use only one task, which in turn tells TensorFlow to
+build with only on task. Of course, if you have a lot of RAM, you can use a
+higher value.
+To include the especially unstable API (which is currently the `expr` module),
+use `--features tensorflow_unstable`.
+
+### Manually building TensorFlow
+
 Install [TensorFlow from source](https://www.tensorflow.org/versions/master/get_started/os_setup.html#source).
-The Python/pip steps are not necessary, but building `tensorflow:libtensorflow.so` is.
+The Python/pip steps are not necessary, but building `tensorflow:libtensorflow_c.so` is.
 
 In short:
 
@@ -18,12 +38,20 @@ In short:
 1. `git clone --recurse-submodules https://github.com/tensorflow/tensorflow`
 1. `cd tensorflow`
 1. `./configure`
-1. `bazel build -c opt tensorflow:libtensorflow.so`
+1. `bazel build -c opt --jobs=1 tensorflow:libtensorflow_c.so`
 
-Copy $TENSORFLOW_SRC/tensorflow/core/public/tensor_c_api.h to /usr/local/include,
-and copy $TENSORFLOW_SRC/bazel-bin/tensorflow/libtensorflow.so to /usr/local/lib.
-If this is not possible, add $TENSORFLOW_SRC/tensorflow/core/public to CPATH
-and $TENSORFLOW_SRC/bazel-bin/tensorflow to LD_LIBRARY_PATH.
+   If you are building TensorFlow version 0.9.0 or earlier, use
+   `libtensorflow.so` instead of `libtensorflow_c.so`.
+
+   Using --jobs=1 is recommended unless you have a lot of RAM, because
+   TensorFlow's build is very memory intensive.
+
+Copy $TENSORFLOW_SRC/bazel-bin/tensorflow/libtensorflow_c.so to /usr/local/lib.
+If this is not possible, add $TENSORFLOW_SRC/bazel-bin/tensorflow to
+LD_LIBRARY_PATH.
+
+If you are building TensorFlow version 0.9.0 or earlier, use
+$TENSORFLOW_SRC/bazel-bin/tensorflow/libtensorflow.so instead.
 
 You may need to run `ldconfig` to reset `ld`'s cache after copying libtensorflow.so.
 
