@@ -1,6 +1,6 @@
 [package]
 name = "tensorflow"
-version = "0.0.4"
+version = "0.1.0"
 authors = ["Adam Crume <acrume@google.com>"]
 description = "Rust language bindings for TensorFlow."
 license = "Apache-2.0"
@@ -11,7 +11,7 @@ repository = "https://github.com/google/tensorflow-rust"
 [dependencies]
 libc = "0.2"
 num-complex = { version = "0.1.35", default-features = false }
-tensorflow-sys = { version = "0.4.1", path = "tensorflow-sys" }
+tensorflow-sys = { version = "0.5.0", path = "tensorflow-sys" }
 
 [dev-dependencies]
 random = "0.12"
