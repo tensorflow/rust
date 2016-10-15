@@ -430,6 +430,8 @@ impl Drop for Session {
 /// Typical usage involves creating an instance of this struct,
 /// adding some inputs to it, requesting some outputs, passing it to `Session::run`
 /// and then taking the outputs out of it.
+#[deprecated(note="Use StepWithGraph instead.")]
+#[allow(deprecated)]
 pub struct Step<'l> {
   input_name_ptrs: Vec<*const c_char>,
   input_name_c_strings: Vec<CString>,
@@ -445,6 +447,7 @@ pub struct Step<'l> {
   phantom: marker::PhantomData<&'l ()>,
 }
 
+#[allow(deprecated)]
 impl<'l> Step<'l> {
   /// Creates a Step.
   pub fn new() -> Self {
@@ -548,6 +551,7 @@ impl<'l> Step<'l> {
   }
 }
 
+#[allow(deprecated)]
 impl<'l> Drop for Step<'l> {
   fn drop(&mut self) {
     self.drop_output_tensors();
