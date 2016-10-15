@@ -330,7 +330,7 @@ impl Operation {
     let status = Status::new();
     unsafe {
       let c_buffer = tf::TF_NewBuffer();
-      tf::TF_OperationToOperationDef(self.inner, c_buffer, status.inner);
+      tf::TF_OperationToNodeDef(self.inner, c_buffer, status.inner);
       if status.is_ok() {
         Ok(Buffer::from_c(c_buffer, true))
       } else {

@@ -325,7 +325,7 @@ extern "C" {
         graph: *mut TF_Graph,
         output_graph_def: *mut TF_Buffer,
         status: *mut TF_Status);
-    pub fn TF_OperationToOperationDef(
+    pub fn TF_OperationToNodeDef(
         operation: *mut TF_Operation,
         output_operation_def: *mut TF_Buffer,
         status: *mut TF_Status);
