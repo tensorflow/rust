@@ -28,10 +28,19 @@ use super::TensorType;
 /// Used for displaying expressions as strings.
 #[derive(Ord,PartialOrd,Eq,PartialEq,Debug)]
 pub enum OpLevel {
+  /// Assignment.
   Assign,
+
+  /// Addition and subtraction.
   Add,
+
+  /// Multiplication, division, and remainder.
   Mul,
+
+  /// Unary operators like negation.
   Unary,
+
+  /// Variables and constants.
   Atom,
 }
 
@@ -67,7 +76,16 @@ impl<T: TensorType> From<T> for Expr<T> {
 pub trait ExprImpl<T: TensorType>: Display + Debug {
   /// Returns the precedence level for this operator.
   fn op_level(&self) -> OpLevel;
+
+  /// Returns the child expressions.
+  ///
+  /// For example, the child expressions of `x + y` would be `x` and `y`.
   fn children(&self) -> Vec<Box<AnyExpr>>; // TODO: return an iterator
+
+  /// Creates an operation for the expression.
+  ///
+  /// The implementation must use the operations in the `children` parameter
+  /// rather than creating child operations itself.
   fn create_operation(&self, graph: &mut Graph, children: &[Rc<Operation>], id_gen: &mut FnMut() -> String) -> Result<Operation, Status>;
 }
 
@@ -239,6 +257,7 @@ impl<T: TensorType> Variable<T> {
     }
   }
 
+  /// Creates an `Expr` for a variable.
   pub fn new_expr(shape: &[u64], name: &str) -> Expr<T> {
     Expr {
       expr: Rc::new(Variable::new(shape, name))
@@ -288,6 +307,7 @@ impl<T: TensorType> Placeholder<T> {
     }
   }
 
+  /// Creates an `Expr` for a placeholder.
   pub fn new_expr(shape: &[u64], name: &str) -> Expr<T> {
     Expr {
       expr: Rc::new(Placeholder::new(shape, name))
@@ -369,10 +389,27 @@ impl<T: TensorType> ExprImpl<T> for Assign<T> {
 ////////////////////////
 
 // TODO: See if we can make this private.
+/// An `AnyExpr` is just an `Expr<T>` for some unknown `T`.
+/// Clients *should not* implement this.
 pub trait AnyExpr {
+  /// Returns a pointer usable as a map key which identifies this expression.
   fn key(&self) -> *const ();
+
+  /// Returns the child expressions.
+  ///
+  /// For example, the child expressions of `x + y` would be `x` and `y`.
   fn children(&self) -> Vec<Box<AnyExpr>>; // TODO: return an iterator
+
+  /// Creates an operation for the expression.
+  ///
+  /// The implementation must use the operations in the `children` parameter
+  /// rather than creating child operations itself.
   fn create_operation(&self, graph: &mut Graph, children: &[Rc<Operation>], id_gen: &mut FnMut() -> String) -> Result<Operation, Status>;
+
+  /// Returns a boxed clone.
+  ///
+  /// This is used rather than the `Clone` trait because that would prevent
+  /// `AnyExpr` values from being used as trait objects.
   fn clone_box(&self) -> Box<AnyExpr>;
 }
 
@@ -411,7 +448,7 @@ impl Hash for Key {
   }
 }
 
-
+/// A `Compiler` compiles `Expr`s to `Operation`s.
 pub struct Compiler<'l> {
   graph: &'l mut Graph,
   operations: HashMap<Key, Rc<Operation>>,
@@ -419,6 +456,7 @@ pub struct Compiler<'l> {
 }
 
 impl<'l> Compiler<'l> {
+  /// Creates a compiler for the given graph.
   pub fn new(graph: &'l mut Graph) -> Self {
     Compiler {
       graph: graph,
@@ -427,10 +465,12 @@ impl<'l> Compiler<'l> {
     }
   }
 
+  /// Compiles the expression.
   pub fn compile<T: TensorType>(&mut self, expr: Expr<T>) -> Result<Rc<Operation>, Status> {
     self.compile_any(Box::new(expr))
   }
 
+  /// Compiles the expression.
   pub fn compile_any(&mut self, expr: Box<AnyExpr>) -> Result<Rc<Operation>, Status> {
     let mut child_operations = vec![];
     for child in expr.children() {

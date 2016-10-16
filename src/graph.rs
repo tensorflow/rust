@@ -79,6 +79,8 @@ impl Graph {
     }
   }
 
+  /// Returns the operation in the graph with the given name, if it exists.
+  /// If the operation does not exist, returns `Ok(None)`.
   pub fn operation_by_name(&self, operation_name: &str) -> std::result::Result<Option<Operation>, NulError> {
     let c_operation_name = try!(CString::new(operation_name));
     unsafe {
@@ -102,6 +104,7 @@ impl Graph {
     }
   }
 
+  /// Iterates over the operations in the graph.
   pub fn operation_iter<'a>(&'a self) -> OperationIter<'a> {
     OperationIter {
       graph: &self,
@@ -109,6 +112,7 @@ impl Graph {
     }
   }
 
+  /// Returns the graph definition as a protobuf.
   pub fn graph_def(&self) -> Result<Buffer<u8>> {
     let status = Status::new();
     unsafe {
@@ -132,6 +136,7 @@ impl GraphTrait for Graph {
 
 ////////////////////////
 
+/// Iterator over the operations in a `Graph`.
 pub struct OperationIter<'a> {
   // We could just have a gimpl field, but keeping a reference to the Graph
   // means that the graph can't be modified while iterating through it.
@@ -159,6 +164,8 @@ impl<'a> Iterator for OperationIter<'a> {
 
 ////////////////////////
 
+/// An `Operation` is a node in a `Graph`.
+/// It is a computation which accepts inputs and produces outputs.
 #[derive(Debug)]
 pub struct Operation {
   inner: *mut tf::TF_Operation,
@@ -166,36 +173,49 @@ pub struct Operation {
 }
 
 impl Operation {
+  /// Returns the name of the operation.
+  ///
+  /// This is the name of the specific computational step,
+  /// not an operation type, so it may look like `'add_x_and_y'` instead of `'Add'`,
+  /// although it may be a generated ID like `'Add_123'`.
   pub fn name(&self) -> std::result::Result<String, Utf8Error> {
     unsafe {
       CStr::from_ptr(tf::TF_OperationName(self.inner)).to_str().map(|x| x.to_string())
     }
   }
 
+  /// Returns the type of operation.
+  /// This will be something like `'Add'`, `'Mul'`, etc.
   pub fn op_type(&self) -> std::result::Result<String, Utf8Error> {
     unsafe {
       CStr::from_ptr(tf::TF_OperationOpType(self.inner)).to_str().map(|x| x.to_string())
     }
   }
 
+  /// Returns the device for this operation.
+  /// The empty string means unconstrained.
   pub fn device(&self) -> std::result::Result<String, Utf8Error> {
     unsafe {
       CStr::from_ptr(tf::TF_OperationOpType(self.inner)).to_str().map(|x| x.to_string())
     }
   }
 
+  /// Returns the number of outputs.
   pub fn num_outputs(&self) -> usize {
     unsafe {
       tf::TF_OperationNumOutputs(self.inner) as usize
     }
   }
 
+  /// Returns the type of a specific output.
   pub fn output_type(&self, index: usize) -> DataType {
     unsafe {
       DataType::from_c(tf::TF_OperationOutputType(tf::TF_Port{operation: self.inner, index: index as c_int}))
     }
   }
 
+  // TODO: Figure out what this does and document it.
+  #[allow(missing_docs)]
   pub fn output_list_length(&self, arg_name: &str) -> Result<usize> {
     let c_arg_name = try!(CString::new(arg_name));
     let status = Status::new();
@@ -209,18 +229,22 @@ impl Operation {
     }
   }
 
+  /// Returns the number of inputs.
   pub fn num_inputs(&self) -> usize {
     unsafe {
       tf::TF_OperationNumInputs(self.inner) as usize
     }
   }
 
+  /// Returns the type of a specific input.
   pub fn input_type(&self, index: usize) -> DataType {
     unsafe {
       DataType::from_c(tf::TF_OperationInputType(tf::TF_Port{operation: self.inner, index: index as c_int}))
     }
   }
 
+  // TODO: Figure out what this does and document it.
+  #[allow(missing_docs)]
   pub fn input_list_length(&self, arg_name: &str) -> Result<usize> {
     let c_arg_name = try!(CString::new(arg_name));
     let status = Status::new();
@@ -234,6 +258,9 @@ impl Operation {
     }
   }
 
+  /// Returns the given input edge.
+  /// The index argument is the index into the current operation's input array,
+  /// and the return value is the source operation and the index into its output array.
   pub fn input(&self, index: usize) -> (Operation, usize) {
     unsafe {
       let port = tf::TF_OperationInput(tf::TF_Port{operation: self.inner, index: index as c_int});
@@ -244,12 +271,16 @@ impl Operation {
     }
   }
 
+  /// Returns the number of consumers of a specific output.
   pub fn output_num_consumers(&self, index: usize) -> usize {
     unsafe {
       tf::TF_OperationOutputNumConsumers(tf::TF_Port{operation: self.inner, index: index as c_int}) as usize
     }
   }
 
+  /// Returns the consumers of a specific output.
+  /// The index argument is the index into the current operation's output array,
+  /// and the return value is a vector of the destination operation and the index into its input array.
   pub fn output_consumers(&self, index: usize) -> Vec<(Operation, usize)> {
     unsafe {
       let num_consumers = tf::TF_OperationOutputNumConsumers(tf::TF_Port{operation: self.inner, index: index as c_int});
@@ -265,12 +296,14 @@ impl Operation {
     }
   }
 
+  /// Returns the number of control inputs.
   pub fn num_control_inputs(&self) -> usize {
     unsafe {
       tf::TF_OperationNumControlInputs(self.inner) as usize
     }
   }
 
+  /// Returns the control inputs.
   pub fn control_inputs(&self) -> Vec<Operation> {
     unsafe {
       let num_consumers = tf::TF_OperationNumControlInputs(self.inner);
@@ -286,12 +319,14 @@ impl Operation {
     }
   }
 
+  /// Returns the number of control outputs.
   pub fn num_control_outputs(&self) -> usize {
     unsafe {
       tf::TF_OperationNumControlOutputs(self.inner) as usize
     }
   }
 
+  /// Returns the control outputs.
   pub fn control_outputs(&self) -> Vec<Operation> {
     unsafe {
       let num_consumers = tf::TF_OperationNumControlOutputs(self.inner);
@@ -307,6 +342,7 @@ impl Operation {
     }
   }
 
+  /// Returns the value of an attribute as an `AttrValue` protobuf.
   pub fn attr_value_proto(&self, attr_name: &str) -> Result<Buffer<u8>> {
     let c_attr_name = try!(CString::new(attr_name));
     unsafe {
@@ -326,6 +362,7 @@ impl Operation {
     }
   }
 
+  /// Returns the operation definition as a protobuf.
   pub fn operation_def(&self) -> Result<Buffer<u8>> {
     let status = Status::new();
     unsafe {
@@ -349,9 +386,14 @@ impl OperationTrait for Operation {
 
 ////////////////////////
 
+/// A `Port` is one end of a graph edge.
+/// It holds an operation and an index into the inputs or outputs of that operation.
 #[derive(Debug,Copy,Clone)]
 pub struct Port<'a> {
+  /// Operation the edge connects to.
   pub operation: &'a Operation,
+
+  /// Index into either the inputs or outputs of the operation.
   pub index: c_int,
 }
 
@@ -366,6 +408,10 @@ impl<'a> Port<'a> {
 
 ////////////////////////
 
+/// An `OperationDescription` is an `Operation` in the process of being built (i.e. the builder pattern).
+///
+/// An `OperationDescription` is required to be finished before the graph goes out of scope,
+/// so `finish()` will be called on drop if it was not already called.
 #[derive(Debug)]
 pub struct OperationDescription<'a> {
   inner: *mut tf::TF_OperationDescription,
@@ -375,6 +421,7 @@ pub struct OperationDescription<'a> {
 }
 
 impl<'a> OperationDescription<'a> {
+  /// Builds the operation and adds it to the graph.
   pub fn finish(mut self) -> Result<Operation> {
     self.finished = true; // used by the drop code
     let status = Status::new();
@@ -391,6 +438,8 @@ impl<'a> OperationDescription<'a> {
     }
   }
 
+  /// Sets the preferred device.
+  /// The empty string means unconstrained.
   pub fn set_device(&mut self, device: &str) -> std::result::Result<(), NulError> {
     let c_device = try!(CString::new(device));
     unsafe {
@@ -399,12 +448,18 @@ impl<'a> OperationDescription<'a> {
     Ok(())
   }
 
+  /// Adds an input to this operation.
+  ///
+  /// The index in the port is an index into the source operation's output array.
   pub fn add_input(&mut self, input: Port) {
     unsafe {
       tf::TF_AddInput(self.inner, input.to_c());
     }
   }
 
+  /// Adds multiple inputs to this operation.
+  ///
+  /// The index in the ports is an index into the source operation's output array.
   pub fn add_input_list(&mut self, inputs: &[Port]) {
     let c_inputs: Vec<tf::TF_Port> = inputs.iter().map(|x| x.to_c()).collect();
     unsafe {
@@ -412,12 +467,14 @@ impl<'a> OperationDescription<'a> {
     }
   }
 
+  /// Adds a control input.
   pub fn add_control_input(&mut self, input: &Operation) {
     unsafe {
       tf::TF_AddControlInput(self.inner, input.inner);
     }
   }
 
+  /// Sets the value of a string attribute.
   pub fn set_attr_string(&mut self, attr_name: &str, value: &str) -> std::result::Result<(), NulError> {
     let c_attr_name = try!(CString::new(attr_name));
     let c_value = value.as_bytes();
@@ -431,6 +488,7 @@ impl<'a> OperationDescription<'a> {
     Ok(())
   }
 
+  /// Sets the value of an attribute which holds a list of strings.
   pub fn set_attr_string_list<S: AsRef<str>>(&mut self, attr_name: &str, value: &[S]) -> std::result::Result<(), NulError> {
     let c_attr_name = try!(CString::new(attr_name));
     let bytes: Vec<&[u8]> = value.iter().map(|x| x.as_ref().as_bytes()).collect();
@@ -447,6 +505,7 @@ impl<'a> OperationDescription<'a> {
     Ok(())
   }
 
+  /// Sets an int-valued attribute.
   pub fn set_attr_int(&mut self, attr_name: &str, value: i64) -> std::result::Result<(), NulError> {
     let c_attr_name = try!(CString::new(attr_name));
     unsafe {
@@ -455,6 +514,7 @@ impl<'a> OperationDescription<'a> {
     Ok(())
   }
 
+  /// Sets an attribute which holds an array of ints.
   pub fn set_attr_int_list(&mut self, attr_name: &str, value: &[i64]) -> std::result::Result<(), NulError> {
     let c_attr_name = try!(CString::new(attr_name));
     unsafe {
@@ -463,6 +523,7 @@ impl<'a> OperationDescription<'a> {
     Ok(())
   }
 
+  /// Sets a float-valued attribute.
   pub fn set_attr_float(&mut self, attr_name: &str, value: f32) -> std::result::Result<(), NulError> {
     let c_attr_name = try!(CString::new(attr_name));
     unsafe {
@@ -471,6 +532,7 @@ impl<'a> OperationDescription<'a> {
     Ok(())
   }
 
+  /// Sets an attribute which holds an array of floats.
   pub fn set_attr_float_list(&mut self, attr_name: &str, value: &[f32]) -> std::result::Result<(), NulError> {
     let c_attr_name = try!(CString::new(attr_name));
     let c_value: Vec<c_float> = value.iter().map(|x| *x as c_float).collect();
@@ -480,6 +542,7 @@ impl<'a> OperationDescription<'a> {
     Ok(())
   }
 
+  /// Sets a boolean-valued attribute.
   pub fn set_attr_bool(&mut self, attr_name: &str, value: bool) -> std::result::Result<(), NulError> {
     let c_attr_name = try!(CString::new(attr_name));
     unsafe {
@@ -488,6 +551,7 @@ impl<'a> OperationDescription<'a> {
     Ok(())
   }
 
+  /// Sets an attribute which holds an array of booleans.
   pub fn set_attr_bool_list(&mut self, attr_name: &str, value: &[bool]) -> std::result::Result<(), NulError> {
     let c_attr_name = try!(CString::new(attr_name));
     let c_value: Vec<c_uchar> = value.iter().map(|x| if *x {1} else {0}).collect();
@@ -497,6 +561,7 @@ impl<'a> OperationDescription<'a> {
     Ok(())
   }
 
+  /// Sets a type-valued attribute.
   pub fn set_attr_type(&mut self, attr_name: &str, value: DataType) -> std::result::Result<(), NulError> {
     let c_attr_name = try!(CString::new(attr_name));
     unsafe {
@@ -505,6 +570,7 @@ impl<'a> OperationDescription<'a> {
     Ok(())
   }
 
+  /// Sets an attribute which holds an array of types.
   pub fn set_attr_type_list(&mut self, attr_name: &str, value: &[DataType]) -> std::result::Result<(), NulError> {
     let c_attr_name = try!(CString::new(attr_name));
     let c_value: Vec<tf::TF_DataType> = value.iter().map(|x| x.to_c()).collect();
@@ -514,6 +580,9 @@ impl<'a> OperationDescription<'a> {
     Ok(())
   }
 
+  /// Sets a shape-valued attribute.
+  ///
+  /// Entries must be at least -1, where -1 means "unknown dimension".
   pub fn set_attr_shape(&mut self, attr_name: &str, value: &[i64]) -> std::result::Result<(), NulError> {
     let c_attr_name = try!(CString::new(attr_name));
     unsafe {
@@ -522,6 +591,9 @@ impl<'a> OperationDescription<'a> {
     Ok(())
   }
 
+  /// Sets an attribute which holds an array of shapes.
+  ///
+  /// Entries must be at least -1, where -1 means "unknown dimension".
   pub fn set_attr_shape_list<T: AsRef<[i64]>>(&mut self, attr_name: &str, value: &[T]) -> std::result::Result<(), NulError> {
     let c_attr_name = try!(CString::new(attr_name));
     let ptrs: Vec<*const i64> = value.iter().map(|x| x.as_ref().as_ptr()).collect();
@@ -537,6 +609,7 @@ impl<'a> OperationDescription<'a> {
     Ok(())
   }
 
+  /// Sets an attribute with a `TensorShapeProto` protobuf.
   pub fn set_attr_tensor_shape_proto(&mut self, attr_name: &str, value: &[u8]) -> Result<()> {
     let c_attr_name = try!(CString::new(attr_name));
     let status = Status::new();
@@ -551,6 +624,7 @@ impl<'a> OperationDescription<'a> {
     status.as_result()
   }
 
+  /// Sets an attribute with an array of `TensorShapeProto` protobufs.
   pub fn set_attr_tensor_shape_proto_list<T: AsRef<[u8]>>(&mut self, attr_name: &str, value: &[T]) -> Result<()> {
     let c_attr_name = try!(CString::new(attr_name));
     let ptrs: Vec<*const c_void> = value.iter().map(|x| x.as_ref().as_ptr() as *const c_void).collect();
@@ -568,6 +642,7 @@ impl<'a> OperationDescription<'a> {
     status.as_result()
   }
 
+  /// Sets a tensor-valued attribute.
   pub fn set_attr_tensor<T: TensorType>(&mut self, attr_name: &str, value: Tensor<T>) -> Result<()> {
     let c_attr_name = try!(CString::new(attr_name));
     let status = Status::new();
@@ -581,6 +656,7 @@ impl<'a> OperationDescription<'a> {
     status.as_result()
   }
 
+  /// Sets an attribute which holds an array of tensors.
   pub fn set_attr_tensor_list<T: IntoIterator<Item=Tensor<u8>>>(&mut self, attr_name: &str, value: T) -> Result<()> {
     let c_attr_name = try!(CString::new(attr_name));
     let status = Status::new();
@@ -596,6 +672,7 @@ impl<'a> OperationDescription<'a> {
     status.as_result()
   }
 
+  /// Sets an attribute with an `AttrValue` proto.
   pub fn set_attr_to_attr_value_proto(&mut self, attr_name: &str, value: &[u8]) -> Result<()> {
     let c_attr_name = try!(CString::new(attr_name));
     let status = Status::new();
