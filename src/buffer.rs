@@ -57,10 +57,10 @@ impl<T: TensorType> Buffer<T> {
     let inner = tf::TF_NewBuffer();
     let elem_size = mem::size_of::<T>();
     let alloc_size = len * elem_size;
-    let align = cmp::max(mem::align_of::<T>(), mem::size_of::<*const libc::c_void>());
+    let align = cmp::max(mem::align_of::<T>(), mem::size_of::<*const c_void>());
     // posix_memalign requires the alignment to be at least sizeof(void*).
     // TODO: Use alloc::heap::allocate once it's stable, or at least libc::aligned_alloc once it exists
-    let mut ptr = ptr::null::<libc::c_void>() as *mut libc::c_void;
+    let mut ptr = ptr::null::<c_void>() as *mut c_void;
     let err = libc::posix_memalign(&mut ptr, align, alloc_size);
     if err != 0 {
       let c_msg = libc::strerror(err);

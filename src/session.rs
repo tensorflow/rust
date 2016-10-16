@@ -20,6 +20,7 @@ use super::TensorType;
 /// Manages a single graph and execution.
 ///
 /// This will be renamed to Session once the old API goes away.
+#[derive(Debug)]
 pub struct SessionWithGraph {
   inner: *mut tf::TF_SessionWithGraph,
 }
@@ -54,7 +55,6 @@ impl SessionWithGraph {
     // Copy the input tensors because TF_Run consumes them.
     let mut input_tensors = Vec::with_capacity(step.input_tensors.len());
     for &input_tensor in &step.input_tensors {
-      let input_tensor = input_tensor as *const tf::TF_Tensor;
       unsafe {
         let mut dims = Vec::with_capacity(tf::TF_NumDims(input_tensor) as usize);
         for i in 0..dims.capacity() {
@@ -106,7 +106,7 @@ impl Drop for SessionWithGraph {
 ////////////////////////
 
 /// An opaque token for retrieving an output from a computation.
-#[derive(Copy,Clone)]
+#[derive(Copy,Clone,Debug)]
 pub struct OutputToken {
   index: usize,
 }
@@ -118,6 +118,7 @@ pub struct OutputToken {
 /// and then taking the outputs out of it.
 ///
 /// This will be renamed to Step once the old API goes away.
+#[derive(Debug)]
 pub struct StepWithGraph<'l> {
   input_ports: Vec<tf::TF_Port>,
   input_tensors: Vec<*mut tf::TF_Tensor>,

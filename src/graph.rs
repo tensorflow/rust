@@ -137,6 +137,7 @@ impl GraphTrait for Graph {
 ////////////////////////
 
 /// Iterator over the operations in a `Graph`.
+#[derive(Debug)]
 pub struct OperationIter<'a> {
   // We could just have a gimpl field, but keeping a reference to the Graph
   // means that the graph can't be modified while iterating through it.
@@ -149,7 +150,7 @@ impl<'a> Iterator for OperationIter<'a> {
 
   fn next(&mut self) -> Option<Self::Item> {
     unsafe {
-      let operation = tf::TF_GraphNextOperation(self.graph.gimpl.inner, &mut self.pos as *mut size_t);
+      let operation = tf::TF_GraphNextOperation(self.graph.gimpl.inner, &mut self.pos);
       if operation.is_null() {
         None
       } else {
@@ -498,7 +499,7 @@ impl<'a> OperationDescription<'a> {
       tf::TF_SetAttrStringList(
         self.inner,
         c_attr_name.as_ptr(),
-        ptrs.as_ptr() as *const *const c_void,
+        ptrs.as_ptr(),
         lens.as_ptr(),
         ptrs.len() as c_int);
     }
@@ -533,8 +534,10 @@ impl<'a> OperationDescription<'a> {
   }
 
   /// Sets an attribute which holds an array of floats.
+  #[allow(trivial_numeric_casts)]
   pub fn set_attr_float_list(&mut self, attr_name: &str, value: &[f32]) -> std::result::Result<(), NulError> {
     let c_attr_name = try!(CString::new(attr_name));
+    // Allow trivial_numeric_casts here because f32 is not necessarily equal to c_float.
     let c_value: Vec<c_float> = value.iter().map(|x| *x as c_float).collect();
     unsafe {
       tf::TF_SetAttrFloatList(self.inner, c_attr_name.as_ptr(), c_value.as_ptr(), c_value.len() as i32);
@@ -673,6 +676,7 @@ impl<'a> OperationDescription<'a> {
   }
 
   /// Sets an attribute with an `AttrValue` proto.
+  #[allow(trivial_numeric_casts)]
   pub fn set_attr_to_attr_value_proto(&mut self, attr_name: &str, value: &[u8]) -> Result<()> {
     let c_attr_name = try!(CString::new(attr_name));
     let status = Status::new();
@@ -681,6 +685,7 @@ impl<'a> OperationDescription<'a> {
         self.inner,
         c_attr_name.as_ptr(),
         value.as_ptr() as *const c_void,
+        // Allow trivial_numeric_casts because usize is not necessarily size_t.
         value.len() as size_t,
         status.inner);
     }

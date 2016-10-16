@@ -26,7 +26,7 @@ use super::TensorType;
 
 /// Denotes operator precedence.
 /// Used for displaying expressions as strings.
-#[derive(Ord,PartialOrd,Eq,PartialEq,Debug)]
+#[derive(Ord,PartialOrd,Eq,PartialEq,Debug,Copy,Clone)]
 pub enum OpLevel {
   /// Assignment.
   Assign,
@@ -391,7 +391,7 @@ impl<T: TensorType> ExprImpl<T> for Assign<T> {
 // TODO: See if we can make this private.
 /// An `AnyExpr` is just an `Expr<T>` for some unknown `T`.
 /// Clients *should not* implement this.
-pub trait AnyExpr {
+pub trait AnyExpr: Debug {
   /// Returns a pointer usable as a map key which identifies this expression.
   fn key(&self) -> *const ();
 
@@ -414,6 +414,7 @@ pub trait AnyExpr {
 }
 
 impl<T: TensorType> AnyExpr for Expr<T> {
+  #[allow(trivial_casts)]
   fn key(&self) -> *const () {
     self.expr.as_ref() as *const ExprImpl<T> as *const ()
   }
@@ -431,6 +432,7 @@ impl<T: TensorType> AnyExpr for Expr<T> {
   }
 }
 
+#[derive(Debug)]
 struct Key(Box<AnyExpr>);
 
 impl PartialEq for Key {
@@ -449,6 +451,7 @@ impl Hash for Key {
 }
 
 /// A `Compiler` compiles `Expr`s to `Operation`s.
+#[derive(Debug)]
 pub struct Compiler<'l> {
   graph: &'l mut Graph,
   operations: HashMap<Key, Rc<Operation>>,

@@ -1,6 +1,15 @@
 // -*-  indent-tabs-mode:nil; tab-width:2;  -*-
 //! This crate provides Rust bindings for the [TensorFlow](https://www.tensorflow.org) machine learning library.
 
+#![warn(missing_copy_implementations,
+        missing_debug_implementations,
+        missing_docs,
+        trivial_casts,
+        trivial_numeric_casts,
+        unused_extern_crates,
+        unused_import_braces,
+        unused_qualifications)]
+
 extern crate libc;
 extern crate num_complex;
 extern crate tensorflow_sys as tf;
@@ -100,7 +109,7 @@ macro_rules! impl_drop {
 macro_rules! c_enum {
   ($doc:expr, $c_name:ident, $enum_name:ident { $( $(#[$attr:meta])* value $name:ident = $num:expr),* }) => {
     #[doc = $doc]
-    #[derive(PartialEq,Eq,PartialOrd,Ord,Debug)]
+    #[derive(PartialEq,Eq,PartialOrd,Ord,Debug,Copy,Clone)]
     pub enum $enum_name {
       /// Represents an unrecognized value.
       ///
@@ -435,6 +444,7 @@ impl Error for Status {
 ////////////////////////
 
 /// Options that can be passed during session creation.
+#[derive(Debug)]
 pub struct SessionOptions {
   inner: *mut tf::TF_SessionOptions,
 }
@@ -481,6 +491,7 @@ impl_drop!(SessionOptions, TF_DeleteSessionOptions);
 /// Manages a single graph and execution.
 #[deprecated(note="Use SessionWithGraph instead.")]
 #[allow(deprecated)]
+#[derive(Debug)]
 pub struct Session {
   inner: *mut tf::TF_Session,
 }
@@ -523,7 +534,6 @@ impl Session {
     // Copy the input tensors because TF_Run consumes them.
     let mut input_tensors = Vec::with_capacity(step.input_tensors.len());
     for &input_tensor in &step.input_tensors {
-      let input_tensor = input_tensor as *const tf::TF_Tensor;
       unsafe {
         let mut dims = Vec::with_capacity(tf::TF_NumDims(input_tensor) as usize);
         for i in 0..dims.capacity() {
@@ -580,6 +590,7 @@ impl Drop for Session {
 /// and then taking the outputs out of it.
 #[deprecated(note="Use StepWithGraph instead.")]
 #[allow(deprecated)]
+#[derive(Debug)]
 pub struct Step<'l> {
   input_name_ptrs: Vec<*const c_char>,
   input_name_c_strings: Vec<CString>,
@@ -799,6 +810,7 @@ q_type!(i32,
 /// ```
 ///
 /// The layout for strings is currently undefined.
+#[derive(Debug)]
 pub struct Tensor<T: TensorType> {
   inner: *mut tf::TF_Tensor,
   data: Buffer<T>,
@@ -931,6 +943,8 @@ impl<T: TensorType> DerefMut for Tensor<T> {
 
 /// Dynamically loaded plugins.
 /// The C API doesn't provide a way to unload libraries, so nothing happens when this goes out of scope.
+#[allow(missing_copy_implementations)]
+#[derive(Debug)]
 pub struct Library {
   inner: *mut tf::TF_Library,
 }
