@@ -824,13 +824,9 @@ unsafe extern "C" fn deallocator(_: *mut c_void, _: size_t, buffer: *mut c_void)
   tf::TF_DeleteBuffer(buffer as *mut tf::TF_Buffer);
 }
 
-// TODO: Replace with Iterator::product once that's stable
+#[inline]
 fn product(values: &[u64]) -> u64 {
-  let mut product = 1;
-  for v in values.iter() {
-    product *= *v;
-  }
-  product
+  values.iter().product()
 }
 
 impl<T: TensorType> Tensor<T> {
