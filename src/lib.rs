@@ -935,6 +935,24 @@ impl<T: TensorType> DerefMut for Tensor<T> {
   }
 }
 
+impl<T: TensorType> From<T> for Tensor<T> {
+  fn from(value: T) -> Self {
+    let mut tensor = Tensor::new(&[1]);
+    tensor[0] = value;
+    tensor
+  }
+}
+
+impl<'a, T: TensorType> From<&'a [T]> for Tensor<T> {
+  fn from(value: &'a [T]) -> Self {
+    let mut tensor = Tensor::new(&[value.len() as u64]);
+    for i in 0..value.len() {
+      tensor[i] = value[i];
+    }
+    tensor
+  }
+}
+
 ////////////////////////
 
 /// Dynamically loaded plugins.
