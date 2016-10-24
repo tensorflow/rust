@@ -16,6 +16,7 @@ use std::hash::Hasher;
 use std::marker::PhantomData;
 use std::ops;
 use std::rc::Rc;
+use super::Code;
 use super::DataType;
 use super::Graph;
 use super::Operation;
@@ -55,6 +56,13 @@ pub struct Expr<T: TensorType> {
   expr: Rc<ExprImpl<T>>,
 }
 
+impl<T: TensorType> Expr<T> {
+  /// Returns the derivative of the expression with respect to the given variable.
+  pub fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
+    self.expr.derivative_by_variable(var)
+  }
+}
+
 impl<T: TensorType> Display for Expr<T> {
   fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
     Display::fmt(&self.expr, f)
@@ -87,6 +95,9 @@ pub trait ExprImpl<T: TensorType>: Display + Debug {
   /// The implementation must use the operations in the `children` parameter
   /// rather than creating child operations itself.
   fn create_operation(&self, graph: &mut Graph, children: &[Rc<Operation>], id_gen: &mut FnMut() -> String) -> Result<Operation, Status>;
+
+  /// Returns the derivative of the expression with respect to the given variable.
+  fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status>;
 }
 
 impl<T: TensorType> ExprImpl<T> for T {
@@ -106,12 +117,16 @@ impl<T: TensorType> ExprImpl<T> for T {
     try!(nd.set_attr_tensor("value", value));
     nd.finish()
   }
+
+  fn derivative_by_variable(&self, _var: &str) -> Result<Expr<T>, Status> {
+    Ok(Expr::from(T::zero()))
+  }
 }
 
 ////////////////////////
 
 macro_rules! impl_bin_op {
-  ($name:ident, $fn_name:ident, $op:expr, $op_level:ident, $assoc:expr, $tf_op:expr, $doc:expr) => {
+  ($name:ident, $fn_name:ident, $op:expr, $op_level:ident, $assoc:expr, $tf_op:expr, $doc:expr, $($ximpl:tt)*) => {
     #[doc = $doc]
     #[derive(Debug)]
     pub struct $name<T: TensorType> {
@@ -181,15 +196,102 @@ macro_rules! impl_bin_op {
         nd.add_input(Port {operation: &children[1], index: 0});
         nd.finish()
       }
+
+      $($ximpl)*
     }
   }
 }
 
-impl_bin_op!(Add, add, "+", Add, true, "Add", "Expression resulting from adding two subexpressions.");
-impl_bin_op!(Sub, sub, "-", Add, false, "Sub", "Expression resulting from subtracting two subexpressions.");
-impl_bin_op!(Mul, mul, "*", Mul, true, "Mul", "Expression resulting from multiplying two subexpressions.");
-impl_bin_op!(Div, div, "/", Mul, false, "Div", "Expression resulting from dividing two subexpressions.");
-impl_bin_op!(Rem, rem, "%", Mul, false, "Mod", "Expression resulting from taking a modulus.");
+impl_bin_op!(
+  Add, add, "+", Add, true, "Add", "Expression resulting from adding two subexpressions.",
+  fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
+    Ok(try!(self.left.derivative_by_variable(var)) + try!(self.right.derivative_by_variable(var)))
+  }
+  );
+impl_bin_op!(
+  Sub, sub, "-", Add, false, "Sub", "Expression resulting from subtracting two subexpressions.",
+  fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
+    Ok(try!(self.left.derivative_by_variable(var)) - try!(self.right.derivative_by_variable(var)))
+  }
+  );
+impl_bin_op!(
+  Mul, mul, "*", Mul, true, "Mul", "Expression resulting from multiplying two subexpressions.",
+  fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
+    Ok(try!(self.left.derivative_by_variable(var)) * self.right.clone() + self.left.clone() * try!(self.right.derivative_by_variable(var)))
+  }
+  );
+impl_bin_op!(
+  Div, div, "/", Mul, false, "Div", "Expression resulting from dividing two subexpressions.",
+  fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
+    let num = try!(self.left.derivative_by_variable(var)) * self.right.clone() - self.left.clone() * try!(self.right.derivative_by_variable(var));
+    let denom = self.right.clone() * self.right.clone();
+    Ok(num / denom)
+  }
+  );
+impl_bin_op!(
+  Rem, rem, "%", Mul, false, "Mod", "Expression resulting from taking a modulus.",
+  fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
+    Ok(try!(self.left.derivative_by_variable(var)) - TruncateDiv::new_expr(self.left.clone(), self.right.clone()) * try!(self.right.derivative_by_variable(var)))
+  }
+  );
+
+////////////////////////
+
+/// Expression that assigns a value to a variable.
+#[derive(Debug)]
+pub struct TruncateDiv<T: TensorType> {
+  left: Expr<T>,
+  right: Expr<T>,
+}
+
+impl<T: TensorType> TruncateDiv<T> {
+  fn new(left: Expr<T>, right: Expr<T>) -> Self {
+    TruncateDiv {
+      left: left,
+      right: right,
+    }
+  }
+
+  /// Creates an expression that divides `left` by `right` and rounds toward zero.
+  pub fn new_expr(left: Expr<T>, right: Expr<T>) -> Expr<T> {
+    Expr {
+      expr: Rc::new(TruncateDiv::new(left, right))
+    }
+  }
+}
+
+impl<T: TensorType> Display for TruncateDiv<T> {
+  fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+    write!(f, "{} // {}", self.left, self.right)
+  }
+}
+
+impl<T: TensorType> ExprImpl<T> for TruncateDiv<T> {
+  fn op_level(&self) -> OpLevel {
+    OpLevel::Mul
+  }
+
+  fn children(&self) -> Vec<Box<AnyExpr>> {
+    vec![Box::new(self.left.clone()), Box::new(self.right.clone())]
+  }
+
+  fn create_operation(&self, graph: &mut Graph, children: &[Rc<Operation>], id_gen: &mut FnMut() -> String) -> Result<Operation, Status> {
+    let mut nd = try!(graph.new_operation("TruncateDiv", &id_gen()));
+    nd.add_input(Port {operation: &children[0], index: 0});
+    nd.add_input(Port {operation: &children[1], index: 0});
+    nd.finish()
+  }
+
+  fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
+    // Mod(x, y) = x - TruncateDiv(x, y) * y
+    // TruncateDiv(x, y) = (x - Mod(x, y)) / y
+    // d/dt TruncateDiv(x, y) = (y * d/dt (x - Mod(x, y)) - (x - Mod(x, y)) dy/dt) / (y * y)
+    let diff = self.left.clone() - self.left.clone() % self.right.clone();
+    let term1 = self.right.clone() * try!(diff.derivative_by_variable(var));
+    let term2 = diff * try!(self.right.derivative_by_variable(var));
+    Ok((term1 - term2) / (self.right.clone() * self.right.clone()))
+  }
+}
 
 ////////////////////////
 
@@ -235,6 +337,10 @@ impl<T: TensorType> ExprImpl<T> for Neg<T> {
     let mut nd = try!(graph.new_operation("Neg", &id_gen()));
     nd.add_input(Port {operation: &children[0], index: 0});
     nd.finish()
+  }
+
+  fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
+    Ok(-try!(self.expr.derivative_by_variable(var)))
   }
 }
 
@@ -286,6 +392,14 @@ impl<T: TensorType> ExprImpl<T> for Variable<T> {
     nd.set_attr_shape("shape", &vec![]).unwrap();
     nd.finish()
   }
+
+  fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
+    Ok(if var == self.name {
+      Expr::from(T::one())
+    } else {
+      Expr::from(T::zero())
+    })
+  }
 }
 
 ////////////////////////
@@ -336,6 +450,10 @@ impl<T: TensorType> ExprImpl<T> for Placeholder<T> {
     nd.set_attr_shape("shape", &vec![]).unwrap();
     nd.finish()
   }
+
+  fn derivative_by_variable(&self, _var: &str) -> Result<Expr<T>, Status> {
+    Ok(Expr::from(T::zero()))
+  }
 }
 
 ////////////////////////
@@ -383,6 +501,10 @@ impl<T: TensorType> ExprImpl<T> for Assign<T> {
     nd.add_input(Port {operation: &children[0], index: 0});
     nd.add_input(Port {operation: &children[1], index: 0});
     nd.finish()
+  }
+
+  fn derivative_by_variable(&self, _var: &str) -> Result<Expr<T>, Status> {
+    Err(invalid_arg!("Cannot take the derivative of an assignment"))
   }
 }
 
@@ -549,5 +671,27 @@ mod tests {
     compiler.compile(x * w.clone() / w.clone() % w.clone() + w.clone() - w.clone()).unwrap();
     let one = Expr::from(1.0f32);
     compiler.compile(Assign::new_expr(w, one)).unwrap();
+  }
+
+  #[test]
+  fn test_derivative_by_variable() {
+    let x = <Variable<f32>>::new_expr(&[], "x");
+    let y = <Variable<f32>>::new_expr(&[], "y");
+    for &(ref expected, ref expression) in [
+      ("0", Expr::from(1.0f32)),
+      ("1", x.clone()),
+      ("0", y.clone()),
+      ("1 + 0", x.clone() + y.clone()),
+      ("1 - 0", x.clone() - y.clone()),
+      ("1 * x + x * 1", x.clone() * x.clone()),
+      ("1 * y + x * 0", x.clone() * y.clone()),
+      ("(1 * x + x * 1) * x + x * x * 1", x.clone() * x.clone() * x.clone()),
+      ("(1 * y - x * 0) / (y * y)", x.clone() / y.clone()),
+      ("1 - x // y * 0",x.clone() % y.clone()),
+      ("0 - y // x * 1", y.clone() % x.clone()),
+      ("(y * (1 - (1 - x // y * 0)) - (x - x % y) * 0) / (y * y)", TruncateDiv::new_expr(x.clone(), y.clone())),
+        ].iter() {
+      assert_eq!(*expected, format!("{}", expression.derivative_by_variable("x").unwrap()));
+    }
   }
 }
