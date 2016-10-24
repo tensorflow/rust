@@ -729,33 +729,51 @@ pub type Result<T> = std::result::Result<T, Status>;
 /// Currently, all implementors must *not* implement Drop (or transitively contain
 /// anything that does) and must be bit-for-bit compatible with the corresponding C
 /// type. Clients must not implement this trait.
+///
+/// This trait doesn't require `num::Zero` or `num::One` because some tensor
+/// types (such as `bool` and `String`) don't implement them and we need to
+/// supply custom implementations.
 pub trait TensorType: Default + Clone + Copy + Display + Debug + 'static {
   // TODO: Use associated constants when/if available
   /// Returns the DataType that corresponds to this type.
   fn data_type() -> DataType;
+
+  /// Returns the zero value.
+  fn zero() -> Self;
+
+  /// Returns the one value.
+  fn one() -> Self;
 }
 
 macro_rules! tensor_type {
-  ($rust_type:ty, $tensor_type:ident) => {
+  ($rust_type:ty, $tensor_type:ident, $zero:expr, $one:expr) => {
     impl TensorType for $rust_type {
       fn data_type() -> DataType {
         DataType::$tensor_type
+      }
+
+      fn zero() -> Self {
+        $zero
+      }
+
+      fn one() -> Self {
+        $one
       }
     }
   }
 }
 
-tensor_type!(f32, Float);
-tensor_type!(f64, Double);
-tensor_type!(i32, Int32);
-tensor_type!(u8, UInt8);
-tensor_type!(i16, Int16);
-tensor_type!(i8, Int8);
+tensor_type!(f32, Float, 0.0, 1.0);
+tensor_type!(f64, Double, 0.0, 1.0);
+tensor_type!(i32, Int32, 0, 1);
+tensor_type!(u8, UInt8, 0, 1);
+tensor_type!(i16, Int16, 0, 1);
+tensor_type!(i8, Int8, 0, 1);
 // TODO: provide type for String
-tensor_type!(Complex<f32>, Complex64);
-tensor_type!(Complex<f64>, Complex128);
-tensor_type!(i64, Int64);
-tensor_type!(bool, Bool);
+tensor_type!(Complex<f32>, Complex64, Complex::new(0.0, 0.0), Complex::new(1.0, 0.0));
+tensor_type!(Complex<f64>, Complex128, Complex::new(0.0, 0.0), Complex::new(1.0, 0.0));
+tensor_type!(i64, Int64, 0, 1);
+tensor_type!(bool, Bool, false, true);
 // TODO: provide type for BFloat16
 
 macro_rules! q_type {
@@ -776,7 +794,7 @@ macro_rules! q_type {
       }
     }
 
-    tensor_type!($q_type, $q_type);
+    tensor_type!($q_type, $q_type, $q_type(0), $q_type(1));
   }
 }
 
