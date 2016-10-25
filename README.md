@@ -60,7 +60,7 @@ To include the especially unstable API (which is currently the `expr` module),
 use `--features tensorflow_unstable`.
 
 ## RFCs
-RFCs are [issues tagged with RFC](https://github.com/google/tensorflow-rust/labels/rfc).
+RFCs are [issues tagged with RFC](https://github.com/tensorflow/rust/labels/rfc).
 Check them out and comment. Discussions are welcome. After all, thats what a Request For Comment is for!
 
 ## FAQs
@@ -87,6 +87,6 @@ This is not an official Google product.
 
 ##For more information
 
-* [API docs](https://google.github.io/tensorflow-rust)
+* [API docs](https://tensorflow.github.io/rust)
 * [TensorFlow website](http://tensorflow.org)
 * [TensorFlow GitHub page](https://github.com/tensorflow/tensorflow)
