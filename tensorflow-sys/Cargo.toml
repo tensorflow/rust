@@ -7,9 +7,9 @@ authors = [
   "Ivan Ukhov <ivan.ukhov@gmail.com>",
 ]
 description = "The package provides bindings to TensorFlow."
-documentation = "https://google.github.io/tensorflow-rust"
-homepage = "https://github.com/google/tensorflow-rust"
-repository = "https://github.com/google/tensorflow-rust"
+documentation = "https://tensorflow.github.io/rust"
+homepage = "https://github.com/tensorflow/rust"
+repository = "https://github.com/tensorflow/rust"
 build = "build.rs"
 links = "tensorflow"
 
