@@ -649,7 +649,7 @@ impl<'a> OperationDescription<'a> {
     let c_attr_name = try!(CString::new(attr_name));
     let status = Status::new();
     unsafe {
-      tf::TF_SetAttrToAttrValueProto(
+      tf::TF_SetAttrValueProto(
         self.inner,
         c_attr_name.as_ptr(),
         value.as_ptr() as *const c_void,

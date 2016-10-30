@@ -99,6 +99,33 @@ pub struct TF_Port {
 #[derive(Clone, Copy, Debug)]
 pub enum TF_SessionWithGraph {}
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[repr(C)]
+pub enum TF_Attr_Type {
+    TF_ATTR_STRING = 0,
+    TF_ATTR_INT = 1,
+    TF_ATTR_FLOAT = 2,
+    TF_ATTR_BOOL = 3,
+    TF_ATTR_TYPE = 4,
+    TF_ATTR_SHAPE = 5,
+    TF_ATTR_TENSOR = 6,
+    TF_ATTR_PLACEHOLDER = 7,
+    TF_ATTR_FUNC = 8,
+}
+pub use TF_Attr_Type::*;
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[repr(C)]
+pub struct TF_Attr_Metadata {
+    pub is_list: c_uchar,
+    pub list_size: int64_t,
+    pub type_: TF_Attr_Type,
+    pub total_size: int64_t,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub enum TF_ImportGraphDefOptions {}
+
 extern "C" {
     pub fn TF_NewBuffer() -> *mut TF_Buffer;
     pub fn TF_NewBufferFromString(proto: *const c_void, length: size_t) -> *mut TF_Buffer;
@@ -108,7 +135,9 @@ extern "C" {
 
 extern "C" {
     pub fn TF_LoadLibrary(name: *const c_char, status: *mut TF_Status) -> *mut TF_Library;
+    pub fn TF_DeleteLibraryHandle(lib_handle: *mut TF_Library);
     pub fn TF_GetOpList(library: *mut TF_Library) -> TF_Buffer;
+    pub fn TF_GetAllOpList() -> *mut TF_Buffer;
 }
 
 extern "C" {
@@ -172,6 +201,11 @@ extern "C" {
                                                                  length: size_t,
                                                                  arg: *mut c_void)>,
                         deallocator_arg: *mut c_void) -> *mut TF_Tensor;
+    pub fn TF_AllocateTensor(
+        datatype: TF_DataType,
+        dims: *const int64_t,
+        num_dims: c_int,
+        len: size_t) -> *mut TF_Tensor;
     pub fn TF_DeleteTensor(tensor: *mut TF_Tensor);
     pub fn TF_TensorType(tensor: *const TF_Tensor) -> TF_DataType;
     pub fn TF_NumDims(tensor: *const TF_Tensor) -> c_int;
@@ -276,7 +310,7 @@ extern "C" {
         values: *const *mut TF_Tensor,
         num_values: c_int,
         status: *mut TF_Status);
-    pub fn TF_SetAttrToAttrValueProto(
+    pub fn TF_SetAttrValueProto(
         desc: *mut TF_OperationDescription,
         attr_name: *const c_char,
         proto: *const c_void,
@@ -329,6 +363,123 @@ extern "C" {
         operation: *mut TF_Operation,
         output_operation_def: *mut TF_Buffer,
         status: *mut TF_Status);
+    pub fn TF_GraphSetTensorShape(
+        graph: *mut TF_Graph,
+        port: TF_Port,
+        dims: *const int64_t,
+        num_dims: c_int,
+        status: *mut TF_Status);
+    pub fn TF_ColocateWith(
+        desc: *mut TF_OperationDescription,
+        op: *mut TF_Operation);
+    pub fn  TF_OperationGetAttrMetadata(
+        oper: *const TF_Operation,
+        attr_name: *const c_char,
+        status: *mut TF_Status) -> TF_Attr_Metadata;
+    pub fn TF_OperationGetAttrString(
+        oper: *const TF_Operation,
+        attr_name: *const c_char,
+        value: *mut c_void,
+        max_length: c_int,
+        status: *mut TF_Status);
+    pub fn TF_OperationGetAttrStringList(
+        oper: *const TF_Operation,
+        attr_name: *const c_char,
+        values: *mut *mut c_void,
+        lengths: *mut c_int,
+        max_values: c_int,
+        storage: *mut c_void,
+        storage_size: size_t,
+        status: *mut TF_Status);
+    pub fn TF_OperationGetAttrInt(
+        oper: *const TF_Operation,
+        attr_name: *const c_char,
+        value: *mut int64_t,
+        status: *mut TF_Status);
+    pub fn TF_OperationGetAttrIntList(
+        oper: *const TF_Operation,
+        attr_name: *const c_char,
+        values: *mut int64_t,
+        max_values: c_int,
+        status: *mut TF_Status);
+    pub fn TF_OperationGetAttrFloat(
+        oper: *const TF_Operation,
+        attr_name: *const c_char,
+        value: *mut c_float,
+        status: *mut TF_Status);
+    pub fn TF_OperationGetAttrFloatList(
+        oper: *const TF_Operation,
+        attr_name: *const c_char,
+        values: *mut c_float,
+        max_values: c_int,
+        status: *mut TF_Status);
+    pub fn TF_OperationGetAttrBool(
+        oper: *const TF_Operation,
+        attr_name: *const c_char,
+        value: *mut c_uchar,
+        status: *mut TF_Status);
+    pub fn TF_OperationGetAttrBoolList(
+        oper: *const TF_Operation,
+        attr_name: *const c_char,
+        values: *mut c_uchar,
+        max_values: c_int,
+        status: *mut TF_Status);
+    pub fn TF_OperationGetAttrType(
+        oper: *const TF_Operation,
+        attr_name: *const c_char,
+        value: *mut TF_DataType,
+        status: *mut TF_Status);
+    pub fn TF_OperationGetAttrTypeList(
+        oper: *const TF_Operation,
+        attr_name: *const c_char,
+        values: *mut TF_DataType,
+        max_values: c_int,
+        status: *mut TF_Status);
+    pub fn TF_OperationGetAttrShape(
+        oper: *const TF_Operation,
+        attr_name: *const c_char,
+        value: *mut int64_t,
+        num_dims: c_int,
+        status: *mut TF_Status);
+    pub fn TF_OperationGetAttrShapeList(
+        oper: *const TF_Operation,
+        attr_name: *const c_char,
+        dims: *mut *mut int64_t,
+        num_dims: *mut c_int,
+        num_shapes: c_int,
+        storage: *mut int64_t,
+        storage_size: c_int,
+        status: *mut TF_Status);
+    pub fn TF_OperationGetAttrTensorShapeProto(
+        oper: *const TF_Operation,
+        attr_name: *const c_char,
+        value: *mut TF_Buffer,
+        status: *mut TF_Status);
+    pub fn TF_OperationGetAttrTensorShapeProtoList(
+        oper: *const TF_Operation,
+        attr_name: *const c_char,
+        values: *mut *mut TF_Buffer,
+        max_values: c_int,
+        status: *mut TF_Status);
+    pub fn TF_OperationGetAttrTensor(
+        oper: *const TF_Operation,
+        attr_name: *const c_char,
+        value: *mut *mut TF_Tensor,
+        status: *mut TF_Status);
+    pub fn TF_OperationGetAttrTensorList(
+        oper: *const TF_Operation,
+        attr_name: *const c_char,
+        values: *mut *mut TF_Tensor,
+        max_values: c_int,
+        status: *mut TF_Status);
+    pub fn TF_NewImportGraphDefOptions() -> *mut TF_ImportGraphDefOptions;
+    pub fn TF_DeleteImportGraphDefOptions(opts: *mut TF_ImportGraphDefOptions);
+    pub fn TF_ImportGraphDefOptionsSetPrefix(opts: *mut TF_ImportGraphDefOptions, prefix: *const c_char);
+    pub fn TF_GraphImportGraphDef(
+        graph: *mut TF_Graph,
+        graph_def: *const TF_Buffer,
+        options: *const TF_ImportGraphDefOptions,
+        status: *mut TF_Status);
 }
 
 extern "C" {
@@ -373,4 +524,20 @@ extern "C" {
         target_operations: *const *const TF_Operation,
         ntargets: c_int,
         status: *mut TF_Status);
+}
+
+#[deprecated(note="Use TF_SetAttrValueProto instead.")]
+#[allow(non_snake_case)]
+pub unsafe extern "C" fn TF_SetAttrToAttrValueProto(
+    desc: *mut TF_OperationDescription,
+    attr_name: *const c_char,
+    proto: *const c_void,
+    proto_len: size_t,
+    status: *mut TF_Status) {
+    TF_SetAttrValueProto(
+        desc,
+        attr_name,
+        proto,
+        proto_len,
+        status)
 }
