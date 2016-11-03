@@ -1,6 +1,6 @@
 #TensorFlow Rust
 [![Version](https://img.shields.io/crates/v/tensorflow.svg)](https://crates.io/crates/tensorflow)
-[![Status](https://travis-ci.org/google/tensorflow-rust.svg?branch=master)](https://travis-ci.org/google/tensorflow-rust)
+[![Status](https://travis-ci.org/tensorflow/rust.svg?branch=master)](https://travis-ci.org/tensorflow/rust)
 
 TensorFlow Rust provides idiomatic [Rust](https://www.rust-lang.org) language
 bindings for [TensorFlow](http://tensorflow.org).
