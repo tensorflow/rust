@@ -342,41 +342,6 @@ impl Operation {
           ).collect()
     }
   }
-
-  /// Returns the value of an attribute as an `AttrValue` protobuf.
-  pub fn attr_value_proto(&self, attr_name: &str) -> Result<Buffer<u8>> {
-    let c_attr_name = try!(CString::new(attr_name));
-    unsafe {
-      let status = Status::new();
-      let buffer = tf::TF_NewBuffer();
-      tf::TF_OperationGetAttrValueProto(
-        self.inner,
-        c_attr_name.as_ptr(),
-        buffer,
-        status.inner);
-      if !status.is_ok() {
-        tf::TF_DeleteBuffer(buffer);
-        Err(status)
-      } else {
-        Ok(Buffer::from_c(buffer, true))
-      }
-    }
-  }
-
-  /// Returns the operation definition as a protobuf.
-  pub fn operation_def(&self) -> Result<Buffer<u8>> {
-    let status = Status::new();
-    unsafe {
-      let c_buffer = tf::TF_NewBuffer();
-      tf::TF_OperationToNodeDef(self.inner, c_buffer, status.inner);
-      if status.is_ok() {
-        Ok(Buffer::from_c(c_buffer, true))
-      } else {
-        tf::TF_DeleteBuffer(c_buffer);
-        Err(status)
-      }
-    }
-  }
 }
 
 impl OperationTrait for Operation {
