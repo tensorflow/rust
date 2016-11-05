@@ -352,10 +352,13 @@ impl OperationTrait for Operation {
 
 ////////////////////////
 
-/// A `Port` is one end of a graph edge.
+#[deprecated(note="Use Output instead.")]
+type Port<'a> = Output<'a>;
+
+/// A `Output` is one end of a graph edge.
 /// It holds an operation and an index into the inputs or outputs of that operation.
 #[derive(Debug,Copy,Clone)]
-pub struct Port<'a> {
+pub struct Output<'a> {
   /// Operation the edge connects to.
   pub operation: &'a Operation,
 
@@ -363,7 +366,7 @@ pub struct Port<'a> {
   pub index: c_int,
 }
 
-impl<'a> Port<'a> {
+impl<'a> Output<'a> {
   fn to_c(&self) -> tf::TF_Port {
     tf::TF_Port {
       operation: self.operation.inner,
@@ -417,7 +420,7 @@ impl<'a> OperationDescription<'a> {
   /// Adds an input to this operation.
   ///
   /// The index in the port is an index into the source operation's output array.
-  pub fn add_input(&mut self, input: Port) {
+  pub fn add_input(&mut self, input: Output) {
     unsafe {
       tf::TF_AddInput(self.inner, input.to_c());
     }
@@ -426,7 +429,7 @@ impl<'a> OperationDescription<'a> {
   /// Adds multiple inputs to this operation.
   ///
   /// The index in the ports is an index into the source operation's output array.
-  pub fn add_input_list(&mut self, inputs: &[Port]) {
+  pub fn add_input_list(&mut self, inputs: &[Output]) {
     let c_inputs: Vec<tf::TF_Port> = inputs.iter().map(|x| x.to_c()).collect();
     unsafe {
       tf::TF_AddInputList(self.inner, c_inputs.as_ptr(), c_inputs.len() as c_int);

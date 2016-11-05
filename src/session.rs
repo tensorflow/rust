@@ -246,7 +246,7 @@ mod tests {
   use super::super::DataType;
   use super::super::Graph;
   use super::super::Operation;
-  use super::super::Port;
+  use super::super::Output;
   use super::super::SessionOptions;
   use super::super::Tensor;
 
@@ -268,8 +268,8 @@ mod tests {
     };
     let y = {
       let mut nd = g.new_operation("Mul", "y").unwrap();
-      nd.add_input(Port {operation: &two, index: 0});
-      nd.add_input(Port {operation: &x, index: 0});
+      nd.add_input(Output {operation: &two, index: 0});
+      nd.add_input(Output {operation: &x, index: 0});
       nd.finish().unwrap()
     };
     let options = SessionOptions::new();

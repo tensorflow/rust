@@ -20,7 +20,7 @@ use super::Code;
 use super::DataType;
 use super::Graph;
 use super::Operation;
-use super::Port;
+use super::Output;
 use super::Status;
 use super::Tensor;
 use super::TensorType;
@@ -192,8 +192,8 @@ macro_rules! impl_bin_op {
 
       fn create_operation(&self, graph: &mut Graph, children: &[Rc<Operation>], id_gen: &mut FnMut() -> String) -> Result<Operation, Status> {
         let mut nd = try!(graph.new_operation($tf_op, &id_gen()));
-        nd.add_input(Port {operation: &children[0], index: 0});
-        nd.add_input(Port {operation: &children[1], index: 0});
+        nd.add_input(Output {operation: &children[0], index: 0});
+        nd.add_input(Output {operation: &children[1], index: 0});
         nd.finish()
       }
 
@@ -277,8 +277,8 @@ impl<T: TensorType> ExprImpl<T> for TruncateDiv<T> {
 
   fn create_operation(&self, graph: &mut Graph, children: &[Rc<Operation>], id_gen: &mut FnMut() -> String) -> Result<Operation, Status> {
     let mut nd = try!(graph.new_operation("TruncateDiv", &id_gen()));
-    nd.add_input(Port {operation: &children[0], index: 0});
-    nd.add_input(Port {operation: &children[1], index: 0});
+    nd.add_input(Output {operation: &children[0], index: 0});
+    nd.add_input(Output {operation: &children[1], index: 0});
     nd.finish()
   }
 
@@ -335,7 +335,7 @@ impl<T: TensorType> ExprImpl<T> for Neg<T> {
 
   fn create_operation(&self, graph: &mut Graph, children: &[Rc<Operation>], id_gen: &mut FnMut() -> String) -> Result<Operation, Status> {
     let mut nd = try!(graph.new_operation("Neg", &id_gen()));
-    nd.add_input(Port {operation: &children[0], index: 0});
+    nd.add_input(Output {operation: &children[0], index: 0});
     nd.finish()
   }
 
@@ -498,8 +498,8 @@ impl<T: TensorType> ExprImpl<T> for Assign<T> {
 
   fn create_operation(&self, graph: &mut Graph, children: &[Rc<Operation>], id_gen: &mut FnMut() -> String) -> Result<Operation, Status> {
     let mut nd = try!(graph.new_operation("Assign", &id_gen()));
-    nd.add_input(Port {operation: &children[0], index: 0});
-    nd.add_input(Port {operation: &children[1], index: 0});
+    nd.add_input(Output {operation: &children[0], index: 0});
+    nd.add_input(Output {operation: &children[1], index: 0});
     nd.finish()
   }
 
