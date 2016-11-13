@@ -18,7 +18,10 @@ TensorFlow header file and shared library that can be used by other languages.
 
 ### Automatically building TensorFlow
 
-[Install Bazel](http://bazel.io/docs/install.html).
+Install [SWIG](http://www.swig.org) and [NumPy](http://www.numpy.org).  The
+version from your distro's package manager should be fine for these two.  Also
+install [Bazel](http://bazel.io/docs/install.html), which you may need to do
+from source.
 Then run `cargo build -j 1`. Since TensorFlow is built during this process, and
 the TensorFlow build is very memory intensive, we recommend using the `-j 1`
 flag which tells cargo to use only one task, which in turn tells TensorFlow to
@@ -34,7 +37,10 @@ The Python/pip steps are not necessary, but building `tensorflow:libtensorflow_c
 
 In short:
 
-1. [Install Bazel](http://bazel.io/docs/install.html)
+1. Install [SWIG](http://www.swig.org) and [NumPy](http://www.numpy.org).  The
+   version from your distro's package manager should be fine for these two.
+1. [Install Bazel](http://bazel.io/docs/install.html), which you may need to do
+   from source.
 1. `git clone --recurse-submodules https://github.com/tensorflow/tensorflow`
 1. `cd tensorflow`
 1. `./configure`
