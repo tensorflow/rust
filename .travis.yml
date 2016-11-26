@@ -9,7 +9,7 @@ cache:
 rust: nightly
 
 install:
-  - export CC="gcc-4.9" CXX="g++-4.9"
+  - export CC="gcc-4.8" CXX="g++-4.8"
   - source travis-ci/install.sh
 
 script:
@@ -26,8 +26,8 @@ addons:
       - ubuntu-toolchain-r-test
 
     packages:
-      - g++-4.9
-      - gcc-4.9
+      - g++-4.8
+      - gcc-4.8
       - oracle-java8-installer
       - python-numpy
       - swig
