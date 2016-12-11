@@ -11,7 +11,7 @@ use semver::Version;
 const LIBRARY: &'static str = "tensorflow_c";
 const REPOSITORY: &'static str = "https://github.com/tensorflow/tensorflow.git";
 const TARGET: &'static str = "tensorflow:libtensorflow_c.so";
-const VERSION: &'static str = "0.11.0";
+const TAG: &'static str = "v0.12.0";
 const MIN_BAZEL: &'static str = "0.3.1";
 
 macro_rules! get(($name:expr) => (ok!(env::var($name))));
@@ -30,9 +30,9 @@ fn main() {
 
     let output = PathBuf::from(&get!("OUT_DIR"));
     log_var!(output);
-    let source = PathBuf::from(&get!("CARGO_MANIFEST_DIR")).join(format!("target/source-{}", VERSION));
+    let source = PathBuf::from(&get!("CARGO_MANIFEST_DIR")).join(format!("target/source-{}", TAG));
     log_var!(source);
-    let lib_dir = output.join(format!("lib-{}", VERSION));
+    let lib_dir = output.join(format!("lib-{}", TAG));
     log_var!(lib_dir);
     if lib_dir.exists() {
         log!("Directory {:?} already exists", lib_dir);
@@ -53,12 +53,12 @@ fn main() {
         log_var!(target_path);
         if !Path::new(&source.join(".git")).exists() {
             run("git", |command| command.arg("clone")
-                                        .arg(format!("--branch=v{}", VERSION))
+                                        .arg(format!("--branch={}", TAG))
                                         .arg("--recursive")
                                         .arg(REPOSITORY)
                                         .arg(&source));
         }
-        run("./configure", |command| command.current_dir(&source));
+        run("bash", |command| command.current_dir(&source).arg("-c").arg("yes ''|./configure"));
         run("bazel", |command| command.current_dir(&source)
                                       .arg("build")
                                       .arg(format!("--jobs={}", get!("NUM_JOBS")))
