@@ -341,6 +341,8 @@ c_enum!("Type of a single tensor element.", TF_DataType, DataType {
 
   /// 16-bit floating point.
   value Half = 19,
+
+  value Resource = 20,
 });
 
 ////////////////////////
@@ -493,7 +495,7 @@ impl_drop!(SessionOptions, TF_DeleteSessionOptions);
 #[allow(deprecated)]
 #[derive(Debug)]
 pub struct Session {
-  inner: *mut tf::TF_Session,
+  inner: *mut tf::TF_DeprecatedSession,
 }
 
 #[allow(deprecated)]
@@ -501,7 +503,7 @@ impl Session {
   /// Creates a session.
   pub fn new(options: &SessionOptions) -> Result<Self> {
     let status = Status::new();
-    let inner = unsafe { tf::TF_NewSession(options.inner, status.inner) };
+    let inner = unsafe { tf::TF_NewDeprecatedSession(options.inner, status.inner) };
     if inner.is_null() {
       Err(status)
     } else {
@@ -515,7 +517,7 @@ impl Session {
   pub fn close(&mut self) -> Result<()> {
     let status = Status::new();
     unsafe {
-      tf::TF_CloseSession(self.inner, status.inner);
+      tf::TF_CloseDeprecatedSession(self.inner, status.inner);
     }
     status.as_result()
   }
@@ -577,7 +579,7 @@ impl Drop for Session {
   fn drop(&mut self) {
     let status = Status::new();
     unsafe {
-      tf::TF_DeleteSession(self.inner, status.inner);
+      tf::TF_DeleteDeprecatedSession(self.inner, status.inner);
     }
     // TODO: What do we do with the status?
   }

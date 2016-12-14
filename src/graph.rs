@@ -211,7 +211,7 @@ impl Operation {
   /// Returns the type of a specific output.
   pub fn output_type(&self, index: usize) -> DataType {
     unsafe {
-      DataType::from_c(tf::TF_OperationOutputType(tf::TF_Port{operation: self.inner, index: index as c_int}))
+      DataType::from_c(tf::TF_OperationOutputType(tf::TF_Output{operation: self.inner, index: index as c_int}))
     }
   }
 
@@ -240,7 +240,7 @@ impl Operation {
   /// Returns the type of a specific input.
   pub fn input_type(&self, index: usize) -> DataType {
     unsafe {
-      DataType::from_c(tf::TF_OperationInputType(tf::TF_Port{operation: self.inner, index: index as c_int}))
+      DataType::from_c(tf::TF_OperationInputType(tf::TF_Input{operation: self.inner, index: index as c_int}))
     }
   }
 
@@ -264,7 +264,7 @@ impl Operation {
   /// and the return value is the source operation and the index into its output array.
   pub fn input(&self, index: usize) -> (Operation, usize) {
     unsafe {
-      let port = tf::TF_OperationInput(tf::TF_Port{operation: self.inner, index: index as c_int});
+      let port = tf::TF_OperationInput(tf::TF_Input{operation: self.inner, index: index as c_int});
       (Operation {
         inner: port.operation,
         gimpl: self.gimpl.clone(),
@@ -275,7 +275,7 @@ impl Operation {
   /// Returns the number of consumers of a specific output.
   pub fn output_num_consumers(&self, index: usize) -> usize {
     unsafe {
-      tf::TF_OperationOutputNumConsumers(tf::TF_Port{operation: self.inner, index: index as c_int}) as usize
+      tf::TF_OperationOutputNumConsumers(tf::TF_Output{operation: self.inner, index: index as c_int}) as usize
     }
   }
 
@@ -284,10 +284,10 @@ impl Operation {
   /// and the return value is a vector of the destination operation and the index into its input array.
   pub fn output_consumers(&self, index: usize) -> Vec<(Operation, usize)> {
     unsafe {
-      let num_consumers = tf::TF_OperationOutputNumConsumers(tf::TF_Port{operation: self.inner, index: index as c_int});
-      let mut vec = <Vec<tf::TF_Port>>::with_capacity(num_consumers as usize);
+      let num_consumers = tf::TF_OperationOutputNumConsumers(tf::TF_Output{operation: self.inner, index: index as c_int});
+      let mut vec = <Vec<tf::TF_Input>>::with_capacity(num_consumers as usize);
       let len = tf::TF_OperationOutputConsumers(
-        tf::TF_Port{operation: self.inner, index: index as c_int},
+        tf::TF_Output{operation: self.inner, index: index as c_int},
         vec.as_mut_ptr(),
         vec.len() as c_int);
       vec.set_len(len as usize);
@@ -352,23 +352,45 @@ impl OperationTrait for Operation {
 
 ////////////////////////
 
+/// A `Input` is one end of a graph edge.
+/// It holds an operation and an index into the inputs of that operation.
+#[derive(Debug,Copy,Clone)]
+pub struct Input<'a> {
+  /// Operation the edge connects to.
+  pub operation: &'a Operation,
+
+  /// Index into either the inputs of the operation.
+  pub index: c_int,
+}
+
+impl<'a> Input<'a> {
+  fn to_c(&self) -> tf::TF_Input {
+    tf::TF_Input {
+      operation: self.operation.inner,
+      index: self.index,
+    }
+  }
+}
+
+////////////////////////
+
 #[deprecated(note="Use Output instead.")]
 type Port<'a> = Output<'a>;
 
 /// A `Output` is one end of a graph edge.
-/// It holds an operation and an index into the inputs or outputs of that operation.
+/// It holds an operation and an index into the outputs of that operation.
 #[derive(Debug,Copy,Clone)]
 pub struct Output<'a> {
   /// Operation the edge connects to.
   pub operation: &'a Operation,
 
-  /// Index into either the inputs or outputs of the operation.
+  /// Index into either the outputs of the operation.
   pub index: c_int,
 }
 
 impl<'a> Output<'a> {
-  fn to_c(&self) -> tf::TF_Port {
-    tf::TF_Port {
+  fn to_c(&self) -> tf::TF_Output {
+    tf::TF_Output {
       operation: self.operation.inner,
       index: self.index,
     }
@@ -430,7 +452,7 @@ impl<'a> OperationDescription<'a> {
   ///
   /// The index in the ports is an index into the source operation's output array.
   pub fn add_input_list(&mut self, inputs: &[Output]) {
-    let c_inputs: Vec<tf::TF_Port> = inputs.iter().map(|x| x.to_c()).collect();
+    let c_inputs: Vec<tf::TF_Output> = inputs.iter().map(|x| x.to_c()).collect();
     unsafe {
       tf::TF_AddInputList(self.inner, c_inputs.as_ptr(), c_inputs.len() as c_int);
     }
@@ -444,6 +466,7 @@ impl<'a> OperationDescription<'a> {
   }
 
   /// Sets the value of a string attribute.
+  #[allow(trivial_numeric_casts)]
   pub fn set_attr_string(&mut self, attr_name: &str, value: &str) -> std::result::Result<(), NulError> {
     let c_attr_name = try!(CString::new(attr_name));
     let c_value = value.as_bytes();
@@ -452,17 +475,18 @@ impl<'a> OperationDescription<'a> {
         self.inner,
         c_attr_name.as_ptr(),
         c_value.as_ptr() as *const c_void,
-        c_value.len() as c_int);
+        c_value.len() as size_t);
     }
     Ok(())
   }
 
   /// Sets the value of an attribute which holds a list of strings.
+  #[allow(trivial_numeric_casts)]
   pub fn set_attr_string_list<S: AsRef<str>>(&mut self, attr_name: &str, value: &[S]) -> std::result::Result<(), NulError> {
     let c_attr_name = try!(CString::new(attr_name));
     let bytes: Vec<&[u8]> = value.iter().map(|x| x.as_ref().as_bytes()).collect();
     let ptrs: Vec<*const c_void> = bytes.iter().map(|x| x.as_ptr() as *const c_void).collect();
-    let lens: Vec<c_int> = bytes.iter().map(|x| x.len() as c_int).collect();
+    let lens: Vec<size_t> = bytes.iter().map(|x| x.len() as size_t).collect();
     unsafe {
       tf::TF_SetAttrStringList(
         self.inner,
@@ -581,6 +605,7 @@ impl<'a> OperationDescription<'a> {
   }
 
   /// Sets an attribute with a `TensorShapeProto` protobuf.
+  #[allow(trivial_numeric_casts)]
   pub fn set_attr_tensor_shape_proto(&mut self, attr_name: &str, value: &[u8]) -> Result<()> {
     let c_attr_name = try!(CString::new(attr_name));
     let status = Status::new();
@@ -589,17 +614,18 @@ impl<'a> OperationDescription<'a> {
         self.inner,
         c_attr_name.as_ptr(),
         value.as_ptr() as *const c_void,
-        value.len() as c_int,
+        value.len() as size_t,
         status.inner);
     }
     status.as_result()
   }
 
   /// Sets an attribute with an array of `TensorShapeProto` protobufs.
+  #[allow(trivial_numeric_casts)]
   pub fn set_attr_tensor_shape_proto_list<T: AsRef<[u8]>>(&mut self, attr_name: &str, value: &[T]) -> Result<()> {
     let c_attr_name = try!(CString::new(attr_name));
     let ptrs: Vec<*const c_void> = value.iter().map(|x| x.as_ref().as_ptr() as *const c_void).collect();
-    let lens: Vec<c_int> = value.iter().map(|x| x.as_ref().len() as c_int).collect();
+    let lens: Vec<size_t> = value.iter().map(|x| x.as_ref().len() as size_t).collect();
     let status = Status::new();
     unsafe {
       tf::TF_SetAttrTensorShapeProtoList(
