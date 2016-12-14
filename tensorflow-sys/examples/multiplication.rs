@@ -29,7 +29,7 @@ fn main() {
     unsafe {
         let options = nonnull!(ffi::TF_NewSessionOptions());
         let status = nonnull!(ffi::TF_NewStatus());
-        let session = nonnull!(ffi::TF_NewSession(options, status));
+        let session = nonnull!(ffi::TF_NewDeprecatedSession(options, status));
 
         let graph = read("examples/assets/multiplication.pb"); // c = a * b
         ffi::TF_ExtendGraph(session, graph.as_ptr() as *const _, graph.len() as size_t, status);
@@ -80,10 +80,10 @@ fn main() {
 
         assert_eq!(data, &[1.0 * 4.0, 2.0 * 5.0, 3.0 * 6.0]);
 
-        ffi::TF_CloseSession(session, status);
+        ffi::TF_CloseDeprecatedSession(session, status);
 
         ffi::TF_DeleteTensor(tensor);
-        ffi::TF_DeleteSession(session, status);
+        ffi::TF_DeleteDeprecatedSession(session, status);
         ffi::TF_DeleteStatus(status);
         ffi::TF_DeleteSessionOptions(options);
     }
