@@ -18,14 +18,15 @@ use super::Tensor;
 use super::TensorType;
 
 /// Manages a single graph and execution.
-///
-/// This will be renamed to Session once the old API goes away.
 #[derive(Debug)]
-pub struct SessionWithGraph {
+pub struct Session {
   inner: *mut tf::TF_Session,
 }
 
-impl SessionWithGraph {
+#[deprecated(note = "Use Session instead.")]
+type SessionWithGraph = Session;
+
+impl Session {
   /// Creates a session.
   pub fn new(options: &SessionOptions, graph: &Graph) -> Result<Self> {
     let status = Status::new();
@@ -35,7 +36,7 @@ impl SessionWithGraph {
     if inner.is_null() {
       Err(status)
     } else {
-      Ok(SessionWithGraph {
+      Ok(Session {
         inner: inner,
       })
     }
@@ -93,7 +94,7 @@ impl SessionWithGraph {
   }
 }
 
-impl Drop for SessionWithGraph {
+impl Drop for Session {
   fn drop(&mut self) {
     let status = Status::new();
     unsafe {
@@ -250,7 +251,7 @@ mod tests {
   use super::super::SessionOptions;
   use super::super::Tensor;
 
-  fn create_session() -> (SessionWithGraph, Operation, Operation) {
+  fn create_session() -> (Session, Operation, Operation) {
     let mut g = Graph::new();
     let two = {
       let mut nd = g.new_operation("Const", "two").unwrap();
@@ -273,7 +274,7 @@ mod tests {
       nd.finish().unwrap()
     };
     let options = SessionOptions::new();
-    match SessionWithGraph::new(&options, &g) {
+    match Session::new(&options, &g) {
       Ok(session) => (session, x, y),
       Err(status) => panic!("Creating session failed with status: {}", status),
     }

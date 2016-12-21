@@ -494,12 +494,12 @@ impl_drop!(SessionOptions, TF_DeleteSessionOptions);
 #[deprecated(note="Use SessionWithGraph instead.")]
 #[allow(deprecated)]
 #[derive(Debug)]
-pub struct Session {
+pub struct DeprecatedSession {
   inner: *mut tf::TF_DeprecatedSession,
 }
 
 #[allow(deprecated)]
-impl Session {
+impl DeprecatedSession {
   /// Creates a session.
   pub fn new(options: &SessionOptions) -> Result<Self> {
     let status = Status::new();
@@ -507,7 +507,7 @@ impl Session {
     if inner.is_null() {
       Err(status)
     } else {
-      Ok(Session {
+      Ok(DeprecatedSession {
         inner: inner,
       })
     }
@@ -575,7 +575,7 @@ impl Session {
 }
 
 #[allow(deprecated)]
-impl Drop for Session {
+impl Drop for DeprecatedSession {
   fn drop(&mut self) {
     let status = Status::new();
     unsafe {
@@ -1029,9 +1029,9 @@ mod tests {
   use super::*;
 
   #[allow(deprecated)]
-  fn create_session() -> Session {
+  fn create_session() -> DeprecatedSession {
     let options = SessionOptions::new();
-    match Session::new(&options) {
+    match DeprecatedSession::new(&options) {
       Ok(session) => session,
       Err(status) => panic!("Creating session failed with status: {}", status),
     }

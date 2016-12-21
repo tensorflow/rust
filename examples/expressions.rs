@@ -9,8 +9,8 @@ use tensorflow::Code;
 use tensorflow::expr::Compiler;
 use tensorflow::expr::Placeholder;
 use tensorflow::Graph;
+use tensorflow::Session;
 use tensorflow::SessionOptions;
-use tensorflow::SessionWithGraph;
 use tensorflow::Status;
 use tensorflow::StepWithGraph;
 use tensorflow::Tensor;
@@ -75,7 +75,7 @@ fn run() -> Result<(), Box<Error>> {
   //   (x_node, y_node)
   // };
   let options = SessionOptions::new();
-  let mut session = try!(SessionWithGraph::new(&options, &g));
+  let mut session = try!(Session::new(&options, &g));
 
   // Evaluate the graph.
   let mut x = <Tensor<f32>>::new(&[2]);
