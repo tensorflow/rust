@@ -46,34 +46,16 @@ macro_rules! invalid_arg {
 
 ////////////////////////
 
-mod buffer;
-pub use buffer::Buffer;
-
-mod graph;
-pub use graph::*;
-
-mod session;
-pub use session::*;
-
-pub mod expr;
-
-////////////////////////
-
-fn check_not_null<T>(p: *mut T) -> *mut T {
-  assert!(!p.is_null());
-  p
-}
-
-////////////////////////
-
 macro_rules! impl_new {
   ($name: ident, $call:ident, $doc:expr) => {
     impl $name {
       #[doc = $doc]
       pub fn new() -> Self {
         unsafe {
+          let inner = tf::$call();
+          assert!(!inner.is_null());
           $name {
-            inner: check_not_null(tf::$call()),
+            inner: inner,
           }
         }
       }
@@ -163,6 +145,19 @@ macro_rules! c_enum {
     c_enum!($doc, $c_name, $enum_name { $( $(#[$attr])* value $name = $num),* });
   }
 }
+
+////////////////////////
+
+mod buffer;
+pub use buffer::Buffer;
+
+mod graph;
+pub use graph::*;
+
+mod session;
+pub use session::*;
+
+pub mod expr;
 
 ////////////////////////
 

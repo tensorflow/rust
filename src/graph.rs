@@ -15,6 +15,7 @@ use std::ffi::NulError;
 use std::str::Utf8Error;
 use std::sync::Arc;
 use super::Buffer;
+use super::BufferTrait;
 use super::Code;
 use super::DataType;
 use super::GraphTrait;
@@ -38,6 +39,30 @@ impl Drop for GraphImpl {
     unsafe {
       tf::TF_DeleteGraph(self.inner);
     }
+  }
+}
+
+////////////////////////
+
+#[derive(Debug)]
+pub struct ImportGraphDefOptions {
+  inner: *mut tf::TF_ImportGraphDefOptions,
+}
+
+impl_new!(ImportGraphDefOptions, TF_NewImportGraphDefOptions, "Creates a default ImportGraphDefOptions.");
+impl_drop!(ImportGraphDefOptions, TF_DeleteImportGraphDefOptions);
+
+/// `ImportGraphDefOptions` holds options that can be passed to
+/// `Graph::import_graph_def`.
+impl ImportGraphDefOptions {
+  /// Set the prefix to be prepended to the names of nodes in `graph_def` that will
+  /// be imported into `graph`.
+  pub fn set_prefix(&mut self, prefix: &str) -> std::result::Result<(), NulError> {
+    let s = try!(CString::new(prefix));
+    unsafe {
+      tf::TF_ImportGraphDefOptionsSetPrefix(self.inner, s.as_ptr());
+    }
+    Ok(())
   }
 }
 
@@ -176,6 +201,19 @@ impl Graph {
       } else{
         Err(status)
       }
+    }
+  }
+
+  /// Import the graph serialized in `graph_def`.
+  pub fn import_graph_def(&mut self, graph_def: Buffer<u8>, options: &ImportGraphDefOptions) -> Result<()> {
+    let status = Status::new();
+    unsafe {
+      tf::TF_GraphImportGraphDef(
+        self.gimpl.inner,
+        graph_def.inner(),
+        options.inner,
+        status.inner);
+      status.as_result()
     }
   }
 }
