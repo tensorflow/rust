@@ -9,6 +9,14 @@ This project is still under active development and not guaranteed to have a
 stable API. This is especially true because the TensorFlow C API used by this
 project has not yet stabilized.
 
+## Using
+
+If you only wish to use TensorFlow within your own project, simply include 
+`tensorflow = "*"` in your `Cargo.toml` file. If the TensorFlow library is 
+not already installed on your computer in a place it can be found, you will
+need the requirements listed in "Automatically Building Tensorflow" below,
+and Cargo will build the library for you.
+
 ## Building
 
 If you only intend to use TensorFlow from within Rust, then you don't need to
