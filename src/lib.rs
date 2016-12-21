@@ -29,6 +29,7 @@ use std::mem;
 use std::ops::Deref;
 use std::ops::DerefMut;
 use std::ops::Drop;
+use std::str::Utf8Error;
 
 ////////////////////////
 
@@ -1020,6 +1021,16 @@ trait GraphTrait {
 /// This exposes Operation behavior without making it public.
 trait OperationTrait {
   fn inner(&self) -> *mut tf::TF_Operation;
+}
+
+////////////////////////
+
+/// Returns a string describing version information of the
+/// TensorFlow library. TensorFlow using semantic versioning.
+pub fn version() -> std::result::Result<String, Utf8Error> {
+  unsafe {
+    CStr::from_ptr(tf::TF_Version()).to_str().map(|s| s.to_string())
+  }
 }
 
 ////////////////////////

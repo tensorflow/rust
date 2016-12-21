@@ -126,6 +126,58 @@ impl Graph {
       }
     }
   }
+
+  /// Returns the number of dimensions of the Tensor referenced by `output`.
+  ///
+  /// If the number of dimensions in the shape is unknown, returns -1.
+  ///
+  /// Returns an error if:
+  ///   * `output` is not in `graph`.
+  pub fn num_dims(&self, output: Output) -> Result<c_int> {
+    let status = Status::new();
+    unsafe {
+      let val = tf::TF_GraphGetTensorNumDims(
+        self.gimpl.inner,
+        output.to_c(),
+        status.inner);
+      if status.is_ok() {
+        Ok(val)
+      } else{
+        Err(status)
+      }
+    }
+  }
+
+  /// Returns the shape of the Tensor referenced by `output`.
+  ///
+  /// If the number of dimensions in the shape is unknown, the return value is
+  /// None. Otherwise, each element of `dims` will be set corresponding to the
+  /// size of the dimension. An unknown dimension is represented by `-1`.
+  ///
+  /// Returns an error if:
+  ///   * `output` is not in `graph`.
+  pub fn tensor_shape(&self, output: Output) -> Result<Option<Vec<i64>>> {
+    let status = Status::new();
+    let n = try!(self.num_dims(output));
+    if n == -1 {
+      return Ok(None);
+    }
+    let mut dims = Vec::with_capacity(n as usize);
+    unsafe {
+      tf::TF_GraphGetTensorShape(
+        self.gimpl.inner,
+        output.to_c(),
+        dims.as_mut_ptr(),
+        dims.len() as c_int,
+        status.inner);
+      if status.is_ok() {
+        dims.set_len(n as usize);
+        Ok(Some(dims))
+      } else{
+        Err(status)
+      }
+    }
+  }
 }
 
 impl GraphTrait for Graph {
