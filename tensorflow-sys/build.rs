@@ -2,6 +2,7 @@ extern crate pkg_config;
 extern crate semver;
 
 use std::error::Error;
+use std::fs::File;
 use std::path::{Path, PathBuf};
 use std::process;
 use std::process::Command;
@@ -58,7 +59,15 @@ fn main() {
                                         .arg(REPOSITORY)
                                         .arg(&source));
         }
-        run("bash", |command| command.current_dir(&source).arg("-c").arg("yes ''|./configure"));
+        // Only configure if not previously configured.  Configuring runs a
+        // `bazel clean`, which we don't want, because we want to be able to
+        // continue from a cancelled build.
+        let configure_hint_file_pb = source.join(".rust-configured");
+        let configure_hint_file = Path::new(&configure_hint_file_pb);
+        if !configure_hint_file.exists() {
+            run("bash", |command| command.current_dir(&source).arg("-c").arg("yes ''|./configure"));
+            File::create(configure_hint_file).unwrap();
+        }
         run("bazel", |command| command.current_dir(&source)
                                       .arg("build")
                                       .arg(format!("--jobs={}", get!("NUM_JOBS")))
