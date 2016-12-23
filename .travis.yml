@@ -13,7 +13,7 @@ install:
   - source travis-ci/install.sh
 
 script:
-  - cargo test -vv -j 1 --features tensorflow_unstable
+  - cargo test -vv -j 2 --features tensorflow_unstable
   - cargo run --example regression
   - cargo run --features tensorflow_unstable --example expressions
   - cargo doc -vv --features tensorflow_unstable
