@@ -12,6 +12,7 @@ use std;
 use std::ffi::CStr;
 use std::ffi::CString;
 use std::ffi::NulError;
+use std::ptr;
 use std::str::Utf8Error;
 use std::sync::Arc;
 use super::Buffer;
@@ -23,6 +24,7 @@ use super::OperationTrait;
 use super::Status;
 use super::Result;
 use super::Tensor;
+use super::TensorShape;
 use super::TensorType;
 
 #[derive(Debug)]
@@ -175,17 +177,13 @@ impl Graph {
 
   /// Returns the shape of the Tensor referenced by `output`.
   ///
-  /// If the number of dimensions in the shape is unknown, the return value is
-  /// None. Otherwise, each element of `dims` will be set corresponding to the
-  /// size of the dimension. An unknown dimension is represented by `-1`.
-  ///
   /// Returns an error if:
   ///   * `output` is not in `graph`.
-  pub fn tensor_shape(&self, output: Output) -> Result<Option<Vec<i64>>> {
+  pub fn tensor_shape(&self, output: Output) -> Result<TensorShape> {
     let status = Status::new();
     let n = try!(self.num_dims(output));
     if n == -1 {
-      return Ok(None);
+      return Ok(TensorShape(None));
     }
     let mut dims = Vec::with_capacity(n as usize);
     unsafe {
@@ -197,7 +195,8 @@ impl Graph {
         status.inner);
       if status.is_ok() {
         dims.set_len(n as usize);
-        Ok(Some(dims))
+        Ok(TensorShape(Some(
+          dims.iter().map(|x| if *x < 0 {None} else {Some(*x)}).collect())))
       } else{
         Err(status)
       }
@@ -666,23 +665,49 @@ impl<'a> OperationDescription<'a> {
   }
 
   /// Sets a shape-valued attribute.
-  ///
-  /// Entries must be at least -1, where -1 means "unknown dimension".
-  pub fn set_attr_shape(&mut self, attr_name: &str, value: &[i64]) -> std::result::Result<(), NulError> {
+  pub fn set_attr_shape(&mut self, attr_name: &str, value: &TensorShape) -> std::result::Result<(), NulError> {
     let c_attr_name = try!(CString::new(attr_name));
     unsafe {
-      tf::TF_SetAttrShape(self.inner, c_attr_name.as_ptr(), value.as_ptr(), value.len() as i32);
+      match &value.0 {
+        &None =>
+          tf::TF_SetAttrShape(self.inner, c_attr_name.as_ptr(), ptr::null(), -1),
+        &Some(ref dims) => {
+          let c_dims: Vec<i64> = dims.iter().map(
+            |x| match x {
+              &Some(d) => d,
+              &None => -1,
+            }).collect();
+          tf::TF_SetAttrShape(self.inner, c_attr_name.as_ptr(), c_dims.as_ptr(), c_dims.len() as i32);
+        }
+      }
     }
     Ok(())
   }
 
   /// Sets an attribute which holds an array of shapes.
-  ///
-  /// Entries must be at least -1, where -1 means "unknown dimension".
-  pub fn set_attr_shape_list<T: AsRef<[i64]>>(&mut self, attr_name: &str, value: &[T]) -> std::result::Result<(), NulError> {
+  pub fn set_attr_shape_list(&mut self, attr_name: &str, value: &[TensorShape]) -> std::result::Result<(), NulError> {
     let c_attr_name = try!(CString::new(attr_name));
-    let ptrs: Vec<*const i64> = value.iter().map(|x| x.as_ref().as_ptr()).collect();
-    let lens: Vec<c_int> = value.iter().map(|x| x.as_ref().len() as c_int).collect();
+    // Convert Option<i64> in each shape to i64 with None becoming -1.
+    let c_dims: Vec<Option<Vec<i64>>> = value.iter().map(
+      |x| match &x.0 {
+        &None => None,
+        &Some(ref dims) =>
+          Some(dims.iter().map(
+            |x| match x {
+              &None => -1,
+              &Some(d) => d,
+            }).collect()),
+      }).collect();
+    let ptrs: Vec<*const i64> = c_dims.iter().map(
+      |x| match x {
+        &None => ptr::null(),
+        &Some(ref dims) => dims.as_ptr(),
+        }).collect();
+    let lens: Vec<c_int> = value.iter().map(
+      |x| match &x.0 {
+        &None => -1,
+        &Some(ref dims) => dims.len() as c_int,
+      }).collect();
     unsafe {
       tf::TF_SetAttrShapeList(
         self.inner,
@@ -798,6 +823,7 @@ impl<'a> Drop for OperationDescription<'a> {
 mod tests {
   use super::*;
   use super::super::DataType;
+  use super::super::TensorShape;
 
   fn add_operation(g: &mut Graph) {
     g.new_operation("Variable", "foo").unwrap();
@@ -810,12 +836,12 @@ mod tests {
     let operation = {
       let mut nd = g.new_operation("Variable", "foo").unwrap();
       nd.set_attr_type("dtype", DataType::Float).unwrap();
-      nd.set_attr_shape("shape", &vec![]).unwrap();
+      nd.set_attr_shape("shape", &TensorShape(Some(vec![]))).unwrap();
       nd.finish().unwrap()
     };
     let mut nd2 = g.new_operation("Variable", "foo2").unwrap();
     nd2.set_attr_type("dtype", DataType::Float).unwrap();
-    nd2.set_attr_shape("shape", &vec![]).unwrap();
+    nd2.set_attr_shape("shape", &TensorShape(Some(vec![]))).unwrap();
     let operation2 = nd2.finish().unwrap();
     assert_eq!("foo", operation.name().unwrap());
     assert_eq!("foo2", operation2.name().unwrap());

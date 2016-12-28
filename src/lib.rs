@@ -29,6 +29,7 @@ use std::mem;
 use std::ops::Deref;
 use std::ops::DerefMut;
 use std::ops::Drop;
+use std::ops::Index;
 use std::str::Utf8Error;
 
 ////////////////////////
@@ -1025,6 +1026,60 @@ trait OperationTrait {
 pub fn version() -> std::result::Result<String, Utf8Error> {
   unsafe {
     CStr::from_ptr(tf::TF_Version()).to_str().map(|s| s.to_string())
+  }
+}
+
+////////////////////////
+
+/// A TensorShape is the shape of a tensor.  A TensorShape may be an unknown
+/// rank, or it may have a known rank with each dimension being known or
+/// unknown.
+#[derive(Debug,Eq,Ord,PartialEq,PartialOrd,Hash,Clone)]
+pub struct TensorShape(Option<Vec<Option<i64>>>);
+
+impl TensorShape {
+  /// Returns the number of dimensions if known, or None if unknown.
+  pub fn rank(&self) -> Option<usize> {
+    match self {
+      &TensorShape(None) => None,
+      &TensorShape(Some(ref v)) => Some(v.len()),
+    }
+  }
+}
+
+impl From<Option<Vec<Option<i64>>>> for TensorShape {
+  fn from(data: Option<Vec<Option<i64>>>) -> TensorShape {
+    TensorShape(data)
+  }
+}
+
+impl Into<Option<Vec<Option<i64>>>> for TensorShape {
+  fn into(self) -> Option<Vec<Option<i64>>> {
+    self.0
+  }
+}
+
+static UNKNOWN_DIMENSION: Option<i64> = None;
+
+impl Index<usize> for TensorShape {
+  type Output = Option<i64>;
+
+  fn index(&self, index: usize) -> &Option<i64> {
+    match &self.0 {
+      &None => &UNKNOWN_DIMENSION,
+      &Some(ref v) =>
+        if index < v.len() {
+          &v[index]
+        } else {
+          &UNKNOWN_DIMENSION
+        },
+    }
+  }
+}
+
+impl Display for TensorShape {
+  fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+    self.0.fmt(f)
   }
 }
 
