@@ -44,6 +44,8 @@ impl Drop for GraphImpl {
 
 ////////////////////////
 
+/// `ImportGraphDefOptions` holds options that can be passed to
+/// `Graph::import_graph_def`.
 #[derive(Debug)]
 pub struct ImportGraphDefOptions {
   inner: *mut tf::TF_ImportGraphDefOptions,
@@ -52,8 +54,6 @@ pub struct ImportGraphDefOptions {
 impl_new!(ImportGraphDefOptions, TF_NewImportGraphDefOptions, "Creates a default ImportGraphDefOptions.");
 impl_drop!(ImportGraphDefOptions, TF_DeleteImportGraphDefOptions);
 
-/// `ImportGraphDefOptions` holds options that can be passed to
-/// `Graph::import_graph_def`.
 impl ImportGraphDefOptions {
   /// Set the prefix to be prepended to the names of nodes in `graph_def` that will
   /// be imported into `graph`.
