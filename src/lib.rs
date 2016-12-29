@@ -1039,7 +1039,7 @@ pub struct TensorShape(Option<Vec<Option<i64>>>);
 
 impl TensorShape {
   /// Returns the number of dimensions if known, or None if unknown.
-  pub fn rank(&self) -> Option<usize> {
+  pub fn dims(&self) -> Option<usize> {
     match self {
       &TensorShape(None) => None,
       &TensorShape(Some(ref v)) => Some(v.len()),
