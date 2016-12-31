@@ -1,17 +1,19 @@
 extern crate pkg_config;
+extern crate semver;
 
 use std::error::Error;
-use std::fs::OpenOptions;
-use std::io::Read;
-use std::io::Write;
+use std::fs::File;
 use std::path::{Path, PathBuf};
+use std::process;
 use std::process::Command;
 use std::{env, fs};
+use semver::Version;
 
 const LIBRARY: &'static str = "tensorflow_c";
 const REPOSITORY: &'static str = "https://github.com/tensorflow/tensorflow.git";
 const TARGET: &'static str = "tensorflow:libtensorflow_c.so";
-const VERSION: &'static str = "0.10.0";
+const TAG: &'static str = "v0.12.0";
+const MIN_BAZEL: &'static str = "0.3.2";
 
 macro_rules! get(($name:expr) => (ok!(env::var($name))));
 macro_rules! ok(($expression:expr) => ($expression.unwrap()));
@@ -29,9 +31,9 @@ fn main() {
 
     let output = PathBuf::from(&get!("OUT_DIR"));
     log_var!(output);
-    let source = PathBuf::from(&get!("CARGO_MANIFEST_DIR")).join(format!("target/source-{}", VERSION));
+    let source = PathBuf::from(&get!("CARGO_MANIFEST_DIR")).join(format!("target/source-{}", TAG));
     log_var!(source);
-    let lib_dir = output.join(format!("lib-{}", VERSION));
+    let lib_dir = output.join(format!("lib-{}", TAG));
     log_var!(lib_dir);
     if lib_dir.exists() {
         log!("Directory {:?} already exists", lib_dir);
@@ -44,17 +46,28 @@ fn main() {
     if library_path.exists() {
         log!("{:?} already exists, not building", library_path);
     } else {
+        if let Err(e) = check_bazel() {
+            println!("cargo:error=Bazel must be installed at be version {} or greater. (Error: {})", MIN_BAZEL, e);
+            process::exit(1);
+        }
         let target_path = &TARGET.replace(":", "/");
         log_var!(target_path);
         if !Path::new(&source.join(".git")).exists() {
             run("git", |command| command.arg("clone")
-                                        .arg(format!("--branch=v{}", VERSION))
+                                        .arg(format!("--branch={}", TAG))
                                         .arg("--recursive")
                                         .arg(REPOSITORY)
                                         .arg(&source));
         }
-        patch_build_file(&source).unwrap();
-        run("./configure", |command| command.current_dir(&source));
+        // Only configure if not previously configured.  Configuring runs a
+        // `bazel clean`, which we don't want, because we want to be able to
+        // continue from a cancelled build.
+        let configure_hint_file_pb = source.join(".rust-configured");
+        let configure_hint_file = Path::new(&configure_hint_file_pb);
+        if !configure_hint_file.exists() {
+            run("bash", |command| command.current_dir(&source).arg("-c").arg("yes ''|./configure"));
+            File::create(configure_hint_file).unwrap();
+        }
         run("bazel", |command| command.current_dir(&source)
                                       .arg("build")
                                       .arg(format!("--jobs={}", get!("NUM_JOBS")))
@@ -69,33 +82,6 @@ fn main() {
     println!("cargo:rustc-link-search={}", lib_dir.display());
 }
 
-// Patches in https://github.com/tensorflow/tensorflow/commit/d03f2545ecc3012e6c941a3a1e957f7d7f8d5040
-// (or close enough) to work around #18 (No C API in TensorFlow v0.10)
-// TODO(acrume): Remove once we're on a non-broken version.
-fn patch_build_file(source: &PathBuf) -> Result<(), Box<Error>> {
-    let build_file = source.join("tensorflow/BUILD");
-    log!("Checking build file {:?}", build_file);
-    let mut content = String::new();
-    let mut file = try!(OpenOptions::new().read(true).append(true).open(build_file.clone()));
-    try!(file.read_to_string(&mut content));
-    if content.contains("libtensorflow_c.so") {
-        log!("Build file {:?} already patched", build_file);
-    } else {
-        log!("Patching build file {:?}", build_file);
-        try!(file.write_all(br#"
-cc_binary(
-    name = "libtensorflow_c.so",
-    linkshared = 1,
-    deps = [
-        "//tensorflow/c:c_api",
-        "//tensorflow/core:tensorflow",
-    ],
-)
-"#));
-    }
-    Ok(())
-}
-
 fn run<F>(name: &str, mut configure: F) where F: FnMut(&mut Command) -> &mut Command {
     let mut command = Command::new(name);
     let configured = configure(&mut command);
@@ -104,4 +90,33 @@ fn run<F>(name: &str, mut configure: F) where F: FnMut(&mut Command) -> &mut Com
         panic!("failed to execute {:?}", configured);
     }
     log!("Command {:?} finished successfully", configured);
+}
+
+// Building TF 0.11.0rc1 with Bazel 0.3.0 gives this error when running `configure`:
+//   expected ConfigurationTransition or NoneType for 'cfg' while calling label_list but got string instead:     data.
+//       ERROR: com.google.devtools.build.lib.packages.BuildFileContainsErrorsException: error loading package '': Extension file 'tensorflow/tensorflow.bzl' has errors.
+// And the simple solution is to require Bazel 0.3.1 or higher.
+fn check_bazel() -> Result<(), Box<Error>> {
+    let mut command = Command::new("bazel");
+    command.arg("version");
+    log!("Executing {:?}", command);
+    let out = try!(command.output());
+    log!("Command {:?} finished successfully", command);
+    let stdout = try!(String::from_utf8(out.stdout));
+    let mut found_version = false;
+    for line in stdout.lines() {
+        if line.starts_with("Build label:") {
+            found_version = true;
+            let version_str = line.split(":").nth(1).unwrap().trim();
+            let version = try!(Version::parse(version_str));
+            let want = try!(Version::parse(MIN_BAZEL));
+            if version < want {
+                return Err(format!("Installed version {} is less than required version {}", version_str, MIN_BAZEL).into());
+            }
+        }
+    }
+    if !found_version {
+        return Err("Did not find version number in `bazel version` output.".into());
+    }
+    Ok(())
 }

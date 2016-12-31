@@ -29,6 +29,8 @@ use std::mem;
 use std::ops::Deref;
 use std::ops::DerefMut;
 use std::ops::Drop;
+use std::ops::Index;
+use std::str::Utf8Error;
 
 ////////////////////////
 
@@ -45,34 +47,16 @@ macro_rules! invalid_arg {
 
 ////////////////////////
 
-mod buffer;
-pub use buffer::Buffer;
-
-mod graph;
-pub use graph::*;
-
-mod session;
-pub use session::*;
-
-pub mod expr;
-
-////////////////////////
-
-fn check_not_null<T>(p: *mut T) -> *mut T {
-  assert!(!p.is_null());
-  p
-}
-
-////////////////////////
-
 macro_rules! impl_new {
   ($name: ident, $call:ident, $doc:expr) => {
     impl $name {
       #[doc = $doc]
       pub fn new() -> Self {
         unsafe {
+          let inner = tf::$call();
+          assert!(!inner.is_null());
           $name {
-            inner: check_not_null(tf::$call()),
+            inner: inner,
           }
         }
       }
@@ -162,6 +146,19 @@ macro_rules! c_enum {
     c_enum!($doc, $c_name, $enum_name { $( $(#[$attr])* value $name = $num),* });
   }
 }
+
+////////////////////////
+
+mod buffer;
+pub use buffer::Buffer;
+
+mod graph;
+pub use graph::*;
+
+mod session;
+pub use session::*;
+
+pub mod expr;
 
 ////////////////////////
 
@@ -341,6 +338,8 @@ c_enum!("Type of a single tensor element.", TF_DataType, DataType {
 
   /// 16-bit floating point.
   value Half = 19,
+
+  value Resource = 20,
 });
 
 ////////////////////////
@@ -492,20 +491,20 @@ impl_drop!(SessionOptions, TF_DeleteSessionOptions);
 #[deprecated(note="Use SessionWithGraph instead.")]
 #[allow(deprecated)]
 #[derive(Debug)]
-pub struct Session {
-  inner: *mut tf::TF_Session,
+pub struct DeprecatedSession {
+  inner: *mut tf::TF_DeprecatedSession,
 }
 
 #[allow(deprecated)]
-impl Session {
+impl DeprecatedSession {
   /// Creates a session.
   pub fn new(options: &SessionOptions) -> Result<Self> {
     let status = Status::new();
-    let inner = unsafe { tf::TF_NewSession(options.inner, status.inner) };
+    let inner = unsafe { tf::TF_NewDeprecatedSession(options.inner, status.inner) };
     if inner.is_null() {
       Err(status)
     } else {
-      Ok(Session {
+      Ok(DeprecatedSession {
         inner: inner,
       })
     }
@@ -515,7 +514,7 @@ impl Session {
   pub fn close(&mut self) -> Result<()> {
     let status = Status::new();
     unsafe {
-      tf::TF_CloseSession(self.inner, status.inner);
+      tf::TF_CloseDeprecatedSession(self.inner, status.inner);
     }
     status.as_result()
   }
@@ -573,11 +572,11 @@ impl Session {
 }
 
 #[allow(deprecated)]
-impl Drop for Session {
+impl Drop for DeprecatedSession {
   fn drop(&mut self) {
     let status = Status::new();
     unsafe {
-      tf::TF_DeleteSession(self.inner, status.inner);
+      tf::TF_DeleteDeprecatedSession(self.inner, status.inner);
     }
     // TODO: What do we do with the status?
   }
@@ -1022,14 +1021,78 @@ trait OperationTrait {
 
 ////////////////////////
 
+/// Returns a string describing version information of the
+/// TensorFlow library. TensorFlow using semantic versioning.
+pub fn version() -> std::result::Result<String, Utf8Error> {
+  unsafe {
+    CStr::from_ptr(tf::TF_Version()).to_str().map(|s| s.to_string())
+  }
+}
+
+////////////////////////
+
+/// A TensorShape is the shape of a tensor.  A TensorShape may be an unknown
+/// rank, or it may have a known rank with each dimension being known or
+/// unknown.
+#[derive(Debug,Eq,Ord,PartialEq,PartialOrd,Hash,Clone)]
+pub struct TensorShape(Option<Vec<Option<i64>>>);
+
+impl TensorShape {
+  /// Returns the number of dimensions if known, or None if unknown.
+  pub fn dims(&self) -> Option<usize> {
+    match self {
+      &TensorShape(None) => None,
+      &TensorShape(Some(ref v)) => Some(v.len()),
+    }
+  }
+}
+
+impl From<Option<Vec<Option<i64>>>> for TensorShape {
+  fn from(data: Option<Vec<Option<i64>>>) -> TensorShape {
+    TensorShape(data)
+  }
+}
+
+impl Into<Option<Vec<Option<i64>>>> for TensorShape {
+  fn into(self) -> Option<Vec<Option<i64>>> {
+    self.0
+  }
+}
+
+static UNKNOWN_DIMENSION: Option<i64> = None;
+
+impl Index<usize> for TensorShape {
+  type Output = Option<i64>;
+
+  fn index(&self, index: usize) -> &Option<i64> {
+    match &self.0 {
+      &None => &UNKNOWN_DIMENSION,
+      &Some(ref v) =>
+        if index < v.len() {
+          &v[index]
+        } else {
+          &UNKNOWN_DIMENSION
+        },
+    }
+  }
+}
+
+impl Display for TensorShape {
+  fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+    self.0.fmt(f)
+  }
+}
+
+////////////////////////
+
 #[cfg(test)]
 mod tests {
   use super::*;
 
   #[allow(deprecated)]
-  fn create_session() -> Session {
+  fn create_session() -> DeprecatedSession {
     let options = SessionOptions::new();
-    match Session::new(&options) {
+    match DeprecatedSession::new(&options) {
       Ok(session) => session,
       Err(status) => panic!("Creating session failed with status: {}", status),
     }

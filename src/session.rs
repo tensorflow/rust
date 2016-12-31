@@ -18,24 +18,25 @@ use super::Tensor;
 use super::TensorType;
 
 /// Manages a single graph and execution.
-///
-/// This will be renamed to Session once the old API goes away.
 #[derive(Debug)]
-pub struct SessionWithGraph {
-  inner: *mut tf::TF_SessionWithGraph,
+pub struct Session {
+  inner: *mut tf::TF_Session,
 }
 
-impl SessionWithGraph {
+#[deprecated(note = "Use Session instead.")]
+type SessionWithGraph = Session;
+
+impl Session {
   /// Creates a session.
   pub fn new(options: &SessionOptions, graph: &Graph) -> Result<Self> {
     let status = Status::new();
     let inner = unsafe {
-      tf::TF_NewSessionWithGraph(graph.inner(), options.inner, status.inner)
+      tf::TF_NewSession(graph.inner(), options.inner, status.inner)
     };
     if inner.is_null() {
       Err(status)
     } else {
-      Ok(SessionWithGraph {
+      Ok(Session {
         inner: inner,
       })
     }
@@ -45,7 +46,7 @@ impl SessionWithGraph {
   pub fn close(&mut self) -> Result<()> {
     let status = Status::new();
     unsafe {
-      tf::TF_CloseSessionWithGraph(self.inner, status.inner);
+      tf::TF_CloseSession(self.inner, status.inner);
     }
     status.as_result()
   }
@@ -93,11 +94,11 @@ impl SessionWithGraph {
   }
 }
 
-impl Drop for SessionWithGraph {
+impl Drop for Session {
   fn drop(&mut self) {
     let status = Status::new();
     unsafe {
-      tf::TF_DeleteSessionWithGraph(self.inner, status.inner);
+      tf::TF_DeleteSession(self.inner, status.inner);
     }
     // TODO: What do we do with the status?
   }
@@ -120,10 +121,10 @@ pub struct OutputToken {
 /// This will be renamed to Step once the old API goes away.
 #[derive(Debug)]
 pub struct StepWithGraph<'l> {
-  input_ports: Vec<tf::TF_Port>,
+  input_ports: Vec<tf::TF_Output>,
   input_tensors: Vec<*mut tf::TF_Tensor>,
 
-  output_ports: Vec<tf::TF_Port>,
+  output_ports: Vec<tf::TF_Output>,
   output_tensors: Vec<*mut tf::TF_Tensor>,
 
   target_operations: Vec<*const tf::TF_Operation>,
@@ -149,7 +150,7 @@ impl<'l> StepWithGraph<'l> {
 
   /// Adds an input to be fed to the graph.
   pub fn add_input<T: TensorType>(&mut self, operation: &Operation, index: c_int, tensor: &'l Tensor<T>) {
-    self.input_ports.push(tf::TF_Port{
+    self.input_ports.push(tf::TF_Output{
       operation: operation.inner(),
       index: index,
     });
@@ -159,7 +160,7 @@ impl<'l> StepWithGraph<'l> {
   /// Requests that an output is fetched from the graph after running this step.
   /// Returns an index that you can then use to fetch this output from the step after running it.
   pub fn request_output(&mut self, operation: &Operation, index: c_int) -> OutputToken {
-    self.output_ports.push(tf::TF_Port{
+    self.output_ports.push(tf::TF_Output{
       operation: operation.inner(),
       index: index,
     });
@@ -249,8 +250,9 @@ mod tests {
   use super::super::Output;
   use super::super::SessionOptions;
   use super::super::Tensor;
+  use super::super::TensorShape;
 
-  fn create_session() -> (SessionWithGraph, Operation, Operation) {
+  fn create_session() -> (Session, Operation, Operation) {
     let mut g = Graph::new();
     let two = {
       let mut nd = g.new_operation("Const", "two").unwrap();
@@ -263,7 +265,7 @@ mod tests {
     let x = {
       let mut nd = g.new_operation("Placeholder", "x").unwrap();
       nd.set_attr_type("dtype", DataType::Float).unwrap();
-      nd.set_attr_shape("shape", &vec![]).unwrap();
+      nd.set_attr_shape("shape", &TensorShape(Some(vec![]))).unwrap();
       nd.finish().unwrap()
     };
     let y = {
@@ -273,7 +275,7 @@ mod tests {
       nd.finish().unwrap()
     };
     let options = SessionOptions::new();
-    match SessionWithGraph::new(&options, &g) {
+    match Session::new(&options, &g) {
       Ok(session) => (session, x, y),
       Err(status) => panic!("Creating session failed with status: {}", status),
     }

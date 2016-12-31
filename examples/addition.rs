@@ -8,7 +8,7 @@ use std::result::Result;
 use std::path::Path;
 use std::process::exit;
 use tensorflow::Code;
-use tensorflow::Session;
+use tensorflow::DeprecatedSession;
 use tensorflow::SessionOptions;
 use tensorflow::Status;
 use tensorflow::Step;
@@ -41,7 +41,7 @@ fn run() -> Result<(), Box<Error>> {
   y[0] = 40i32;
 
   // Load the computation graph defined by regression.py.
-  let mut session = try!(Session::new(&SessionOptions::new()));
+  let mut session = try!(DeprecatedSession::new(&SessionOptions::new()));
   let mut proto = Vec::new();
   try!(try!(File::open(filename)).read_to_end(&mut proto));
   try!(session.extend_graph(&proto));
