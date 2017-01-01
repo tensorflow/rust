@@ -7,11 +7,14 @@ use std::io::Read;
 use std::result::Result;
 use std::path::Path;
 use std::process::exit;
+use tensorflow::Buffer;
 use tensorflow::Code;
-use tensorflow::DeprecatedSession;
+use tensorflow::Graph;
+use tensorflow::ImportGraphDefOptions;
+use tensorflow::Session;
 use tensorflow::SessionOptions;
 use tensorflow::Status;
-use tensorflow::Step;
+use tensorflow::StepWithGraph;
 use tensorflow::Tensor;
 
 fn main() {
@@ -41,17 +44,17 @@ fn run() -> Result<(), Box<Error>> {
   y[0] = 40i32;
 
   // Load the computation graph defined by regression.py.
-  let mut session = try!(DeprecatedSession::new(&SessionOptions::new()));
+  let mut graph = Graph::new();
   let mut proto = Vec::new();
   try!(try!(File::open(filename)).read_to_end(&mut proto));
-  try!(session.extend_graph(&proto));
-
+  graph.import_graph_def(Buffer::from(&proto), &ImportGraphDefOptions::new())?;
+  let mut session = Session::new(&SessionOptions::new(), &graph)?;
 
   // Run the Step
-  let mut step = Step::new();
-  step.add_input("x", &x).unwrap();
-  step.add_input("y", &y).unwrap();
-  let z = try!(step.request_output("z"));
+  let mut step = StepWithGraph::new();
+  step.add_input(&graph.operation_by_name_required("x")?, 0, &x);
+  step.add_input(&graph.operation_by_name_required("y")?, 0, &y);
+  let z = step.request_output(&graph.operation_by_name_required("z")?, 0);
   try!(session.run(&mut step));
 
   // Check our results.
