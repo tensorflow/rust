@@ -358,6 +358,21 @@ impl<T: TensorType> IndexMut<RangeFull> for Buffer<T> {
   }
 }
 
+impl<'a, T: TensorType> From<&'a [T]> for Buffer<T> {
+  fn from(data: &'a [T]) -> Buffer<T> {
+    let mut buffer = Buffer::new(data.len());
+    buffer.clone_from_slice(data);
+    buffer
+  }
+}
+
+impl<'a, T: TensorType> From<&'a Vec<T>> for Buffer<T> {
+  #[allow(trivial_casts)]
+  fn from(data: &'a Vec<T>) -> Buffer<T> {
+    Buffer::from(data as &[T])
+  }
+}
+
 ////////////////////////
 
 #[cfg(test)]
