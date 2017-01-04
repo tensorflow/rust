@@ -9,11 +9,14 @@ use std::io::Read;
 use std::result::Result;
 use std::path::Path;
 use std::process::exit;
+use tensorflow::Buffer;
 use tensorflow::Code;
-use tensorflow::DeprecatedSession;
+use tensorflow::Graph;
+use tensorflow::ImportGraphDefOptions;
+use tensorflow::Session;
 use tensorflow::SessionOptions;
 use tensorflow::Status;
-use tensorflow::Step;
+use tensorflow::StepWithGraph;
 use tensorflow::Tensor;
 
 fn main() {
@@ -50,31 +53,38 @@ fn run() -> Result<(), Box<Error>> {
   }
 
   // Load the computation graph defined by regression.py.
-  let mut session = try!(DeprecatedSession::new(&SessionOptions::new()));
+  let mut graph = Graph::new();
   let mut proto = Vec::new();
   try!(try!(File::open(filename)).read_to_end(&mut proto));
-  try!(session.extend_graph(&proto));
+  graph.import_graph_def(Buffer::from(&proto), &ImportGraphDefOptions::new())?;
+  let mut session = Session::new(&SessionOptions::new(), &graph)?;
+  let op_x = graph.operation_by_name_required("x")?;
+  let op_y = graph.operation_by_name_required("y")?;
+  let op_init = graph.operation_by_name_required("init")?;
+  let op_train = graph.operation_by_name_required("train")?;
+  let op_w = graph.operation_by_name_required("w")?;
+  let op_b = graph.operation_by_name_required("b")?;
 
   // Load the test data into the session.
-  let mut init_step = Step::new();
-  try!(init_step.add_input("x", &x));
-  try!(init_step.add_input("y", &y));
-  try!(init_step.add_target("init"));
+  let mut init_step = StepWithGraph::new();
+  init_step.add_input(&op_x, 0, &x);
+  init_step.add_input(&op_y, 0, &y);
+  init_step.add_target(&op_init);
   try!(session.run(&mut init_step));
 
   // Train the model.
-  let mut train_step = Step::new();
-  try!(train_step.add_input("x", &x));
-  try!(train_step.add_input("y", &y));
-  try!(train_step.add_target("train"));
+  let mut train_step = StepWithGraph::new();
+  train_step.add_input(&op_x, 0, &x);
+  train_step.add_input(&op_y, 0, &y);
+  train_step.add_target(&op_train);
   for _ in 0..steps {
     try!(session.run(&mut train_step));
   }
 
   // Grab the data out of the session.
-  let mut output_step = Step::new();
-  let w_ix = try!(output_step.request_output("w"));
-  let b_ix = try!(output_step.request_output("b"));
+  let mut output_step = StepWithGraph::new();
+  let w_ix = output_step.request_output(&op_w, 0);
+  let b_ix = output_step.request_output(&op_b, 0);
   try!(session.run(&mut output_step));
 
   // Check our results.
