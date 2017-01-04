@@ -7,7 +7,6 @@ use std::io::Read;
 use std::result::Result;
 use std::path::Path;
 use std::process::exit;
-use tensorflow::Buffer;
 use tensorflow::Code;
 use tensorflow::Graph;
 use tensorflow::ImportGraphDefOptions;
@@ -47,7 +46,7 @@ fn run() -> Result<(), Box<Error>> {
   let mut graph = Graph::new();
   let mut proto = Vec::new();
   try!(try!(File::open(filename)).read_to_end(&mut proto));
-  graph.import_graph_def(Buffer::from(&proto), &ImportGraphDefOptions::new())?;
+  graph.import_graph_def(&proto, &ImportGraphDefOptions::new())?;
   let mut session = Session::new(&SessionOptions::new(), &graph)?;
 
   // Run the Step

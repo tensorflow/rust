@@ -15,7 +15,7 @@ use std::ffi::NulError;
 use std::ptr;
 use std::str::Utf8Error;
 use std::sync::Arc;
-use super::Buffer;
+use super::buffer::Buffer;
 use super::BufferTrait;
 use super::Code;
 use super::DataType;
@@ -140,13 +140,13 @@ impl Graph {
   }
 
   /// Returns the graph definition as a protobuf.
-  pub fn graph_def(&self) -> Result<Buffer<u8>> {
+  pub fn graph_def(&self) -> Result<Vec<u8>> {
     let status = Status::new();
     unsafe {
       let c_buffer = tf::TF_NewBuffer();
       tf::TF_GraphToGraphDef(self.gimpl.inner, c_buffer, status.inner);
       if status.is_ok() {
-        Ok(Buffer::from_c(c_buffer, true))
+        Ok(Buffer::from_c(c_buffer, true).into())
       } else {
         tf::TF_DeleteBuffer(c_buffer);
         Err(status)
@@ -204,12 +204,13 @@ impl Graph {
   }
 
   /// Import the graph serialized in `graph_def`.
-  pub fn import_graph_def(&mut self, graph_def: Buffer<u8>, options: &ImportGraphDefOptions) -> Result<()> {
+  pub fn import_graph_def(&mut self, graph_def: &[u8], options: &ImportGraphDefOptions) -> Result<()> {
+    let buf = Buffer::from(graph_def);
     let status = Status::new();
     unsafe {
       tf::TF_GraphImportGraphDef(
         self.gimpl.inner,
-        graph_def.inner(),
+        buf.inner(),
         options.inner,
         status.inner);
       status.as_result()
