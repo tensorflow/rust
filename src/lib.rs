@@ -150,7 +150,7 @@ macro_rules! c_enum {
 ////////////////////////
 
 mod buffer;
-pub use buffer::Buffer;
+use buffer::Buffer;
 
 mod graph;
 pub use graph::*;
@@ -852,36 +852,18 @@ impl<T: TensorType> Tensor<T> {
   /// The data is initialized to zeros.
   pub fn new(dims: &[u64]) -> Self {
     let total = product(dims);
-    let data = <Buffer<T>>::new(total as usize);
-    // Guaranteed safe to unwrap, because the only way for it to fail is for the
-    // length of the buffer not to match the dimensions, and we created it with
-    // exactly the right size.
-    Self::new_with_buffer(dims, data).unwrap()
-  }
-
-  /// Creates a new tensor from existing data.
-  pub fn new_with_buffer(dims: &[u64], mut data: Buffer<T>) -> Result<Self> {
-    let total = product(dims);
-    if total != data.len() as u64 {
-      return Err(invalid_arg!("Dimensions {:?} do not match buffer length {}", dims, data.len()));
-    }
     unsafe {
-      // Be careful.  TF_NewTensor may copy the data and deallocate the original buffer.
-      let inner = tf::TF_NewTensor(
+      let inner = tf::TF_AllocateTensor(
         T::data_type().to_c(),
         dims.as_ptr() as *const _,
         dims.len() as c_int,
-        data.as_ptr() as *mut _,
-        data.len() * mem::size_of::<T>(),
-        Some(if data.is_owned() {deallocator} else {noop_deallocator}),
-        if data.is_owned() {data.inner_mut() as *mut _} else {std::ptr::null_mut()});
-      data.set_owned(false);
-      Ok(Tensor {
+        total as usize * mem::size_of::<T>());
+      Tensor {
         inner: inner,
         data: Buffer::from_ptr(tf::TF_TensorData(inner) as *mut T, total as usize),
         dims: Vec::from(dims),
         owned: true,
-      })
+      }
     }
   }
 
@@ -937,17 +919,17 @@ impl<T: TensorType> Drop for Tensor<T> {
 }
 
 impl<T: TensorType> Deref for Tensor<T> {
-  type Target = Buffer<T>;
+  type Target = [T];
 
   #[inline]
-  fn deref(&self) -> &Buffer<T> {
+  fn deref(&self) -> &[T] {
     &self.data
   }
 }
 
 impl<T: TensorType> DerefMut for Tensor<T> {
   #[inline]
-  fn deref_mut<'a>(&'a mut self) -> &'a mut Buffer<T> {
+  fn deref_mut<'a>(&'a mut self) -> &'a mut [T] {
     &mut self.data
   }
 }
