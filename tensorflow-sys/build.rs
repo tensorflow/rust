@@ -58,6 +58,9 @@ fn main() {
                                         .arg("--recursive")
                                         .arg(REPOSITORY)
                                         .arg(&source));
+            run("git", |command| command.current_dir(&source)
+                                        .arg("apply")
+                                        .arg("../../0001-Fix-zlib-dependency.patch"));
         }
         // Only configure if not previously configured.  Configuring runs a
         // `bazel clean`, which we don't want, because we want to be able to
