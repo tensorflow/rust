@@ -47,7 +47,7 @@ fn main() {
         log!("{:?} already exists, not building", library_path);
     } else {
         if let Err(e) = check_bazel() {
-            println!("cargo:error=Bazel must be installed at be version {} or greater. (Error: {})", MIN_BAZEL, e);
+            println!("cargo:error=Bazel must be installed at version {} or greater. (Error: {})", MIN_BAZEL, e);
             process::exit(1);
         }
         let target_path = &TARGET.replace(":", "/");
@@ -110,7 +110,12 @@ fn check_bazel() -> Result<(), Box<Error>> {
     for line in stdout.lines() {
         if line.starts_with("Build label:") {
             found_version = true;
-            let version_str = line.split(":").nth(1).unwrap().trim();
+            let mut version_str = line.split(":").nth(1).unwrap()
+                .split(" ").nth(1).unwrap().trim();
+            if version_str.ends_with('-') {
+                // hyphen is 1 byte long, so it's safe
+                version_str = &version_str[..version_str.len() - 1];
+            }
             let version = try!(Version::parse(version_str));
             let want = try!(Version::parse(MIN_BAZEL));
             if version < want {
