@@ -249,8 +249,8 @@ mod tests {
   use super::super::Operation;
   use super::super::Output;
   use super::super::SessionOptions;
+  use super::super::Shape;
   use super::super::Tensor;
-  use super::super::TensorShape;
 
   fn create_session() -> (Session, Operation, Operation) {
     let mut g = Graph::new();
@@ -265,7 +265,7 @@ mod tests {
     let x = {
       let mut nd = g.new_operation("Placeholder", "x").unwrap();
       nd.set_attr_type("dtype", DataType::Float).unwrap();
-      nd.set_attr_shape("shape", &TensorShape(Some(vec![]))).unwrap();
+      nd.set_attr_shape("shape", &Shape(Some(vec![]))).unwrap();
       nd.finish().unwrap()
     };
     let y = {

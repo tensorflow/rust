@@ -21,9 +21,9 @@ use super::DataType;
 use super::Graph;
 use super::Operation;
 use super::Output;
+use super::Shape;
 use super::Status;
 use super::Tensor;
-use super::TensorShape;
 use super::TensorType;
 
 /// Denotes operator precedence.
@@ -390,7 +390,7 @@ impl<T: TensorType> ExprImpl<T> for Variable<T> {
   fn create_operation(&self, graph: &mut Graph, _children: &[Rc<Operation>], _id_gen: &mut FnMut() -> String) -> Result<Operation, Status> {
     let mut nd = try!(graph.new_operation("Variable", &self.name));
     nd.set_attr_type("dtype", DataType::Float).unwrap();
-    nd.set_attr_shape("shape", &TensorShape(Some(vec![]))).unwrap();
+    nd.set_attr_shape("shape", &Shape(Some(vec![]))).unwrap();
     nd.finish()
   }
 
@@ -448,7 +448,7 @@ impl<T: TensorType> ExprImpl<T> for Placeholder<T> {
   fn create_operation(&self, graph: &mut Graph, _children: &[Rc<Operation>], _id_gen: &mut FnMut() -> String) -> Result<Operation, Status> {
     let mut nd = try!(graph.new_operation("Placeholder", &self.name));
     nd.set_attr_type("dtype", DataType::Float).unwrap();
-    nd.set_attr_shape("shape", &TensorShape(Some(vec![]))).unwrap();
+    nd.set_attr_shape("shape", &Shape(Some(vec![]))).unwrap();
     nd.finish()
   }
 
