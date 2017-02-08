@@ -1013,29 +1013,31 @@ pub fn version() -> std::result::Result<String, Utf8Error> {
 
 ////////////////////////
 
-/// A TensorShape is the shape of a tensor.  A TensorShape may be an unknown
-/// rank, or it may have a known rank with each dimension being known or
-/// unknown.
-#[derive(Debug,Eq,Ord,PartialEq,PartialOrd,Hash,Clone)]
-pub struct TensorShape(Option<Vec<Option<i64>>>);
+#[deprecated(note="Use Shape instead.")]
+type TensorShape = Shape;
 
-impl TensorShape {
+/// A Shape is the shape of a tensor.  A Shape may be an unknown rank, or it may
+/// have a known rank with each dimension being known or unknown.
+#[derive(Debug,Eq,Ord,PartialEq,PartialOrd,Hash,Clone)]
+pub struct Shape(Option<Vec<Option<i64>>>);
+
+impl Shape {
   /// Returns the number of dimensions if known, or None if unknown.
   pub fn dims(&self) -> Option<usize> {
     match self {
-      &TensorShape(None) => None,
-      &TensorShape(Some(ref v)) => Some(v.len()),
+      &Shape(None) => None,
+      &Shape(Some(ref v)) => Some(v.len()),
     }
   }
 }
 
-impl From<Option<Vec<Option<i64>>>> for TensorShape {
-  fn from(data: Option<Vec<Option<i64>>>) -> TensorShape {
-    TensorShape(data)
+impl From<Option<Vec<Option<i64>>>> for Shape {
+  fn from(data: Option<Vec<Option<i64>>>) -> Shape {
+    Shape(data)
   }
 }
 
-impl Into<Option<Vec<Option<i64>>>> for TensorShape {
+impl Into<Option<Vec<Option<i64>>>> for Shape {
   fn into(self) -> Option<Vec<Option<i64>>> {
     self.0
   }
@@ -1043,7 +1045,7 @@ impl Into<Option<Vec<Option<i64>>>> for TensorShape {
 
 static UNKNOWN_DIMENSION: Option<i64> = None;
 
-impl Index<usize> for TensorShape {
+impl Index<usize> for Shape {
   type Output = Option<i64>;
 
   fn index(&self, index: usize) -> &Option<i64> {
@@ -1059,7 +1061,7 @@ impl Index<usize> for TensorShape {
   }
 }
 
-impl Display for TensorShape {
+impl Display for Shape {
   fn fmt(&self, f: &mut Formatter) -> fmt::Result {
     self.0.fmt(f)
   }

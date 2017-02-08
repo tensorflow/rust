@@ -21,10 +21,10 @@ use super::Code;
 use super::DataType;
 use super::GraphTrait;
 use super::OperationTrait;
+use super::Shape;
 use super::Status;
 use super::Result;
 use super::Tensor;
-use super::TensorShape;
 use super::TensorType;
 
 #[derive(Debug)]
@@ -179,11 +179,11 @@ impl Graph {
   ///
   /// Returns an error if:
   ///   * `output` is not in `graph`.
-  pub fn tensor_shape(&self, output: Output) -> Result<TensorShape> {
+  pub fn tensor_shape(&self, output: Output) -> Result<Shape> {
     let status = Status::new();
     let n = try!(self.num_dims(output));
     if n == -1 {
-      return Ok(TensorShape(None));
+      return Ok(Shape(None));
     }
     let mut dims = Vec::with_capacity(n as usize);
     unsafe {
@@ -195,7 +195,7 @@ impl Graph {
         status.inner);
       if status.is_ok() {
         dims.set_len(n as usize);
-        Ok(TensorShape(Some(
+        Ok(Shape(Some(
           dims.iter().map(|x| if *x < 0 {None} else {Some(*x)}).collect())))
       } else{
         Err(status)
@@ -666,7 +666,7 @@ impl<'a> OperationDescription<'a> {
   }
 
   /// Sets a shape-valued attribute.
-  pub fn set_attr_shape(&mut self, attr_name: &str, value: &TensorShape) -> std::result::Result<(), NulError> {
+  pub fn set_attr_shape(&mut self, attr_name: &str, value: &Shape) -> std::result::Result<(), NulError> {
     let c_attr_name = try!(CString::new(attr_name));
     unsafe {
       match &value.0 {
@@ -686,7 +686,7 @@ impl<'a> OperationDescription<'a> {
   }
 
   /// Sets an attribute which holds an array of shapes.
-  pub fn set_attr_shape_list(&mut self, attr_name: &str, value: &[TensorShape]) -> std::result::Result<(), NulError> {
+  pub fn set_attr_shape_list(&mut self, attr_name: &str, value: &[Shape]) -> std::result::Result<(), NulError> {
     let c_attr_name = try!(CString::new(attr_name));
     // Convert Option<i64> in each shape to i64 with None becoming -1.
     let c_dims: Vec<Option<Vec<i64>>> = value.iter().map(
@@ -824,7 +824,7 @@ impl<'a> Drop for OperationDescription<'a> {
 mod tests {
   use super::*;
   use super::super::DataType;
-  use super::super::TensorShape;
+  use super::super::Shape;
 
   fn add_operation(g: &mut Graph) {
     g.new_operation("Variable", "foo").unwrap();
@@ -837,12 +837,12 @@ mod tests {
     let operation = {
       let mut nd = g.new_operation("Variable", "foo").unwrap();
       nd.set_attr_type("dtype", DataType::Float).unwrap();
-      nd.set_attr_shape("shape", &TensorShape(Some(vec![]))).unwrap();
+      nd.set_attr_shape("shape", &Shape(Some(vec![]))).unwrap();
       nd.finish().unwrap()
     };
     let mut nd2 = g.new_operation("Variable", "foo2").unwrap();
     nd2.set_attr_type("dtype", DataType::Float).unwrap();
-    nd2.set_attr_shape("shape", &TensorShape(Some(vec![]))).unwrap();
+    nd2.set_attr_shape("shape", &Shape(Some(vec![]))).unwrap();
     let operation2 = nd2.finish().unwrap();
     assert_eq!("foo", operation.name().unwrap());
     assert_eq!("foo2", operation2.name().unwrap());
