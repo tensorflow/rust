@@ -498,6 +498,14 @@ extern "C" {
                          opts: *const TF_SessionOptions,
                          status: *mut TF_Status)
                          -> *mut TF_Session;
+    pub fn TF_LoadSessionFromSavedModel(session_options: *const TF_SessionOptions,
+                                        run_options: *const TF_Buffer,
+                                        export_dir: *const c_char,
+                                        tags: *const *const c_char,
+                                        tags_len: c_int,
+                                        graph: *mut TF_Graph,
+                                        meta_graph_def: *mut TF_Buffer,
+                                        status: *mut TF_Status) -> *mut TF_Session;
     pub fn TF_CloseSession(session: *mut TF_Session, status: *mut TF_Status);
     pub fn TF_DeleteSession(session: *mut TF_Session, status: *mut TF_Status);
     pub fn TF_SessionRun(session: *mut TF_Session,

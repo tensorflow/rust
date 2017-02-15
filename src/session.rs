@@ -1,7 +1,10 @@
 use tf;
-use libc::c_int;
+use libc::{c_char, c_int};
+use std::ffi::CString;
 use std::marker;
+use std::path::Path;
 use std::ptr;
+use std::result::Result as StdResult;
 use super::Code;
 use super::DataType;
 use super::Graph;
@@ -29,6 +32,43 @@ impl Session {
             Err(status)
         } else {
             Ok(Session { inner: inner })
+        }
+    }
+
+    /// Loads a session from an exported model.
+    pub fn from_saved_model<P: AsRef<Path>, Tag: AsRef<str>, Tags: IntoIterator<Item=Tag>>(
+            options: &SessionOptions, tags: Tags, graph: &mut Graph, export_dir: P) -> Result<Self> {
+        let mut status = Status::new();
+        
+        let export_dir_cstr = try!(export_dir.as_ref().to_str()
+                .and_then(|s| CString::new(s.as_bytes()).ok())
+                .ok_or_else(|| Status::new_set(
+                    Code::InvalidArgument, "Invalid export directory path").unwrap()));
+        
+        let tags_cstr: Vec<_> = try!(tags.into_iter()
+                .map(|t| CString::new(t.as_ref()))
+                .collect::<StdResult<_,_>>()
+                .map_err(|_| Status::new_set(Code::InvalidArgument, "Invalid tag name").unwrap()));
+        // keeping tags_cstr to retain strings in memory
+        let tags_ptr: Vec<*const c_char> = tags_cstr.iter().map(|t| t.as_ptr()).collect();
+        
+        let inner = unsafe {
+        tf::TF_LoadSessionFromSavedModel(
+            options.inner,
+            ptr::null(),
+            export_dir_cstr.to_bytes_with_nul().as_ptr() as *const c_char,
+            tags_ptr.as_ptr(),
+            tags_ptr.len() as c_int,
+            graph.inner(),
+            ptr::null_mut(),
+            status.inner())
+        };
+        if inner.is_null() {
+            Err(status)
+        } else {
+            Ok(Session {
+                inner: inner,
+            })
         }
     }
 
