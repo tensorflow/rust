@@ -1,4 +1,3 @@
-// -*-  indent-tabs-mode:nil; tab-width:2;  -*-
 extern crate random;
 extern crate tensorflow;
 
@@ -19,79 +18,94 @@ use tensorflow::StepWithGraph;
 use tensorflow::Tensor;
 
 fn main() {
-  // Putting the main code in another function serves two purposes:
-  // 1. We can use the try! macro.
-  // 2. We can call exit safely, which does not run any destructors.
-  exit(match run() {
-    Ok(_) => 0,
-    Err(e) => {
-      println!("{}", e);
-      1
-    }
-  })
+    // Putting the main code in another function serves two purposes:
+    // 1. We can use the try! macro.
+    // 2. We can call exit safely, which does not run any destructors.
+    exit(match run() {
+        Ok(_) => 0,
+        Err(e) => {
+            println!("{}", e);
+            1
+        }
+    })
 }
 
 fn run() -> Result<(), Box<Error>> {
-  let filename = "examples/regression-model/model.pb"; // y = w * x + b
-  if !Path::new(filename).exists() {
-    return Err(Box::new(Status::new_set(Code::NotFound, &format!(
-      "Run 'python regression.py' to generate {} and try again.", filename)).unwrap()));
-  }
+    let filename = "examples/regression-model/model.pb"; // y = w * x + b
+    if !Path::new(filename).exists() {
+        return Err(Box::new(Status::new_set(Code::NotFound,
+                                            &format!("Run 'python regression.py' to generate \
+                                                      {} and try again.",
+                                                     filename))
+            .unwrap()));
+    }
 
-  // Generate some test data.
-  let w = 0.1;
-  let b = 0.3;
-  let num_points = 100;
-  let steps = 201;
-  let mut rand = random::default();
-  let mut x = Tensor::new(&[num_points as u64]);
-  let mut y = Tensor::new(&[num_points as u64]);
-  for i in 0..num_points {
-    x[i] = (2.0 * rand.read::<f64>() - 1.0) as f32;
-    y[i] = w * x[i] + b;
-  }
+    // Generate some test data.
+    let w = 0.1;
+    let b = 0.3;
+    let num_points = 100;
+    let steps = 201;
+    let mut rand = random::default();
+    let mut x = Tensor::new(&[num_points as u64]);
+    let mut y = Tensor::new(&[num_points as u64]);
+    for i in 0..num_points {
+        x[i] = (2.0 * rand.read::<f64>() - 1.0) as f32;
+        y[i] = w * x[i] + b;
+    }
 
-  // Load the computation graph defined by regression.py.
-  let mut graph = Graph::new();
-  let mut proto = Vec::new();
-  try!(try!(File::open(filename)).read_to_end(&mut proto));
-  graph.import_graph_def(&proto, &ImportGraphDefOptions::new())?;
-  let mut session = Session::new(&SessionOptions::new(), &graph)?;
-  let op_x = graph.operation_by_name_required("x")?;
-  let op_y = graph.operation_by_name_required("y")?;
-  let op_init = graph.operation_by_name_required("init")?;
-  let op_train = graph.operation_by_name_required("train")?;
-  let op_w = graph.operation_by_name_required("w")?;
-  let op_b = graph.operation_by_name_required("b")?;
+    // Load the computation graph defined by regression.py.
+    let mut graph = Graph::new();
+    let mut proto = Vec::new();
+    try!(try!(File::open(filename)).read_to_end(&mut proto));
+    graph.import_graph_def(&proto, &ImportGraphDefOptions::new())?;
+    let mut session = Session::new(&SessionOptions::new(), &graph)?;
+    let op_x = graph.operation_by_name_required("x")?;
+    let op_y = graph.operation_by_name_required("y")?;
+    let op_init = graph.operation_by_name_required("init")?;
+    let op_train = graph.operation_by_name_required("train")?;
+    let op_w = graph.operation_by_name_required("w")?;
+    let op_b = graph.operation_by_name_required("b")?;
 
-  // Load the test data into the session.
-  let mut init_step = StepWithGraph::new();
-  init_step.add_input(&op_x, 0, &x);
-  init_step.add_input(&op_y, 0, &y);
-  init_step.add_target(&op_init);
-  try!(session.run(&mut init_step));
+    // Load the test data into the session.
+    let mut init_step = StepWithGraph::new();
+    init_step.add_input(&op_x, 0, &x);
+    init_step.add_input(&op_y, 0, &y);
+    init_step.add_target(&op_init);
+    try!(session.run(&mut init_step));
 
-  // Train the model.
-  let mut train_step = StepWithGraph::new();
-  train_step.add_input(&op_x, 0, &x);
-  train_step.add_input(&op_y, 0, &y);
-  train_step.add_target(&op_train);
-  for _ in 0..steps {
-    try!(session.run(&mut train_step));
-  }
+    // Train the model.
+    let mut train_step = StepWithGraph::new();
+    train_step.add_input(&op_x, 0, &x);
+    train_step.add_input(&op_y, 0, &y);
+    train_step.add_target(&op_train);
+    for _ in 0..steps {
+        try!(session.run(&mut train_step));
+    }
 
-  // Grab the data out of the session.
-  let mut output_step = StepWithGraph::new();
-  let w_ix = output_step.request_output(&op_w, 0);
-  let b_ix = output_step.request_output(&op_b, 0);
-  try!(session.run(&mut output_step));
+    // Grab the data out of the session.
+    let mut output_step = StepWithGraph::new();
+    let w_ix = output_step.request_output(&op_w, 0);
+    let b_ix = output_step.request_output(&op_b, 0);
+    try!(session.run(&mut output_step));
 
-  // Check our results.
-  let w_hat: f32 = try!(output_step.take_output(w_ix)).data()[0];
-  let b_hat: f32 = try!(output_step.take_output(b_ix)).data()[0];
-  println!("Checking w: expected {}, got {}. {}", w, w_hat,
-           if (w - w_hat).abs() < 1e-3 {"Success!"} else {"FAIL"});
-  println!("Checking b: expected {}, got {}. {}", b, b_hat,
-           if (b - b_hat).abs() < 1e-3 {"Success!"} else {"FAIL"});
-  Ok(())
+    // Check our results.
+    let w_hat: f32 = try!(output_step.take_output(w_ix)).data()[0];
+    let b_hat: f32 = try!(output_step.take_output(b_ix)).data()[0];
+    println!("Checking w: expected {}, got {}. {}",
+             w,
+             w_hat,
+             if (w - w_hat).abs() < 1e-3 {
+                 "Success!"
+             } else {
+                 "FAIL"
+             });
+    println!("Checking b: expected {}, got {}. {}",
+             b,
+             b_hat,
+             if (b - b_hat).abs() < 1e-3 {
+                 "Success!"
+             } else {
+                 "FAIL"
+             });
+    Ok(())
 }

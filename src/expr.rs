@@ -1,4 +1,3 @@
-// -*-  indent-tabs-mode:nil; tab-width:2;  -*-
 //! This module builds computation graphs.
 //!
 //! This module is unfinished.
@@ -30,20 +29,20 @@ use super::TensorType;
 /// Used for displaying expressions as strings.
 #[derive(Ord,PartialOrd,Eq,PartialEq,Debug,Copy,Clone)]
 pub enum OpLevel {
-  /// Assignment.
-  Assign,
+    /// Assignment.
+    Assign,
 
-  /// Addition and subtraction.
-  Add,
+    /// Addition and subtraction.
+    Add,
 
-  /// Multiplication, division, and remainder.
-  Mul,
+    /// Multiplication, division, and remainder.
+    Mul,
 
-  /// Unary operators like negation.
-  Unary,
+    /// Unary operators like negation.
+    Unary,
 
-  /// Variables and constants.
-  Atom,
+    /// Variables and constants.
+    Atom,
 }
 
 ////////////////////////
@@ -54,28 +53,26 @@ pub enum OpLevel {
 /// and we can't directly implement std::ops::Add, etc., for Rc<E: ExprImpl<T>>.
 #[derive(Debug,Clone)]
 pub struct Expr<T: TensorType> {
-  expr: Rc<ExprImpl<T>>,
+    expr: Rc<ExprImpl<T>>,
 }
 
 impl<T: TensorType> Expr<T> {
-  /// Returns the derivative of the expression with respect to the given variable.
-  pub fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
-    self.expr.derivative_by_variable(var)
-  }
+    /// Returns the derivative of the expression with respect to the given variable.
+    pub fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
+        self.expr.derivative_by_variable(var)
+    }
 }
 
 impl<T: TensorType> Display for Expr<T> {
-  fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-    Display::fmt(&self.expr, f)
-  }
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        Display::fmt(&self.expr, f)
+    }
 }
 
 impl<T: TensorType> From<T> for Expr<T> {
-  fn from(value: T) -> Self {
-    Expr {
-      expr: Rc::new(value),
+    fn from(value: T) -> Self {
+        Expr { expr: Rc::new(value) }
     }
-  }
 }
 
 ////////////////////////
@@ -83,51 +80,60 @@ impl<T: TensorType> From<T> for Expr<T> {
 /// Trait implemented by all expression types.
 /// Most users will want to store an Expr instead.
 pub trait ExprImpl<T: TensorType>: Display + Debug {
-  /// Returns the precedence level for this operator.
-  fn op_level(&self) -> OpLevel;
+    /// Returns the precedence level for this operator.
+    fn op_level(&self) -> OpLevel;
 
-  /// Returns the child expressions.
-  ///
-  /// For example, the child expressions of `x + y` would be `x` and `y`.
-  fn children(&self) -> Vec<Box<AnyExpr>>; // TODO: return an iterator
+    /// Returns the child expressions.
+    ///
+    /// For example, the child expressions of `x + y` would be `x` and `y`.
+    fn children(&self) -> Vec<Box<AnyExpr>>; // TODO: return an iterator
 
-  /// Creates an operation for the expression.
-  ///
-  /// The implementation must use the operations in the `children` parameter
-  /// rather than creating child operations itself.
-  fn create_operation(&self, graph: &mut Graph, children: &[Rc<Operation>], id_gen: &mut FnMut() -> String) -> Result<Operation, Status>;
+    /// Creates an operation for the expression.
+    ///
+    /// The implementation must use the operations in the `children` parameter
+    /// rather than creating child operations itself.
+    fn create_operation(&self,
+                        graph: &mut Graph,
+                        children: &[Rc<Operation>],
+                        id_gen: &mut FnMut() -> String)
+                        -> Result<Operation, Status>;
 
-  /// Returns the derivative of the expression with respect to the given variable.
-  fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status>;
+    /// Returns the derivative of the expression with respect to the given variable.
+    fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status>;
 }
 
 impl<T: TensorType> ExprImpl<T> for T {
-  fn op_level(&self) -> OpLevel {
-    OpLevel::Atom
-  }
+    fn op_level(&self) -> OpLevel {
+        OpLevel::Atom
+    }
 
-  fn children(&self) -> Vec<Box<AnyExpr>> {
-    vec![]
-  }
+    fn children(&self) -> Vec<Box<AnyExpr>> {
+        vec![]
+    }
 
-  fn create_operation(&self, graph: &mut Graph, _children: &[Rc<Operation>], id_gen: &mut FnMut() -> String) -> Result<Operation, Status> {
-    let mut nd = try!(graph.new_operation("Const", &id_gen()));
-    try!(nd.set_attr_type("dtype", DataType::Float));
-    let mut value = Tensor::new(&[1]);
-    value[0] = *self;
-    try!(nd.set_attr_tensor("value", value));
-    nd.finish()
-  }
+    fn create_operation(&self,
+                        graph: &mut Graph,
+                        _children: &[Rc<Operation>],
+                        id_gen: &mut FnMut() -> String)
+                        -> Result<Operation, Status> {
+        let mut nd = try!(graph.new_operation("Const", &id_gen()));
+        try!(nd.set_attr_type("dtype", DataType::Float));
+        let mut value = Tensor::new(&[1]);
+        value[0] = *self;
+        try!(nd.set_attr_tensor("value", value));
+        nd.finish()
+    }
 
-  fn derivative_by_variable(&self, _var: &str) -> Result<Expr<T>, Status> {
-    Ok(Expr::from(T::zero()))
-  }
+    fn derivative_by_variable(&self, _var: &str) -> Result<Expr<T>, Status> {
+        Ok(Expr::from(T::zero()))
+    }
 }
 
 ////////////////////////
 
 macro_rules! impl_bin_op {
-  ($name:ident, $fn_name:ident, $op:expr, $op_level:ident, $assoc:expr, $tf_op:expr, $doc:expr, $($ximpl:tt)*) => {
+  ($name:ident, $fn_name:ident, $op:expr, $op_level:ident, $assoc:expr,
+      $tf_op:expr, $doc:expr, $($ximpl:tt)*) => {
     #[doc = $doc]
     #[derive(Debug)]
     pub struct $name<T: TensorType> {
@@ -191,7 +197,8 @@ macro_rules! impl_bin_op {
         vec![Box::new(self.left.clone()), Box::new(self.right.clone())]
       }
 
-      fn create_operation(&self, graph: &mut Graph, children: &[Rc<Operation>], id_gen: &mut FnMut() -> String) -> Result<Operation, Status> {
+      fn create_operation(&self, graph: &mut Graph, children: &[Rc<Operation>],
+          id_gen: &mut FnMut() -> String) -> Result<Operation, Status> {
         let mut nd = try!(graph.new_operation($tf_op, &id_gen()));
         nd.add_input(Output {operation: &children[0], index: 0});
         nd.add_input(Output {operation: &children[1], index: 0});
@@ -218,13 +225,15 @@ impl_bin_op!(
 impl_bin_op!(
   Mul, mul, "*", Mul, true, "Mul", "Expression resulting from multiplying two subexpressions.",
   fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
-    Ok(try!(self.left.derivative_by_variable(var)) * self.right.clone() + self.left.clone() * try!(self.right.derivative_by_variable(var)))
+    Ok(try!(self.left.derivative_by_variable(var)) * self.right.clone()
+    + self.left.clone() * try!(self.right.derivative_by_variable(var)))
   }
   );
 impl_bin_op!(
   Div, div, "/", Mul, false, "Div", "Expression resulting from dividing two subexpressions.",
   fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
-    let num = try!(self.left.derivative_by_variable(var)) * self.right.clone() - self.left.clone() * try!(self.right.derivative_by_variable(var));
+    let num = try!(self.left.derivative_by_variable(var)) * self.right.clone()
+    - self.left.clone() * try!(self.right.derivative_by_variable(var));
     let denom = self.right.clone() * self.right.clone();
     Ok(num / denom)
   }
@@ -232,7 +241,9 @@ impl_bin_op!(
 impl_bin_op!(
   Rem, rem, "%", Mul, false, "Mod", "Expression resulting from taking a modulus.",
   fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
-    Ok(try!(self.left.derivative_by_variable(var)) - TruncateDiv::new_expr(self.left.clone(), self.right.clone()) * try!(self.right.derivative_by_variable(var)))
+    Ok(try!(self.left.derivative_by_variable(var))
+    - TruncateDiv::new_expr(self.left.clone(), self.right.clone())
+    * try!(self.right.derivative_by_variable(var)))
   }
   );
 
@@ -241,57 +252,65 @@ impl_bin_op!(
 /// Expression that assigns a value to a variable.
 #[derive(Debug)]
 pub struct TruncateDiv<T: TensorType> {
-  left: Expr<T>,
-  right: Expr<T>,
+    left: Expr<T>,
+    right: Expr<T>,
 }
 
 impl<T: TensorType> TruncateDiv<T> {
-  fn new(left: Expr<T>, right: Expr<T>) -> Self {
-    TruncateDiv {
-      left: left,
-      right: right,
+    fn new(left: Expr<T>, right: Expr<T>) -> Self {
+        TruncateDiv {
+            left: left,
+            right: right,
+        }
     }
-  }
 
-  /// Creates an expression that divides `left` by `right` and rounds toward zero.
-  pub fn new_expr(left: Expr<T>, right: Expr<T>) -> Expr<T> {
-    Expr {
-      expr: Rc::new(TruncateDiv::new(left, right))
+    /// Creates an expression that divides `left` by `right` and rounds toward zero.
+    pub fn new_expr(left: Expr<T>, right: Expr<T>) -> Expr<T> {
+        Expr { expr: Rc::new(TruncateDiv::new(left, right)) }
     }
-  }
 }
 
 impl<T: TensorType> Display for TruncateDiv<T> {
-  fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-    write!(f, "{} // {}", self.left, self.right)
-  }
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        write!(f, "{} // {}", self.left, self.right)
+    }
 }
 
 impl<T: TensorType> ExprImpl<T> for TruncateDiv<T> {
-  fn op_level(&self) -> OpLevel {
-    OpLevel::Mul
-  }
+    fn op_level(&self) -> OpLevel {
+        OpLevel::Mul
+    }
 
-  fn children(&self) -> Vec<Box<AnyExpr>> {
-    vec![Box::new(self.left.clone()), Box::new(self.right.clone())]
-  }
+    fn children(&self) -> Vec<Box<AnyExpr>> {
+        vec![Box::new(self.left.clone()), Box::new(self.right.clone())]
+    }
 
-  fn create_operation(&self, graph: &mut Graph, children: &[Rc<Operation>], id_gen: &mut FnMut() -> String) -> Result<Operation, Status> {
-    let mut nd = try!(graph.new_operation("TruncateDiv", &id_gen()));
-    nd.add_input(Output {operation: &children[0], index: 0});
-    nd.add_input(Output {operation: &children[1], index: 0});
-    nd.finish()
-  }
+    fn create_operation(&self,
+                        graph: &mut Graph,
+                        children: &[Rc<Operation>],
+                        id_gen: &mut FnMut() -> String)
+                        -> Result<Operation, Status> {
+        let mut nd = try!(graph.new_operation("TruncateDiv", &id_gen()));
+        nd.add_input(Output {
+            operation: &children[0],
+            index: 0,
+        });
+        nd.add_input(Output {
+            operation: &children[1],
+            index: 0,
+        });
+        nd.finish()
+    }
 
-  fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
-    // Mod(x, y) = x - TruncateDiv(x, y) * y
-    // TruncateDiv(x, y) = (x - Mod(x, y)) / y
-    // d/dt TruncateDiv(x, y) = (y * d/dt (x - Mod(x, y)) - (x - Mod(x, y)) dy/dt) / (y * y)
-    let diff = self.left.clone() - self.left.clone() % self.right.clone();
-    let term1 = self.right.clone() * try!(diff.derivative_by_variable(var));
-    let term2 = diff * try!(self.right.derivative_by_variable(var));
-    Ok((term1 - term2) / (self.right.clone() * self.right.clone()))
-  }
+    fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
+        // Mod(x, y) = x - TruncateDiv(x, y) * y
+        // TruncateDiv(x, y) = (x - Mod(x, y)) / y
+        // d/dt TruncateDiv(x, y) = (y * d/dt (x - Mod(x, y)) - (x - Mod(x, y)) dy/dt) / (y * y)
+        let diff = self.left.clone() - self.left.clone() % self.right.clone();
+        let term1 = self.right.clone() * try!(diff.derivative_by_variable(var));
+        let term2 = diff * try!(self.right.derivative_by_variable(var));
+        Ok((term1 - term2) / (self.right.clone() * self.right.clone()))
+    }
 }
 
 ////////////////////////
@@ -299,50 +318,53 @@ impl<T: TensorType> ExprImpl<T> for TruncateDiv<T> {
 /// Expression resulting from negation of an expression.
 #[derive(Debug)]
 pub struct Neg<T: TensorType> {
-  expr: Expr<T>,
+    expr: Expr<T>,
 }
 
 impl<T: TensorType> ops::Neg for Expr<T> {
-  type Output = Expr<T>;
+    type Output = Expr<T>;
 
-  fn neg(self) -> Expr<T> {
-    Expr {
-      expr: Rc::new(Neg {
-        expr: self,
-      }),
+    fn neg(self) -> Expr<T> {
+        Expr { expr: Rc::new(Neg { expr: self }) }
     }
-  }
 }
 
 impl<T: TensorType> Display for Neg<T> {
-  fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-    try!(write!(f, "-"));
-    if self.expr.expr.op_level() <= OpLevel::Unary {
-      write!(f, "({})", self.expr)
-    } else {
-      write!(f, "{}", self.expr)
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        try!(write!(f, "-"));
+        if self.expr.expr.op_level() <= OpLevel::Unary {
+            write!(f, "({})", self.expr)
+        } else {
+            write!(f, "{}", self.expr)
+        }
     }
-  }
 }
 
 impl<T: TensorType> ExprImpl<T> for Neg<T> {
-  fn op_level(&self) -> OpLevel {
-    OpLevel::Unary
-  }
+    fn op_level(&self) -> OpLevel {
+        OpLevel::Unary
+    }
 
-  fn children(&self) -> Vec<Box<AnyExpr>> {
-    vec![Box::new(self.expr.clone())]
-  }
+    fn children(&self) -> Vec<Box<AnyExpr>> {
+        vec![Box::new(self.expr.clone())]
+    }
 
-  fn create_operation(&self, graph: &mut Graph, children: &[Rc<Operation>], id_gen: &mut FnMut() -> String) -> Result<Operation, Status> {
-    let mut nd = try!(graph.new_operation("Neg", &id_gen()));
-    nd.add_input(Output {operation: &children[0], index: 0});
-    nd.finish()
-  }
+    fn create_operation(&self,
+                        graph: &mut Graph,
+                        children: &[Rc<Operation>],
+                        id_gen: &mut FnMut() -> String)
+                        -> Result<Operation, Status> {
+        let mut nd = try!(graph.new_operation("Neg", &id_gen()));
+        nd.add_input(Output {
+            operation: &children[0],
+            index: 0,
+        });
+        nd.finish()
+    }
 
-  fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
-    Ok(-try!(self.expr.derivative_by_variable(var)))
-  }
+    fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
+        Ok(-try!(self.expr.derivative_by_variable(var)))
+    }
 }
 
 ////////////////////////
@@ -350,57 +372,59 @@ impl<T: TensorType> ExprImpl<T> for Neg<T> {
 /// Expression for a variable.
 #[derive(Debug)]
 pub struct Variable<T: TensorType> {
-  shape: Vec<u64>,
-  name: String,
-  phantom: PhantomData<T>,
+    shape: Vec<u64>,
+    name: String,
+    phantom: PhantomData<T>,
 }
 
 impl<T: TensorType> Variable<T> {
-  fn new(shape: &[u64], name: &str) -> Self {
-    Variable {
-      shape: Vec::from(shape),
-      name: name.to_string(),
-      phantom: PhantomData,
+    fn new(shape: &[u64], name: &str) -> Self {
+        Variable {
+            shape: Vec::from(shape),
+            name: name.to_string(),
+            phantom: PhantomData,
+        }
     }
-  }
 
-  /// Creates an `Expr` for a variable.
-  pub fn new_expr(shape: &[u64], name: &str) -> Expr<T> {
-    Expr {
-      expr: Rc::new(Variable::new(shape, name))
+    /// Creates an `Expr` for a variable.
+    pub fn new_expr(shape: &[u64], name: &str) -> Expr<T> {
+        Expr { expr: Rc::new(Variable::new(shape, name)) }
     }
-  }
 }
 
 impl<T: TensorType> Display for Variable<T> {
-  fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-    write!(f, "{}", self.name)
-  }
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        write!(f, "{}", self.name)
+    }
 }
 
 impl<T: TensorType> ExprImpl<T> for Variable<T> {
-  fn op_level(&self) -> OpLevel {
-    OpLevel::Atom
-  }
+    fn op_level(&self) -> OpLevel {
+        OpLevel::Atom
+    }
 
-  fn children(&self) -> Vec<Box<AnyExpr>> {
-    vec![]
-  }
+    fn children(&self) -> Vec<Box<AnyExpr>> {
+        vec![]
+    }
 
-  fn create_operation(&self, graph: &mut Graph, _children: &[Rc<Operation>], _id_gen: &mut FnMut() -> String) -> Result<Operation, Status> {
-    let mut nd = try!(graph.new_operation("Variable", &self.name));
-    nd.set_attr_type("dtype", DataType::Float).unwrap();
-    nd.set_attr_shape("shape", &Shape(Some(vec![]))).unwrap();
-    nd.finish()
-  }
+    fn create_operation(&self,
+                        graph: &mut Graph,
+                        _children: &[Rc<Operation>],
+                        _id_gen: &mut FnMut() -> String)
+                        -> Result<Operation, Status> {
+        let mut nd = try!(graph.new_operation("Variable", &self.name));
+        nd.set_attr_type("dtype", DataType::Float).unwrap();
+        nd.set_attr_shape("shape", &Shape(Some(vec![]))).unwrap();
+        nd.finish()
+    }
 
-  fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
-    Ok(if var == self.name {
-      Expr::from(T::one())
-    } else {
-      Expr::from(T::zero())
-    })
-  }
+    fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
+        Ok(if var == self.name {
+            Expr::from(T::one())
+        } else {
+            Expr::from(T::zero())
+        })
+    }
 }
 
 ////////////////////////
@@ -408,53 +432,55 @@ impl<T: TensorType> ExprImpl<T> for Variable<T> {
 /// Expression for a placeholder.
 #[derive(Debug)]
 pub struct Placeholder<T: TensorType> {
-  shape: Vec<u64>,
-  name: String,
-  phantom: PhantomData<T>,
+    shape: Vec<u64>,
+    name: String,
+    phantom: PhantomData<T>,
 }
 
 impl<T: TensorType> Placeholder<T> {
-  fn new(shape: &[u64], name: &str) -> Self {
-    Placeholder {
-      shape: Vec::from(shape),
-      name: name.to_string(),
-      phantom: PhantomData,
+    fn new(shape: &[u64], name: &str) -> Self {
+        Placeholder {
+            shape: Vec::from(shape),
+            name: name.to_string(),
+            phantom: PhantomData,
+        }
     }
-  }
 
-  /// Creates an `Expr` for a placeholder.
-  pub fn new_expr(shape: &[u64], name: &str) -> Expr<T> {
-    Expr {
-      expr: Rc::new(Placeholder::new(shape, name))
+    /// Creates an `Expr` for a placeholder.
+    pub fn new_expr(shape: &[u64], name: &str) -> Expr<T> {
+        Expr { expr: Rc::new(Placeholder::new(shape, name)) }
     }
-  }
 }
 
 impl<T: TensorType> Display for Placeholder<T> {
-  fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-    write!(f, "{}", self.name)
-  }
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        write!(f, "{}", self.name)
+    }
 }
 
 impl<T: TensorType> ExprImpl<T> for Placeholder<T> {
-  fn op_level(&self) -> OpLevel {
-    OpLevel::Atom
-  }
+    fn op_level(&self) -> OpLevel {
+        OpLevel::Atom
+    }
 
-  fn children(&self) -> Vec<Box<AnyExpr>> {
-    vec![]
-  }
+    fn children(&self) -> Vec<Box<AnyExpr>> {
+        vec![]
+    }
 
-  fn create_operation(&self, graph: &mut Graph, _children: &[Rc<Operation>], _id_gen: &mut FnMut() -> String) -> Result<Operation, Status> {
-    let mut nd = try!(graph.new_operation("Placeholder", &self.name));
-    nd.set_attr_type("dtype", DataType::Float).unwrap();
-    nd.set_attr_shape("shape", &Shape(Some(vec![]))).unwrap();
-    nd.finish()
-  }
+    fn create_operation(&self,
+                        graph: &mut Graph,
+                        _children: &[Rc<Operation>],
+                        _id_gen: &mut FnMut() -> String)
+                        -> Result<Operation, Status> {
+        let mut nd = try!(graph.new_operation("Placeholder", &self.name));
+        nd.set_attr_type("dtype", DataType::Float).unwrap();
+        nd.set_attr_shape("shape", &Shape(Some(vec![]))).unwrap();
+        nd.finish()
+    }
 
-  fn derivative_by_variable(&self, _var: &str) -> Result<Expr<T>, Status> {
-    Ok(Expr::from(T::zero()))
-  }
+    fn derivative_by_variable(&self, _var: &str) -> Result<Expr<T>, Status> {
+        Ok(Expr::from(T::zero()))
+    }
 }
 
 ////////////////////////
@@ -462,51 +488,59 @@ impl<T: TensorType> ExprImpl<T> for Placeholder<T> {
 /// Expression that assigns a value to a variable.
 #[derive(Debug)]
 pub struct Assign<T: TensorType> {
-  variable: Expr<T>,
-  value: Expr<T>,
+    variable: Expr<T>,
+    value: Expr<T>,
 }
 
 impl<T: TensorType> Assign<T> {
-  fn new(variable: Expr<T>, value: Expr<T>) -> Self {
-    Assign {
-      variable: variable,
-      value: value,
+    fn new(variable: Expr<T>, value: Expr<T>) -> Self {
+        Assign {
+            variable: variable,
+            value: value,
+        }
     }
-  }
 
-  /// Creates an expression that assigns `value` to `variable`.
-  pub fn new_expr(variable: Expr<T>, value: Expr<T>) -> Expr<T> {
-    Expr {
-      expr: Rc::new(Assign::new(variable, value))
+    /// Creates an expression that assigns `value` to `variable`.
+    pub fn new_expr(variable: Expr<T>, value: Expr<T>) -> Expr<T> {
+        Expr { expr: Rc::new(Assign::new(variable, value)) }
     }
-  }
 }
 
 impl<T: TensorType> Display for Assign<T> {
-  fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-    write!(f, "{} = {}", self.variable, self.value)
-  }
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        write!(f, "{} = {}", self.variable, self.value)
+    }
 }
 
 impl<T: TensorType> ExprImpl<T> for Assign<T> {
-  fn op_level(&self) -> OpLevel {
-    OpLevel::Assign
-  }
+    fn op_level(&self) -> OpLevel {
+        OpLevel::Assign
+    }
 
-  fn children(&self) -> Vec<Box<AnyExpr>> {
-    vec![Box::new(self.variable.clone()), Box::new(self.value.clone())]
-  }
+    fn children(&self) -> Vec<Box<AnyExpr>> {
+        vec![Box::new(self.variable.clone()), Box::new(self.value.clone())]
+    }
 
-  fn create_operation(&self, graph: &mut Graph, children: &[Rc<Operation>], id_gen: &mut FnMut() -> String) -> Result<Operation, Status> {
-    let mut nd = try!(graph.new_operation("Assign", &id_gen()));
-    nd.add_input(Output {operation: &children[0], index: 0});
-    nd.add_input(Output {operation: &children[1], index: 0});
-    nd.finish()
-  }
+    fn create_operation(&self,
+                        graph: &mut Graph,
+                        children: &[Rc<Operation>],
+                        id_gen: &mut FnMut() -> String)
+                        -> Result<Operation, Status> {
+        let mut nd = try!(graph.new_operation("Assign", &id_gen()));
+        nd.add_input(Output {
+            operation: &children[0],
+            index: 0,
+        });
+        nd.add_input(Output {
+            operation: &children[1],
+            index: 0,
+        });
+        nd.finish()
+    }
 
-  fn derivative_by_variable(&self, _var: &str) -> Result<Expr<T>, Status> {
-    Err(invalid_arg!("Cannot take the derivative of an assignment"))
-  }
+    fn derivative_by_variable(&self, _var: &str) -> Result<Expr<T>, Status> {
+        Err(invalid_arg!("Cannot take the derivative of an assignment"))
+    }
 }
 
 ////////////////////////
@@ -515,184 +549,208 @@ impl<T: TensorType> ExprImpl<T> for Assign<T> {
 /// An `AnyExpr` is just an `Expr<T>` for some unknown `T`.
 /// Clients *should not* implement this.
 pub trait AnyExpr: Debug {
-  /// Returns a pointer usable as a map key which identifies this expression.
-  fn key(&self) -> *const ();
+    /// Returns a pointer usable as a map key which identifies this expression.
+    fn key(&self) -> *const ();
 
-  /// Returns the child expressions.
-  ///
-  /// For example, the child expressions of `x + y` would be `x` and `y`.
-  fn children(&self) -> Vec<Box<AnyExpr>>; // TODO: return an iterator
+    /// Returns the child expressions.
+    ///
+    /// For example, the child expressions of `x + y` would be `x` and `y`.
+    fn children(&self) -> Vec<Box<AnyExpr>>; // TODO: return an iterator
 
-  /// Creates an operation for the expression.
-  ///
-  /// The implementation must use the operations in the `children` parameter
-  /// rather than creating child operations itself.
-  fn create_operation(&self, graph: &mut Graph, children: &[Rc<Operation>], id_gen: &mut FnMut() -> String) -> Result<Operation, Status>;
+    /// Creates an operation for the expression.
+    ///
+    /// The implementation must use the operations in the `children` parameter
+    /// rather than creating child operations itself.
+    fn create_operation(&self,
+                        graph: &mut Graph,
+                        children: &[Rc<Operation>],
+                        id_gen: &mut FnMut() -> String)
+                        -> Result<Operation, Status>;
 
-  /// Returns a boxed clone.
-  ///
-  /// This is used rather than the `Clone` trait because that would prevent
-  /// `AnyExpr` values from being used as trait objects.
-  fn clone_box(&self) -> Box<AnyExpr>;
+    /// Returns a boxed clone.
+    ///
+    /// This is used rather than the `Clone` trait because that would prevent
+    /// `AnyExpr` values from being used as trait objects.
+    fn clone_box(&self) -> Box<AnyExpr>;
 }
 
 impl<T: TensorType> AnyExpr for Expr<T> {
-  #[allow(trivial_casts)]
-  fn key(&self) -> *const () {
-    self.expr.as_ref() as *const ExprImpl<T> as *const ()
-  }
+    #[allow(trivial_casts)]
+    fn key(&self) -> *const () {
+        self.expr.as_ref() as *const ExprImpl<T> as *const ()
+    }
 
-  fn children(&self) -> Vec<Box<AnyExpr>> {
-    self.expr.children()
-  }
+    fn children(&self) -> Vec<Box<AnyExpr>> {
+        self.expr.children()
+    }
 
-  fn create_operation(&self, graph: &mut Graph, children: &[Rc<Operation>], id_gen: &mut FnMut() -> String) -> Result<Operation, Status> {
-    self.expr.create_operation(graph, children, id_gen)
-  }
+    fn create_operation(&self,
+                        graph: &mut Graph,
+                        children: &[Rc<Operation>],
+                        id_gen: &mut FnMut() -> String)
+                        -> Result<Operation, Status> {
+        self.expr.create_operation(graph, children, id_gen)
+    }
 
-  fn clone_box(&self) -> Box<AnyExpr> {
-    Box::new(self.clone())
-  }
+    fn clone_box(&self) -> Box<AnyExpr> {
+        Box::new(self.clone())
+    }
 }
 
 #[derive(Debug)]
 struct Key(Box<AnyExpr>);
 
 impl PartialEq for Key {
-  fn eq(&self, other: &Key) -> bool {
-    self.0.key() == other.0.key()
-  }
+    fn eq(&self, other: &Key) -> bool {
+        self.0.key() == other.0.key()
+    }
 }
 
-impl Eq for Key {
-}
+impl Eq for Key {}
 
 impl Hash for Key {
-  fn hash<H>(&self, state: &mut H) where H: Hasher {
-    state.write_isize(self.0.key() as isize)
-  }
+    fn hash<H>(&self, state: &mut H)
+        where H: Hasher
+    {
+        state.write_isize(self.0.key() as isize)
+    }
 }
 
 /// A `Compiler` compiles `Expr`s to `Operation`s.
 #[derive(Debug)]
 pub struct Compiler<'l> {
-  graph: &'l mut Graph,
-  operations: HashMap<Key, Rc<Operation>>,
-  next_id: i32,
+    graph: &'l mut Graph,
+    operations: HashMap<Key, Rc<Operation>>,
+    next_id: i32,
 }
 
 impl<'l> Compiler<'l> {
-  /// Creates a compiler for the given graph.
-  pub fn new(graph: &'l mut Graph) -> Self {
-    Compiler {
-      graph: graph,
-      operations: HashMap::new(),
-      next_id: 0,
+    /// Creates a compiler for the given graph.
+    pub fn new(graph: &'l mut Graph) -> Self {
+        Compiler {
+            graph: graph,
+            operations: HashMap::new(),
+            next_id: 0,
+        }
     }
-  }
 
-  /// Compiles the expression.
-  pub fn compile<T: TensorType>(&mut self, expr: Expr<T>) -> Result<Rc<Operation>, Status> {
-    self.compile_any(Box::new(expr))
-  }
-
-  /// Compiles the expression.
-  pub fn compile_any(&mut self, expr: Box<AnyExpr>) -> Result<Rc<Operation>, Status> {
-    let mut child_operations = vec![];
-    for child in expr.children() {
-      let key = Key(child.clone_box());
-      // The result is mapped separately from the match statement below to avoid
-      // reference lifetime isues.
-      let value = self.operations.get(&key).map(|v| v.clone());
-      child_operations.push(match value {
-        Some(v) => v,
-        None => try!(self.compile_any(child)),
-      });
+    /// Compiles the expression.
+    pub fn compile<T: TensorType>(&mut self, expr: Expr<T>) -> Result<Rc<Operation>, Status> {
+        self.compile_any(Box::new(expr))
     }
-    let mut next_id = self.next_id;
-    let result = expr.create_operation(self.graph, &child_operations, &mut || {
-      let id = format!("operation_{}", next_id);
-      next_id += 1;
-      id
-    });
-    self.next_id = next_id;
-    let operation = Rc::new(try!(result));
-    self.operations.insert(Key(expr), operation.clone());
-    Ok(operation)
-  }
+
+    /// Compiles the expression.
+    pub fn compile_any(&mut self, expr: Box<AnyExpr>) -> Result<Rc<Operation>, Status> {
+        let mut child_operations = vec![];
+        for child in expr.children() {
+            let key = Key(child.clone_box());
+            // The result is mapped separately from the match statement below to avoid
+            // reference lifetime isues.
+            let value = self.operations.get(&key).map(|v| v.clone());
+            child_operations.push(match value {
+                Some(v) => v,
+                None => try!(self.compile_any(child)),
+            });
+        }
+        let mut next_id = self.next_id;
+        let result = expr.create_operation(self.graph,
+                                           &child_operations,
+                                           &mut || {
+                                               let id = format!("operation_{}", next_id);
+                                               next_id += 1;
+                                               id
+                                           });
+        self.next_id = next_id;
+        let operation = Rc::new(try!(result));
+        self.operations.insert(Key(expr), operation.clone());
+        Ok(operation)
+    }
 }
 
 ////////////////////////
 
 #[cfg(test)]
 mod tests {
-  use super::*;
-  use super::super::Graph;
+    use super::*;
+    use super::super::Graph;
 
-  #[test]
-  fn test_display() {
-    assert_eq!("1 + 2 + 3", format!("{}", (Expr::from(1) + 2) + 3));
-    assert_eq!("1 + 2 + 3", format!("{}", Expr::from(1) + (Expr::from(2) + 3)));
-    assert_eq!("1 + 2 - 3", format!("{}", (Expr::from(1) + 2) - 3));
-    assert_eq!("1 - (2 + 3)", format!("{}", Expr::from(1) - (Expr::from(2) + 3)));
+    #[test]
+    fn test_display() {
+        assert_eq!("1 + 2 + 3", format!("{}", (Expr::from(1) + 2) + 3));
+        assert_eq!("1 + 2 + 3",
+                   format!("{}", Expr::from(1) + (Expr::from(2) + 3)));
+        assert_eq!("1 + 2 - 3", format!("{}", (Expr::from(1) + 2) - 3));
+        assert_eq!("1 - (2 + 3)",
+                   format!("{}", Expr::from(1) - (Expr::from(2) + 3)));
 
-    assert_eq!("(1 + 2) * 3", format!("{}", (Expr::from(1) + 2) * 3));
-    assert_eq!("1 * (2 + 3)", format!("{}", Expr::from(1) * (Expr::from(2) + 3)));
-    assert_eq!("1 * 2 * 3", format!("{}", (Expr::from(1) * 2) * 3));
-    assert_eq!("1 * 2 * 3", format!("{}", Expr::from(1) * (Expr::from(2) * 3)));
+        assert_eq!("(1 + 2) * 3", format!("{}", (Expr::from(1) + 2) * 3));
+        assert_eq!("1 * (2 + 3)",
+                   format!("{}", Expr::from(1) * (Expr::from(2) + 3)));
+        assert_eq!("1 * 2 * 3", format!("{}", (Expr::from(1) * 2) * 3));
+        assert_eq!("1 * 2 * 3",
+                   format!("{}", Expr::from(1) * (Expr::from(2) * 3)));
 
-    assert_eq!("(1 + 2) / 3", format!("{}", (Expr::from(1) + 2) / 3));
-    assert_eq!("1 / (2 + 3)", format!("{}", Expr::from(1) / (Expr::from(2) + 3)));
-    assert_eq!("1 * 2 / 3", format!("{}", (Expr::from(1) * 2) / 3));
-    assert_eq!("1 / (2 * 3)", format!("{}", Expr::from(1) / (Expr::from(2) * 3)));
+        assert_eq!("(1 + 2) / 3", format!("{}", (Expr::from(1) + 2) / 3));
+        assert_eq!("1 / (2 + 3)",
+                   format!("{}", Expr::from(1) / (Expr::from(2) + 3)));
+        assert_eq!("1 * 2 / 3", format!("{}", (Expr::from(1) * 2) / 3));
+        assert_eq!("1 / (2 * 3)",
+                   format!("{}", Expr::from(1) / (Expr::from(2) * 3)));
 
-    assert_eq!("(1 + 2) % 3", format!("{}", (Expr::from(1) + 2) % 3));
-    assert_eq!("1 % (2 + 3)", format!("{}", Expr::from(1) % (Expr::from(2) + 3)));
-    assert_eq!("1 * 2 % 3", format!("{}", (Expr::from(1) * 2) % 3));
-    assert_eq!("1 % (2 * 3)", format!("{}", Expr::from(1) % (Expr::from(2) * 3)));
+        assert_eq!("(1 + 2) % 3", format!("{}", (Expr::from(1) + 2) % 3));
+        assert_eq!("1 % (2 + 3)",
+                   format!("{}", Expr::from(1) % (Expr::from(2) + 3)));
+        assert_eq!("1 * 2 % 3", format!("{}", (Expr::from(1) * 2) % 3));
+        assert_eq!("1 % (2 * 3)",
+                   format!("{}", Expr::from(1) % (Expr::from(2) * 3)));
 
-    assert_eq!("-1", format!("{}", -Expr::from(1)));
-    assert_eq!("-(-1)", format!("{}", -(-Expr::from(1))));
-    assert_eq!("-(1 + 2)", format!("{}", -(Expr::from(1) + 2)));
+        assert_eq!("-1", format!("{}", -Expr::from(1)));
+        assert_eq!("-(-1)", format!("{}", -(-Expr::from(1))));
+        assert_eq!("-(1 + 2)", format!("{}", -(Expr::from(1) + 2)));
 
-    assert_eq!("x", format!("{}", <Variable<f32>>::new(&vec![2, 3], "x")));
+        assert_eq!("x", format!("{}", <Variable<f32>>::new(&vec![2, 3], "x")));
 
-    assert_eq!("x", format!("{}", <Placeholder<f32>>::new(&vec![2, 3], "x")));
+        assert_eq!("x",
+                   format!("{}", <Placeholder<f32>>::new(&vec![2, 3], "x")));
 
-    assert_eq!("x = 1 + 2", format!("{}", Assign::new(
-      <Placeholder<f32>>::new_expr(&vec![2, 3], "x"), Expr::from(1.0f32) + 2.0f32)));
-  }
-
-  #[test]
-  fn test_compile() {
-    let mut g = Graph::new();
-    let w = <Variable<f32>>::new_expr(&vec![2, 3], "w");
-    let x = <Placeholder<f32>>::new_expr(&vec![2, 3], "x");
-    let mut compiler = Compiler::new(&mut g);
-    compiler.compile(x * w.clone() / w.clone() % w.clone() + w.clone() - w.clone()).unwrap();
-    let one = Expr::from(1.0f32);
-    compiler.compile(Assign::new_expr(w, one)).unwrap();
-  }
-
-  #[test]
-  fn test_derivative_by_variable() {
-    let x = <Variable<f32>>::new_expr(&[], "x");
-    let y = <Variable<f32>>::new_expr(&[], "y");
-    for &(ref expected, ref expression) in [
-      ("0", Expr::from(1.0f32)),
-      ("1", x.clone()),
-      ("0", y.clone()),
-      ("1 + 0", x.clone() + y.clone()),
-      ("1 - 0", x.clone() - y.clone()),
-      ("1 * x + x * 1", x.clone() * x.clone()),
-      ("1 * y + x * 0", x.clone() * y.clone()),
-      ("(1 * x + x * 1) * x + x * x * 1", x.clone() * x.clone() * x.clone()),
-      ("(1 * y - x * 0) / (y * y)", x.clone() / y.clone()),
-      ("1 - x // y * 0",x.clone() % y.clone()),
-      ("0 - y // x * 1", y.clone() % x.clone()),
-      ("(y * (1 - (1 - x // y * 0)) - (x - x % y) * 0) / (y * y)", TruncateDiv::new_expr(x.clone(), y.clone())),
-        ].iter() {
-      assert_eq!(*expected, format!("{}", expression.derivative_by_variable("x").unwrap()));
+        assert_eq!("x = 1 + 2",
+                   format!("{}",
+                           Assign::new(<Placeholder<f32>>::new_expr(&vec![2, 3], "x"),
+                                       Expr::from(1.0f32) + 2.0f32)));
     }
-  }
+
+    #[test]
+    fn test_compile() {
+        let mut g = Graph::new();
+        let w = <Variable<f32>>::new_expr(&vec![2, 3], "w");
+        let x = <Placeholder<f32>>::new_expr(&vec![2, 3], "x");
+        let mut compiler = Compiler::new(&mut g);
+        compiler.compile(x * w.clone() / w.clone() % w.clone() + w.clone() - w.clone()).unwrap();
+        let one = Expr::from(1.0f32);
+        compiler.compile(Assign::new_expr(w, one)).unwrap();
+    }
+
+    #[test]
+    fn test_derivative_by_variable() {
+        let x = <Variable<f32>>::new_expr(&[], "x");
+        let y = <Variable<f32>>::new_expr(&[], "y");
+        for &(ref expected, ref expression) in
+            [("0", Expr::from(1.0f32)),
+             ("1", x.clone()),
+             ("0", y.clone()),
+             ("1 + 0", x.clone() + y.clone()),
+             ("1 - 0", x.clone() - y.clone()),
+             ("1 * x + x * 1", x.clone() * x.clone()),
+             ("1 * y + x * 0", x.clone() * y.clone()),
+             ("(1 * x + x * 1) * x + x * x * 1", x.clone() * x.clone() * x.clone()),
+             ("(1 * y - x * 0) / (y * y)", x.clone() / y.clone()),
+             ("1 - x // y * 0", x.clone() % y.clone()),
+             ("0 - y // x * 1", y.clone() % x.clone()),
+             ("(y * (1 - (1 - x // y * 0)) - (x - x % y) * 0) / (y * y)",
+              TruncateDiv::new_expr(x.clone(), y.clone()))]
+                .iter() {
+            assert_eq!(*expected,
+                       format!("{}", expression.derivative_by_variable("x").unwrap()));
+        }
+    }
 }

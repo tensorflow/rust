@@ -1,4 +1,3 @@
-// -*-  indent-tabs-mode:nil; tab-width:2;  -*-
 extern crate tensorflow;
 
 use std::error::Error;
@@ -17,48 +16,51 @@ use tensorflow::StepWithGraph;
 use tensorflow::Tensor;
 
 fn main() {
-  // Putting the main code in another function serves two purposes:
-  // 1. We can use the try! macro.
-  // 2. We can call exit safely, which does not run any destructors.
-  exit(match run() {
-    Ok(_) => 0,
-    Err(e) => {
-      println!("{}", e);
-      1
-    }
-  })
+    // Putting the main code in another function serves two purposes:
+    // 1. We can use the try! macro.
+    // 2. We can call exit safely, which does not run any destructors.
+    exit(match run() {
+        Ok(_) => 0,
+        Err(e) => {
+            println!("{}", e);
+            1
+        }
+    })
 }
 
 fn run() -> Result<(), Box<Error>> {
-  let filename = "examples/addition-model/model.pb"; // z = x + y
-  if !Path::new(filename).exists() {
-    return Err(Box::new(Status::new_set(Code::NotFound, &format!(
-      "Run 'python addition.py' to generate {} and try again.", filename)).unwrap()));
-  }
+    let filename = "examples/addition-model/model.pb"; // z = x + y
+    if !Path::new(filename).exists() {
+        return Err(Box::new(Status::new_set(Code::NotFound,
+                                            &format!("Run 'python addition.py' to generate {} \
+                                                      and try again.",
+                                                     filename))
+            .unwrap()));
+    }
 
-  // Create input variables for our addition
-  let mut x = Tensor::new(&[1]);
-  x[0] = 2i32;
-  let mut y = Tensor::new(&[1]);
-  y[0] = 40i32;
+    // Create input variables for our addition
+    let mut x = Tensor::new(&[1]);
+    x[0] = 2i32;
+    let mut y = Tensor::new(&[1]);
+    y[0] = 40i32;
 
-  // Load the computation graph defined by regression.py.
-  let mut graph = Graph::new();
-  let mut proto = Vec::new();
-  try!(try!(File::open(filename)).read_to_end(&mut proto));
-  graph.import_graph_def(&proto, &ImportGraphDefOptions::new())?;
-  let mut session = Session::new(&SessionOptions::new(), &graph)?;
+    // Load the computation graph defined by regression.py.
+    let mut graph = Graph::new();
+    let mut proto = Vec::new();
+    try!(try!(File::open(filename)).read_to_end(&mut proto));
+    graph.import_graph_def(&proto, &ImportGraphDefOptions::new())?;
+    let mut session = Session::new(&SessionOptions::new(), &graph)?;
 
-  // Run the Step
-  let mut step = StepWithGraph::new();
-  step.add_input(&graph.operation_by_name_required("x")?, 0, &x);
-  step.add_input(&graph.operation_by_name_required("y")?, 0, &y);
-  let z = step.request_output(&graph.operation_by_name_required("z")?, 0);
-  try!(session.run(&mut step));
+    // Run the Step
+    let mut step = StepWithGraph::new();
+    step.add_input(&graph.operation_by_name_required("x")?, 0, &x);
+    step.add_input(&graph.operation_by_name_required("y")?, 0, &y);
+    let z = step.request_output(&graph.operation_by_name_required("z")?, 0);
+    try!(session.run(&mut step));
 
-  // Check our results.
-  let z_res: i32 = try!(step.take_output(z)).data()[0];
-  println!("{:?}", z_res);
+    // Check our results.
+    let z_res: i32 = try!(step.take_output(z)).data()[0];
+    println!("{:?}", z_res);
 
-  Ok(())
+    Ok(())
 }

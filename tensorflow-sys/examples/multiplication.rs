@@ -32,7 +32,10 @@ fn main() {
         let session = nonnull!(ffi::TF_NewDeprecatedSession(options, status));
 
         let graph = read("examples/assets/multiplication.pb"); // c = a * b
-        ffi::TF_ExtendGraph(session, graph.as_ptr() as *const _, graph.len() as size_t, status);
+        ffi::TF_ExtendGraph(session,
+                            graph.as_ptr() as *const _,
+                            graph.len() as size_t,
+                            status);
         ok!(status);
 
         let mut input_names = vec![];
@@ -41,9 +44,13 @@ fn main() {
         let name = CString::new("a").unwrap();
         let mut data = vec![1f32, 2.0, 3.0];
         let dims = vec![data.len() as int64_t];
-        let tensor = nonnull!(ffi::TF_NewTensor(ffi::TF_FLOAT, dims.as_ptr(), dims.len() as c_int,
-                                                data.as_mut_ptr() as *mut _, data.len() as size_t,
-                                                Some(noop), null_mut()));
+        let tensor = nonnull!(ffi::TF_NewTensor(ffi::TF_FLOAT,
+                                                dims.as_ptr(),
+                                                dims.len() as c_int,
+                                                data.as_mut_ptr() as *mut _,
+                                                data.len() as size_t,
+                                                Some(noop),
+                                                null_mut()));
 
         input_names.push(name.as_ptr());
         inputs.push(tensor);
@@ -51,9 +58,13 @@ fn main() {
         let name = CString::new("b").unwrap();
         let mut data = vec![4f32, 5.0, 6.0];
         let dims = vec![data.len() as int64_t];
-        let tensor = nonnull!(ffi::TF_NewTensor(ffi::TF_FLOAT, dims.as_ptr(), dims.len() as c_int,
-                                                data.as_mut_ptr() as *mut _, data.len() as size_t,
-                                                Some(noop), null_mut()));
+        let tensor = nonnull!(ffi::TF_NewTensor(ffi::TF_FLOAT,
+                                                dims.as_ptr(),
+                                                dims.len() as c_int,
+                                                data.as_mut_ptr() as *mut _,
+                                                data.len() as size_t,
+                                                Some(noop),
+                                                null_mut()));
 
         input_names.push(name.as_ptr());
         inputs.push(tensor);
@@ -68,10 +79,18 @@ fn main() {
 
         let mut target_names = vec![];
 
-        ffi::TF_Run(session, null(), input_names.as_mut_ptr(), inputs.as_mut_ptr(),
-                    input_names.len() as c_int, output_names.as_mut_ptr(), outputs.as_mut_ptr(),
-                    output_names.len() as c_int, target_names.as_mut_ptr(),
-                    target_names.len() as c_int, null_mut(), status);
+        ffi::TF_Run(session,
+                    null(),
+                    input_names.as_mut_ptr(),
+                    inputs.as_mut_ptr(),
+                    input_names.len() as c_int,
+                    output_names.as_mut_ptr(),
+                    outputs.as_mut_ptr(),
+                    output_names.len() as c_int,
+                    target_names.as_mut_ptr(),
+                    target_names.len() as c_int,
+                    null_mut(),
+                    status);
         ok!(status);
 
         let tensor = nonnull!(outputs[0]);
