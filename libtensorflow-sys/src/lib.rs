@@ -11,17 +11,17 @@ include!(concat!(env!("OUT_DIR"), "/ffi.rs"));
 
 #[cfg(test)]
 mod tests {
-  use super::*;
+    use super::*;
 
-  #[test]
-  fn smoke() {
-    unsafe {
-      let session_options = TF_NewSessionOptions();
-      let status = TF_NewStatus();
-      let session = TF_NewSession(session_options, status);
-      TF_DeleteSession(session, status);
-      TF_DeleteStatus(status);
-      TF_DeleteSessionOptions(session_options);
+    #[test]
+    fn smoke() {
+        unsafe {
+            let session_options = TF_NewSessionOptions();
+            let status = TF_NewStatus();
+            let session = TF_NewSession(session_options, status);
+            TF_DeleteSession(session, status);
+            TF_DeleteStatus(status);
+            TF_DeleteSessionOptions(session_options);
+        }
     }
-  }
 }
