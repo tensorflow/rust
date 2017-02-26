@@ -11,7 +11,7 @@ use semver::Version;
 
 const LIBRARY: &'static str = "tensorflow_c";
 const REPOSITORY: &'static str = "https://github.com/tensorflow/tensorflow.git";
-const TARGET: &'static str = "tensorflow:libtensorflow_c.so";
+const TARGET: &'static str = "tensorflow:libtensorflow.so";
 const TAG: &'static str = "v0.12.0";
 const MIN_BAZEL: &'static str = "0.3.2";
 

@@ -41,7 +41,7 @@ use `--features tensorflow_unstable`.
 ### Manually building TensorFlow
 
 Install [TensorFlow from source](https://www.tensorflow.org/versions/master/get_started/os_setup.html#source).
-The Python/pip steps are not necessary, but building `tensorflow:libtensorflow_c.so` is.
+The Python/pip steps are not necessary, but building `tensorflow:libtensorflow.so` is.
 
 In short:
 
@@ -52,20 +52,14 @@ In short:
 1. `git clone --recurse-submodules https://github.com/tensorflow/tensorflow`
 1. `cd tensorflow`
 1. `./configure`
-1. `bazel build -c opt --jobs=1 tensorflow:libtensorflow_c.so`
-
-   If you are building TensorFlow version 0.9.0 or earlier, use
-   `libtensorflow.so` instead of `libtensorflow_c.so`.
+1. `bazel build -c opt --jobs=1 tensorflow:libtensorflow.so`
 
    Using --jobs=1 is recommended unless you have a lot of RAM, because
    TensorFlow's build is very memory intensive.
 
-Copy $TENSORFLOW_SRC/bazel-bin/tensorflow/libtensorflow_c.so to /usr/local/lib.
+Copy $TENSORFLOW_SRC/bazel-bin/tensorflow/libtensorflow.so to /usr/local/lib.
 If this is not possible, add $TENSORFLOW_SRC/bazel-bin/tensorflow to
 LD_LIBRARY_PATH.
-
-If you are building TensorFlow version 0.9.0 or earlier, use
-$TENSORFLOW_SRC/bazel-bin/tensorflow/libtensorflow.so instead.
 
 You may need to run `ldconfig` to reset `ld`'s cache after copying libtensorflow.so.
 
