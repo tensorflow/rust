@@ -9,7 +9,7 @@ use std::process::Command;
 use std::{env, fs};
 use semver::Version;
 
-const LIBRARY: &'static str = "tensorflow_c";
+const LIBRARY: &'static str = "tensorflow";
 const REPOSITORY: &'static str = "https://github.com/tensorflow/tensorflow.git";
 const TARGET: &'static str = "tensorflow:libtensorflow.so";
 const TAG: &'static str = "v1.0.0";
