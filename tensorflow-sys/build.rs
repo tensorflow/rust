@@ -12,7 +12,7 @@ use semver::Version;
 const LIBRARY: &'static str = "tensorflow_c";
 const REPOSITORY: &'static str = "https://github.com/tensorflow/tensorflow.git";
 const TARGET: &'static str = "tensorflow:libtensorflow.so";
-const TAG: &'static str = "v0.12.0";
+const TAG: &'static str = "v1.0.0";
 const MIN_BAZEL: &'static str = "0.3.2";
 
 macro_rules! get(($name:expr) => (ok!(env::var($name))));
@@ -62,11 +62,6 @@ fn main() {
                     .arg("--recursive")
                     .arg(REPOSITORY)
                     .arg(&source)
-            });
-            run("git", |command| {
-                command.current_dir(&source)
-                    .arg("apply")
-                    .arg("../../0001-Fix-zlib-dependency.patch")
             });
         }
         // Only configure if not previously configured.  Configuring runs a
