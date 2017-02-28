@@ -194,7 +194,7 @@ impl<T: TensorType> Deref for Buffer<T> {
 
 impl<T: TensorType> DerefMut for Buffer<T> {
     #[inline]
-    fn deref_mut<'a>(&'a mut self) -> &'a mut [T] {
+    fn deref_mut(&mut self) -> &mut [T] {
         self.as_mut()
     }
 }

@@ -1,4 +1,3 @@
-extern crate libc;
 extern crate tensorflow_sys as tf;
 
 use libc::c_float;
@@ -144,9 +143,9 @@ impl Graph {
     }
 
     /// Iterates over the operations in the graph.
-    pub fn operation_iter<'a>(&'a self) -> OperationIter<'a> {
+    pub fn operation_iter(&self) -> OperationIter {
         OperationIter {
-            graph: &self,
+            graph: self,
             pos: 0,
         }
     }
@@ -492,9 +491,6 @@ impl<'a> Input<'a> {
 
 ////////////////////////
 
-#[deprecated(note="Use Output instead.")]
-type Port<'a> = Output<'a>;
-
 /// A `Output` is one end of a graph edge.
 /// It holds an operation and an index into the outputs of that operation.
 #[derive(Debug,Copy,Clone)]
@@ -756,13 +752,13 @@ impl<'a> OperationDescription<'a> {
                           -> std::result::Result<(), NulError> {
         let c_attr_name = try!(CString::new(attr_name));
         unsafe {
-            match &value.0 {
-                &None => tf::TF_SetAttrShape(self.inner, c_attr_name.as_ptr(), ptr::null(), -1),
-                &Some(ref dims) => {
+            match value.0 {
+                None => tf::TF_SetAttrShape(self.inner, c_attr_name.as_ptr(), ptr::null(), -1),
+                Some(ref dims) => {
                     let c_dims: Vec<i64> = dims.iter()
-                        .map(|x| match x {
-                            &Some(d) => d,
-                            &None => -1,
+                        .map(|x| match *x {
+                            Some(d) => d,
+                            None => -1,
                         })
                         .collect();
                     tf::TF_SetAttrShape(self.inner,
@@ -783,28 +779,28 @@ impl<'a> OperationDescription<'a> {
         let c_attr_name = try!(CString::new(attr_name));
         // Convert Option<i64> in each shape to i64 with None becoming -1.
         let c_dims: Vec<Option<Vec<i64>>> = value.iter()
-            .map(|x| match &x.0 {
-                &None => None,
-                &Some(ref dims) => {
+            .map(|x| match x.0 {
+                None => None,
+                Some(ref dims) => {
                     Some(dims.iter()
-                        .map(|x| match x {
-                            &None => -1,
-                            &Some(d) => d,
+                        .map(|x| match *x {
+                            None => -1,
+                            Some(d) => d,
                         })
                         .collect())
                 }
             })
             .collect();
         let ptrs: Vec<*const i64> = c_dims.iter()
-            .map(|x| match x {
-                &None => ptr::null(),
-                &Some(ref dims) => dims.as_ptr(),
+            .map(|x| match *x {
+                None => ptr::null(),
+                Some(ref dims) => dims.as_ptr(),
             })
             .collect();
         let lens: Vec<c_int> = value.iter()
-            .map(|x| match &x.0 {
-                &None => -1,
-                &Some(ref dims) => dims.len() as c_int,
+            .map(|x| match x.0 {
+                None => -1,
+                Some(ref dims) => dims.len() as c_int,
             })
             .collect();
         unsafe {
