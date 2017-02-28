@@ -63,8 +63,8 @@ impl Checker {
 // Workaround for https://github.com/rust-lang/cargo/issues/1570
 #[cfg(not(feature = "tensorflow_unstable"))]
 fn run() -> Result<(), Box<Error>> {
-    println!("examples/expressions.rs is disabled because the `tensorflow_unstable feature is \
-              not enabled!`");
+    println!("examples/expressions.rs is disabled because the `tensorflow_unstable` feature is \
+              not enabled!");
     Ok(())
 }
 
