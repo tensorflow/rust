@@ -9,7 +9,7 @@ use std::process::Command;
 use std::{env, fs};
 use semver::Version;
 
-const LIBRARY: &'static str = "tensorflow_c";
+const LIBRARY: &'static str = "tensorflow";
 const REPOSITORY: &'static str = "https://github.com/tensorflow/tensorflow.git";
 const TARGET: &'static str = "tensorflow:libtensorflow.so";
 const TAG: &'static str = "v1.0.0";
@@ -79,6 +79,7 @@ fn main() {
                 .arg("build")
                 .arg(format!("--jobs={}", get!("NUM_JOBS")))
                 .arg("--compilation_mode=opt")
+                .arg("--copt=-march=native")
                 .arg(TARGET)
         });
         let target_bazel_bin = source.join("bazel-bin").join(target_path);
