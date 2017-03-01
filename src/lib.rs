@@ -348,8 +348,9 @@ c_enum!("Type of a single tensor element.", TF_DataType, DataType {
 
 ////////////////////////
 
-/// Holds error information.  It either has an OK code, or else an error code with an
-/// associated error message.
+/// Holds error information when communicating with back and forth with `tensorflow`.
+///
+/// It either has an `Code::Ok` code, or otherwise an error code with an associated message.
 pub struct Status {
     inner: *mut tf::TF_Status,
 }
@@ -375,7 +376,8 @@ impl Status {
         self.code() == Code::Ok
     }
 
-    fn as_result(self) -> Result<()> {
+    /// Turns the current `Status` into a `Result`.
+    fn into_result(self) -> Result<()> {
         if self.is_ok() { Ok(()) } else { Err(self) }
     }
 
@@ -387,34 +389,39 @@ impl Status {
         }
         Ok(())
     }
+
+    /// Returns a mutable pointer to the inner tensorflow Status `TF_Status`.
+    fn inner(&mut self) -> *mut tf::TF_Status {
+        self.inner
+    }
 }
 
 impl Display for Status {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        unsafe {
-            try!(write!(f, "{}: ", self.code()));
-            let msg = match CStr::from_ptr(tf::TF_Message(self.inner)).to_str() {
+        try!(write!(f, "{}: ", self.code()));
+        let msg = unsafe {
+            match CStr::from_ptr(tf::TF_Message(self.inner)).to_str() {
                 Ok(s) => s,
                 Err(_) => "<invalid UTF-8 in message>",
-            };
-            f.write_str(msg)
-        }
+            }
+        };
+        f.write_str(msg)
     }
 }
 
 impl Debug for Status {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        unsafe {
-            try!(write!(f, "{{inner:{:?}, ", self.inner));
-            try!(write!(f, "{}: ", self.code()));
-            let msg = match CStr::from_ptr(tf::TF_Message(self.inner)).to_str() {
+        try!(write!(f, "{{inner:{:?}, ", self.inner));
+        try!(write!(f, "{}: ", self.code()));
+        let msg = unsafe {
+            match CStr::from_ptr(tf::TF_Message(self.inner)).to_str() {
                 Ok(s) => s,
                 Err(_) => "<invalid UTF-8 in message>",
-            };
-            try!(f.write_str(msg));
-            try!(write!(f, "}}"));
-            Ok(())
-        }
+            }
+        };
+        try!(f.write_str(msg));
+        try!(write!(f, "}}"));
+        Ok(())
     }
 }
 
@@ -469,12 +476,12 @@ impl SessionOptions {
     /// `config` should be a serialized brain.ConfigProto proto.
     /// Returns an error if config was not parsed successfully as a ConfigProto.
     pub fn set_config(&mut self, config: &[u8]) -> Result<()> {
-        let status = Status::new();
+        let mut status = Status::new();
         unsafe {
             tf::TF_SetConfig(self.inner,
                              config.as_ptr() as *const _,
                              config.len(),
-                             status.inner);
+                             status.inner());
         }
         if status.is_ok() { Ok(()) } else { Err(status) }
     }
@@ -497,8 +504,8 @@ pub struct DeprecatedSession {
 impl DeprecatedSession {
     /// Creates a session.
     pub fn new(options: &SessionOptions) -> Result<Self> {
-        let status = Status::new();
-        let inner = unsafe { tf::TF_NewDeprecatedSession(options.inner, status.inner) };
+        let mut status = Status::new();
+        let inner = unsafe { tf::TF_NewDeprecatedSession(options.inner, status.inner()) };
         if inner.is_null() {
             Err(status)
         } else {
@@ -508,24 +515,24 @@ impl DeprecatedSession {
 
     /// Closes the session.
     pub fn close(&mut self) -> Result<()> {
-        let status = Status::new();
+        let mut status = Status::new();
         unsafe {
-            tf::TF_CloseDeprecatedSession(self.inner, status.inner);
+            tf::TF_CloseDeprecatedSession(self.inner, status.inner());
         }
-        status.as_result()
+        status.into_result()
     }
 
     /// Treat `proto` as a serialized `GraphDef` and add the operations in that `GraphDef`
     /// to the graph for the session.
     pub fn extend_graph(&mut self, proto: &[u8]) -> Result<()> {
-        let status = Status::new();
+        let mut status = Status::new();
         unsafe {
             tf::TF_ExtendGraph(self.inner,
                                proto.as_ptr() as *const _,
                                proto.len(),
-                               status.inner);
+                               status.inner());
         }
-        status.as_result()
+        status.into_result()
     }
 
     /// Runs the graph, feeding the inputs and then fetching the outputs requested in the step.
@@ -551,7 +558,7 @@ impl DeprecatedSession {
         // In case we're running it a second time and not all outputs were taken out.
         step.drop_output_tensors();
 
-        let status = Status::new();
+        let mut status = Status::new();
         unsafe {
             tf::TF_Run(self.inner,
                        std::ptr::null(),
@@ -564,18 +571,18 @@ impl DeprecatedSession {
                        step.target_name_ptrs.as_mut_ptr(),
                        step.target_name_ptrs.len() as c_int,
                        std::ptr::null_mut(),
-                       status.inner);
+                       status.inner());
         };
-        status.as_result()
+        status.into_result()
     }
 }
 
 #[allow(deprecated)]
 impl Drop for DeprecatedSession {
     fn drop(&mut self) {
-        let status = Status::new();
+        let mut status = Status::new();
         unsafe {
-            tf::TF_DeleteDeprecatedSession(self.inner, status.inner);
+            tf::TF_DeleteDeprecatedSession(self.inner, status.inner());
         }
         // TODO: What do we do with the status?
     }
@@ -967,8 +974,8 @@ impl Library {
     /// Loads a library.
     pub fn load(library_filename: &str) -> Result<Self> {
         let c_filename = try!(CString::new(library_filename));
-        let status = Status::new();
-        let inner = unsafe { tf::TF_LoadLibrary(c_filename.as_ptr(), status.inner) };
+        let mut status = Status::new();
+        let inner = unsafe { tf::TF_LoadLibrary(c_filename.as_ptr(), status.inner()) };
         if inner.is_null() {
             Err(status)
         } else {
