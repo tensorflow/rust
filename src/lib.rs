@@ -1018,7 +1018,7 @@ pub fn version() -> std::result::Result<String, Utf8Error> {
 ////////////////////////
 
 #[deprecated(note="Use Shape instead.")]
-type TensorShape = Shape;
+pub type TensorShape = Shape;
 
 /// A Shape is the shape of a tensor.  A Shape may be an unknown rank, or it may
 /// have a known rank with each dimension being known or unknown.
