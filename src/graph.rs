@@ -153,10 +153,10 @@ impl Graph {
 
     /// Returns the graph definition as a protobuf.
     pub fn graph_def(&self) -> Result<Vec<u8>> {
-        let status = Status::new();
+        let mut status = Status::new();
         unsafe {
             let c_buffer = tf::TF_NewBuffer();
-            tf::TF_GraphToGraphDef(self.gimpl.inner, c_buffer, status.inner);
+            tf::TF_GraphToGraphDef(self.gimpl.inner, c_buffer, status.inner());
             if status.is_ok() {
                 Ok(Buffer::from_c(c_buffer, true).into())
             } else {
@@ -173,9 +173,9 @@ impl Graph {
     /// Returns an error if:
     ///   * `output` is not in `graph`.
     pub fn num_dims(&self, output: Output) -> Result<c_int> {
-        let status = Status::new();
+        let mut status = Status::new();
         unsafe {
-            let val = tf::TF_GraphGetTensorNumDims(self.gimpl.inner, output.to_c(), status.inner);
+            let val = tf::TF_GraphGetTensorNumDims(self.gimpl.inner, output.to_c(), status.inner());
             if status.is_ok() { Ok(val) } else { Err(status) }
         }
     }
@@ -185,7 +185,7 @@ impl Graph {
     /// Returns an error if:
     ///   * `output` is not in `graph`.
     pub fn tensor_shape(&self, output: Output) -> Result<Shape> {
-        let status = Status::new();
+        let mut status = Status::new();
         let n = try!(self.num_dims(output));
         if n == -1 {
             return Ok(Shape(None));
@@ -196,7 +196,7 @@ impl Graph {
                                        output.to_c(),
                                        dims.as_mut_ptr(),
                                        dims.len() as c_int,
-                                       status.inner);
+                                       status.inner());
             if status.is_ok() {
                 dims.set_len(n as usize);
                 Ok(Shape(Some(dims.iter().map(|x| if *x < 0 { None } else { Some(*x) }).collect())))
@@ -212,10 +212,13 @@ impl Graph {
                             options: &ImportGraphDefOptions)
                             -> Result<()> {
         let buf = Buffer::from(graph_def);
-        let status = Status::new();
+        let mut status = Status::new();
         unsafe {
-            tf::TF_GraphImportGraphDef(self.gimpl.inner, buf.inner(), options.inner, status.inner);
-            status.as_result()
+            tf::TF_GraphImportGraphDef(self.gimpl.inner,
+                                       buf.inner(),
+                                       options.inner,
+                                       status.inner());
+            status.into_result()
         }
     }
 }
@@ -310,9 +313,9 @@ impl Operation {
     #[allow(missing_docs)]
     pub fn output_list_length(&self, arg_name: &str) -> Result<usize> {
         let c_arg_name = try!(CString::new(arg_name));
-        let status = Status::new();
+        let mut status = Status::new();
         let length = unsafe {
-            tf::TF_OperationOutputListLength(self.inner, c_arg_name.as_ptr(), status.inner)
+            tf::TF_OperationOutputListLength(self.inner, c_arg_name.as_ptr(), status.inner())
         };
         if status.is_ok() {
             Ok(length as usize)
@@ -340,9 +343,9 @@ impl Operation {
     #[allow(missing_docs)]
     pub fn input_list_length(&self, arg_name: &str) -> Result<usize> {
         let c_arg_name = try!(CString::new(arg_name));
-        let status = Status::new();
+        let mut status = Status::new();
         let length = unsafe {
-            tf::TF_OperationInputListLength(self.inner, c_arg_name.as_ptr(), status.inner)
+            tf::TF_OperationInputListLength(self.inner, c_arg_name.as_ptr(), status.inner())
         };
         if status.is_ok() {
             Ok(length as usize)
@@ -548,8 +551,8 @@ impl<'a> OperationDescription<'a> {
     /// Builds the operation and adds it to the graph.
     pub fn finish(mut self) -> Result<Operation> {
         self.finished = true; // used by the drop code
-        let status = Status::new();
-        let operation = unsafe { tf::TF_FinishOperation(self.inner, status.inner) };
+        let mut status = Status::new();
+        let operation = unsafe { tf::TF_FinishOperation(self.inner, status.inner()) };
         if status.is_ok() {
             Ok(Operation {
                 inner: operation,
@@ -818,15 +821,15 @@ impl<'a> OperationDescription<'a> {
     #[allow(trivial_numeric_casts)]
     pub fn set_attr_tensor_shape_proto(&mut self, attr_name: &str, value: &[u8]) -> Result<()> {
         let c_attr_name = try!(CString::new(attr_name));
-        let status = Status::new();
+        let mut status = Status::new();
         unsafe {
             tf::TF_SetAttrTensorShapeProto(self.inner,
                                            c_attr_name.as_ptr(),
                                            value.as_ptr() as *const c_void,
                                            value.len() as size_t,
-                                           status.inner);
+                                           status.inner());
         }
-        status.as_result()
+        status.into_result()
     }
 
     /// Sets an attribute with an array of `TensorShapeProto` protobufs.
@@ -840,16 +843,16 @@ impl<'a> OperationDescription<'a> {
             .map(|x| x.as_ref().as_ptr() as *const c_void)
             .collect();
         let lens: Vec<size_t> = value.iter().map(|x| x.as_ref().len() as size_t).collect();
-        let status = Status::new();
+        let mut status = Status::new();
         unsafe {
             tf::TF_SetAttrTensorShapeProtoList(self.inner,
                                                c_attr_name.as_ptr(),
                                                ptrs.as_ptr(),
                                                lens.as_ptr(),
                                                ptrs.len() as c_int,
-                                               status.inner);
+                                               status.inner());
         }
-        status.as_result()
+        status.into_result()
     }
 
     /// Sets a tensor-valued attribute.
@@ -858,14 +861,14 @@ impl<'a> OperationDescription<'a> {
                                           value: Tensor<T>)
                                           -> Result<()> {
         let c_attr_name = try!(CString::new(attr_name));
-        let status = Status::new();
+        let mut status = Status::new();
         unsafe {
             tf::TF_SetAttrTensor(self.inner,
                                  c_attr_name.as_ptr(),
                                  value.into_ptr(),
-                                 status.inner);
+                                 status.inner());
         }
-        status.as_result()
+        status.into_result()
     }
 
     /// Sets an attribute which holds an array of tensors.
@@ -874,23 +877,23 @@ impl<'a> OperationDescription<'a> {
                                                                     value: T)
                                                                     -> Result<()> {
         let c_attr_name = try!(CString::new(attr_name));
-        let status = Status::new();
+        let mut status = Status::new();
         unsafe {
             let ptrs: Vec<*mut tf::TF_Tensor> = value.into_iter().map(|x| x.into_ptr()).collect();
             tf::TF_SetAttrTensorList(self.inner,
                                      c_attr_name.as_ptr(),
                                      ptrs.as_ptr(),
                                      ptrs.len() as c_int,
-                                     status.inner);
+                                     status.inner());
         }
-        status.as_result()
+        status.into_result()
     }
 
     /// Sets an attribute with an `AttrValue` proto.
     #[allow(trivial_numeric_casts)]
     pub fn set_attr_to_attr_value_proto(&mut self, attr_name: &str, value: &[u8]) -> Result<()> {
         let c_attr_name = try!(CString::new(attr_name));
-        let status = Status::new();
+        let mut status = Status::new();
         unsafe {
             tf::TF_SetAttrValueProto(self.inner,
                                      c_attr_name.as_ptr(),
@@ -898,9 +901,9 @@ impl<'a> OperationDescription<'a> {
                                      // Allow trivial_numeric_casts because usize is not
                                      // necessarily size_t.
                                      value.len() as size_t,
-                                     status.inner);
+                                     status.inner());
         }
-        status.as_result()
+        status.into_result()
     }
 }
 

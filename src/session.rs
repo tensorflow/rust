@@ -27,8 +27,8 @@ type SessionWithGraph = Session;
 impl Session {
     /// Creates a session.
     pub fn new(options: &SessionOptions, graph: &Graph) -> Result<Self> {
-        let status = Status::new();
-        let inner = unsafe { tf::TF_NewSession(graph.inner(), options.inner, status.inner) };
+        let mut status = Status::new();
+        let inner = unsafe { tf::TF_NewSession(graph.inner(), options.inner, status.inner()) };
         if inner.is_null() {
             Err(status)
         } else {
@@ -38,11 +38,11 @@ impl Session {
 
     /// Closes the session.
     pub fn close(&mut self) -> Result<()> {
-        let status = Status::new();
+        let mut status = Status::new();
         unsafe {
-            tf::TF_CloseSession(self.inner, status.inner);
+            tf::TF_CloseSession(self.inner, status.inner());
         }
-        status.as_result()
+        status.into_result()
     }
 
     /// Runs the graph, feeding the inputs and then fetching the outputs requested in the step.
@@ -68,7 +68,7 @@ impl Session {
         // In case we're running it a second time and not all outputs were taken out.
         step.drop_output_tensors();
 
-        let status = Status::new();
+        let mut status = Status::new();
         unsafe {
             tf::TF_SessionRun(self.inner,
                               ptr::null(),
@@ -81,17 +81,17 @@ impl Session {
                               step.target_operations.as_mut_ptr(),
                               step.target_operations.len() as c_int,
                               ptr::null_mut(),
-                              status.inner);
+                              status.inner());
         };
-        status.as_result()
+        status.into_result()
     }
 }
 
 impl Drop for Session {
     fn drop(&mut self) {
-        let status = Status::new();
+        let mut status = Status::new();
         unsafe {
-            tf::TF_DeleteSession(self.inner, status.inner);
+            tf::TF_DeleteSession(self.inner, status.inner());
         }
         // TODO: What do we do with the status?
     }
