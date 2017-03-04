@@ -1,5 +1,5 @@
 //! This crate provides Rust bindings for the
-//! [TensorFlow](https://www.tensorflow.org) machine learning library.
+//! [`TensorFlow`](https://www.tensorflow.org) machine learning library.
 
 #![warn(missing_copy_implementations,
         missing_debug_implementations,
@@ -343,6 +343,7 @@ c_enum!("Type of a single tensor element.", TF_DataType, DataType {
   /// 16-bit floating point.
   value Half = 19,
 
+  /// TensorFlow Resource (name, container, device,...)
   value Resource = 20,
 });
 
@@ -936,7 +937,7 @@ impl<T: TensorType> Deref for Tensor<T> {
 
 impl<T: TensorType> DerefMut for Tensor<T> {
     #[inline]
-    fn deref_mut<'a>(&'a mut self) -> &'a mut [T] {
+    fn deref_mut(&mut self) -> &mut [T] {
         &mut self.data
     }
 }
@@ -1010,7 +1011,7 @@ trait OperationTrait {
 ////////////////////////
 
 /// Returns a string describing version information of the
-/// TensorFlow library. TensorFlow using semantic versioning.
+/// `TensorFlow` library. `TensorFlow` is using semantic versioning.
 pub fn version() -> std::result::Result<String, Utf8Error> {
     unsafe { CStr::from_ptr(tf::TF_Version()).to_str().map(|s| s.to_string()) }
 }
@@ -1028,9 +1029,9 @@ pub struct Shape(Option<Vec<Option<i64>>>);
 impl Shape {
     /// Returns the number of dimensions if known, or None if unknown.
     pub fn dims(&self) -> Option<usize> {
-        match self {
-            &Shape(None) => None,
-            &Shape(Some(ref v)) => Some(v.len()),
+        match *self {
+            Shape(None) => None,
+            Shape(Some(ref v)) => Some(v.len()),
         }
     }
 }
@@ -1053,9 +1054,9 @@ impl Index<usize> for Shape {
     type Output = Option<i64>;
 
     fn index(&self, index: usize) -> &Option<i64> {
-        match &self.0 {
-            &None => &UNKNOWN_DIMENSION,
-            &Some(ref v) => {
+        match self.0 {
+            None => &UNKNOWN_DIMENSION,
+            Some(ref v) => {
                 if index < v.len() {
                     &v[index]
                 } else {

@@ -1,5 +1,4 @@
-extern crate tensorflow_sys as tf;
-
+use tf;
 use libc::c_int;
 use std::marker;
 use std::ptr;
@@ -20,9 +19,6 @@ use super::TensorType;
 pub struct Session {
     inner: *mut tf::TF_Session,
 }
-
-#[deprecated(note = "Use Session instead.")]
-type SessionWithGraph = Session;
 
 impl Session {
     /// Creates a session.
@@ -236,7 +232,6 @@ impl<'l> Drop for StepWithGraph<'l> {
 
 #[cfg(test)]
 mod tests {
-    extern crate tensorflow_sys as tf;
     use super::*;
     use super::super::DataType;
     use super::super::Graph;
