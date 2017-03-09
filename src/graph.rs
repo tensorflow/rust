@@ -332,7 +332,7 @@ impl Operation {
     pub fn input_type(&self, index: usize) -> DataType {
         unsafe {
             DataType::from_c(tf::TF_OperationInputType(tf::TF_Input {
-                operation: self.inner,
+                oper: self.inner,
                 index: index as c_int,
             }))
         }
@@ -359,11 +359,11 @@ impl Operation {
     pub fn input(&self, index: usize) -> (Operation, usize) {
         unsafe {
             let port = tf::TF_OperationInput(tf::TF_Input {
-                operation: self.inner,
+                oper: self.inner,
                 index: index as c_int,
             });
             (Operation {
-                 inner: port.operation,
+                 inner: port.oper,
                  gimpl: self.gimpl.clone(),
              },
              port.index as usize)
@@ -483,7 +483,7 @@ pub struct Input<'a> {
 impl<'a> Input<'a> {
     fn to_c(&self) -> tf::TF_Input {
         tf::TF_Input {
-            operation: self.operation.inner,
+            oper: self.operation.inner,
             index: self.index,
         }
     }
