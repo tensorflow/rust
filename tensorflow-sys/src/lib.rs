@@ -505,7 +505,8 @@ extern "C" {
                                         tags_len: c_int,
                                         graph: *mut TF_Graph,
                                         meta_graph_def: *mut TF_Buffer,
-                                        status: *mut TF_Status) -> *mut TF_Session;
+                                        status: *mut TF_Status)
+                                        -> *mut TF_Session;
     pub fn TF_CloseSession(session: *mut TF_Session, status: *mut TF_Status);
     pub fn TF_DeleteSession(session: *mut TF_Session, status: *mut TF_Status);
     pub fn TF_SessionRun(session: *mut TF_Session,
@@ -565,3 +566,4 @@ pub unsafe extern "C" fn TF_SetAttrToAttrValueProto(desc: *mut TF_OperationDescr
                                                     status: *mut TF_Status) {
     TF_SetAttrValueProto(desc, attr_name, proto, proto_len, status)
 }
+

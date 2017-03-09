@@ -36,39 +36,45 @@ impl Session {
     }
 
     /// Loads a session from an exported model.
-    pub fn from_saved_model<P: AsRef<Path>, Tag: AsRef<str>, Tags: IntoIterator<Item=Tag>>(
-            options: &SessionOptions, tags: Tags, graph: &mut Graph, export_dir: P) -> Result<Self> {
+    pub fn from_saved_model<P: AsRef<Path>, Tag: AsRef<str>, Tags: IntoIterator<Item = Tag>>
+        (options: &SessionOptions,
+         tags: Tags,
+         graph: &mut Graph,
+         export_dir: P)
+         -> Result<Self> {
         let mut status = Status::new();
-        
-        let export_dir_cstr = try!(export_dir.as_ref().to_str()
-                .and_then(|s| CString::new(s.as_bytes()).ok())
-                .ok_or_else(|| Status::new_set(
-                    Code::InvalidArgument, "Invalid export directory path").unwrap()));
-        
+
+        let export_dir_cstr = try!(export_dir.as_ref()
+                                       .to_str()
+                                       .and_then(|s| CString::new(s.as_bytes()).ok())
+                                       .ok_or_else(|| {
+            Status::new_set(Code::InvalidArgument, "Invalid export directory path").unwrap()
+        }));
+
         let tags_cstr: Vec<_> = try!(tags.into_iter()
-                .map(|t| CString::new(t.as_ref()))
-                .collect::<StdResult<_,_>>()
-                .map_err(|_| Status::new_set(Code::InvalidArgument, "Invalid tag name").unwrap()));
+                                         .map(|t| CString::new(t.as_ref()))
+                                         .collect::<StdResult<_, _>>()
+                                         .map_err(|_| {
+            Status::new_set(Code::InvalidArgument, "Invalid tag name").unwrap()
+        }));
         // keeping tags_cstr to retain strings in memory
         let tags_ptr: Vec<*const c_char> = tags_cstr.iter().map(|t| t.as_ptr()).collect();
-        
+
         let inner = unsafe {
-        tf::TF_LoadSessionFromSavedModel(
-            options.inner,
-            ptr::null(),
-            export_dir_cstr.to_bytes_with_nul().as_ptr() as *const c_char,
-            tags_ptr.as_ptr(),
-            tags_ptr.len() as c_int,
-            graph.inner(),
-            ptr::null_mut(),
-            status.inner())
+            tf::TF_LoadSessionFromSavedModel(options.inner,
+                                             ptr::null(),
+                                             export_dir_cstr.to_bytes_with_nul().as_ptr() as
+                                             *const c_char,
+                                             tags_ptr.as_ptr(),
+                                             tags_ptr.len() as c_int,
+                                             graph.inner(),
+                                             ptr::null_mut(),
+                                             status.inner())
         };
         if inner.is_null() {
             Err(status)
         } else {
-            Ok(Session {
-                inner: inner,
-            })
+            Ok(Session { inner: inner })
         }
     }
 
@@ -183,9 +189,9 @@ impl<'l> StepWithGraph<'l> {
                                     index: c_int,
                                     tensor: &'l Tensor<T>) {
         self.input_ports.push(tf::TF_Output {
-            operation: operation.inner(),
-            index: index,
-        });
+                                  operation: operation.inner(),
+                                  index: index,
+                              });
         self.input_tensors.push(tensor.inner);
     }
 
@@ -193,9 +199,9 @@ impl<'l> StepWithGraph<'l> {
     /// Returns an index that you can then use to fetch this output from the step after running it.
     pub fn request_output(&mut self, operation: &Operation, index: c_int) -> OutputToken {
         self.output_ports.push(tf::TF_Output {
-            operation: operation.inner(),
-            index: index,
-        });
+                                   operation: operation.inner(),
+                                   index: index,
+                               });
         self.output_tensors.push(ptr::null_mut());
         OutputToken { index: self.output_tensors.len() - 1 }
     }
@@ -212,13 +218,13 @@ impl<'l> StepWithGraph<'l> {
                                                  {}",
                                                 output_idx,
                                                 self.output_tensors.len()))
-                .unwrap());
+                               .unwrap());
         }
         if self.output_tensors[output_idx].is_null() {
             return Err(Status::new_set(Code::Unavailable,
                                        "Output not available. Either it was already taken, or \
                                         this step has not been sucessfully run yet.")
-                .unwrap());
+                               .unwrap());
         }
         let actual_data_type = self.output_data_type(output_idx).unwrap();
         if actual_data_type != T::data_type() {
@@ -300,13 +306,13 @@ mod tests {
         let y = {
             let mut nd = g.new_operation("Mul", "y").unwrap();
             nd.add_input(Output {
-                operation: &two,
-                index: 0,
-            });
+                             operation: &two,
+                             index: 0,
+                         });
             nd.add_input(Output {
-                operation: &x,
-                index: 0,
-            });
+                             operation: &x,
+                             index: 0,
+                         });
             nd.finish().unwrap()
         };
         let options = SessionOptions::new();
