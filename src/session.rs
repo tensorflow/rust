@@ -69,7 +69,7 @@ impl Session {
             tf::TF_SessionRun(self.inner,
                               ptr::null(),
                               step.input_ports.as_ptr(),
-                              input_tensors.as_mut_ptr(),
+                              input_tensors.as_ptr() as *const *const tf::TF_Tensor,
                               input_tensors.len() as c_int,
                               step.output_ports.as_ptr(),
                               step.output_tensors.as_mut_ptr(),
