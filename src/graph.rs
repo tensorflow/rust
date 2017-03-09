@@ -879,7 +879,7 @@ impl<'a> OperationDescription<'a> {
             let ptrs: Vec<*mut tf::TF_Tensor> = value.into_iter().map(|x| x.into_ptr()).collect();
             tf::TF_SetAttrTensorList(self.inner,
                                      c_attr_name.as_ptr(),
-                                     ptrs.as_ptr(),
+                                     ptrs.as_ptr() as *const *const tf::TF_Tensor,
                                      ptrs.len() as c_int,
                                      status.inner());
         }
