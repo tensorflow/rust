@@ -143,7 +143,7 @@ impl<'l> StepWithGraph<'l> {
                                     index: c_int,
                                     tensor: &'l Tensor<T>) {
         self.input_ports.push(tf::TF_Output {
-            operation: operation.inner(),
+            oper: operation.inner(),
             index: index,
         });
         self.input_tensors.push(tensor.inner);
@@ -153,7 +153,7 @@ impl<'l> StepWithGraph<'l> {
     /// Returns an index that you can then use to fetch this output from the step after running it.
     pub fn request_output(&mut self, operation: &Operation, index: c_int) -> OutputToken {
         self.output_ports.push(tf::TF_Output {
-            operation: operation.inner(),
+            oper: operation.inner(),
             index: index,
         });
         self.output_tensors.push(ptr::null_mut());

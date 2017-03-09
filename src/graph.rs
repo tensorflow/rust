@@ -302,7 +302,7 @@ impl Operation {
     pub fn output_type(&self, index: usize) -> DataType {
         unsafe {
             DataType::from_c(tf::TF_OperationOutputType(tf::TF_Output {
-                operation: self.inner,
+                oper: self.inner,
                 index: index as c_int,
             }))
         }
@@ -374,7 +374,7 @@ impl Operation {
     pub fn output_num_consumers(&self, index: usize) -> usize {
         unsafe {
             tf::TF_OperationOutputNumConsumers(tf::TF_Output {
-                operation: self.inner,
+                oper: self.inner,
                 index: index as c_int,
             }) as usize
         }
@@ -387,12 +387,12 @@ impl Operation {
     pub fn output_consumers(&self, index: usize) -> Vec<(Operation, usize)> {
         unsafe {
             let num_consumers = tf::TF_OperationOutputNumConsumers(tf::TF_Output {
-                operation: self.inner,
+                oper: self.inner,
                 index: index as c_int,
             });
             let mut vec = <Vec<tf::TF_Input>>::with_capacity(num_consumers as usize);
             let len = tf::TF_OperationOutputConsumers(tf::TF_Output {
-                                                          operation: self.inner,
+                                                          oper: self.inner,
                                                           index: index as c_int,
                                                       },
                                                       vec.as_mut_ptr(),
@@ -401,7 +401,7 @@ impl Operation {
             vec.into_iter()
                 .map(|port| {
                     (Operation {
-                         inner: port.operation,
+                         inner: port.oper,
                          gimpl: self.gimpl.clone(),
                      },
                      port.index as usize)
@@ -505,7 +505,7 @@ pub struct Output<'a> {
 impl<'a> Output<'a> {
     fn to_c(&self) -> tf::TF_Output {
         tf::TF_Output {
-            operation: self.operation.inner,
+            oper: self.operation.inner,
             index: self.index,
         }
     }
