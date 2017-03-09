@@ -30,6 +30,7 @@ use std::ops::Deref;
 use std::ops::DerefMut;
 use std::ops::Drop;
 use std::ops::Index;
+use std::os::raw::c_void as std_c_void;
 use std::str::Utf8Error;
 
 ////////////////////////
@@ -844,9 +845,9 @@ pub struct Tensor<T: TensorType> {
     owned: bool,
 }
 
-unsafe extern "C" fn noop_deallocator(_: *mut c_void, _: size_t, _: *mut c_void) -> () {}
+unsafe extern "C" fn noop_deallocator(_: *mut std_c_void, _: size_t, _: *mut std_c_void) -> () {}
 
-unsafe extern "C" fn deallocator(_: *mut c_void, _: size_t, buffer: *mut c_void) -> () {
+unsafe extern "C" fn deallocator(_: *mut std_c_void, _: size_t, buffer: *mut std_c_void) -> () {
     tf::TF_DeleteBuffer(buffer as *mut tf::TF_Buffer);
 }
 

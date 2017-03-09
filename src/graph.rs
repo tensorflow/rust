@@ -9,6 +9,7 @@ use std;
 use std::ffi::CStr;
 use std::ffi::CString;
 use std::ffi::NulError;
+use std::os::raw::c_void as std_c_void;
 use std::ptr;
 use std::str::Utf8Error;
 use std::sync::Arc;
@@ -606,7 +607,7 @@ impl<'a> OperationDescription<'a> {
         unsafe {
             tf::TF_SetAttrString(self.inner,
                                  c_attr_name.as_ptr(),
-                                 c_value.as_ptr() as *const c_void,
+                                 c_value.as_ptr() as *const std_c_void,
                                  c_value.len() as size_t);
         }
         Ok(())
@@ -625,7 +626,7 @@ impl<'a> OperationDescription<'a> {
         unsafe {
             tf::TF_SetAttrStringList(self.inner,
                                      c_attr_name.as_ptr(),
-                                     ptrs.as_ptr(),
+                                     ptrs.as_ptr() as *const *const std_c_void,
                                      lens.as_ptr(),
                                      ptrs.len() as c_int);
         }
@@ -821,7 +822,7 @@ impl<'a> OperationDescription<'a> {
         unsafe {
             tf::TF_SetAttrTensorShapeProto(self.inner,
                                            c_attr_name.as_ptr(),
-                                           value.as_ptr() as *const c_void,
+                                           value.as_ptr() as *const std_c_void,
                                            value.len() as size_t,
                                            status.inner());
         }
@@ -843,7 +844,7 @@ impl<'a> OperationDescription<'a> {
         unsafe {
             tf::TF_SetAttrTensorShapeProtoList(self.inner,
                                                c_attr_name.as_ptr(),
-                                               ptrs.as_ptr(),
+                                               ptrs.as_ptr() as *const *const std_c_void,
                                                lens.as_ptr(),
                                                ptrs.len() as c_int,
                                                status.inner());
@@ -893,7 +894,7 @@ impl<'a> OperationDescription<'a> {
         unsafe {
             tf::TF_SetAttrValueProto(self.inner,
                                      c_attr_name.as_ptr(),
-                                     value.as_ptr() as *const c_void,
+                                     value.as_ptr() as *const std_c_void,
                                      // Allow trivial_numeric_casts because usize is not
                                      // necessarily size_t.
                                      value.len() as size_t,
