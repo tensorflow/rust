@@ -82,11 +82,14 @@ fn install_prebuilt() {
     let mut base_name = short_file_name.to_string();
     remove_suffix(&mut base_name, ".tar.gz");
     log_var!(base_name);
-    let target_dir = PathBuf::from(&get!("CARGO_MANIFEST_DIR")).join("target");
-    if !target_dir.exists() {
-        fs::create_dir(&target_dir).unwrap();
+    let download_dir = match env::var("TF_RUST_DOWNLOAD_DIR") {
+        Ok(s) => PathBuf::from(s),
+        Err(_) => PathBuf::from(&get!("CARGO_MANIFEST_DIR")).join("target"),
+    };
+    if !download_dir.exists() {
+        fs::create_dir(&download_dir).unwrap();
     }
-    let file_name = target_dir.join(short_file_name);
+    let file_name = download_dir.join(short_file_name);
     log_var!(file_name);
 
     // Download the tarball.
@@ -107,7 +110,7 @@ fn install_prebuilt() {
     }
 
     // Extract the tarball.
-    let unpacked_dir = target_dir.join(base_name);
+    let unpacked_dir = download_dir.join(base_name);
     let lib_dir = unpacked_dir.join("lib");
     if !lib_dir.join(format!("lib{}.so", LIBRARY)).exists() {
         extract(file_name, &unpacked_dir);
