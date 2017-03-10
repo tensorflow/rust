@@ -41,7 +41,11 @@ fn main() {
         return;
     }
 
-    if env::consts::ARCH == "x86_64" && (env::consts::OS == "linux" || env::consts::OS == "macos") {
+    let force_src = match env::var("TF_RUST_BUILD_FROM_SRC") {
+        Ok(s) => s == "true",
+        Err(_) => false,
+    };
+    if !force_src && env::consts::ARCH == "x86_64" && (env::consts::OS == "linux" || env::consts::OS == "macos") {
         install_prebuilt();
     } else {
         build_from_src();
