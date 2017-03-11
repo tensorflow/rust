@@ -1,7 +1,7 @@
 extern crate libc;
 extern crate tensorflow_sys as ffi;
 
-use libc::{c_int, c_void, int64_t, size_t};
+use libc::{c_int, int64_t, size_t};
 use std::ffi::{CStr, CString};
 use std::path::Path;
 
@@ -107,7 +107,7 @@ fn main() {
         ffi::TF_DeleteSessionOptions(options);
     }
 
-    unsafe extern "C" fn noop(_: *mut c_void, _: size_t, _: *mut c_void) {}
+    unsafe extern "C" fn noop(_: *mut std::os::raw::c_void, _: size_t, _: *mut std::os::raw::c_void) {}
 }
 
 fn read<T: AsRef<Path>>(path: T) -> Vec<u8> {

@@ -17,5 +17,11 @@ links = "tensorflow"
 libc = "0.2"
 
 [build-dependencies]
+curl = "0.4"
+flate2 = "0.2"
 pkg-config = "0.3"
 semver = "0.5"
+tar = "0.4"
+
+[features]
+tensorflow_gpu = []
