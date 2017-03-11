@@ -9,6 +9,7 @@ use std;
 use std::ffi::CStr;
 use std::ffi::CString;
 use std::ffi::NulError;
+use std::os::raw::c_void as std_c_void;
 use std::ptr;
 use std::str::Utf8Error;
 use std::sync::Arc;
@@ -302,7 +303,7 @@ impl Operation {
     pub fn output_type(&self, index: usize) -> DataType {
         unsafe {
             DataType::from_c(tf::TF_OperationOutputType(tf::TF_Output {
-                operation: self.inner,
+                oper: self.inner,
                 index: index as c_int,
             }))
         }
@@ -332,7 +333,7 @@ impl Operation {
     pub fn input_type(&self, index: usize) -> DataType {
         unsafe {
             DataType::from_c(tf::TF_OperationInputType(tf::TF_Input {
-                operation: self.inner,
+                oper: self.inner,
                 index: index as c_int,
             }))
         }
@@ -359,11 +360,11 @@ impl Operation {
     pub fn input(&self, index: usize) -> (Operation, usize) {
         unsafe {
             let port = tf::TF_OperationInput(tf::TF_Input {
-                operation: self.inner,
+                oper: self.inner,
                 index: index as c_int,
             });
             (Operation {
-                 inner: port.operation,
+                 inner: port.oper,
                  gimpl: self.gimpl.clone(),
              },
              port.index as usize)
@@ -374,7 +375,7 @@ impl Operation {
     pub fn output_num_consumers(&self, index: usize) -> usize {
         unsafe {
             tf::TF_OperationOutputNumConsumers(tf::TF_Output {
-                operation: self.inner,
+                oper: self.inner,
                 index: index as c_int,
             }) as usize
         }
@@ -387,12 +388,12 @@ impl Operation {
     pub fn output_consumers(&self, index: usize) -> Vec<(Operation, usize)> {
         unsafe {
             let num_consumers = tf::TF_OperationOutputNumConsumers(tf::TF_Output {
-                operation: self.inner,
+                oper: self.inner,
                 index: index as c_int,
             });
             let mut vec = <Vec<tf::TF_Input>>::with_capacity(num_consumers as usize);
             let len = tf::TF_OperationOutputConsumers(tf::TF_Output {
-                                                          operation: self.inner,
+                                                          oper: self.inner,
                                                           index: index as c_int,
                                                       },
                                                       vec.as_mut_ptr(),
@@ -401,7 +402,7 @@ impl Operation {
             vec.into_iter()
                 .map(|port| {
                     (Operation {
-                         inner: port.operation,
+                         inner: port.oper,
                          gimpl: self.gimpl.clone(),
                      },
                      port.index as usize)
@@ -483,7 +484,7 @@ pub struct Input<'a> {
 impl<'a> Input<'a> {
     fn to_c(&self) -> tf::TF_Input {
         tf::TF_Input {
-            operation: self.operation.inner,
+            oper: self.operation.inner,
             index: self.index,
         }
     }
@@ -505,7 +506,7 @@ pub struct Output<'a> {
 impl<'a> Output<'a> {
     fn to_c(&self) -> tf::TF_Output {
         tf::TF_Output {
-            operation: self.operation.inner,
+            oper: self.operation.inner,
             index: self.index,
         }
     }
@@ -606,7 +607,7 @@ impl<'a> OperationDescription<'a> {
         unsafe {
             tf::TF_SetAttrString(self.inner,
                                  c_attr_name.as_ptr(),
-                                 c_value.as_ptr() as *const c_void,
+                                 c_value.as_ptr() as *const std_c_void,
                                  c_value.len() as size_t);
         }
         Ok(())
@@ -625,7 +626,7 @@ impl<'a> OperationDescription<'a> {
         unsafe {
             tf::TF_SetAttrStringList(self.inner,
                                      c_attr_name.as_ptr(),
-                                     ptrs.as_ptr(),
+                                     ptrs.as_ptr() as *const *const std_c_void,
                                      lens.as_ptr(),
                                      ptrs.len() as c_int);
         }
@@ -821,7 +822,7 @@ impl<'a> OperationDescription<'a> {
         unsafe {
             tf::TF_SetAttrTensorShapeProto(self.inner,
                                            c_attr_name.as_ptr(),
-                                           value.as_ptr() as *const c_void,
+                                           value.as_ptr() as *const std_c_void,
                                            value.len() as size_t,
                                            status.inner());
         }
@@ -843,7 +844,7 @@ impl<'a> OperationDescription<'a> {
         unsafe {
             tf::TF_SetAttrTensorShapeProtoList(self.inner,
                                                c_attr_name.as_ptr(),
-                                               ptrs.as_ptr(),
+                                               ptrs.as_ptr() as *const *const std_c_void,
                                                lens.as_ptr(),
                                                ptrs.len() as c_int,
                                                status.inner());
@@ -878,7 +879,7 @@ impl<'a> OperationDescription<'a> {
             let ptrs: Vec<*mut tf::TF_Tensor> = value.into_iter().map(|x| x.into_ptr()).collect();
             tf::TF_SetAttrTensorList(self.inner,
                                      c_attr_name.as_ptr(),
-                                     ptrs.as_ptr(),
+                                     ptrs.as_ptr() as *const *const tf::TF_Tensor,
                                      ptrs.len() as c_int,
                                      status.inner());
         }
@@ -893,7 +894,7 @@ impl<'a> OperationDescription<'a> {
         unsafe {
             tf::TF_SetAttrValueProto(self.inner,
                                      c_attr_name.as_ptr(),
-                                     value.as_ptr() as *const c_void,
+                                     value.as_ptr() as *const std_c_void,
                                      // Allow trivial_numeric_casts because usize is not
                                      // necessarily size_t.
                                      value.len() as size_t,

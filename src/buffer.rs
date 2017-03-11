@@ -17,6 +17,7 @@ use std::ops::Range;
 use std::ops::RangeFrom;
 use std::ops::RangeFull;
 use std::ops::RangeTo;
+use std::os::raw::c_void as std_c_void;
 use std::ptr;
 use std::slice;
 use super::BufferTrait;
@@ -65,7 +66,7 @@ impl<T: TensorType> Buffer<T> {
             let msg = CStr::from_ptr(c_msg);
             panic!("Failed to allocate: {}", msg.to_str().unwrap());
         }
-        (*inner).data = ptr;
+        (*inner).data = ptr as *mut std_c_void;
         (*inner).length = len;
         (*inner).data_deallocator = Some(deallocator);
         Buffer {
@@ -81,7 +82,7 @@ impl<T: TensorType> Buffer<T> {
     /// The underlying data is *not* freed when the buffer is destroyed.
     pub unsafe fn from_ptr(ptr: *mut T, len: usize) -> Self {
         let inner = tf::TF_NewBuffer();
-        (*inner).data = ptr as *const c_void;
+        (*inner).data = ptr as *const std_c_void;
         (*inner).length = len;
         Buffer {
             inner: inner,
@@ -155,8 +156,8 @@ impl<T: TensorType> BufferTrait for Buffer<T> {
     }
 }
 
-unsafe extern "C" fn deallocator(data: *mut c_void, _length: size_t) {
-    libc::free(data);
+unsafe extern "C" fn deallocator(data: *mut std_c_void, _length: size_t) {
+    libc::free(data as *mut c_void);
 }
 
 impl<T: TensorType> Drop for Buffer<T> {
