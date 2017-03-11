@@ -1,6 +1,8 @@
 use tf;
-use libc::c_int;
+use libc::{c_char, c_int};
+use std::ffi::CString;
 use std::marker;
+use std::path::Path;
 use std::ptr;
 use super::Code;
 use super::DataType;
@@ -25,6 +27,45 @@ impl Session {
     pub fn new(options: &SessionOptions, graph: &Graph) -> Result<Self> {
         let mut status = Status::new();
         let inner = unsafe { tf::TF_NewSession(graph.inner(), options.inner, status.inner()) };
+        if inner.is_null() {
+            Err(status)
+        } else {
+            Ok(Session { inner: inner })
+        }
+    }
+
+    /// Loads a session from an exported model.
+    pub fn from_saved_model<P: AsRef<Path>, Tag: AsRef<str>, Tags: IntoIterator<Item = Tag>>
+        (options: &SessionOptions,
+         tags: Tags,
+         graph: &mut Graph,
+         export_dir: P)
+         -> Result<Self> {
+        let mut status = Status::new();
+
+        let export_dir_cstr =
+            try!(export_dir.as_ref()
+                     .to_str()
+                     .and_then(|s| CString::new(s.as_bytes()).ok())
+                     .ok_or_else(|| invalid_arg!("Invalid export directory path")));
+
+        let tags_cstr: Vec<_> = try!(tags.into_iter()
+                                         .map(|t| CString::new(t.as_ref()))
+                                         .collect::<::std::result::Result<_, _>>()
+                                         .map_err(|_| invalid_arg!("Invalid tag name")));
+        // keeping tags_cstr to retain strings in memory
+        let tags_ptr: Vec<*const c_char> = tags_cstr.iter().map(|t| t.as_ptr()).collect();
+
+        let inner = unsafe {
+            tf::TF_LoadSessionFromSavedModel(options.inner,
+                                             ptr::null(),
+                                             export_dir_cstr.as_ptr(),
+                                             tags_ptr.as_ptr(),
+                                             tags_ptr.len() as c_int,
+                                             graph.inner(),
+                                             ptr::null_mut(),
+                                             status.inner())
+        };
         if inner.is_null() {
             Err(status)
         } else {
@@ -143,9 +184,9 @@ impl<'l> StepWithGraph<'l> {
                                     index: c_int,
                                     tensor: &'l Tensor<T>) {
         self.input_ports.push(tf::TF_Output {
-            oper: operation.inner(),
-            index: index,
-        });
+                                  oper: operation.inner(),
+                                  index: index,
+                              });
         self.input_tensors.push(tensor.inner);
     }
 
@@ -153,9 +194,9 @@ impl<'l> StepWithGraph<'l> {
     /// Returns an index that you can then use to fetch this output from the step after running it.
     pub fn request_output(&mut self, operation: &Operation, index: c_int) -> OutputToken {
         self.output_ports.push(tf::TF_Output {
-            oper: operation.inner(),
-            index: index,
-        });
+                                   oper: operation.inner(),
+                                   index: index,
+                               });
         self.output_tensors.push(ptr::null_mut());
         OutputToken { index: self.output_tensors.len() - 1 }
     }
@@ -172,13 +213,13 @@ impl<'l> StepWithGraph<'l> {
                                                  {}",
                                                 output_idx,
                                                 self.output_tensors.len()))
-                .unwrap());
+                               .unwrap());
         }
         if self.output_tensors[output_idx].is_null() {
             return Err(Status::new_set(Code::Unavailable,
                                        "Output not available. Either it was already taken, or \
                                         this step has not been sucessfully run yet.")
-                .unwrap());
+                               .unwrap());
         }
         let actual_data_type = self.output_data_type(output_idx).unwrap();
         if actual_data_type != T::data_type() {
@@ -260,13 +301,13 @@ mod tests {
         let y = {
             let mut nd = g.new_operation("Mul", "y").unwrap();
             nd.add_input(Output {
-                operation: &two,
-                index: 0,
-            });
+                             operation: &two,
+                             index: 0,
+                         });
             nd.add_input(Output {
-                operation: &x,
-                index: 0,
-            });
+                             operation: &x,
+                             index: 0,
+                         });
             nd.finish().unwrap()
         };
         let options = SessionOptions::new();
