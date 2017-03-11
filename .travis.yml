@@ -1,23 +1,25 @@
 language: rust
 sudo: false
+dist: trusty # still in beta, but required for the prebuilt TF binaries
 
 cache:
   cargo: true
   directories:
     - $HOME/.cache/bazel
 
-rust: nightly
+rust: stable
 
 install:
   - export CC="gcc-4.9" CXX="g++-4.9"
   - source travis-ci/install.sh
 
 script:
+  - export RUST_BACKTRACE=1
   - cargo test -vv -j 2 --features tensorflow_unstable
   - cargo run --example regression
   - cargo run --features tensorflow_unstable --example expressions
   - cargo doc -vv --features tensorflow_unstable
-  - (cd tensorflow-sys && cargo test -vv -j 1)
+  - # TODO(#66): Re-enable: (cd tensorflow-sys && cargo test -vv -j 1)
   - (cd tensorflow-sys && cargo doc -vv)
 
 addons:
