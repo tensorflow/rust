@@ -26,6 +26,7 @@ script:
   # Compile the tests, but don't run them. This makes sure the prebuilt tensorflow.so
   # is downloaded and available (if required).
   - (cd tensorflow-sys && cargo test --no-run -vv -j 1)
+  - tree
   - # TODO(#66): Re-enable: (cd tensorflow-sys && cargo test -vv -j 1)
   - (cd tensorflow-sys && cargo doc -vv)
   # Run tests through valgrind, but only on nightly since Rust's standard allocator (jemalloc)
