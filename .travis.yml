@@ -19,6 +19,9 @@ script:
   - cargo run --example regression
   - cargo run --features tensorflow_unstable --example expressions
   - cargo doc -vv --features tensorflow_unstable
+  # Compile the tests, but don't run them. This makes sure the prebuilt tensorflow.so
+  # is downloaded and available (if required).
+  - (cd tensorflow-sys && cargo test --no-run -vv -j 1)
   - # TODO(#66): Re-enable: (cd tensorflow-sys && cargo test -vv -j 1)
   - (cd tensorflow-sys && cargo doc -vv)
 
