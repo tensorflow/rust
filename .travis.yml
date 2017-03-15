@@ -4,8 +4,9 @@ dist: trusty # still in beta, but required for the prebuilt TF binaries
 
 cache:
   cargo: true
-  directories:
-    - $HOME/.cache/bazel
+  # FIXME: We don't need bazel for now
+  # directories:
+  #   - $HOME/.cache/bazel
 
 rust:
   - stable
@@ -15,7 +16,8 @@ rust:
 
 install:
   - export CC="gcc-4.9" CXX="g++-4.9"
-  - source travis-ci/install.sh
+  # FIXME: We don't need bazel for now
+  # - source travis-ci/install.sh
 
 script:
   - export RUST_BACKTRACE=1
