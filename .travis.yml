@@ -8,6 +8,9 @@ cache:
   # directories:
   #   - $HOME/.cache/bazel
 
+env:
+  - valgrind="valgrind --error-exitcode=42 --leak-check=full"
+
 rust:
   - stable
   # FIXME: Should nightly be allowed to fail? Should a specific nightly
@@ -40,7 +43,7 @@ script:
   - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then (cd tensorflow-sys && cargo test --no-run -vv -j 1 --features=nightly); fi
   # Run the tests using valgrind.
   # FIXME: Add suppressions to ignore "errors" in cargo.
-  - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then (cd tensorflow-sys && valgrind --error-exitcode=42 --leak-check=full cargo test -vv -j 1 --features=nightly); fi
+  - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then (cd tensorflow-sys && $valgrind cargo test -vv -j 1 --features=nightly); fi
 
 
 addons:
