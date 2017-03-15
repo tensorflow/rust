@@ -41,8 +41,14 @@ script:
   # Compile the tests using the 'nightly' feature, but don't run them.
   - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then (cd tensorflow-sys && cargo test --no-run -vv -j 1 --features=nightly); fi
   # Run the tests using valgrind.
-  # FIXME: Add suppressions to ignore "errors" in cargo.
-  - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then (cd tensorflow-sys && $valgrind cargo test -vv -j 1 --features=nightly); fi
+  # FIXME: Running valgrind on cargo will catch "errors" inside cargo, not the binary to test. One could use
+  #        valgrind's `--trace-children=yes` but valgrind would still fail on cargo. Maybe suppressions could be
+  #        used. Meanwhile, just call the binaries directly.
+  # - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then (cd tensorflow-sys && $valgrind cargo test -vv -j 1 --features=nightly); fi
+  - export TEST_LIB_LINK=$(ls $TRAVIS_BUILD_DIR/target/debug/deps/lib-*)
+  - export TEST_LIB_SYS=$(ls $TRAVIS_BUILD_DIR/target/debug/deps/tensorflow_sys-*)
+  - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then LD_LIBRARY_PATH=$TFSO $valgrind $TEST_LIB_LINK ; fi
+  - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then LD_LIBRARY_PATH=$TFSO $valgrind $TEST_LIB_SYS ; fi
   # Now build and test the main crate
   - cargo test -vv -j 2 --features tensorflow_unstable
   - cargo run --example regression
