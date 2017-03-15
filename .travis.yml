@@ -57,16 +57,17 @@ script:
   - cargo run --example regression
   - cargo run --features tensorflow_unstable --example expressions
   # Run the tests through valgrind
-  # Clean the stable artifacts
-  - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then cargo clean; fi
-  # Compile the tests using the 'nightly' feature, then run them through valgrind
-  # FIXME: Add suppressions to ignore "errors" in cargo.
-  - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then           cargo test --no-run -vv -j 2 --features tensorflow_unstable --features=nightly; fi
-  - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then $valgrind cargo test -vv -j 2 --features tensorflow_unstable --features=nightly; fi
-  - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then           cargo build --example regression --features=nightly; fi
-  - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then $valgrind cargo run   --example regression --features=nightly; fi
-  - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then           cargo build --example regression --features=nightly; fi
-  - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then $valgrind cargo run   --example regression --features=nightly; fi
+  # FIXME: Add `nightly` feature to main crate (to enable `alloc_system` feature)
+  # # Clean the stable artifacts
+  # - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then cargo clean; fi
+  # # Compile the tests using the 'nightly' feature, then run them through valgrind
+  # # FIXME: Add suppressions to ignore "errors" in cargo.
+  # - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then           cargo test --no-run -vv -j 2 --features tensorflow_unstable --features=nightly; fi
+  # - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then $valgrind cargo test -vv -j 2 --features tensorflow_unstable --features=nightly; fi
+  # - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then           cargo build --example regression --features=nightly; fi
+  # - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then $valgrind cargo run   --example regression --features=nightly; fi
+  # - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then           cargo build --features tensorflow_unstable --example expressions --features=nightly; fi
+  # - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then $valgrind cargo run   --features tensorflow_unstable --example expressions --features=nightly; fi
   # Now build the doc
   - cargo doc -vv --features tensorflow_unstable
 
