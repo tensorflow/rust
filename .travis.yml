@@ -48,7 +48,8 @@ script:
   # - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then (cd tensorflow-sys && $valgrind cargo test -vv -j 1 --features=nightly); fi
   - export TEST_LIB_LINK=$(ls $TRAVIS_BUILD_DIR/target/debug/deps/lib-*)
   - export TEST_LIB_SYS=$(ls $TRAVIS_BUILD_DIR/target/debug/deps/tensorflow_sys-*)
-  - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then LD_LIBRARY_PATH=$TFSO $valgrind $TEST_LIB_LINK ; fi
+  # FIXME: Disable for now since valgrind just loop like crazy. See https://travis-ci.org/tensorflow/rust/jobs/211495588#L759
+  # - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then LD_LIBRARY_PATH=$TFSO $valgrind $TEST_LIB_LINK ; fi
   - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then LD_LIBRARY_PATH=$TFSO $valgrind $TEST_LIB_SYS ; fi
   # Now build and test the main crate
   - cargo test -vv -j 2 --features tensorflow_unstable
