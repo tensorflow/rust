@@ -24,6 +24,17 @@ script:
   - (cd tensorflow-sys && cargo test --no-run -vv -j 1)
   - # TODO(#66): Re-enable: (cd tensorflow-sys && cargo test -vv -j 1)
   - (cd tensorflow-sys && cargo doc -vv)
+  # Run tests through valgrind, but only on nightly since Rust's standard allocator (jemalloc)
+  # does not work with valgrind. One has to use the system allocator (`alloc_system`) which
+  # is only available on nightly.
+  # Clean the stable artifacts
+  - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then (cd tensorflow-sys && cargo clean); fi
+  # Compile the tests using the 'nightly' feature, but don't run them.
+  - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then (cd tensorflow-sys && cargo test --no-run -vv -j 1 --features=nightly); fi
+  # Run the tests using valgrind.
+  # FIXME: Add suppressions to ignore "errors" in cargo.
+  - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then (cd tensorflow-sys && valgrind --error-exitcode=42 --leak-check=full cargo test -vv -j 1 --features=nightly); fi
+
 
 addons:
   apt:
