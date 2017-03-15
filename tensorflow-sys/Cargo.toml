@@ -25,3 +25,4 @@ tar = "0.4"
 
 [features]
 tensorflow_gpu = []
+nightly = []
