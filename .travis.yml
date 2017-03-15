@@ -30,6 +30,8 @@ script:
   - (cd tensorflow-sys && cargo test --no-run -vv -j 1)
   # FIXME: Make sure this does not fail the CI when pre-built binaries are used.
   - export TFSO=$(ls $TRAVIS_BUILD_DIR/tensorflow-sys/target/libtensorflow-*-*-*-*/lib/)
+  - ls -d $TFSO
+  - find $TFSO
   - # TODO(#66): Re-enable: (cd tensorflow-sys && cargo test -vv -j 1)
   - (cd tensorflow-sys && cargo doc -vv)
   # Run tests through valgrind, but only on nightly since Rust's standard allocator (jemalloc)
