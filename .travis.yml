@@ -11,9 +11,14 @@ env:
     - RUST_BACKTRACE=1
     - CC="gcc-4.9"
     - CXX="g++-4.9"
+  matrix:
+    - TF_RUST_BUILD_FROM_SRC=true
+    - TF_RUST_BUILD_FROM_SRC=false
+
 
 install:
-  - source travis-ci/install.sh
+  # Install dependencies only if we build tensorflow from source.
+  - if [[ "$TF_RUST_BUILD_FROM_SRC" == "true" ]]; then source travis-ci/install.sh; fi
 
 script:
   - cargo test -vv -j 2 --features tensorflow_unstable
