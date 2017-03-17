@@ -19,6 +19,7 @@ env:
 install:
   # Install dependencies only if we build tensorflow from source.
   - if [[ "$TF_RUST_BUILD_FROM_SRC" == "true" ]]; then source travis-ci/install.sh; fi
+  - if [[ "$TF_RUST_BUILD_FROM_SRC" == "true" ]]; then pip install --user numpy; fi
 
 script:
   - cargo test -vv -j 2 --features tensorflow_unstable
@@ -37,7 +38,6 @@ addons:
       - g++-4.9
       - gcc-4.9
       - oracle-java8-installer
-      - python-numpy
       - swig
 
 notifications:
