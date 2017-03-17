@@ -21,6 +21,7 @@ env:
 
 
 matrix:
+  fast_finish: true
   allow_failures:
     - rust: nightly
 
