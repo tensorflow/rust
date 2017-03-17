@@ -6,13 +6,16 @@ cache:
   cargo: true
 
 rust: stable
+env:
+  global:
+    - RUST_BACKTRACE=1
+    - CC="gcc-4.9"
+    - CXX="g++-4.9"
 
 install:
-  - export CC="gcc-4.9" CXX="g++-4.9"
   - source travis-ci/install.sh
 
 script:
-  - export RUST_BACKTRACE=1
   - cargo test -vv -j 2 --features tensorflow_unstable
   - cargo run --example regression
   - cargo run --features tensorflow_unstable --example expressions
