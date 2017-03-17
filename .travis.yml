@@ -20,6 +20,11 @@ env:
     - TF_RUST_BUILD_FROM_SRC=false
 
 
+matrix:
+  allow_failures:
+    - rust: nightly
+
+
 install:
   # Install dependencies only if we build tensorflow from source.
   - if [[ "$TF_RUST_BUILD_FROM_SRC" == "true" ]]; then source travis-ci/install.sh; fi
