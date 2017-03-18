@@ -12,7 +12,7 @@ loss = tf.reduce_mean(tf.square(y_hat - y))
 optimizer = tf.train.GradientDescentOptimizer(0.5)
 train = optimizer.minimize(loss, name='train')
 
-init = tf.initialize_variables(tf.all_variables(), name='init')
+init = tf.variables_initializer(tf.global_variables(), name='init')
 
 definition = tf.Session().graph_def
 directory = 'examples/regression-model'
