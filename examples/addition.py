@@ -9,4 +9,4 @@ tf.variables_initializer(tf.global_variables(), name = 'init')
 
 definition = tf.Session().graph_def
 directory = 'examples/addition-model'
-tf.train.write_graph(definition, directory, 'model.pb', as_text=True)
+tf.train.write_graph(definition, directory, 'model.pb', as_text=False)
