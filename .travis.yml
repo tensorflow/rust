@@ -4,8 +4,6 @@ dist: trusty # still in beta, but required for the prebuilt TF binaries
 
 cache:
   cargo: true
-  directories:
-    - $HOME/.cache/bazel
 
 rust: stable
 
