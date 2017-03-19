@@ -112,7 +112,9 @@ fn install_prebuilt() {
     // Extract the tarball.
     let unpacked_dir = download_dir.join(base_name);
     let lib_dir = unpacked_dir.join("lib");
-    if !lib_dir.join(format!("lib{}.so", LIBRARY)).exists() {
+    let library_file = format!("lib{}.so", LIBRARY);
+    let library_full_path = lib_dir.join(&library_file);
+    if !library_full_path.exists() {
         extract(file_name, &unpacked_dir);
     }
 
@@ -122,7 +124,16 @@ fn install_prebuilt() {
         }); // TODO: remove
 
     println!("cargo:rustc-link-lib=dylib={}", LIBRARY);
-    println!("cargo:rustc-link-search={}", lib_dir.display());
+    let output = PathBuf::from(&get!("OUT_DIR"));
+    let new_library_full_path = output.join(&library_file);
+    if new_library_full_path.exists() {
+        log!("File {} already exists, deleting.", new_library_full_path.display());
+        std::fs::remove_file(&new_library_full_path).unwrap();
+    }
+
+    log!("Copying {} to {}...", library_full_path.display(), new_library_full_path.display());
+    std::fs::copy(&library_full_path, &new_library_full_path).unwrap();
+    println!("cargo:rustc-link-search={}", output.display());
 }
 
 fn build_from_src() {
