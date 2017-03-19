@@ -19,6 +19,8 @@ random = "0.12"
 
 [features]
 tensorflow_unstable = []
+# This is for testing purposes; users should not use this.
+nightly = []
 
 [workspace]
 
