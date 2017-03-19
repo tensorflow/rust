@@ -127,11 +127,11 @@ fn install_prebuilt() {
     let output = PathBuf::from(&get!("OUT_DIR"));
     let new_library_full_path = output.join(&library_file);
     if new_library_full_path.exists() {
-        println!("File {} already exists, deleting.", new_library_full_path.display());
+        log!("File {} already exists, deleting.", new_library_full_path.display());
         std::fs::remove_file(&new_library_full_path).unwrap();
     }
 
-    println!("Copying {} to {}...", library_full_path.display(), new_library_full_path.display());
+    log!("Copying {} to {}...", library_full_path.display(), new_library_full_path.display());
     std::fs::copy(&library_full_path, &new_library_full_path).unwrap();
     println!("cargo:rustc-link-search={}", output.display());
 }
