@@ -4,23 +4,73 @@ dist: trusty # still in beta, but required for the prebuilt TF binaries
 
 cache:
   cargo: true
-  directories:
-    - $HOME/.cache/bazel
+  # FIXME: We don't need bazel for now
+  # directories:
+  #   - $HOME/.cache/bazel
 
-rust: stable
+env:
+  - valgrind="valgrind --error-exitcode=42 --leak-check=full"
+
+rust:
+  - stable
+  # FIXME: Should nightly be allowed to fail? Should a specific nightly
+  #        be pinned and _not_ allowed to fail?
+  - nightly
 
 install:
   - export CC="gcc-4.9" CXX="g++-4.9"
-  - source travis-ci/install.sh
+  # FIXME: We don't need bazel for now
+  # - source travis-ci/install.sh
 
 script:
   - export RUST_BACKTRACE=1
+  # Build and test the tensorflow-sys crate first
+  # Compile the tests, but don't run them. This makes sure the prebuilt tensorflow.so
+  # is downloaded and available (if required).
+  - (cd tensorflow-sys && cargo test --no-run -vv -j 1)
+  # FIXME: Make sure this does not fail the CI when pre-built binaries are used.
+  - export TFSO=$(ls -d $TRAVIS_BUILD_DIR/tensorflow-sys/target/libtensorflow-*-*-*-*/lib/)
+  - ls -d $TFSO
+  - find $TFSO
+  - export LD_LIBRARY_PATH=$TFSO
+  - # TODO(#66): Re-enable: (cd tensorflow-sys && cargo test -vv -j 1)
+  - (cd tensorflow-sys && cargo doc -vv)
+  # Run tests through valgrind, but only on nightly since Rust's standard allocator (jemalloc)
+  # does not work with valgrind. One has to use the system allocator (`alloc_system`) which
+  # is only available on nightly.
+  # Clean the stable artifacts
+  - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then (cd tensorflow-sys && cargo clean); fi
+  # Compile the tests using the 'nightly' feature, but don't run them.
+  - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then (cd tensorflow-sys && cargo test --no-run -vv -j 1 --features=nightly); fi
+  # Run the tests using valgrind.
+  # FIXME: Running valgrind on cargo will catch "errors" inside cargo, not the binary to test. One could use
+  #        valgrind's `--trace-children=yes` but valgrind would still fail on cargo. Maybe suppressions could be
+  #        used. Meanwhile, just call the binaries directly.
+  # - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then (cd tensorflow-sys && $valgrind cargo test -vv -j 1 --features=nightly); fi
+  - export TEST_LIB_LINK=$(ls $TRAVIS_BUILD_DIR/target/debug/deps/lib-*)
+  - export TEST_LIB_SYS=$(ls $TRAVIS_BUILD_DIR/target/debug/deps/tensorflow_sys-*)
+  # FIXME: Disable for now since valgrind just loop like crazy. See https://travis-ci.org/tensorflow/rust/jobs/211495588#L759
+  # - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then $valgrind $TEST_LIB_LINK ; fi
+  - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then $valgrind $TEST_LIB_SYS ; fi
+  # Now build and test the main crate
   - cargo test -vv -j 2 --features tensorflow_unstable
   - cargo run --example regression
   - cargo run --features tensorflow_unstable --example expressions
+  # Run the tests through valgrind
+  # FIXME: Add `nightly` feature to main crate (to enable `alloc_system` feature)
+  # # Clean the stable artifacts
+  # - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then cargo clean; fi
+  # # Compile the tests using the 'nightly' feature, then run them through valgrind
+  # # FIXME: Add suppressions to ignore "errors" in cargo.
+  # - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then           cargo test --no-run -vv -j 2 --features tensorflow_unstable --features=nightly; fi
+  # - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then $valgrind cargo test -vv -j 2 --features tensorflow_unstable --features=nightly; fi
+  # - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then           cargo build --example regression --features=nightly; fi
+  # - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then $valgrind cargo run   --example regression --features=nightly; fi
+  # - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then           cargo build --features tensorflow_unstable --example expressions --features=nightly; fi
+  # - if [ "$TRAVIS_RUST_VERSION" == "nightly" ]; then $valgrind cargo run   --features tensorflow_unstable --example expressions --features=nightly; fi
+  # Now build the doc
   - cargo doc -vv --features tensorflow_unstable
-  - # TODO(#66): Re-enable: (cd tensorflow-sys && cargo test -vv -j 1)
-  - (cd tensorflow-sys && cargo doc -vv)
+
 
 addons:
   apt:
@@ -33,6 +83,7 @@ addons:
       - oracle-java8-installer
       - python-numpy
       - swig
+      - valgrind
 
 notifications:
   email: false
