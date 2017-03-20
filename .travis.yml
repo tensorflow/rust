@@ -16,7 +16,9 @@ env:
     - CC="gcc-4.9"
     - CXX="g++-4.9"
   matrix:
-    - TF_RUST_BUILD_FROM_SRC=true
+    # Building TensorFlow in Travis is not working properly, probably due
+    # to resources constraints.
+    # - TF_RUST_BUILD_FROM_SRC=true
     - TF_RUST_BUILD_FROM_SRC=false
 
 
