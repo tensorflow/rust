@@ -5,14 +5,38 @@ dist: trusty # still in beta, but required for the prebuilt TF binaries
 cache:
   cargo: true
 
-rust: stable
+rust:
+  - stable
+  - beta
+  - nightly
+
+env:
+  global:
+    - RUST_BACKTRACE=1
+    - CC="gcc-4.9"
+    - CXX="g++-4.9"
+  matrix:
+    # Building TensorFlow in Travis is not working properly, probably due
+    # to resources constraints.
+    # - TF_RUST_BUILD_FROM_SRC=true
+    - TF_RUST_BUILD_FROM_SRC=false
+
+os:
+  - linux
+  - osx
+
+matrix:
+  fast_finish: true
+  allow_failures:
+    - rust: nightly
+
 
 install:
-  - export CC="gcc-4.9" CXX="g++-4.9"
-  - source travis-ci/install.sh
+  # Install dependencies only if we build tensorflow from source.
+  - if [[ "$TF_RUST_BUILD_FROM_SRC" == "true" ]]; then source travis-ci/install.sh; fi
+  - if [[ "$TF_RUST_BUILD_FROM_SRC" == "true" ]]; then pip install --user numpy; fi
 
 script:
-  - export RUST_BACKTRACE=1
   - cargo test -vv -j 2 --features tensorflow_unstable
   - cargo run --example regression
   - cargo run --features tensorflow_unstable --example expressions
@@ -29,7 +53,6 @@ addons:
       - g++-4.9
       - gcc-4.9
       - oracle-java8-installer
-      - python-numpy
       - swig
 
 notifications:
