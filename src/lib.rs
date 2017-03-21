@@ -877,11 +877,13 @@ impl<T: TensorType> Tensor<T> {
     }
 
     /// Returns the tensor's data.
+    #[deprecated(note="Deref the tensor as a slice instead.")]
     pub fn data(&self) -> &Buffer<T> {
         &self.data
     }
 
     /// Returns the tensor's data.
+    #[deprecated(note="Deref the tensor as a slice instead.")]
     pub fn data_mut(&mut self) -> &mut Buffer<T> {
         &mut self.data
     }
