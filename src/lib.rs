@@ -16,6 +16,7 @@ extern crate tensorflow_sys as tf;
 
 use libc::{c_char, c_int, c_uint, c_void, size_t};
 use num_complex::Complex;
+use std::cmp::Ordering;
 use std::error::Error;
 use std::ffi::CStr;
 use std::ffi::CString;
@@ -783,7 +784,6 @@ tensor_type!(Complex<f32>, Complex64, Complex::new(0.0, 0.0), Complex::new(1.0, 
 tensor_type!(Complex<f64>, Complex128, Complex::new(0.0, 0.0), Complex::new(1.0, 0.0));
 tensor_type!(i64, Int64, 0, 1);
 tensor_type!(bool, Bool, false, true);
-// TODO: provide type for BFloat16
 
 macro_rules! q_type {
   ($rust_type:ident, $(#[$attr:meta])* type $q_type:ident) => {
@@ -822,6 +822,56 @@ q_type!(u16,
 q_type!(i32,
         /// Quantized type for i32.
         type QInt32);
+
+////////////////////////
+
+/// BFloat16 provides a Rust type for BFloat16.
+#[derive(Debug,Clone,Copy,Default)]
+pub struct BFloat16(u16);
+
+impl Display for BFloat16 {
+    fn fmt(&self, f: &mut Formatter) -> ::std::fmt::Result {
+        Display::fmt(self.into(), f)
+    }
+}
+
+impl Into<f32> for BFloat16 {
+    fn into(self) -> f32 {
+        unsafe {
+            // Assumes that the architecture uses IEEE-754 natively for floats
+            // and twos-complement for integers.
+            mem::transmute::<u32, f32>((self.0 as u32) << 16)
+        }
+    }
+}
+
+impl From<f32> for BFloat16 {
+    fn from(value: f32) -> Self {
+        unsafe {
+            // Assumes that the architecture uses IEEE-754 natively for floats
+            // and twos-complement for integers.
+            BFloat16((mem::transmute::<f32, u32>(value) >> 16) as u16)
+        }
+    }
+}
+
+impl PartialEq for BFloat16 {
+    fn eq(&self, other: &BFloat16) -> bool {
+        let x: f32 = (*self).into();
+        let y: f32 = (*other).into();
+        x.eq(&y)
+    }
+}
+
+impl PartialOrd for BFloat16 {
+    fn partial_cmp(&self, other: &BFloat16) -> Option<Ordering> {
+        let x: f32 = (*self).into();
+        let y: f32 = (*other).into();
+        x.partial_cmp(&y)
+    }
+}
+
+tensor_type!(BFloat16, BFloat16, BFloat16::from(0.0f32), BFloat16::from(1.0f32));
 
 ////////////////////////
 
@@ -1160,5 +1210,25 @@ mod tests {
         assert_eq!(data.len(), 2);
         assert_eq!(data[0], 4.0);
         assert_eq!(data[1], 6.0);
+    }
+
+    #[test]
+    fn test_bfloat16() {
+        let data = [-1.0f32, 0.0, 1.0, 2.5];
+        for i in 0..data.len() {
+            let x = data[i];
+            let bfx = BFloat16::from(x);
+            assert_eq!(<BFloat16 as Into<f32>>::into(bfx), x);
+            assert_eq!(bfx.partial_cmp(&bfx), Some(Ordering::Equal));
+            assert!(bfx.eq(&bfx));
+            for j in 0..i {
+                let y = data[j];
+                let bfy = BFloat16::from(y);
+                assert_eq!(bfx.partial_cmp(&bfy), Some(Ordering::Greater));
+                assert_eq!(bfy.partial_cmp(&bfx), Some(Ordering::Less));
+                assert!(!bfx.eq(&bfy));
+            }
+        }
+        assert_eq!(<BFloat16 as Into<f32>>::into(BFloat16::default()), 0.0f32);
     }
 }
