@@ -495,240 +495,6 @@ impl_drop!(SessionOptions, TF_DeleteSessionOptions);
 
 ////////////////////////
 
-/// Manages a single graph and execution.
-#[deprecated(note="Use SessionWithGraph instead.")]
-#[allow(deprecated)]
-#[derive(Debug)]
-pub struct DeprecatedSession {
-    inner: *mut tf::TF_DeprecatedSession,
-}
-
-#[allow(deprecated)]
-impl DeprecatedSession {
-    /// Creates a session.
-    pub fn new(options: &SessionOptions) -> Result<Self> {
-        let mut status = Status::new();
-        let inner = unsafe { tf::TF_NewDeprecatedSession(options.inner, status.inner()) };
-        if inner.is_null() {
-            Err(status)
-        } else {
-            Ok(DeprecatedSession { inner: inner })
-        }
-    }
-
-    /// Closes the session.
-    pub fn close(&mut self) -> Result<()> {
-        let mut status = Status::new();
-        unsafe {
-            tf::TF_CloseDeprecatedSession(self.inner, status.inner());
-        }
-        status.into_result()
-    }
-
-    /// Treat `proto` as a serialized `GraphDef` and add the operations in that `GraphDef`
-    /// to the graph for the session.
-    pub fn extend_graph(&mut self, proto: &[u8]) -> Result<()> {
-        let mut status = Status::new();
-        unsafe {
-            tf::TF_ExtendGraph(self.inner,
-                               proto.as_ptr() as *const _,
-                               proto.len(),
-                               status.inner());
-        }
-        status.into_result()
-    }
-
-    /// Runs the graph, feeding the inputs and then fetching the outputs requested in the step.
-    pub fn run(&mut self, step: &mut Step) -> Result<()> {
-        // Copy the input tensors because TF_Run consumes them.
-        let mut input_tensors = Vec::with_capacity(step.input_tensors.len());
-        for &input_tensor in &step.input_tensors {
-            unsafe {
-                let mut dims = Vec::with_capacity(tf::TF_NumDims(input_tensor) as usize);
-                for i in 0..dims.capacity() {
-                    dims.push(tf::TF_Dim(input_tensor, i as c_int));
-                }
-                input_tensors.push(tf::TF_NewTensor(tf::TF_TensorType(input_tensor),
-                                                    dims.as_ptr(),
-                                                    dims.len() as c_int,
-                                                    tf::TF_TensorData(input_tensor),
-                                                    tf::TF_TensorByteSize(input_tensor),
-                                                    Some(noop_deallocator),
-                                                    std::ptr::null_mut()));
-            }
-        }
-
-        // In case we're running it a second time and not all outputs were taken out.
-        step.drop_output_tensors();
-
-        let mut status = Status::new();
-        unsafe {
-            tf::TF_Run(self.inner,
-                       std::ptr::null(),
-                       step.input_name_ptrs.as_mut_ptr(),
-                       input_tensors.as_mut_ptr(),
-                       input_tensors.len() as c_int,
-                       step.output_name_ptrs.as_mut_ptr(),
-                       step.output_tensors.as_mut_ptr(),
-                       step.output_tensors.len() as c_int,
-                       step.target_name_ptrs.as_mut_ptr(),
-                       step.target_name_ptrs.len() as c_int,
-                       std::ptr::null_mut(),
-                       status.inner());
-        };
-        status.into_result()
-    }
-}
-
-#[allow(deprecated)]
-impl Drop for DeprecatedSession {
-    fn drop(&mut self) {
-        let mut status = Status::new();
-        unsafe {
-            tf::TF_DeleteDeprecatedSession(self.inner, status.inner());
-        }
-        // TODO: What do we do with the status?
-    }
-}
-
-/// Manages the inputs and outputs for a single execution of a graph.
-///
-/// Typical usage involves creating an instance of this struct,
-/// adding some inputs to it, requesting some outputs, passing it to `Session::run`
-/// and then taking the outputs out of it.
-#[deprecated(note="Use StepWithGraph instead.")]
-#[allow(deprecated)]
-#[derive(Debug)]
-pub struct Step<'l> {
-    input_name_ptrs: Vec<*const c_char>,
-    input_name_c_strings: Vec<CString>,
-    input_tensors: Vec<*mut tf::TF_Tensor>,
-
-    output_name_ptrs: Vec<*const c_char>,
-    output_name_c_strings: Vec<CString>,
-    output_tensors: Vec<*mut tf::TF_Tensor>,
-
-    target_name_ptrs: Vec<*const c_char>,
-    target_name_c_strings: Vec<CString>,
-
-    phantom: marker::PhantomData<&'l ()>,
-}
-
-#[allow(deprecated)]
-impl<'l> Step<'l> {
-    /// Creates a Step.
-    pub fn new() -> Self {
-        Step {
-            input_name_ptrs: vec![],
-            input_name_c_strings: vec![],
-            input_tensors: vec![],
-
-            output_name_ptrs: vec![],
-            output_name_c_strings: vec![],
-            output_tensors: vec![],
-
-            target_name_ptrs: vec![],
-            target_name_c_strings: vec![],
-
-            phantom: marker::PhantomData,
-        }
-    }
-
-    /// Adds an input to be fed to the graph.
-    pub fn add_input<T: TensorType>(&mut self,
-                                    name: &str,
-                                    tensor: &'l Tensor<T>)
-                                    -> std::result::Result<(), NulError> {
-        let c_string = try!(CString::new(name));
-        self.input_name_ptrs.push(c_string.as_ptr());
-        self.input_name_c_strings.push(c_string);
-        self.input_tensors.push(tensor.inner);
-        Ok(())
-    }
-
-    /// Requests that an output is fetched from the graph after running this step.
-    /// Returns an index that you can then use to fetch this output from the step after running it.
-    pub fn request_output(&mut self, name: &str) -> std::result::Result<usize, NulError> {
-        let c_string = try!(CString::new(name));
-        self.output_name_ptrs.push(c_string.as_ptr());
-        self.output_name_c_strings.push(c_string);
-        self.output_tensors.push(std::ptr::null_mut());
-        Ok(self.output_tensors.len() - 1)
-    }
-
-    /// Extracts a tensor output given an index. A given index can only be extracted
-    /// once per `Session::run`.
-    /// Returns an error if output_idx is out of range, output is unavailable or the
-    /// requested type does not match the type of the actual tensor.
-    pub fn take_output<T: TensorType>(&mut self, output_idx: usize) -> Result<Tensor<T>> {
-        if output_idx >= self.output_tensors.len() {
-            return Err(Status::new_set(Code::OutOfRange,
-                                       &format!("Requested output index is out of range: {} vs {}",
-          output_idx,
-          self.output_tensors.len()))
-                .unwrap());
-        }
-        if self.output_tensors[output_idx].is_null() {
-            return Err(Status::new_set(Code::Unavailable,
-                                       "Output not available. Either it was already taken, or \
-                                        this step has not been successfully run yet.")
-                .unwrap());
-        }
-        let actual_data_type = self.get_output_data_type(output_idx).unwrap();
-        if actual_data_type != T::data_type() {
-            return Err(invalid_arg!(
-        "Requested tensor type does not match actual tensor type: {} vs {}",
-        actual_data_type,
-        T::data_type()));
-        }
-        let tensor = unsafe { Tensor::from_tf_tensor(self.output_tensors[output_idx]).unwrap() };
-        self.output_tensors[output_idx] = std::ptr::null_mut();
-        Ok(tensor)
-    }
-
-    /// Adds a target operation to be executed when running the graph.
-    pub fn add_target(&mut self, name: &str) -> std::result::Result<(), NulError> {
-        let c_string = try!(CString::new(name));
-        self.target_name_ptrs.push(c_string.as_ptr());
-        self.target_name_c_strings.push(c_string);
-        Ok(())
-    }
-
-    /// Retuns the type of the tensor given an index.
-    /// Returns `None` if the index is out of range or the output is not yet available.
-    pub fn get_output_data_type(&self, output_idx: usize) -> Option<DataType> {
-        // TODO: rename to output_data_type()
-        if output_idx >= self.output_tensors.len() {
-            return None;
-        }
-        if self.output_tensors[output_idx].is_null() {
-            return None;
-        }
-        unsafe { Some(DataType::from_c(tf::TF_TensorType(self.output_tensors[output_idx]))) }
-    }
-
-    fn drop_output_tensors(&mut self) {
-        for mut tensor in &mut self.output_tensors {
-            // TODO: Is TF_DeleteTensor NULL safe?
-            if !tensor.is_null() {
-                unsafe {
-                    tf::TF_DeleteTensor(*tensor);
-                }
-            }
-            *tensor = std::ptr::null_mut();
-        }
-    }
-}
-
-#[allow(deprecated)]
-impl<'l> Drop for Step<'l> {
-    fn drop(&mut self) {
-        self.drop_output_tensors();
-    }
-}
-
-////////////////////////
-
 /// Convenience type for `Result` with `Status` as the error type.
 pub type Result<T> = std::result::Result<T, Status>;
 
@@ -1132,11 +898,11 @@ impl Display for Shape {
 mod tests {
     use super::*;
 
-    #[allow(deprecated)]
-    fn create_session() -> DeprecatedSession {
+    fn create_session() -> (Session, Graph) {
+        let graph = Graph::new();
         let options = SessionOptions::new();
-        match DeprecatedSession::new(&options) {
-            Ok(session) => session,
+        match Session::new(&options, &graph) {
+            Ok(session) => (session, graph),
             Err(status) => panic!("Creating session failed with status: {}", status),
         }
     }
@@ -1148,7 +914,8 @@ mod tests {
 
     #[test]
     fn test_close() {
-        let status = create_session().close();
+        let (mut session, _) = create_session();
+        let status = session.close();
         assert!(status.is_ok());
     }
 
@@ -1173,14 +940,6 @@ mod tests {
     }
 
     #[test]
-    fn test_extend_graph() {
-        let mut session = create_session();
-        // An empty array is a valid proto, since all fields are optional.
-        let status = session.extend_graph(&vec![]);
-        assert!(status.is_ok());
-    }
-
-    #[test]
     fn test_run() {
         // Graph is just y = 2 * x
         let graph_proto = vec![
@@ -1195,15 +954,18 @@ mod tests {
       0x1a, 0x01, 0x78, 0x1a, 0x03, 0x79, 0x2f, 0x79, 0x2a, 0x07, 0x0a, 0x01, 0x54,
       0x12, 0x02, 0x30, 0x01
     ];
-        let mut session = create_session();
-        let status = session.extend_graph(&graph_proto);
+        let (mut session, mut graph) = create_session();
+        let opts = ImportGraphDefOptions::new();
+        let status = graph.import_graph_def(&graph_proto, &opts);
         assert!(status.is_ok());
         let mut x = <Tensor<f32>>::new(&[2]);
         x.data_mut()[0] = 2.0;
         x.data_mut()[1] = 3.0;
-        let mut step = Step::new();
-        step.add_input("x:0", &x).unwrap();
-        let output_ix = step.request_output("y:0").unwrap();
+        let mut step = StepWithGraph::new();
+        let x_op = graph.operation_by_name_required("x").unwrap();
+        step.add_input(&x_op, 0, &x);
+        let y_op = graph.operation_by_name_required("y").unwrap();
+        let output_ix = step.request_output(&y_op, 0);
         session.run(&mut step).unwrap();
         let output_tensor = step.take_output::<f32>(output_ix).unwrap();
         let data = output_tensor.data();

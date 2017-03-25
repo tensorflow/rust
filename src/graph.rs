@@ -933,4 +933,13 @@ mod tests {
         assert_eq!("foo", operation.name().unwrap());
         assert_eq!("foo2", operation2.name().unwrap());
     }
+
+    #[test]
+    fn test_import_graph_def() {
+        let mut g = Graph::new();
+        let opts = ImportGraphDefOptions::new();
+        // An empty array is a valid proto, since all fields are optional.
+        let status = g.import_graph_def(&[], &opts);
+        assert!(status.is_ok());
+    }
 }
