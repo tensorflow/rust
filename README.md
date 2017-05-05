@@ -48,7 +48,7 @@ extern crate tensorflow;
 Then run `cargo build -j 1`. Since TensorFlow is built during this process, and
 the TensorFlow build is very memory intensive, we recommend using the `-j 1`
 flag which tells cargo to use only one task, which in turn tells TensorFlow to
-build with only on task. Of course, if you have a lot of RAM, you can use a
+build with only one task. Of course, if you have a lot of RAM, you can use a
 higher value.
 
 To include the especially unstable API (which is currently the `expr` module),
