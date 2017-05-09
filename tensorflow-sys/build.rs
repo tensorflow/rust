@@ -22,8 +22,8 @@ const LIBRARY: &'static str = "tensorflow";
 const REPOSITORY: &'static str = "https://github.com/tensorflow/tensorflow.git";
 const TARGET: &'static str = "tensorflow:libtensorflow.so";
 // `VERSION` and `TAG` are separate because the tag is not always `'v' + VERSION`.
-const VERSION: &'static str = "1.0.0";
-const TAG: &'static str = "v1.0.0";
+const VERSION: &'static str = "1.1.0";
+const TAG: &'static str = "v1.1.0";
 const MIN_BAZEL: &'static str = "0.3.2";
 
 macro_rules! get(($name:expr) => (ok!(env::var($name))));
