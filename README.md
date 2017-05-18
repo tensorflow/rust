@@ -36,7 +36,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-tensorflow = "0.3"
+tensorflow = "0.4.0"
 ```
 
 and this to your crate root:
