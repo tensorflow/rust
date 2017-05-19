@@ -89,8 +89,8 @@ fn run() -> Result<(), Box<Error>> {
     try!(session.run(&mut output_step));
 
     // Check our results.
-    let w_hat: f32 = try!(output_step.take_output(w_ix)).data()[0];
-    let b_hat: f32 = try!(output_step.take_output(b_ix)).data()[0];
+    let w_hat: f32 = output_step.take_output(w_ix)?[0];
+    let b_hat: f32 = output_step.take_output(b_ix)?[0];
     println!("Checking w: expected {}, got {}. {}",
              w,
              w_hat,

@@ -921,8 +921,8 @@ mod tests {
     #[test]
     fn test_tensor() {
         let mut tensor = <Tensor<f32>>::new(&[2, 3]);
-        assert_eq!(tensor.data().len(), 6);
-        tensor.data_mut()[0] = 1.0;
+        assert_eq!(tensor.len(), 6);
+        tensor[0] = 1.0;
     }
 
     #[test]
@@ -958,8 +958,8 @@ mod tests {
         let status = graph.import_graph_def(&graph_proto, &opts);
         assert!(status.is_ok());
         let mut x = <Tensor<f32>>::new(&[2]);
-        x.data_mut()[0] = 2.0;
-        x.data_mut()[1] = 3.0;
+        x[0] = 2.0;
+        x[1] = 3.0;
         let mut step = StepWithGraph::new();
         let x_op = graph.operation_by_name_required("x").unwrap();
         step.add_input(&x_op, 0, &x);
@@ -967,10 +967,9 @@ mod tests {
         let output_ix = step.request_output(&y_op, 0);
         session.run(&mut step).unwrap();
         let output_tensor = step.take_output::<f32>(output_ix).unwrap();
-        let data = output_tensor.data();
-        assert_eq!(data.len(), 2);
-        assert_eq!(data[0], 4.0);
-        assert_eq!(data[1], 6.0);
+        assert_eq!(output_tensor.len(), 2);
+        assert_eq!(output_tensor[0], 4.0);
+        assert_eq!(output_tensor[1], 6.0);
     }
 
     #[test]

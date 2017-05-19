@@ -59,7 +59,7 @@ fn run() -> Result<(), Box<Error>> {
     try!(session.run(&mut step));
 
     // Check our results.
-    let z_res: i32 = try!(step.take_output(z)).data()[0];
+    let z_res: i32 = step.take_output(z)?[0];
     println!("{:?}", z_res);
 
     Ok(())
