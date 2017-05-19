@@ -66,6 +66,68 @@ impl ImportGraphDefOptions {
         }
         Ok(())
     }
+
+    /// Set any imported nodes with input `src_name:src_index` to have that input
+    /// replaced with `dst`. `src_name` refers to a node in the graph to be imported,
+    /// `dst` references a node already existing in the graph being imported into.
+    pub fn add_input_mapping(&mut self,
+                             src_name: &str,
+                             src_index: usize,
+                             dst: &Output)
+                             -> std::result::Result<(), NulError> {
+        let s = CString::new(src_name)?;
+        unsafe {
+            tf::TF_ImportGraphDefOptionsAddInputMapping(self.inner,
+                                                        s.as_ptr(),
+                                                        src_index as c_int,
+                                                        dst.to_c());
+        }
+        Ok(())
+    }
+
+    /// Set any imported nodes with control input `src_name` to have that input
+    /// replaced with `dst`. `src_name` refers to a node in the graph to be imported,
+    /// `dst` references an operation already existing in the graph being imported
+    /// into.
+    pub fn remap_control_dependency(&mut self,
+                                    src_name: &str,
+                                    dst: &Operation)
+                                    -> std::result::Result<(), NulError> {
+        let s = CString::new(src_name)?;
+        unsafe {
+            tf::TF_GraphImportGraphDefOptionsRemapControlDependency(self.inner,
+                                                                    s.as_ptr(),
+                                                                    dst.inner);
+        }
+        Ok(())
+    }
+
+    /// Cause the imported graph to have a control dependency on `oper`. `oper`
+    /// should exist in the graph being imported into.
+    pub fn add_control_dependency(&mut self, oper: &Operation) {
+        unsafe {
+            tf::TF_ImportGraphDefOptionsAddControlDependency(self.inner, oper.inner);
+        }
+    }
+
+    /// Add an output in `graph_def` to be returned via the `return_outputs` output
+    /// parameter of `import_graph_def()`. If the output is remapped via an input
+    /// mapping, the corresponding existing tensor in `graph` will be returned.
+    pub fn add_return_output(&mut self,
+                             oper_name: &str,
+                             index: usize)
+                             -> std::result::Result<(), NulError> {
+        let s = CString::new(oper_name)?;
+        unsafe {
+            tf::TF_ImportGraphDefOptionsAddReturnOutput(self.inner, s.as_ptr(), index as c_int);
+        }
+        Ok(())
+    }
+
+    /// Returns the number of return outputs added via `add_return_output()`.
+    pub fn num_return_outputs(&self) -> usize {
+        unsafe { tf::TF_ImportGraphDefOptionsNumReturnOutputs(self.inner) as usize }
+    }
 }
 
 ////////////////////////
