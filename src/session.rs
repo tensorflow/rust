@@ -301,11 +301,11 @@ mod tests {
         let y = {
             let mut nd = g.new_operation("Mul", "y").unwrap();
             nd.add_input(Output {
-                             operation: &two,
+                             operation: two,
                              index: 0,
                          });
             nd.add_input(Output {
-                             operation: &x,
+                             operation: x.clone(),
                              index: 0,
                          });
             nd.finish().unwrap()

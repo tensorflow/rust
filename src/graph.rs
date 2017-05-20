@@ -248,7 +248,7 @@ impl Graph {
     ///   * `output` is not in `graph`.
     pub fn tensor_shape(&self, output: Output) -> Result<Shape> {
         let mut status = Status::new();
-        let n = try!(self.num_dims(output));
+        let n = try!(self.num_dims(output.clone()));
         if n == -1 {
             return Ok(Shape(None));
         }
@@ -282,6 +282,36 @@ impl Graph {
                                        status.inner());
             status.into_result()
         }
+    }
+
+    /// Import the graph serialized in `graph_def`.
+    ///
+    /// `num_return_outputs` must be the number of return outputs added (i.e. the
+    /// result of TF_ImportGraphDefOptionsNumReturnOutputs()).  If
+    /// `num_return_outputs` is non-zero, `return_outputs` must be of length
+    /// `num_return_outputs`. Otherwise it can be null.
+    pub fn import_graph_def_with_return_outputs(&mut self,
+                                                graph_def: &[u8],
+                                                options: &ImportGraphDefOptions)
+                                                -> Result<Vec<Output>> {
+        let buf = Buffer::from(graph_def);
+        let mut status = Status::new();
+        let mut c_return_outputs = Vec::new();
+        let n = options.num_return_outputs();
+        unsafe {
+            c_return_outputs.set_len(n);
+            tf::TF_GraphImportGraphDefWithReturnOutputs(self.gimpl.inner,
+                                                        buf.inner(),
+                                                        options.inner,
+                                                        c_return_outputs.as_mut_ptr(),
+                                                        n as c_int,
+                                                        status.inner());
+        }
+        status.into_result()?;
+        Ok(c_return_outputs
+               .iter()
+               .map(|x| Output::from_c(self, x))
+               .collect())
     }
 }
 
@@ -324,7 +354,7 @@ impl<'a> Iterator for OperationIter<'a> {
 
 /// An `Operation` is a node in a `Graph`.
 /// It is a computation which accepts inputs and produces outputs.
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 pub struct Operation {
     inner: *mut tf::TF_Operation,
     gimpl: Arc<GraphImpl>,
@@ -556,20 +586,30 @@ impl<'a> Input<'a> {
 
 /// A `Output` is one end of a graph edge.
 /// It holds an operation and an index into the outputs of that operation.
-#[derive(Debug,Copy,Clone)]
-pub struct Output<'a> {
+#[derive(Debug,Clone)]
+pub struct Output {
     /// Operation the edge connects to.
-    pub operation: &'a Operation,
+    pub operation: Operation,
 
     /// Index into either the outputs of the operation.
     pub index: c_int,
 }
 
-impl<'a> Output<'a> {
+impl Output {
     fn to_c(&self) -> tf::TF_Output {
         tf::TF_Output {
             oper: self.operation.inner,
             index: self.index,
+        }
+    }
+
+    fn from_c(graph: &Graph, output: &tf::TF_Output) -> Self {
+        Output {
+            operation: Operation {
+                inner: output.oper,
+                gimpl: graph.gimpl.clone(),
+            },
+            index: output.index,
         }
     }
 }
