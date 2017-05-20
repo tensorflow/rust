@@ -596,7 +596,8 @@ pub struct BFloat16(u16);
 
 impl Display for BFloat16 {
     fn fmt(&self, f: &mut Formatter) -> ::std::fmt::Result {
-        Display::fmt(self.into(), f)
+        let val: f32 = (*self).into();
+        Display::fmt(&val, f)
     }
 }
 
@@ -990,5 +991,6 @@ mod tests {
             }
         }
         assert_eq!(<BFloat16 as Into<f32>>::into(BFloat16::default()), 0.0f32);
+        assert_eq!(BFloat16::from(1.5f32).to_string(), "1.5");
     }
 }
