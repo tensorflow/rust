@@ -14,7 +14,7 @@ extern crate libc;
 extern crate num_complex;
 extern crate tensorflow_sys as tf;
 
-use libc::{c_char, c_int, c_uint, c_void, size_t};
+use libc::{c_int, c_uint, size_t};
 use num_complex::Complex;
 use std::cmp::Ordering;
 use std::error::Error;
@@ -25,7 +25,6 @@ use std::fmt::Debug;
 use std::fmt::Display;
 use std::fmt::Formatter;
 use std::fmt;
-use std::marker;
 use std::mem;
 use std::ops::Deref;
 use std::ops::DerefMut;
