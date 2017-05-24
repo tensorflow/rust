@@ -285,11 +285,6 @@ impl Graph {
     }
 
     /// Import the graph serialized in `graph_def`.
-    ///
-    /// `num_return_outputs` must be the number of return outputs added (i.e. the
-    /// result of TF_ImportGraphDefOptionsNumReturnOutputs()).  If
-    /// `num_return_outputs` is non-zero, `return_outputs` must be of length
-    /// `num_return_outputs`. Otherwise it can be null.
     pub fn import_graph_def_with_return_outputs(&mut self,
                                                 graph_def: &[u8],
                                                 options: &ImportGraphDefOptions)
