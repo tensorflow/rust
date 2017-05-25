@@ -14,7 +14,7 @@ extern crate libc;
 extern crate num_complex;
 extern crate tensorflow_sys as tf;
 
-use libc::{c_char, c_int, c_uint, c_void, size_t};
+use libc::{c_int, c_uint, size_t};
 use num_complex::Complex;
 use std::cmp::Ordering;
 use std::error::Error;
@@ -25,7 +25,6 @@ use std::fmt::Debug;
 use std::fmt::Display;
 use std::fmt::Formatter;
 use std::fmt;
-use std::marker;
 use std::mem;
 use std::ops::Deref;
 use std::ops::DerefMut;
@@ -597,7 +596,8 @@ pub struct BFloat16(u16);
 
 impl Display for BFloat16 {
     fn fmt(&self, f: &mut Formatter) -> ::std::fmt::Result {
-        Display::fmt(self.into(), f)
+        let val: f32 = (*self).into();
+        Display::fmt(&val, f)
     }
 }
 
@@ -922,8 +922,8 @@ mod tests {
     #[test]
     fn test_tensor() {
         let mut tensor = <Tensor<f32>>::new(&[2, 3]);
-        assert_eq!(tensor.data().len(), 6);
-        tensor.data_mut()[0] = 1.0;
+        assert_eq!(tensor.len(), 6);
+        tensor[0] = 1.0;
     }
 
     #[test]
@@ -959,8 +959,8 @@ mod tests {
         let status = graph.import_graph_def(&graph_proto, &opts);
         assert!(status.is_ok());
         let mut x = <Tensor<f32>>::new(&[2]);
-        x.data_mut()[0] = 2.0;
-        x.data_mut()[1] = 3.0;
+        x[0] = 2.0;
+        x[1] = 3.0;
         let mut step = StepWithGraph::new();
         let x_op = graph.operation_by_name_required("x").unwrap();
         step.add_input(&x_op, 0, &x);
@@ -968,10 +968,9 @@ mod tests {
         let output_ix = step.request_output(&y_op, 0);
         session.run(&mut step).unwrap();
         let output_tensor = step.take_output::<f32>(output_ix).unwrap();
-        let data = output_tensor.data();
-        assert_eq!(data.len(), 2);
-        assert_eq!(data[0], 4.0);
-        assert_eq!(data[1], 6.0);
+        assert_eq!(output_tensor.len(), 2);
+        assert_eq!(output_tensor[0], 4.0);
+        assert_eq!(output_tensor[1], 6.0);
     }
 
     #[test]
@@ -992,5 +991,6 @@ mod tests {
             }
         }
         assert_eq!(<BFloat16 as Into<f32>>::into(BFloat16::default()), 0.0f32);
+        assert_eq!(BFloat16::from(1.5f32).to_string(), "1.5");
     }
 }

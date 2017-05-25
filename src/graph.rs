@@ -66,6 +66,68 @@ impl ImportGraphDefOptions {
         }
         Ok(())
     }
+
+    /// Set any imported nodes with input `src_name:src_index` to have that input
+    /// replaced with `dst`. `src_name` refers to a node in the graph to be imported,
+    /// `dst` references a node already existing in the graph being imported into.
+    pub fn add_input_mapping(&mut self,
+                             src_name: &str,
+                             src_index: usize,
+                             dst: &Output)
+                             -> std::result::Result<(), NulError> {
+        let s = CString::new(src_name)?;
+        unsafe {
+            tf::TF_ImportGraphDefOptionsAddInputMapping(self.inner,
+                                                        s.as_ptr(),
+                                                        src_index as c_int,
+                                                        dst.to_c());
+        }
+        Ok(())
+    }
+
+    /// Set any imported nodes with control input `src_name` to have that input
+    /// replaced with `dst`. `src_name` refers to a node in the graph to be imported,
+    /// `dst` references an operation already existing in the graph being imported
+    /// into.
+    pub fn remap_control_dependency(&mut self,
+                                    src_name: &str,
+                                    dst: &Operation)
+                                    -> std::result::Result<(), NulError> {
+        let s = CString::new(src_name)?;
+        unsafe {
+            tf::TF_GraphImportGraphDefOptionsRemapControlDependency(self.inner,
+                                                                    s.as_ptr(),
+                                                                    dst.inner);
+        }
+        Ok(())
+    }
+
+    /// Cause the imported graph to have a control dependency on `oper`. `oper`
+    /// should exist in the graph being imported into.
+    pub fn add_control_dependency(&mut self, oper: &Operation) {
+        unsafe {
+            tf::TF_ImportGraphDefOptionsAddControlDependency(self.inner, oper.inner);
+        }
+    }
+
+    /// Add an output in `graph_def` to be returned via the `return_outputs` output
+    /// parameter of `import_graph_def()`. If the output is remapped via an input
+    /// mapping, the corresponding existing tensor in `graph` will be returned.
+    pub fn add_return_output(&mut self,
+                             oper_name: &str,
+                             index: usize)
+                             -> std::result::Result<(), NulError> {
+        let s = CString::new(oper_name)?;
+        unsafe {
+            tf::TF_ImportGraphDefOptionsAddReturnOutput(self.inner, s.as_ptr(), index as c_int);
+        }
+        Ok(())
+    }
+
+    /// Returns the number of return outputs added via `add_return_output()`.
+    pub fn num_return_outputs(&self) -> usize {
+        unsafe { tf::TF_ImportGraphDefOptionsNumReturnOutputs(self.inner) as usize }
+    }
 }
 
 ////////////////////////
@@ -186,7 +248,7 @@ impl Graph {
     ///   * `output` is not in `graph`.
     pub fn tensor_shape(&self, output: Output) -> Result<Shape> {
         let mut status = Status::new();
-        let n = try!(self.num_dims(output));
+        let n = try!(self.num_dims(output.clone()));
         if n == -1 {
             return Ok(Shape(None));
         }
@@ -220,6 +282,31 @@ impl Graph {
                                        status.inner());
             status.into_result()
         }
+    }
+
+    /// Import the graph serialized in `graph_def`.
+    pub fn import_graph_def_with_return_outputs(&mut self,
+                                                graph_def: &[u8],
+                                                options: &ImportGraphDefOptions)
+                                                -> Result<Vec<Output>> {
+        let buf = Buffer::from(graph_def);
+        let mut status = Status::new();
+        let mut c_return_outputs = Vec::new();
+        let n = options.num_return_outputs();
+        unsafe {
+            c_return_outputs.set_len(n);
+            tf::TF_GraphImportGraphDefWithReturnOutputs(self.gimpl.inner,
+                                                        buf.inner(),
+                                                        options.inner,
+                                                        c_return_outputs.as_mut_ptr(),
+                                                        n as c_int,
+                                                        status.inner());
+        }
+        status.into_result()?;
+        Ok(c_return_outputs
+               .iter()
+               .map(|x| Output::from_c(self, x))
+               .collect())
     }
 }
 
@@ -262,7 +349,7 @@ impl<'a> Iterator for OperationIter<'a> {
 
 /// An `Operation` is a node in a `Graph`.
 /// It is a computation which accepts inputs and produces outputs.
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 pub struct Operation {
     inner: *mut tf::TF_Operation,
     gimpl: Arc<GraphImpl>,
@@ -494,20 +581,30 @@ impl<'a> Input<'a> {
 
 /// A `Output` is one end of a graph edge.
 /// It holds an operation and an index into the outputs of that operation.
-#[derive(Debug,Copy,Clone)]
-pub struct Output<'a> {
+#[derive(Debug,Clone)]
+pub struct Output {
     /// Operation the edge connects to.
-    pub operation: &'a Operation,
+    pub operation: Operation,
 
     /// Index into either the outputs of the operation.
     pub index: c_int,
 }
 
-impl<'a> Output<'a> {
+impl Output {
     fn to_c(&self) -> tf::TF_Output {
         tf::TF_Output {
             oper: self.operation.inner,
             index: self.index,
+        }
+    }
+
+    fn from_c(graph: &Graph, output: &tf::TF_Output) -> Self {
+        Output {
+            operation: Operation {
+                inner: output.oper,
+                gimpl: graph.gimpl.clone(),
+            },
+            index: output.index,
         }
     }
 }

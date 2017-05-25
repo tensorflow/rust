@@ -301,11 +301,11 @@ mod tests {
         let y = {
             let mut nd = g.new_operation("Mul", "y").unwrap();
             nd.add_input(Output {
-                             operation: &two,
+                             operation: two,
                              index: 0,
                          });
             nd.add_input(Output {
-                             operation: &x,
+                             operation: x.clone(),
                              index: 0,
                          });
             nd.finish().unwrap()
@@ -340,9 +340,8 @@ mod tests {
         let output_token = step.request_output(&y_operation, 0);
         session.run(&mut step).unwrap();
         let output_tensor = step.take_output::<f32>(output_token).unwrap();
-        let data = output_tensor.data();
-        assert_eq!(data.len(), 2);
-        assert_eq!(data[0], 4.0);
-        assert_eq!(data[1], 6.0);
+        assert_eq!(output_tensor.len(), 2);
+        assert_eq!(output_tensor[0], 4.0);
+        assert_eq!(output_tensor[1], 6.0);
     }
 }

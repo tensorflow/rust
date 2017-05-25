@@ -21,3 +21,16 @@ random = "0.12"
 tensorflow_unstable = []
 
 [workspace]
+
+[[example]]
+name = "addition"
+
+[[example]]
+name = "expressions"
+required-features = ["tensorflow_unstable"]
+
+[[example]]
+name = "regression"
+
+[[example]]
+name = "regression_savedmodel"

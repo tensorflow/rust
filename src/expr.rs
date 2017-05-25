@@ -94,7 +94,7 @@ pub trait ExprImpl<T: TensorType>: Display + Debug {
     /// rather than creating child operations itself.
     fn create_operation(&self,
                         graph: &mut Graph,
-                        children: &[Rc<Operation>],
+                        children: &[Operation],
                         id_gen: &mut FnMut() -> String)
                         -> Result<Operation, Status>;
 
@@ -113,7 +113,7 @@ impl<T: TensorType> ExprImpl<T> for T {
 
     fn create_operation(&self,
                         graph: &mut Graph,
-                        _children: &[Rc<Operation>],
+                        _children: &[Operation],
                         id_gen: &mut FnMut() -> String)
                         -> Result<Operation, Status> {
         let mut nd = try!(graph.new_operation("Const", &id_gen()));
@@ -197,11 +197,11 @@ macro_rules! impl_bin_op {
         vec![Box::new(self.left.clone()), Box::new(self.right.clone())]
       }
 
-      fn create_operation(&self, graph: &mut Graph, children: &[Rc<Operation>],
+      fn create_operation(&self, graph: &mut Graph, children: &[Operation],
           id_gen: &mut FnMut() -> String) -> Result<Operation, Status> {
         let mut nd = try!(graph.new_operation($tf_op, &id_gen()));
-        nd.add_input(Output {operation: &children[0], index: 0});
-        nd.add_input(Output {operation: &children[1], index: 0});
+        nd.add_input(Output {operation: children[0].clone(), index: 0});
+        nd.add_input(Output {operation: children[1].clone(), index: 0});
         nd.finish()
       }
 
@@ -287,18 +287,18 @@ impl<T: TensorType> ExprImpl<T> for TruncateDiv<T> {
 
     fn create_operation(&self,
                         graph: &mut Graph,
-                        children: &[Rc<Operation>],
+                        children: &[Operation],
                         id_gen: &mut FnMut() -> String)
                         -> Result<Operation, Status> {
         let mut nd = try!(graph.new_operation("TruncateDiv", &id_gen()));
         nd.add_input(Output {
-            operation: &children[0],
-            index: 0,
-        });
+                         operation: children[0].clone(),
+                         index: 0,
+                     });
         nd.add_input(Output {
-            operation: &children[1],
-            index: 0,
-        });
+                         operation: children[1].clone(),
+                         index: 0,
+                     });
         nd.finish()
     }
 
@@ -351,14 +351,14 @@ impl<T: TensorType> ExprImpl<T> for Neg<T> {
 
     fn create_operation(&self,
                         graph: &mut Graph,
-                        children: &[Rc<Operation>],
+                        children: &[Operation],
                         id_gen: &mut FnMut() -> String)
                         -> Result<Operation, Status> {
         let mut nd = try!(graph.new_operation("Neg", &id_gen()));
         nd.add_input(Output {
-            operation: &children[0],
-            index: 0,
-        });
+                         operation: children[0].clone(),
+                         index: 0,
+                     });
         nd.finish()
     }
 
@@ -409,7 +409,7 @@ impl<T: TensorType> ExprImpl<T> for Variable<T> {
 
     fn create_operation(&self,
                         graph: &mut Graph,
-                        _children: &[Rc<Operation>],
+                        _children: &[Operation],
                         _id_gen: &mut FnMut() -> String)
                         -> Result<Operation, Status> {
         let mut nd = try!(graph.new_operation("Variable", &self.name));
@@ -469,7 +469,7 @@ impl<T: TensorType> ExprImpl<T> for Placeholder<T> {
 
     fn create_operation(&self,
                         graph: &mut Graph,
-                        _children: &[Rc<Operation>],
+                        _children: &[Operation],
                         _id_gen: &mut FnMut() -> String)
                         -> Result<Operation, Status> {
         let mut nd = try!(graph.new_operation("Placeholder", &self.name));
@@ -523,18 +523,18 @@ impl<T: TensorType> ExprImpl<T> for Assign<T> {
 
     fn create_operation(&self,
                         graph: &mut Graph,
-                        children: &[Rc<Operation>],
+                        children: &[Operation],
                         id_gen: &mut FnMut() -> String)
                         -> Result<Operation, Status> {
         let mut nd = try!(graph.new_operation("Assign", &id_gen()));
         nd.add_input(Output {
-            operation: &children[0],
-            index: 0,
-        });
+                         operation: children[0].clone(),
+                         index: 0,
+                     });
         nd.add_input(Output {
-            operation: &children[1],
-            index: 0,
-        });
+                         operation: children[1].clone(),
+                         index: 0,
+                     });
         nd.finish()
     }
 
@@ -563,7 +563,7 @@ pub trait AnyExpr: Debug {
     /// rather than creating child operations itself.
     fn create_operation(&self,
                         graph: &mut Graph,
-                        children: &[Rc<Operation>],
+                        children: &[Operation],
                         id_gen: &mut FnMut() -> String)
                         -> Result<Operation, Status>;
 
@@ -586,7 +586,7 @@ impl<T: TensorType> AnyExpr for Expr<T> {
 
     fn create_operation(&self,
                         graph: &mut Graph,
-                        children: &[Rc<Operation>],
+                        children: &[Operation],
                         id_gen: &mut FnMut() -> String)
                         -> Result<Operation, Status> {
         self.expr.create_operation(graph, children, id_gen)
@@ -620,7 +620,7 @@ impl Hash for Key {
 #[derive(Debug)]
 pub struct Compiler<'l> {
     graph: &'l mut Graph,
-    operations: HashMap<Key, Rc<Operation>>,
+    operations: HashMap<Key, Operation>,
     next_id: i32,
 }
 
@@ -635,12 +635,12 @@ impl<'l> Compiler<'l> {
     }
 
     /// Compiles the expression.
-    pub fn compile<T: TensorType>(&mut self, expr: Expr<T>) -> Result<Rc<Operation>, Status> {
+    pub fn compile<T: TensorType>(&mut self, expr: Expr<T>) -> Result<Operation, Status> {
         self.compile_any(Box::new(expr))
     }
 
     /// Compiles the expression.
-    pub fn compile_any(&mut self, expr: Box<AnyExpr>) -> Result<Rc<Operation>, Status> {
+    pub fn compile_any(&mut self, expr: Box<AnyExpr>) -> Result<Operation, Status> {
         let mut child_operations = vec![];
         for child in expr.children() {
             let key = Key(child.clone_box());
@@ -661,7 +661,7 @@ impl<'l> Compiler<'l> {
                                                id
                                            });
         self.next_id = next_id;
-        let operation = Rc::new(try!(result));
+        let operation = result?;
         self.operations.insert(Key(expr), operation.clone());
         Ok(operation)
     }

@@ -5,8 +5,6 @@ use std::error::Error;
 use std::result::Result;
 use std::process::exit;
 use tensorflow::Code;
-// Workaround for https://github.com/rust-lang/cargo/issues/1570
-#[cfg(feature = "tensorflow_unstable")]
 use tensorflow::expr::{Compiler, Placeholder};
 use tensorflow::Graph;
 use tensorflow::Session;
@@ -60,16 +58,6 @@ impl Checker {
     }
 }
 
-// Workaround for https://github.com/rust-lang/cargo/issues/1570
-#[cfg(not(feature = "tensorflow_unstable"))]
-fn run() -> Result<(), Box<Error>> {
-    println!("examples/expressions.rs is disabled because the `tensorflow_unstable` feature is \
-              not enabled!");
-    Ok(())
-}
-
-// Workaround for https://github.com/rust-lang/cargo/issues/1570
-#[cfg(feature = "tensorflow_unstable")]
 fn run() -> Result<(), Box<Error>> {
     // Build the graph
     let mut g = Graph::new();
@@ -101,9 +89,8 @@ fn run() -> Result<(), Box<Error>> {
 
     // Check our results.
     let output_tensor = try!(step.take_output::<f32>(output_token));
-    let data = output_tensor.data();
     let mut checker = Checker::new(1e-3);
-    checker.check("data[0]", 5.0, data[0]);
-    checker.check("data[1]", 7.0, data[1]);
+    checker.check("output_tensor[0]", 5.0, output_tensor[0]);
+    checker.check("output_tensor[1]", 7.0, output_tensor[1]);
     checker.result()
 }
