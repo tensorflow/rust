@@ -84,24 +84,6 @@ impl Session {
 
     /// Runs the graph, feeding the inputs and then fetching the outputs requested in the step.
     pub fn run(&mut self, step: &mut StepWithGraph) -> Result<()> {
-        // Copy the input tensors because TF_Run consumes them.
-        let mut input_tensors = Vec::with_capacity(step.input_tensors.len());
-        for &input_tensor in &step.input_tensors {
-            unsafe {
-                let mut dims = Vec::with_capacity(tf::TF_NumDims(input_tensor) as usize);
-                for i in 0..dims.capacity() {
-                    dims.push(tf::TF_Dim(input_tensor, i as c_int));
-                }
-                input_tensors.push(tf::TF_NewTensor(tf::TF_TensorType(input_tensor),
-                                                    dims.as_ptr(),
-                                                    dims.len() as c_int,
-                                                    tf::TF_TensorData(input_tensor),
-                                                    tf::TF_TensorByteSize(input_tensor),
-                                                    Some(super::noop_deallocator),
-                                                    ptr::null_mut()));
-            }
-        }
-
         // In case we're running it a second time and not all outputs were taken out.
         step.drop_output_tensors();
 
@@ -110,8 +92,8 @@ impl Session {
             tf::TF_SessionRun(self.inner,
                               ptr::null(),
                               step.input_ports.as_ptr(),
-                              input_tensors.as_ptr() as *const *const tf::TF_Tensor,
-                              input_tensors.len() as c_int,
+                              step.input_tensors.as_ptr() as *const *const tf::TF_Tensor,
+                              step.input_tensors.len() as c_int,
                               step.output_ports.as_ptr(),
                               step.output_tensors.as_mut_ptr(),
                               step.output_tensors.len() as c_int,
