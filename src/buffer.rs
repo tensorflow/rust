@@ -86,7 +86,7 @@ impl<T: TensorType> Buffer<T> {
         (*inner).length = len;
         Buffer {
             inner: inner,
-            owned: false,
+            owned: true,
             phantom: PhantomData,
         }
     }
@@ -96,8 +96,7 @@ impl<T: TensorType> Buffer<T> {
     /// The caller is responsible for freeing the data.
     pub unsafe fn into_ptr(mut self) -> (*mut T, usize) {
         // TODO: remove
-        // This flag is used by drop.
-        self.owned = false;
+        (*self.inner).data_deallocator = None;
         (self.data_mut(), self.length())
     }
 
@@ -128,7 +127,8 @@ impl<T: TensorType> Buffer<T> {
     /// Creates a buffer from data owned by the C API.
     ///
     /// `len` is the number of elements.
-    /// The underlying data is freed when the buffer is destroyed if `owned` is true.
+    /// The underlying data is freed when the buffer is destroyed if `owned`
+    /// is true and the `buf` has a data deallocator.
     pub unsafe fn from_c(buf: *mut tf::TF_Buffer, owned: bool) -> Self {
         Buffer {
             inner: buf,
