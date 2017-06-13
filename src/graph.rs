@@ -959,7 +959,7 @@ impl<'a> OperationDescription<'a> {
         unsafe {
             tf::TF_SetAttrTensor(self.inner,
                                  c_attr_name.as_ptr(),
-                                 value.into_ptr(),
+                                 value.inner,
                                  status.inner());
         }
         status.into_result()
@@ -973,7 +973,7 @@ impl<'a> OperationDescription<'a> {
         let c_attr_name = try!(CString::new(attr_name));
         let mut status = Status::new();
         unsafe {
-            let ptrs: Vec<*mut tf::TF_Tensor> = value.into_iter().map(|x| x.into_ptr()).collect();
+            let ptrs: Vec<*mut tf::TF_Tensor> = value.into_iter().map(|x| x.inner).collect();
             tf::TF_SetAttrTensorList(self.inner,
                                      c_attr_name.as_ptr(),
                                      ptrs.as_ptr() as *const *const tf::TF_Tensor,
