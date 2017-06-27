@@ -4,6 +4,7 @@ use std::ffi::CString;
 use std::marker;
 use std::path::Path;
 use std::ptr;
+use super::{Buffer, BufferTrait};
 use super::Code;
 use super::DataType;
 use super::Graph;
@@ -15,6 +16,15 @@ use super::SessionOptions;
 use super::Status;
 use super::Tensor;
 use super::TensorType;
+
+/// Aggregation type for a saved model bundle.
+#[derive(Debug)]
+pub struct SavedModelBundle {
+    /// The loaded session.
+    pub session: Session,
+    /// A meta graph defition as raw protocol buffer.
+    pub meta_graph_def: Vec<u8>,
+}
 
 /// Manages a single graph and execution.
 #[derive(Debug)]
@@ -70,6 +80,51 @@ impl Session {
             Err(status)
         } else {
             Ok(Session { inner: inner })
+        }
+    }
+
+    /// Loads a session from an exported model, creating a bundle
+    pub fn from_saved_model_to_bundle<P: AsRef<Path>, Tag: AsRef<str>, Tags: IntoIterator<Item = Tag>>
+        (options: &SessionOptions,
+         tags: Tags,
+         graph: &mut Graph,
+         export_dir: P)
+         -> Result<SavedModelBundle> {
+        let mut status = Status::new();
+
+        let export_dir_cstr =
+            try!(export_dir.as_ref()
+                     .to_str()
+                     .and_then(|s| CString::new(s.as_bytes()).ok())
+                     .ok_or_else(|| invalid_arg!("Invalid export directory path")));
+
+        let tags_cstr: Vec<_> = try!(tags.into_iter()
+                                         .map(|t| CString::new(t.as_ref()))
+                                         .collect::<::std::result::Result<_, _>>()
+                                         .map_err(|_| invalid_arg!("Invalid tag name")));
+        let tags_ptr: Vec<*const c_char> = tags_cstr.iter().map(|t| t.as_ptr()).collect();
+
+        // The empty TF_Buffer will be filled by LoadSessionFromSavedModel
+        let mut meta = unsafe { Buffer::<u8>::from_ptr(ptr::null_mut(), 0) };
+
+        let inner = unsafe {
+            tf::TF_LoadSessionFromSavedModel(options.inner,
+                                             ptr::null(),
+                                             export_dir_cstr.as_ptr(),
+                                             tags_ptr.as_ptr(),
+                                             tags_ptr.len() as c_int,
+                                             graph.inner(),
+                                             meta.inner_mut(),
+                                             status.inner())
+        };
+        if inner.is_null() {
+            Err(status)
+        } else {
+            let session = Session { inner: inner };
+            Ok(SavedModelBundle {
+                session: session,
+                meta_graph_def: Vec::from(meta.as_ref())
+            })
         }
     }
 
