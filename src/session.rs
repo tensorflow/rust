@@ -4,6 +4,7 @@ use std::ffi::CString;
 use std::marker;
 use std::path::Path;
 use std::ptr;
+use super::{Buffer, BufferTrait};
 use super::Code;
 use super::DataType;
 use super::Graph;
@@ -15,6 +16,64 @@ use super::SessionOptions;
 use super::Status;
 use super::Tensor;
 use super::TensorType;
+
+/// Aggregation type for a saved model bundle.
+#[derive(Debug)]
+pub struct SavedModelBundle {
+    /// The loaded session.
+    pub session: Session,
+    /// A meta graph definition as raw protocol buffer.
+    pub meta_graph_def: Vec<u8>,
+}
+
+impl SavedModelBundle {
+
+    /// Loads a session from an exported model, creating a bundle
+    pub fn load<P: AsRef<Path>, Tag: AsRef<str>, Tags: IntoIterator<Item = Tag>>
+        (options: &SessionOptions,
+         tags: Tags,
+         graph: &mut Graph,
+         export_dir: P)
+         -> Result<SavedModelBundle> {
+        let mut status = Status::new();
+
+        let export_dir_cstr =
+            export_dir.as_ref()
+                     .to_str()
+                     .and_then(|s| CString::new(s.as_bytes()).ok())
+                     .ok_or_else(|| invalid_arg!("Invalid export directory path"))?;
+
+        let tags_cstr: Vec<_> = tags.into_iter()
+                                    .map(|t| CString::new(t.as_ref()))
+                                    .collect::<::std::result::Result<_, _>>()
+                                    .map_err(|_| invalid_arg!("Invalid tag name"))?;
+        let tags_ptr: Vec<*const c_char> = tags_cstr.iter().map(|t| t.as_ptr()).collect();
+
+        // The empty TF_Buffer will be filled by LoadSessionFromSavedModel
+        let mut meta = unsafe { Buffer::<u8>::from_ptr(ptr::null_mut(), 0) };
+
+        let inner = unsafe {
+            tf::TF_LoadSessionFromSavedModel(options.inner,
+                                             ptr::null(),
+                                             export_dir_cstr.as_ptr(),
+                                             tags_ptr.as_ptr(),
+                                             tags_ptr.len() as c_int,
+                                             graph.inner(),
+                                             meta.inner_mut(),
+                                             status.inner())
+        };
+        if inner.is_null() {
+            Err(status)
+        } else {
+            let session = Session { inner: inner };
+            Ok(SavedModelBundle {
+                session: session,
+                meta_graph_def: Vec::from(meta.as_ref())
+            })
+        }
+    }
+    
+}
 
 /// Manages a single graph and execution.
 #[derive(Debug)]
@@ -43,16 +102,15 @@ impl Session {
          -> Result<Self> {
         let mut status = Status::new();
 
-        let export_dir_cstr =
-            try!(export_dir.as_ref()
+        let export_dir_cstr = export_dir.as_ref()
                      .to_str()
                      .and_then(|s| CString::new(s.as_bytes()).ok())
-                     .ok_or_else(|| invalid_arg!("Invalid export directory path")));
+                     .ok_or_else(|| invalid_arg!("Invalid export directory path"))?;
 
-        let tags_cstr: Vec<_> = try!(tags.into_iter()
-                                         .map(|t| CString::new(t.as_ref()))
-                                         .collect::<::std::result::Result<_, _>>()
-                                         .map_err(|_| invalid_arg!("Invalid tag name")));
+        let tags_cstr: Vec<_> = tags.into_iter()
+                                    .map(|t| CString::new(t.as_ref()))
+                                    .collect::<::std::result::Result<_, _>>()
+                                    .map_err(|_| invalid_arg!("Invalid tag name"))?;
         // keeping tags_cstr to retain strings in memory
         let tags_ptr: Vec<*const c_char> = tags_cstr.iter().map(|t| t.as_ptr()).collect();
 
@@ -325,5 +383,40 @@ mod tests {
         assert_eq!(output_tensor.len(), 2);
         assert_eq!(output_tensor[0], 4.0);
         assert_eq!(output_tensor[1], 6.0);
+    }
+
+    #[test]
+    fn test_savedmodelbundle() {
+        let mut graph = Graph::new();
+        let bundle = SavedModelBundle::load(
+            &SessionOptions::new(),
+            &["train", "serve"],
+            &mut graph,
+            "test_resources/regression-model",
+        ).unwrap();
+
+        let x_op = graph.operation_by_name_required("x").unwrap();
+        let y_op = graph.operation_by_name_required("y").unwrap();
+        let y_hat_op = graph.operation_by_name_required("y_hat").unwrap();
+        let _train_op = graph.operation_by_name_required("train").unwrap();
+
+        let SavedModelBundle {
+            mut session,
+            meta_graph_def,
+        } = bundle;
+
+        assert!(!meta_graph_def.is_empty());
+
+        let mut x = <Tensor<f32>>::new(&[1]);
+        x[0] = 2.0;
+        let mut y = <Tensor<f32>>::new(&[1]);
+        y[0] = 4.0;
+        let mut step = StepWithGraph::new();
+        step.add_input(&x_op, 0, &x);
+        step.add_input(&y_op, 0, &y);
+        let output_token = step.request_output(&y_hat_op, 0);
+        session.run(&mut step).unwrap();
+        let output_tensor = step.take_output::<f32>(output_token).unwrap();
+        assert_eq!(output_tensor.len(), 1);
     }
 }

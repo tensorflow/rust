@@ -10,7 +10,7 @@ y = tf.placeholder(tf.float32, name='y')
 
 w = tf.Variable(tf.random_uniform([1], -1.0, 1.0), name='w')
 b = tf.Variable(tf.zeros([1]), name='b')
-y_hat = w * x + b
+y_hat = tf.add(w * x, b, name="y_hat")
 
 loss = tf.reduce_mean(tf.square(y_hat - y))
 optimizer = tf.train.GradientDescentOptimizer(0.5)
