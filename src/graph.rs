@@ -162,12 +162,12 @@ impl Graph {
         let c_operation_name = try!(CString::new(operation_name));
         unsafe {
             Ok(OperationDescription {
-                inner: tf::TF_NewOperation(self.gimpl.inner,
-                                           c_op_type.as_ptr(),
-                                           c_operation_name.as_ptr()),
-                graph: self,
-                finished: false,
-            })
+                   inner: tf::TF_NewOperation(self.gimpl.inner,
+                                              c_op_type.as_ptr(),
+                                              c_operation_name.as_ptr()),
+                   graph: self,
+                   finished: false,
+               })
         }
     }
 
@@ -184,9 +184,9 @@ impl Graph {
                 Ok(None)
             } else {
                 Ok(Some(Operation {
-                    inner: operation,
-                    gimpl: self.gimpl.clone(),
-                }))
+                            inner: operation,
+                            gimpl: self.gimpl.clone(),
+                        }))
             }
         }
     }
@@ -200,7 +200,7 @@ impl Graph {
             None => {
                 Err(Status::new_set(Code::Unavailable,
                                     &format!("Operation {:?} not found", operation_name))
-                    .unwrap())
+                            .unwrap())
             }
         }
     }
@@ -246,6 +246,7 @@ impl Graph {
     ///
     /// Returns an error if:
     ///   * `output` is not in `graph`.
+    ///   * `num_dims` does not match the actual number of dimensions.
     pub fn tensor_shape(&self, output: Output) -> Result<Shape> {
         let mut status = Status::new();
         let n = try!(self.num_dims(output.clone()));
@@ -253,15 +254,24 @@ impl Graph {
             return Ok(Shape(None));
         }
         let mut dims = Vec::with_capacity(n as usize);
+        println!("DIMS: {}", n);
         unsafe {
             tf::TF_GraphGetTensorShape(self.gimpl.inner,
                                        output.to_c(),
                                        dims.as_mut_ptr(),
+<<<<<<< HEAD
                                        n,
+||||||| merged common ancestors
+                                       dims.len() as c_int,
+=======
+                                       dims.capacity() as c_int,
+>>>>>>> 24f035c723654bcc2a2ebc42a2ff1edc467189fd
                                        status.inner());
             if status.is_ok() {
                 dims.set_len(n as usize);
-                Ok(Shape(Some(dims.iter().map(|x| if *x < 0 { None } else { Some(*x) }).collect())))
+                Ok(Shape(Some(dims.iter()
+                                  .map(|x| if *x < 0 { None } else { Some(*x) })
+                                  .collect())))
             } else {
                 Err(status)
             }
@@ -337,9 +347,9 @@ impl<'a> Iterator for OperationIter<'a> {
                 None
             } else {
                 Some(Operation {
-                    inner: operation,
-                    gimpl: self.graph.gimpl.clone(),
-                })
+                         inner: operation,
+                         gimpl: self.graph.gimpl.clone(),
+                     })
             }
         }
     }
@@ -362,14 +372,20 @@ impl Operation {
     /// not an operation type, so it may look like `'add_x_and_y'` instead of `'Add'`,
     /// although it may be a generated ID like `'Add_123'`.
     pub fn name(&self) -> std::result::Result<String, Utf8Error> {
-        unsafe { CStr::from_ptr(tf::TF_OperationName(self.inner)).to_str().map(|x| x.to_string()) }
+        unsafe {
+            CStr::from_ptr(tf::TF_OperationName(self.inner))
+                .to_str()
+                .map(|x| x.to_string())
+        }
     }
 
     /// Returns the type of operation.
     /// This will be something like `'Add'`, `'Mul'`, etc.
     pub fn op_type(&self) -> std::result::Result<String, Utf8Error> {
         unsafe {
-            CStr::from_ptr(tf::TF_OperationOpType(self.inner)).to_str().map(|x| x.to_string())
+            CStr::from_ptr(tf::TF_OperationOpType(self.inner))
+                .to_str()
+                .map(|x| x.to_string())
         }
     }
 
@@ -377,7 +393,9 @@ impl Operation {
     /// The empty string means unconstrained.
     pub fn device(&self) -> std::result::Result<String, Utf8Error> {
         unsafe {
-            CStr::from_ptr(tf::TF_OperationOpType(self.inner)).to_str().map(|x| x.to_string())
+            CStr::from_ptr(tf::TF_OperationOpType(self.inner))
+                .to_str()
+                .map(|x| x.to_string())
         }
     }
 
@@ -390,9 +408,9 @@ impl Operation {
     pub fn output_type(&self, index: usize) -> DataType {
         unsafe {
             DataType::from_c(tf::TF_OperationOutputType(tf::TF_Output {
-                oper: self.inner,
-                index: index as c_int,
-            }))
+                                                            oper: self.inner,
+                                                            index: index as c_int,
+                                                        }))
         }
     }
 
@@ -420,9 +438,9 @@ impl Operation {
     pub fn input_type(&self, index: usize) -> DataType {
         unsafe {
             DataType::from_c(tf::TF_OperationInputType(tf::TF_Input {
-                oper: self.inner,
-                index: index as c_int,
-            }))
+                                                           oper: self.inner,
+                                                           index: index as c_int,
+                                                       }))
         }
     }
 
@@ -447,9 +465,9 @@ impl Operation {
     pub fn input(&self, index: usize) -> (Operation, usize) {
         unsafe {
             let port = tf::TF_OperationInput(tf::TF_Input {
-                oper: self.inner,
-                index: index as c_int,
-            });
+                                                 oper: self.inner,
+                                                 index: index as c_int,
+                                             });
             (Operation {
                  inner: port.oper,
                  gimpl: self.gimpl.clone(),
@@ -462,9 +480,9 @@ impl Operation {
     pub fn output_num_consumers(&self, index: usize) -> usize {
         unsafe {
             tf::TF_OperationOutputNumConsumers(tf::TF_Output {
-                oper: self.inner,
-                index: index as c_int,
-            }) as usize
+                                                   oper: self.inner,
+                                                   index: index as c_int,
+                                               }) as usize
         }
     }
 
@@ -475,9 +493,9 @@ impl Operation {
     pub fn output_consumers(&self, index: usize) -> Vec<(Operation, usize)> {
         unsafe {
             let num_consumers = tf::TF_OperationOutputNumConsumers(tf::TF_Output {
-                oper: self.inner,
-                index: index as c_int,
-            });
+                                                                       oper: self.inner,
+                                                                       index: index as c_int,
+                                                                   });
             let mut vec = <Vec<tf::TF_Input>>::with_capacity(num_consumers as usize);
             let len = tf::TF_OperationOutputConsumers(tf::TF_Output {
                                                           oper: self.inner,
@@ -488,12 +506,12 @@ impl Operation {
             vec.set_len(len as usize);
             vec.into_iter()
                 .map(|port| {
-                    (Operation {
-                         inner: port.oper,
-                         gimpl: self.gimpl.clone(),
-                     },
-                     port.index as usize)
-                })
+                         (Operation {
+                              inner: port.oper,
+                              gimpl: self.gimpl.clone(),
+                          },
+                          port.index as usize)
+                     })
                 .collect()
         }
     }
@@ -507,18 +525,17 @@ impl Operation {
     pub fn control_inputs(&self) -> Vec<Operation> {
         unsafe {
             let num_consumers = tf::TF_OperationNumControlInputs(self.inner);
-            let mut vec =
-                <Vec<*mut tf::TF_Operation>>::with_capacity(num_consumers as usize);
+            let mut vec = <Vec<*mut tf::TF_Operation>>::with_capacity(num_consumers as usize);
             let len =
                 tf::TF_OperationGetControlInputs(self.inner, vec.as_mut_ptr(), vec.len() as c_int);
             vec.set_len(len as usize);
             vec.into_iter()
                 .map(|operation| {
-                    Operation {
-                        inner: operation,
-                        gimpl: self.gimpl.clone(),
-                    }
-                })
+                         Operation {
+                             inner: operation,
+                             gimpl: self.gimpl.clone(),
+                         }
+                     })
                 .collect()
         }
     }
@@ -532,18 +549,17 @@ impl Operation {
     pub fn control_outputs(&self) -> Vec<Operation> {
         unsafe {
             let num_consumers = tf::TF_OperationNumControlOutputs(self.inner);
-            let mut vec =
-                <Vec<*mut tf::TF_Operation>>::with_capacity(num_consumers as usize);
+            let mut vec = <Vec<*mut tf::TF_Operation>>::with_capacity(num_consumers as usize);
             let len =
                 tf::TF_OperationGetControlOutputs(self.inner, vec.as_mut_ptr(), vec.len() as c_int);
             vec.set_len(len as usize);
             vec.into_iter()
                 .map(|operation| {
-                    Operation {
-                        inner: operation,
-                        gimpl: self.gimpl.clone(),
-                    }
-                })
+                         Operation {
+                             inner: operation,
+                             gimpl: self.gimpl.clone(),
+                         }
+                     })
                 .collect()
         }
     }
@@ -649,9 +665,9 @@ impl<'a> OperationDescription<'a> {
         let operation = unsafe { tf::TF_FinishOperation(self.inner, status.inner()) };
         if status.is_ok() {
             Ok(Operation {
-                inner: operation,
-                gimpl: self.graph.gimpl.clone(),
-            })
+                   inner: operation,
+                   gimpl: self.graph.gimpl.clone(),
+               })
         } else {
             Err(status)
         }
@@ -718,7 +734,10 @@ impl<'a> OperationDescription<'a> {
                                                -> std::result::Result<(), NulError> {
         let c_attr_name = try!(CString::new(attr_name));
         let bytes: Vec<&[u8]> = value.iter().map(|x| x.as_ref().as_bytes()).collect();
-        let ptrs: Vec<*const c_void> = bytes.iter().map(|x| x.as_ptr() as *const c_void).collect();
+        let ptrs: Vec<*const c_void> = bytes
+            .iter()
+            .map(|x| x.as_ptr() as *const c_void)
+            .collect();
         let lens: Vec<size_t> = bytes.iter().map(|x| x.len() as size_t).collect();
         unsafe {
             tf::TF_SetAttrStringList(self.inner,
@@ -855,9 +874,9 @@ impl<'a> OperationDescription<'a> {
                 Some(ref dims) => {
                     let c_dims: Vec<i64> = dims.iter()
                         .map(|x| match *x {
-                            Some(d) => d,
-                            None => -1,
-                        })
+                                 Some(d) => d,
+                                 None => -1,
+                             })
                         .collect();
                     tf::TF_SetAttrShape(self.inner,
                                         c_attr_name.as_ptr(),
@@ -876,30 +895,33 @@ impl<'a> OperationDescription<'a> {
                                -> std::result::Result<(), NulError> {
         let c_attr_name = try!(CString::new(attr_name));
         // Convert Option<i64> in each shape to i64 with None becoming -1.
-        let c_dims: Vec<Option<Vec<i64>>> = value.iter()
+        let c_dims: Vec<Option<Vec<i64>>> = value
+            .iter()
             .map(|x| match x.0 {
-                None => None,
-                Some(ref dims) => {
-                    Some(dims.iter()
-                        .map(|x| match *x {
-                            None => -1,
-                            Some(d) => d,
-                        })
-                        .collect())
-                }
-            })
+                     None => None,
+                     Some(ref dims) => {
+                         Some(dims.iter()
+                                  .map(|x| match *x {
+                                           None => -1,
+                                           Some(d) => d,
+                                       })
+                                  .collect())
+                     }
+                 })
             .collect();
-        let ptrs: Vec<*const i64> = c_dims.iter()
+        let ptrs: Vec<*const i64> = c_dims
+            .iter()
             .map(|x| match *x {
-                None => ptr::null(),
-                Some(ref dims) => dims.as_ptr(),
-            })
+                     None => ptr::null(),
+                     Some(ref dims) => dims.as_ptr(),
+                 })
             .collect();
-        let lens: Vec<c_int> = value.iter()
+        let lens: Vec<c_int> = value
+            .iter()
             .map(|x| match x.0 {
-                None => -1,
-                Some(ref dims) => dims.len() as c_int,
-            })
+                     None => -1,
+                     Some(ref dims) => dims.len() as c_int,
+                 })
             .collect();
         unsafe {
             tf::TF_SetAttrShapeList(self.inner,
@@ -933,10 +955,14 @@ impl<'a> OperationDescription<'a> {
                                                             value: &[T])
                                                             -> Result<()> {
         let c_attr_name = try!(CString::new(attr_name));
-        let ptrs: Vec<*const c_void> = value.iter()
+        let ptrs: Vec<*const c_void> = value
+            .iter()
             .map(|x| x.as_ref().as_ptr() as *const c_void)
             .collect();
-        let lens: Vec<size_t> = value.iter().map(|x| x.as_ref().len() as size_t).collect();
+        let lens: Vec<size_t> = value
+            .iter()
+            .map(|x| x.as_ref().len() as size_t)
+            .collect();
         let mut status = Status::new();
         unsafe {
             tf::TF_SetAttrTensorShapeProtoList(self.inner,
@@ -1025,7 +1051,8 @@ mod tests {
         };
         let mut nd2 = g.new_operation("Variable", "foo2").unwrap();
         nd2.set_attr_type("dtype", DataType::Float).unwrap();
-        nd2.set_attr_shape("shape", &Shape(Some(vec![]))).unwrap();
+        nd2.set_attr_shape("shape", &Shape(Some(vec![])))
+            .unwrap();
         let operation2 = nd2.finish().unwrap();
         assert_eq!("foo", operation.name().unwrap());
         assert_eq!("foo2", operation2.name().unwrap());
