@@ -17,7 +17,7 @@ use tensorflow::Tensor;
 
 fn main() {
     // Putting the main code in another function serves two purposes:
-    // 1. We can use the try! macro.
+    // 1. We can use the `?` operator.
     // 2. We can call exit safely, which does not run any destructors.
     exit(match run() {
         Ok(_) => 0,
@@ -47,7 +47,7 @@ fn run() -> Result<(), Box<Error>> {
     // Load the computation graph defined by regression.py.
     let mut graph = Graph::new();
     let mut proto = Vec::new();
-    try!(try!(File::open(filename)).read_to_end(&mut proto));
+    File::open(filename)?.read_to_end(&mut proto)?;
     graph.import_graph_def(&proto, &ImportGraphDefOptions::new())?;
     let mut session = Session::new(&SessionOptions::new(), &graph)?;
 
@@ -56,7 +56,7 @@ fn run() -> Result<(), Box<Error>> {
     step.add_input(&graph.operation_by_name_required("x")?, 0, &x);
     step.add_input(&graph.operation_by_name_required("y")?, 0, &y);
     let z = step.request_output(&graph.operation_by_name_required("z")?, 0);
-    try!(session.run(&mut step));
+    session.run(&mut step)?;
 
     // Check our results.
     let z_res: i32 = step.take_output(z)?[0];
