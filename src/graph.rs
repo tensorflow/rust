@@ -257,7 +257,7 @@ impl Graph {
             tf::TF_GraphGetTensorShape(self.gimpl.inner,
                                        output.to_c(),
                                        dims.as_mut_ptr(),
-                                       dims.len() as c_int,
+                                       n,
                                        status.inner());
             if status.is_ok() {
                 dims.set_len(n as usize);
@@ -1038,5 +1038,35 @@ mod tests {
         // An empty array is a valid proto, since all fields are optional.
         let status = g.import_graph_def(&[], &opts);
         assert!(status.is_ok());
+    }
+
+    #[test]
+    fn test_get_tensor_shape() {
+        fn constant<T: TensorType>(graph: &mut Graph, name: &str, value: Tensor<T>) -> Operation {
+            let mut c = graph.new_operation("Const", name).unwrap();
+            c.set_attr_tensor("value", value).unwrap();
+            c.set_attr_type("dtype", T::data_type()).unwrap();
+            c.finish().unwrap()
+        }
+
+        let mut graph = Graph::new();
+        let x_init = Tensor::<i32>::new(&[3, 3]);
+        let x = constant(&mut graph, "x/assign_0", x_init);
+        assert_eq!(1, x.num_outputs());
+        assert_eq!(x.output_type(0), DataType::Int32);
+        let dims = graph
+            .num_dims(Output {
+                          operation: x.clone(),
+                          index: 0,
+                      })
+            .unwrap();
+        assert_eq!(dims, 2);
+        let shape = graph
+            .tensor_shape(Output {
+                              operation: x.clone(),
+                              index: 0,
+                          })
+            .unwrap();
+        assert_eq!(shape, Shape(Some(vec![Some(3_i64), Some(3_i64)])));
     }
 }
