@@ -223,9 +223,9 @@ fn check_bazel() -> Result<(), Box<Error>> {
     let mut command = Command::new("bazel");
     command.arg("version");
     log!("Executing {:?}", command);
-    let out = try!(command.output());
+    let out = command.output()?;
     log!("Command {:?} finished successfully", command);
-    let stdout = try!(String::from_utf8(out.stdout));
+    let stdout = String::from_utf8(out.stdout)?;
     let mut found_version = false;
     for line in stdout.lines() {
         if line.starts_with("Build label:") {
@@ -241,8 +241,8 @@ fn check_bazel() -> Result<(), Box<Error>> {
                 // hyphen is 1 byte long, so it's safe
                 version_str = &version_str[..version_str.len() - 1];
             }
-            let version = try!(Version::parse(version_str));
-            let want = try!(Version::parse(MIN_BAZEL));
+            let version = Version::parse(version_str)?;
+            let want = Version::parse(MIN_BAZEL)?;
             if version < want {
                 return Err(format!("Installed version {} is less than required version {}",
                                    version_str,

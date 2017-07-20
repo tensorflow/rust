@@ -116,11 +116,11 @@ impl<T: TensorType> ExprImpl<T> for T {
                         _children: &[Operation],
                         id_gen: &mut FnMut() -> String)
                         -> Result<Operation, Status> {
-        let mut nd = try!(graph.new_operation("Const", &id_gen()));
-        try!(nd.set_attr_type("dtype", DataType::Float));
+        let mut nd = graph.new_operation("Const", &id_gen())?;
+        nd.set_attr_type("dtype", DataType::Float)?;
         let mut value = Tensor::new(&[1]);
         value[0] = *self;
-        try!(nd.set_attr_tensor("value", value));
+        nd.set_attr_tensor("value", value)?;
         nd.finish()
     }
 
@@ -170,11 +170,11 @@ macro_rules! impl_bin_op {
     impl<T: TensorType> Display for $name<T> {
       fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
         if self.left.expr.op_level() < OpLevel::$op_level {
-          try!(write!(f, "({})", self.left));
+          write!(f, "({})", self.left)?;
         } else {
-          try!(write!(f, "{}", self.left));
+          write!(f, "{}", self.left)?;
         }
-        try!(write!(f, concat!(" ", $op, " ")));
+        write!(f, concat!(" ", $op, " "))?;
         let paren = if $assoc {
           self.right.expr.op_level() < OpLevel::$op_level
         } else {
@@ -199,7 +199,7 @@ macro_rules! impl_bin_op {
 
       fn create_operation(&self, graph: &mut Graph, children: &[Operation],
           id_gen: &mut FnMut() -> String) -> Result<Operation, Status> {
-        let mut nd = try!(graph.new_operation($tf_op, &id_gen()));
+        let mut nd = graph.new_operation($tf_op, &id_gen())?;
         nd.add_input(Output {operation: children[0].clone(), index: 0});
         nd.add_input(Output {operation: children[1].clone(), index: 0});
         nd.finish()
@@ -213,27 +213,27 @@ macro_rules! impl_bin_op {
 impl_bin_op!(
   Add, add, "+", Add, true, "Add", "Expression resulting from adding two subexpressions.",
   fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
-    Ok(try!(self.left.derivative_by_variable(var)) + try!(self.right.derivative_by_variable(var)))
+    Ok(self.left.derivative_by_variable(var)? + self.right.derivative_by_variable(var)?)
   }
   );
 impl_bin_op!(
   Sub, sub, "-", Add, false, "Sub", "Expression resulting from subtracting two subexpressions.",
   fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
-    Ok(try!(self.left.derivative_by_variable(var)) - try!(self.right.derivative_by_variable(var)))
+    Ok(self.left.derivative_by_variable(var)? - self.right.derivative_by_variable(var)?)
   }
   );
 impl_bin_op!(
   Mul, mul, "*", Mul, true, "Mul", "Expression resulting from multiplying two subexpressions.",
   fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
-    Ok(try!(self.left.derivative_by_variable(var)) * self.right.clone()
-    + self.left.clone() * try!(self.right.derivative_by_variable(var)))
+    Ok(self.left.derivative_by_variable(var)? * self.right.clone()
+    + self.left.clone() * self.right.derivative_by_variable(var)?)
   }
   );
 impl_bin_op!(
   Div, div, "/", Mul, false, "Div", "Expression resulting from dividing two subexpressions.",
   fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
-    let num = try!(self.left.derivative_by_variable(var)) * self.right.clone()
-    - self.left.clone() * try!(self.right.derivative_by_variable(var));
+    let num = self.left.derivative_by_variable(var)? * self.right.clone()
+    - self.left.clone() * self.right.derivative_by_variable(var)?;
     let denom = self.right.clone() * self.right.clone();
     Ok(num / denom)
   }
@@ -241,9 +241,9 @@ impl_bin_op!(
 impl_bin_op!(
   Rem, rem, "%", Mul, false, "Mod", "Expression resulting from taking a modulus.",
   fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
-    Ok(try!(self.left.derivative_by_variable(var))
+    Ok(self.left.derivative_by_variable(var)?
     - TruncateDiv::new_expr(self.left.clone(), self.right.clone())
-    * try!(self.right.derivative_by_variable(var)))
+    * self.right.derivative_by_variable(var)?)
   }
   );
 
@@ -290,7 +290,7 @@ impl<T: TensorType> ExprImpl<T> for TruncateDiv<T> {
                         children: &[Operation],
                         id_gen: &mut FnMut() -> String)
                         -> Result<Operation, Status> {
-        let mut nd = try!(graph.new_operation("TruncateDiv", &id_gen()));
+        let mut nd = graph.new_operation("TruncateDiv", &id_gen())?;
         nd.add_input(Output {
                          operation: children[0].clone(),
                          index: 0,
@@ -307,8 +307,8 @@ impl<T: TensorType> ExprImpl<T> for TruncateDiv<T> {
         // TruncateDiv(x, y) = (x - Mod(x, y)) / y
         // d/dt TruncateDiv(x, y) = (y * d/dt (x - Mod(x, y)) - (x - Mod(x, y)) dy/dt) / (y * y)
         let diff = self.left.clone() - self.left.clone() % self.right.clone();
-        let term1 = self.right.clone() * try!(diff.derivative_by_variable(var));
-        let term2 = diff * try!(self.right.derivative_by_variable(var));
+        let term1 = self.right.clone() * diff.derivative_by_variable(var)?;
+        let term2 = diff * self.right.derivative_by_variable(var)?;
         Ok((term1 - term2) / (self.right.clone() * self.right.clone()))
     }
 }
@@ -331,7 +331,7 @@ impl<T: TensorType> ops::Neg for Expr<T> {
 
 impl<T: TensorType> Display for Neg<T> {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-        try!(write!(f, "-"));
+        write!(f, "-")?;
         if self.expr.expr.op_level() <= OpLevel::Unary {
             write!(f, "({})", self.expr)
         } else {
@@ -354,7 +354,7 @@ impl<T: TensorType> ExprImpl<T> for Neg<T> {
                         children: &[Operation],
                         id_gen: &mut FnMut() -> String)
                         -> Result<Operation, Status> {
-        let mut nd = try!(graph.new_operation("Neg", &id_gen()));
+        let mut nd = graph.new_operation("Neg", &id_gen())?;
         nd.add_input(Output {
                          operation: children[0].clone(),
                          index: 0,
@@ -363,7 +363,7 @@ impl<T: TensorType> ExprImpl<T> for Neg<T> {
     }
 
     fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
-        Ok(-try!(self.expr.derivative_by_variable(var)))
+        Ok(-self.expr.derivative_by_variable(var)?)
     }
 }
 
@@ -412,7 +412,7 @@ impl<T: TensorType> ExprImpl<T> for Variable<T> {
                         _children: &[Operation],
                         _id_gen: &mut FnMut() -> String)
                         -> Result<Operation, Status> {
-        let mut nd = try!(graph.new_operation("Variable", &self.name));
+        let mut nd = graph.new_operation("Variable", &self.name)?;
         nd.set_attr_type("dtype", DataType::Float).unwrap();
         nd.set_attr_shape("shape", &Shape(Some(vec![]))).unwrap();
         nd.finish()
@@ -472,7 +472,7 @@ impl<T: TensorType> ExprImpl<T> for Placeholder<T> {
                         _children: &[Operation],
                         _id_gen: &mut FnMut() -> String)
                         -> Result<Operation, Status> {
-        let mut nd = try!(graph.new_operation("Placeholder", &self.name));
+        let mut nd = graph.new_operation("Placeholder", &self.name)?;
         nd.set_attr_type("dtype", DataType::Float).unwrap();
         nd.set_attr_shape("shape", &Shape(Some(vec![]))).unwrap();
         nd.finish()
@@ -526,7 +526,7 @@ impl<T: TensorType> ExprImpl<T> for Assign<T> {
                         children: &[Operation],
                         id_gen: &mut FnMut() -> String)
                         -> Result<Operation, Status> {
-        let mut nd = try!(graph.new_operation("Assign", &id_gen()));
+        let mut nd = graph.new_operation("Assign", &id_gen())?;
         nd.add_input(Output {
                          operation: children[0].clone(),
                          index: 0,
@@ -649,7 +649,7 @@ impl<'l> Compiler<'l> {
             let value = self.operations.get(&key).map(|v| v.clone());
             child_operations.push(match value {
                 Some(v) => v,
-                None => try!(self.compile_any(child)),
+                None => self.compile_any(child)?,
             });
         }
         let mut next_id = self.next_id;

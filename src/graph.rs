@@ -60,7 +60,7 @@ impl ImportGraphDefOptions {
     /// Set the prefix to be prepended to the names of nodes in `graph_def` that will
     /// be imported into `graph`.
     pub fn set_prefix(&mut self, prefix: &str) -> std::result::Result<(), NulError> {
-        let s = try!(CString::new(prefix));
+        let s = CString::new(prefix)?;
         unsafe {
             tf::TF_ImportGraphDefOptionsSetPrefix(self.inner, s.as_ptr());
         }
@@ -158,8 +158,8 @@ impl Graph {
                          op_type: &str,
                          operation_name: &str)
                          -> std::result::Result<OperationDescription, NulError> {
-        let c_op_type = try!(CString::new(op_type));
-        let c_operation_name = try!(CString::new(operation_name));
+        let c_op_type = CString::new(op_type)?;
+        let c_operation_name = CString::new(operation_name)?;
         unsafe {
             Ok(OperationDescription {
                 inner: tf::TF_NewOperation(self.gimpl.inner,
@@ -176,7 +176,7 @@ impl Graph {
     pub fn operation_by_name(&self,
                              operation_name: &str)
                              -> std::result::Result<Option<Operation>, NulError> {
-        let c_operation_name = try!(CString::new(operation_name));
+        let c_operation_name = CString::new(operation_name)?;
         unsafe {
             let operation = tf::TF_GraphOperationByName(self.gimpl.inner,
                                                         c_operation_name.as_ptr());
@@ -195,7 +195,7 @@ impl Graph {
     pub fn operation_by_name_required(&self,
                                       operation_name: &str)
                                       -> std::result::Result<Operation, Status> {
-        match try!(self.operation_by_name(operation_name)) {
+        match self.operation_by_name(operation_name)? {
             Some(operation) => Ok(operation),
             None => {
                 Err(Status::new_set(Code::Unavailable,
@@ -248,7 +248,7 @@ impl Graph {
     ///   * `output` is not in `graph`.
     pub fn tensor_shape(&self, output: Output) -> Result<Shape> {
         let mut status = Status::new();
-        let n = try!(self.num_dims(output.clone()));
+        let n = self.num_dims(output.clone())?;
         if n == -1 {
             return Ok(Shape(None));
         }
@@ -399,7 +399,7 @@ impl Operation {
     // TODO: Figure out what this does and document it.
     #[allow(missing_docs)]
     pub fn output_list_length(&self, arg_name: &str) -> Result<usize> {
-        let c_arg_name = try!(CString::new(arg_name));
+        let c_arg_name = CString::new(arg_name)?;
         let mut status = Status::new();
         let length = unsafe {
             tf::TF_OperationOutputListLength(self.inner, c_arg_name.as_ptr(), status.inner())
@@ -429,7 +429,7 @@ impl Operation {
     // TODO: Figure out what this does and document it.
     #[allow(missing_docs)]
     pub fn input_list_length(&self, arg_name: &str) -> Result<usize> {
-        let c_arg_name = try!(CString::new(arg_name));
+        let c_arg_name = CString::new(arg_name)?;
         let mut status = Status::new();
         let length = unsafe {
             tf::TF_OperationInputListLength(self.inner, c_arg_name.as_ptr(), status.inner())
@@ -660,7 +660,7 @@ impl<'a> OperationDescription<'a> {
     /// Sets the preferred device.
     /// The empty string means unconstrained.
     pub fn set_device(&mut self, device: &str) -> std::result::Result<(), NulError> {
-        let c_device = try!(CString::new(device));
+        let c_device = CString::new(device)?;
         unsafe {
             tf::TF_SetDevice(self.inner, c_device.as_ptr());
         }
@@ -699,7 +699,7 @@ impl<'a> OperationDescription<'a> {
                            attr_name: &str,
                            value: &str)
                            -> std::result::Result<(), NulError> {
-        let c_attr_name = try!(CString::new(attr_name));
+        let c_attr_name = CString::new(attr_name)?;
         let c_value = value.as_bytes();
         unsafe {
             tf::TF_SetAttrString(self.inner,
@@ -716,7 +716,7 @@ impl<'a> OperationDescription<'a> {
                                                attr_name: &str,
                                                value: &[S])
                                                -> std::result::Result<(), NulError> {
-        let c_attr_name = try!(CString::new(attr_name));
+        let c_attr_name = CString::new(attr_name)?;
         let bytes: Vec<&[u8]> = value.iter().map(|x| x.as_ref().as_bytes()).collect();
         let ptrs: Vec<*const c_void> = bytes.iter().map(|x| x.as_ptr() as *const c_void).collect();
         let lens: Vec<size_t> = bytes.iter().map(|x| x.len() as size_t).collect();
@@ -735,7 +735,7 @@ impl<'a> OperationDescription<'a> {
                         attr_name: &str,
                         value: i64)
                         -> std::result::Result<(), NulError> {
-        let c_attr_name = try!(CString::new(attr_name));
+        let c_attr_name = CString::new(attr_name)?;
         unsafe {
             tf::TF_SetAttrInt(self.inner, c_attr_name.as_ptr(), value);
         }
@@ -747,7 +747,7 @@ impl<'a> OperationDescription<'a> {
                              attr_name: &str,
                              value: &[i64])
                              -> std::result::Result<(), NulError> {
-        let c_attr_name = try!(CString::new(attr_name));
+        let c_attr_name = CString::new(attr_name)?;
         unsafe {
             tf::TF_SetAttrIntList(self.inner,
                                   c_attr_name.as_ptr(),
@@ -762,7 +762,7 @@ impl<'a> OperationDescription<'a> {
                           attr_name: &str,
                           value: f32)
                           -> std::result::Result<(), NulError> {
-        let c_attr_name = try!(CString::new(attr_name));
+        let c_attr_name = CString::new(attr_name)?;
         unsafe {
             tf::TF_SetAttrFloat(self.inner, c_attr_name.as_ptr(), value);
         }
@@ -775,7 +775,7 @@ impl<'a> OperationDescription<'a> {
                                attr_name: &str,
                                value: &[f32])
                                -> std::result::Result<(), NulError> {
-        let c_attr_name = try!(CString::new(attr_name));
+        let c_attr_name = CString::new(attr_name)?;
         // Allow trivial_numeric_casts here because f32 is not necessarily equal to c_float.
         let c_value: Vec<c_float> = value.iter().map(|x| *x as c_float).collect();
         unsafe {
@@ -792,7 +792,7 @@ impl<'a> OperationDescription<'a> {
                          attr_name: &str,
                          value: bool)
                          -> std::result::Result<(), NulError> {
-        let c_attr_name = try!(CString::new(attr_name));
+        let c_attr_name = CString::new(attr_name)?;
         unsafe {
             tf::TF_SetAttrBool(self.inner, c_attr_name.as_ptr(), if value { 1 } else { 0 });
         }
@@ -804,7 +804,7 @@ impl<'a> OperationDescription<'a> {
                               attr_name: &str,
                               value: &[bool])
                               -> std::result::Result<(), NulError> {
-        let c_attr_name = try!(CString::new(attr_name));
+        let c_attr_name = CString::new(attr_name)?;
         let c_value: Vec<c_uchar> = value.iter().map(|x| if *x { 1 } else { 0 }).collect();
         unsafe {
             tf::TF_SetAttrBoolList(self.inner,
@@ -820,7 +820,7 @@ impl<'a> OperationDescription<'a> {
                          attr_name: &str,
                          value: DataType)
                          -> std::result::Result<(), NulError> {
-        let c_attr_name = try!(CString::new(attr_name));
+        let c_attr_name = CString::new(attr_name)?;
         unsafe {
             tf::TF_SetAttrType(self.inner, c_attr_name.as_ptr(), value.to_c());
         }
@@ -832,7 +832,7 @@ impl<'a> OperationDescription<'a> {
                               attr_name: &str,
                               value: &[DataType])
                               -> std::result::Result<(), NulError> {
-        let c_attr_name = try!(CString::new(attr_name));
+        let c_attr_name = CString::new(attr_name)?;
         let c_value: Vec<tf::TF_DataType> = value.iter().map(|x| x.to_c()).collect();
         unsafe {
             tf::TF_SetAttrTypeList(self.inner,
@@ -848,7 +848,7 @@ impl<'a> OperationDescription<'a> {
                           attr_name: &str,
                           value: &Shape)
                           -> std::result::Result<(), NulError> {
-        let c_attr_name = try!(CString::new(attr_name));
+        let c_attr_name = CString::new(attr_name)?;
         unsafe {
             match value.0 {
                 None => tf::TF_SetAttrShape(self.inner, c_attr_name.as_ptr(), ptr::null(), -1),
@@ -874,7 +874,7 @@ impl<'a> OperationDescription<'a> {
                                attr_name: &str,
                                value: &[Shape])
                                -> std::result::Result<(), NulError> {
-        let c_attr_name = try!(CString::new(attr_name));
+        let c_attr_name = CString::new(attr_name)?;
         // Convert Option<i64> in each shape to i64 with None becoming -1.
         let c_dims: Vec<Option<Vec<i64>>> = value.iter()
             .map(|x| match x.0 {
@@ -914,7 +914,7 @@ impl<'a> OperationDescription<'a> {
     /// Sets an attribute with a `TensorShapeProto` protobuf.
     #[allow(trivial_numeric_casts)]
     pub fn set_attr_tensor_shape_proto(&mut self, attr_name: &str, value: &[u8]) -> Result<()> {
-        let c_attr_name = try!(CString::new(attr_name));
+        let c_attr_name = CString::new(attr_name)?;
         let mut status = Status::new();
         unsafe {
             tf::TF_SetAttrTensorShapeProto(self.inner,
@@ -932,7 +932,7 @@ impl<'a> OperationDescription<'a> {
                                                             attr_name: &str,
                                                             value: &[T])
                                                             -> Result<()> {
-        let c_attr_name = try!(CString::new(attr_name));
+        let c_attr_name = CString::new(attr_name)?;
         let ptrs: Vec<*const c_void> = value.iter()
             .map(|x| x.as_ref().as_ptr() as *const c_void)
             .collect();
@@ -954,7 +954,7 @@ impl<'a> OperationDescription<'a> {
                                           attr_name: &str,
                                           value: Tensor<T>)
                                           -> Result<()> {
-        let c_attr_name = try!(CString::new(attr_name));
+        let c_attr_name = CString::new(attr_name)?;
         let mut status = Status::new();
         unsafe {
             tf::TF_SetAttrTensor(self.inner,
@@ -970,7 +970,7 @@ impl<'a> OperationDescription<'a> {
                                                                     attr_name: &str,
                                                                     value: T)
                                                                     -> Result<()> {
-        let c_attr_name = try!(CString::new(attr_name));
+        let c_attr_name = CString::new(attr_name)?;
         let mut status = Status::new();
         unsafe {
             let ptrs: Vec<*mut tf::TF_Tensor> = value.into_iter().map(|x| x.inner).collect();
@@ -986,7 +986,7 @@ impl<'a> OperationDescription<'a> {
     /// Sets an attribute with an `AttrValue` proto.
     #[allow(trivial_numeric_casts)]
     pub fn set_attr_to_attr_value_proto(&mut self, attr_name: &str, value: &[u8]) -> Result<()> {
-        let c_attr_name = try!(CString::new(attr_name));
+        let c_attr_name = CString::new(attr_name)?;
         let mut status = Status::new();
         unsafe {
             tf::TF_SetAttrValueProto(self.inner,

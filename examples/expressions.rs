@@ -15,7 +15,7 @@ use tensorflow::Tensor;
 
 fn main() {
     // Putting the main code in another function serves two purposes:
-    // 1. We can use the try! macro.
+    // 1. We can use the `?` operator.
     // 2. We can call exit safely, which does not run any destructors.
     exit(match run() {
         Ok(_) => 0,
@@ -53,7 +53,7 @@ impl Checker {
         if self.success {
             Ok(())
         } else {
-            Err(Box::new(try!(Status::new_set(Code::Internal, "At least one check failed"))))
+            Err(Box::new(Status::new_set(Code::Internal, "At least one check failed")?))
         }
     }
 }
@@ -64,19 +64,19 @@ fn run() -> Result<(), Box<Error>> {
     let y_node = {
         let mut compiler = Compiler::new(&mut g);
         let x_expr = <Placeholder<f32>>::new_expr(&vec![2], "x");
-        try!(compiler.compile(x_expr * 2.0f32 + 1.0f32))
+        compiler.compile(x_expr * 2.0f32 + 1.0f32)?
     };
-    let x_node = try!(g.operation_by_name_required("x"));
+    let x_node = g.operation_by_name_required("x")?;
     // This is another valid way to get x_node and y_node:
     // let (x_node, y_node) = {
     //   let mut compiler = Compiler::new(&mut g);
     //   let x_expr = <Placeholder<f32>>::new_expr(&vec![2], "x");
-    //   let x_node = try!(compiler.compile(x_expr.clone()));
-    //   let y_node = try!(compiler.compile(x_expr * 2.0f32 + 1.0f32));
+    //   let x_node = compiler.compile(x_expr.clone())?;
+    //   let y_node = compiler.compile(x_expr * 2.0f32 + 1.0f32)?;
     //   (x_node, y_node)
     // };
     let options = SessionOptions::new();
-    let mut session = try!(Session::new(&options, &g));
+    let mut session = Session::new(&options, &g)?;
 
     // Evaluate the graph.
     let mut x = <Tensor<f32>>::new(&[2]);
@@ -88,7 +88,7 @@ fn run() -> Result<(), Box<Error>> {
     session.run(&mut step).unwrap();
 
     // Check our results.
-    let output_tensor = try!(step.take_output::<f32>(output_token));
+    let output_tensor = step.take_output::<f32>(output_token)?;
     let mut checker = Checker::new(1e-3);
     checker.check("output_tensor[0]", 5.0, output_tensor[0]);
     checker.check("output_tensor[1]", 7.0, output_tensor[1]);

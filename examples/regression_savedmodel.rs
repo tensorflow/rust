@@ -16,7 +16,7 @@ use tensorflow::Tensor;
 
 fn main() {
     // Putting the main code in another function serves two purposes:
-    // 1. We can use the try! macro.
+    // 1. We can use the `?` operator.
     // 2. We can call exit safely, which does not run any destructors.
     exit(match run() {
         Ok(_) => 0,
@@ -68,14 +68,14 @@ fn run() -> Result<(), Box<Error>> {
     train_step.add_input(&op_y, 0, &y);
     train_step.add_target(&op_train);
     for _ in 0..steps {
-        try!(session.run(&mut train_step));
+        session.run(&mut train_step)?;
     }
 
     // Grab the data out of the session.
     let mut output_step = StepWithGraph::new();
     let w_ix = output_step.request_output(&op_w, 0);
     let b_ix = output_step.request_output(&op_b, 0);
-    try!(session.run(&mut output_step));
+    session.run(&mut output_step)?;
 
     // Check our results.
     let w_hat: f32 = output_step.take_output(w_ix)?[0];

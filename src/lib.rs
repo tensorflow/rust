@@ -364,7 +364,7 @@ impl Status {
     /// Creates a status and sets its code and message.
     pub fn new_set(code: Code, msg: &str) -> std::result::Result<Status, NulError> {
         let mut status = Status::new();
-        try!(status.set(code, msg));
+        status.set(code, msg)?;
         Ok(status)
     }
 
@@ -385,7 +385,7 @@ impl Status {
 
     /// Sets the code and message.
     pub fn set(&mut self, code: Code, msg: &str) -> std::result::Result<(), NulError> {
-        let message = try!(CString::new(msg));
+        let message = CString::new(msg)?;
         unsafe {
             tf::TF_SetStatus(self.inner, code.to_c(), message.as_ptr());
         }
@@ -400,7 +400,7 @@ impl Status {
 
 impl Display for Status {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        try!(write!(f, "{}: ", self.code()));
+        write!(f, "{}: ", self.code())?;
         let msg = unsafe {
             match CStr::from_ptr(tf::TF_Message(self.inner)).to_str() {
                 Ok(s) => s,
@@ -413,16 +413,16 @@ impl Display for Status {
 
 impl Debug for Status {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        try!(write!(f, "{{inner:{:?}, ", self.inner));
-        try!(write!(f, "{}: ", self.code()));
+        write!(f, "{{inner:{:?}, ", self.inner)?;
+        write!(f, "{}: ", self.code())?;
         let msg = unsafe {
             match CStr::from_ptr(tf::TF_Message(self.inner)).to_str() {
                 Ok(s) => s,
                 Err(_) => "<invalid UTF-8 in message>",
             }
         };
-        try!(f.write_str(msg));
-        try!(write!(f, "}}"));
+        f.write_str(msg)?;
+        write!(f, "}}")?;
         Ok(())
     }
 }
@@ -466,7 +466,7 @@ impl SessionOptions {
     /// - ip:port
     /// - host:port
     pub fn set_target(&mut self, target: &str) -> std::result::Result<(), NulError> {
-        let cstr = try!(CString::new(target));
+        let cstr = CString::new(target)?;
         unsafe {
             tf::TF_SetTarget(self.inner, cstr.as_ptr());
         }
@@ -793,7 +793,7 @@ pub struct Library {
 impl Library {
     /// Loads a library.
     pub fn load(library_filename: &str) -> Result<Self> {
-        let c_filename = try!(CString::new(library_filename));
+        let c_filename = CString::new(library_filename)?;
         let mut status = Status::new();
         let inner = unsafe { tf::TF_LoadLibrary(c_filename.as_ptr(), status.inner()) };
         if inner.is_null() {
