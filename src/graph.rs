@@ -966,10 +966,14 @@ impl<'a> OperationDescription<'a> {
     }
 
     /// Sets an attribute which holds an array of tensors.
-    pub fn set_attr_tensor_list<T: IntoIterator<Item = Tensor<u8>>>(&mut self,
-                                                                    attr_name: &str,
-                                                                    value: T)
-                                                                    -> Result<()> {
+    pub fn set_attr_tensor_list<I, T>(
+        &mut self,
+        attr_name: &str,
+        value: I
+        ) -> Result<()> 
+        where I: IntoIterator<Item = Tensor<T>>, 
+            T: TensorType 
+    {
         let c_attr_name = CString::new(attr_name)?;
         let mut status = Status::new();
         unsafe {
