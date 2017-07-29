@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# Runs valgrind and reports results.
+#
+# Since jemalloc dropped support for valgrind
+# (https://github.com/jemalloc/jemalloc/issues/369), and both Rust and TensorFlow
+# use jemalloc by default, we need to compile both without it.  Unfortunately,
+# compiling TensorFlow from source is expensive, so this script takes a long
+# time to run.
+
+set -e
+
+cd $(dirname $(readlink -f "$0"))
+
+tensorflow_version=1.1.0
+
+valgrind_log=valgrind.log
+truncate --size=0 "$valgrind_log"
+
+# Disable jemalloc in TensorFlow.
+export TF_NEED_JEMALLOC=0
+
+# Disable jemalloc in Rust.
+export TF_RUST_BUILD_FROM_SRC=true
+
+# Don't need to rebuild the world, and `cargo clean --package tensorflow-sys` doesn't seem to do the job.
+rm -rf tensorflow-sys/target
+
+# This is the very expensive step.
+cargo +nightly build --features=nightly -p tensorflow-sys -vvv
+
+# Run valgrind against all the things.
+export LD_LIBRARY_PATH="$(echo "$PWD"/target/debug/build/tensorflow-sys-*/out/lib-v$tensorflow_version)"
+echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
+for example in addition regression expressions; do
+    cargo +nightly build --features='nightly tensorflow_unstable' --example="$example"
+    valgrind --leak-check=full target/debug/examples/"$example" >> "$valgrind_log" 2>&1
+done
+
+rel_log=$(readlink -f "$PWD"/"$valgrind_log")
+if grep -i 'error summary' < "$valgrind_log" > /dev/null; then
+    echo "Error running valgrind.  See $rel_log"
+fi
+
+# Aggregate results.
+lost_bytes=$(awk '/(definitely|indirectly) lost:/{sum+=gensub(",","","g",$4)}END{print sum}' < "$valgrind_log")
+echo "Lost bytes: $lost_bytes"
+echo "For details, see $rel_log"
