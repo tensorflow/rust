@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if ! which bindgen &> /dev/null; then
+if ! which bindgen > /dev/null; then
     echo "ERROR: Please install 'bindgen' using cargo:"
     echo "    cargo install bindgen"
     echo "See https://github.com/servo/rust-bindgen for more information."

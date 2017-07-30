@@ -95,9 +95,9 @@ impl ImportGraphDefOptions {
                                     -> std::result::Result<(), NulError> {
         let s = CString::new(src_name)?;
         unsafe {
-            tf::TF_GraphImportGraphDefOptionsRemapControlDependency(self.inner,
-                                                                    s.as_ptr(),
-                                                                    dst.inner);
+            tf::TF_ImportGraphDefOptionsRemapControlDependency(self.inner,
+                                                               s.as_ptr(),
+                                                               dst.inner);
         }
         Ok(())
     }
