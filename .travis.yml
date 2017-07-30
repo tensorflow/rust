@@ -37,12 +37,7 @@ install:
   - if [[ "$TF_RUST_BUILD_FROM_SRC" == "true" ]]; then pip install --user numpy; fi
 
 script:
-  - cargo test -vv -j 2 --features tensorflow_unstable
-  - cargo run --example regression
-  - cargo run --features tensorflow_unstable --example expressions
-  - cargo doc -vv --features tensorflow_unstable
-  - # TODO(#66): Re-enable: (cd tensorflow-sys && cargo test -vv -j 1)
-  - (cd tensorflow-sys && cargo doc -vv)
+  - ./test-all
 
 addons:
   apt:
