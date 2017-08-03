@@ -9,8 +9,10 @@ use std;
 use std::ffi::CStr;
 use std::ffi::CString;
 use std::ffi::NulError;
+use std::iter::FromIterator;
 use std::os::raw::c_void as std_c_void;
 use std::ptr;
+use std::slice;
 use std::str::Utf8Error;
 use std::sync::Arc;
 use super::buffer::Buffer;
@@ -31,13 +33,18 @@ struct GraphLifetime;
 #[derive(Debug)]
 struct GraphImpl {
     inner: *mut tf::TF_Graph,
+    is_subgraph: bool,
 }
 
 impl Drop for GraphImpl {
     /// Graph will be deleted once no more Sessions are referencing it.
     fn drop(&mut self) {
         unsafe {
-            tf::TF_DeleteGraph(self.inner);
+            // subgraphs in a while loop are destroyed when the loop is finished/aborted,
+            // this check avoids double free
+            if !self.is_subgraph {
+                tf::TF_DeleteGraph(self.inner);
+            }
         }
     }
 }
@@ -145,7 +152,7 @@ impl Graph {
     pub fn new() -> Graph {
         unsafe {
             Graph {
-                gimpl: Arc::new(GraphImpl { inner: tf::TF_NewGraph() }),
+                gimpl: Arc::new(GraphImpl { inner: tf::TF_NewGraph(), is_subgraph: false }),
                 lifetime: GraphLifetime,
             }
         }
@@ -307,6 +314,12 @@ impl Graph {
                .iter()
                .map(|x| Output::from_c(self, x))
                .collect())
+    }
+
+    /// Creates a WhileParams for building a while loop. `inputs` are outputs 
+    /// that already exist in this graph used as initial values for the loop variables.
+    pub fn new_while(&mut self, inputs: Vec<Output>, name: &str) -> Result<WhileParams> {
+        WhileParams::new(self.inner(), inputs, name)
     }
 }
 
@@ -1007,6 +1020,242 @@ impl<'a> OperationDescription<'a> {
 
 ////////////////////////
 
+/// A builder for control flow while loops.
+/// 
+/// The caller should build the condition and body subgraphs starting from the inputs, 
+/// and set the final outputs for each subgraph calling the respective methods. 
+/// The caller must call `finish` before the builder goes out of scope or this
+/// _while loop_ construction will be aborted.
+#[derive(Debug)]
+pub struct WhileParams {
+    cond_graph: Option<Graph>,
+    cond_inputs: *const tf::TF_Output,
+    cond_output: tf::TF_Output,
+
+    body_graph: Option<Graph>,
+    body_inputs: *const tf::TF_Output,
+    body_outputs: *mut tf::TF_Output,
+
+    name: CString,
+    finished: bool,
+    ninputs: usize,
+}
+
+mod while_params {
+    /*! We overwrite the bindgen generated TF_WhileParams definition as it is 
+        wrongly generated. The C typedef is:
+
+        ```C
+            typedef struct TF_WhileParams {
+                const int ninputs;
+
+                TF_Graph* const cond_graph;
+                const TF_Output* const cond_inputs;
+                TF_Output cond_output;
+
+                TF_Graph* const body_graph;
+                const TF_Output* const body_inputs;
+                TF_Output* const body_outputs;
+                const char* name;
+            } TF_WhileParams;
+        ```
+
+        The body_graph / cond_graph fields have 'const' qualifiers but not the graph
+        pointers themselves, which are mutable. The creator has ownership over both subgraphs 
+        and they have to be used to build the loop, but the owner should NOT replace the
+        subgraphs themselves, although is possible to change the contents of the graph 
+        (hence the const qualifier for the fields, but not for the graph types pointers).
+
+        Likewise for cond_output / body_outputs. However the inputs stay constant as they are
+        specified on TF_WhileParams creation.
+    */
+
+    use super::*;
+
+    #[repr(C)]
+    #[derive(Debug)]
+    #[doc(hidden)]
+    pub struct TF_WhileParams {
+        pub ninputs: ::std::os::raw::c_int,
+        pub cond_graph: *mut tf::TF_Graph,
+        pub cond_inputs: *const tf::TF_Output,
+        pub cond_output: tf::TF_Output,
+        pub body_graph: *mut tf::TF_Graph,
+        pub body_inputs: *const tf::TF_Output,
+        pub body_outputs: *mut tf::TF_Output,
+        pub name: *const ::std::os::raw::c_char,
+    }
+
+    extern "C" {
+        #[doc(hidden)]
+        pub fn TF_NewWhile(g: *mut tf::TF_Graph,
+                           inputs: *mut tf::TF_Output,
+                           ninputs: ::std::os::raw::c_int,
+                           status: *mut tf::TF_Status)
+                           -> TF_WhileParams;
+        #[doc(hidden)]
+        pub fn TF_FinishWhile(params: *const TF_WhileParams,
+                              status: *mut tf::TF_Status,
+                              outputs: *mut tf::TF_Output);
+        #[doc(hidden)]
+        pub fn TF_AbortWhile(params: *const TF_WhileParams);
+    }
+}
+
+impl WhileParams {
+    fn new(graph: *mut tf::TF_Graph, inputs: Vec<Output>, name: &str) -> Result<WhileParams> {
+        let mut status = Status::new();
+        let mut inputs: Vec<_> = inputs.into_iter().map(|x| x.to_c()).collect();
+        let ninputs = inputs.len();
+        unsafe {
+            let while_params::TF_WhileParams {
+                cond_graph,
+                cond_inputs,
+                cond_output,
+                body_graph,
+                body_inputs,
+                body_outputs,
+                ..
+            } = while_params::TF_NewWhile(graph,
+                                          inputs.as_mut_ptr(),
+                                          ninputs as i32,
+                                          status.inner());
+            status.into_result()?;
+            Ok(WhileParams {
+                   cond_graph: Some(Graph {
+                                        gimpl: Arc::new(GraphImpl { 
+                                            inner: cond_graph, 
+                                            is_subgraph: true }),
+                                        lifetime: GraphLifetime,
+                                    }),
+                   cond_inputs,
+                   cond_output,
+
+                   body_graph: Some(Graph {
+                                        gimpl: Arc::new(GraphImpl { 
+                                            inner: body_graph, 
+                                            is_subgraph: true }),
+                                        lifetime: GraphLifetime,
+                                    }),
+                   body_inputs,
+                   body_outputs,
+
+                   finished: false,
+                   name: CString::new(name).unwrap(),
+                   ninputs,
+               })
+        }
+    }
+
+    /// Get a mutable reference to the underlying condition subgraph for this while loop.
+    pub fn get_mut_cond_subgraph(&mut self) -> &mut Graph {
+        self.cond_graph.as_mut().unwrap()
+    }
+
+    /// Get a mutable reference to the underlying body subgraph for this while loop.
+    pub fn get_mut_body_subgraph(&mut self) -> &mut Graph {
+        self.body_graph.as_mut().unwrap()
+    }
+
+    /// Get a reference to the underlying condition subgraph for this while loop.
+    pub fn get_cond_subgraph(&self) -> &Graph {
+        self.cond_graph.as_ref().unwrap()
+    }
+
+    /// Get a reference to the underlying body subgraph for this while loop.
+    pub fn get_body_subgraph(&self) -> &Graph {
+        self.body_graph.as_ref().unwrap()
+    }
+
+    /// Set the condition output. The output should be a scalar boolean.
+    pub fn set_cond_output(&mut self, output: Output) {
+        self.cond_output = output.to_c();
+    }
+
+    /// Get the cond subgraph input tensors.
+    pub fn get_cond_inputs(&self) -> Vec<Output> {
+        unsafe {
+            Vec::from_iter(
+                slice::from_raw_parts(self.cond_inputs, self.ninputs)
+                    .iter()
+                    .map(|x| Output::from_c(self.cond_graph.as_ref().unwrap(), x)))
+        }
+    }
+
+    /// Set the body output. The outputs are the updated values of the loop variables. 
+    pub fn set_body_outputs(&mut self, outputs: Vec<Output>) {
+        let buffer = unsafe { slice::from_raw_parts_mut(self.body_outputs, self.ninputs) };
+        for (i, output) in outputs.into_iter().enumerate() {
+            buffer[i] = output.to_c();
+        }
+    }
+
+    /// Get the body subgraph input tensors.
+    pub fn get_body_inputs(&self) -> Vec<Output> {
+        unsafe {
+            Vec::from_iter(
+                slice::from_raw_parts(self.body_inputs, self.ninputs)
+                    .iter()
+                    .map(|x| Output::from_c(self.cond_graph.as_ref().unwrap(), x)))
+        }
+    }
+
+    /// Only perform this conversion when we are about to drop or finish the loop.
+    fn to_c(&mut self) -> while_params::TF_WhileParams {
+
+        // ownership of the subgraphs should be unique at this point, otherwise
+        // we would get a SEGFAULT, so we set them to None on Rust and unwrap
+        // the shared pointers.
+        let mut cond_graph = None;
+        let mut body_graph = None;
+        ::mem::swap(&mut cond_graph, &mut self.cond_graph);
+        ::mem::swap(&mut body_graph, &mut self.body_graph);
+        let Graph { gimpl, .. } = cond_graph.unwrap();
+        let GraphImpl { inner: cond_graph, .. } = Arc::try_unwrap(gimpl).unwrap();
+        let Graph { gimpl, .. } = body_graph.unwrap();
+        let GraphImpl { inner: body_graph, .. } = Arc::try_unwrap(gimpl).unwrap();
+
+        while_params::TF_WhileParams {
+            ninputs: self.ninputs as i32,
+            cond_graph: cond_graph,
+            cond_inputs: self.cond_inputs,
+            cond_output: self.cond_output,
+            body_graph: body_graph,
+            body_inputs: self.body_inputs,
+            body_outputs: self.body_outputs,
+            name: self.name.as_ptr(),
+        }
+    }
+
+    /// Builds the while loop specified by `self` and returns the output tensors of
+    /// the while loop.
+    pub fn finish(mut self, graph: &Graph) -> Result<Vec<Output>> {
+        let mut status = Status::new();
+        unsafe {
+            let mut outputs: Vec<tf::TF_Output> = Vec::with_capacity(self.ninputs);
+            while_params::TF_FinishWhile(&self.to_c(), status.inner(), outputs.as_mut_ptr());
+            self.finished = true; // avoid double free, call to FinishWhile destroys subgraphs
+            status.into_result()?;
+            Ok(outputs
+                   .into_iter()
+                   .map(|x| Output::from_c(graph, &x))
+                   .collect::<Vec<_>>())
+        }
+    }
+}
+
+impl Drop for WhileParams {
+    fn drop(&mut self) {
+        if !self.finished {
+            unsafe { 
+                while_params::TF_AbortWhile(&self.to_c()) 
+            }
+        }
+    }
+}
+
+////////////////////////
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1044,15 +1293,15 @@ mod tests {
         assert!(status.is_ok());
     }
 
-    #[test]
-    fn test_get_tensor_shape() {
-        fn constant<T: TensorType>(graph: &mut Graph, name: &str, value: Tensor<T>) -> Operation {
+    fn constant<T: TensorType>(graph: &mut Graph, name: &str, value: Tensor<T>) -> Operation {
             let mut c = graph.new_operation("Const", name).unwrap();
             c.set_attr_tensor("value", value).unwrap();
             c.set_attr_type("dtype", T::data_type()).unwrap();
             c.finish().unwrap()
-        }
+    }
 
+    #[test]
+    fn test_get_tensor_shape() {
         let mut graph = Graph::new();
         let x_init = Tensor::<i32>::new(&[3, 3]);
         let x = constant(&mut graph, "x/assign_0", x_init);
@@ -1072,5 +1321,59 @@ mod tests {
                           })
             .unwrap();
         assert_eq!(shape, Shape(Some(vec![Some(3_i64), Some(3_i64)])));
+    }
+
+    #[test]
+    fn test_while_loop() {
+        let mut graph = Graph::new();
+
+        let x = Tensor::<i32>::new(&[]);
+        let x = constant(&mut graph, "x", x);
+
+        let mut y = Tensor::<i32>::new(&[]);
+        y[0] = 10;
+        let y = constant(&mut graph, "y", y);
+
+        let mut while_loop = graph
+                .new_while(
+                    vec![
+                        Output { operation: x.clone(), index: 0 },
+                        Output { operation: y.clone(), index: 0 },
+                    ],
+                    "loop")
+                .unwrap();
+
+        {
+            let cond_inputs = while_loop.get_cond_inputs();
+            let less = {
+                let cond = while_loop.get_mut_cond_subgraph();
+                let mut desc = cond.new_operation("Less", "pred").unwrap();
+                desc.add_input(cond_inputs[0].clone());
+                desc.add_input(cond_inputs[1].clone());
+                desc.finish().unwrap()
+            };
+            while_loop.set_cond_output(Output { operation: less, index: 0 });
+        }
+        {
+            let body_inputs = while_loop.get_body_inputs();
+            let y;
+            let add = {
+                let body = while_loop.get_mut_body_subgraph();
+
+                let mut t = Tensor::<i32>::new(&[]);
+                t[0] = 1;
+                y = constant(body, "add_y", t);
+
+                let mut desc = body.new_operation("Add", "add").unwrap();
+                desc.add_input(body_inputs[0].clone());
+                desc.add_input(Output { operation: y, index: 0});
+                desc.finish().unwrap()
+            };
+            while_loop.set_body_outputs(
+                vec![Output { operation: add, index: 0 }, body_inputs[1].clone()]);
+        }
+
+        let res = while_loop.finish(&graph).unwrap();
+        assert_eq!(res.len(), 2);
     }
 }
