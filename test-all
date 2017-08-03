@@ -2,6 +2,18 @@
 
 set -e
 
+# Make sure the Tensorflow version in the -sys build script matches the one in
+# the run-valgrind script.
+version_build_script=`grep "const VERSION" tensorflow-sys/build.rs | sed 's|.*"\([0-9\.]*\)";|\1|g'`
+version_run_valgrind=`grep "tensorflow_version=" run-valgrind | sed "s|.*=\(.*\)|\1|g"`
+if [[ "${version_build_script}" != "${version_run_valgrind}" ]]; then
+    echo "ERROR: Tensorflow version specified in build script does not match the one in the"
+    echo "       valgrind run script."
+    echo "       tensorflow-sys/build.rs: ${version_build_script}"
+    echo "       run-valgrind: ${version_run_valgrind}"
+    exit 1
+fi
+
 cargo test -vv -j 2 --features tensorflow_unstable
 cargo run --example regression
 cargo run --features tensorflow_unstable --example expressions
