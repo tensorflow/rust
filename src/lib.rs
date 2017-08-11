@@ -10,9 +10,12 @@
         unused_import_braces,
         unused_qualifications)]
 
+#![cfg_attr(windows, feature(alloc, allocator_api))]
+
 extern crate libc;
 extern crate num_complex;
 extern crate tensorflow_sys as tf;
+#[cfg(windows)] extern crate alloc;
 
 use libc::{c_int, c_uint};
 use num_complex::Complex;

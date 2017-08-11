@@ -6,7 +6,6 @@ use libc::size_t;
 use std::borrow::Borrow;
 use std::borrow::BorrowMut;
 use std::cmp;
-use std::ffi::CStr;
 use std::marker::PhantomData;
 use std::mem;
 use std::ops::Deref;
@@ -18,10 +17,39 @@ use std::ops::RangeFrom;
 use std::ops::RangeFull;
 use std::ops::RangeTo;
 use std::os::raw::c_void as std_c_void;
-use std::ptr;
 use std::slice;
 use super::BufferTrait;
 use super::TensorType;
+
+/// allocate a new aligned buffer
+#[cfg(not(windows))]
+unsafe fn alloc_aligned(size: usize, align: usize) -> Result<*mut u8, &'static str> {
+    use std::ffi::CStr;
+
+    // posix_memalign requires the alignment to be at least sizeof(void*).
+    // TODO: Use alloc::heap::allocate once it's stable, or at least
+    // libc::aligned_alloc once it exists
+    let mut ptr = ptr::null::<c_void>() as *mut c_void;
+    let err = libc::posix_memalign(&mut ptr, align, alloc_size);
+    if err != 0 {
+        let c_msg = libc::strerror(err);
+        let msg = CStr::from_ptr(c_msg);
+        Err("Failed to allocate: {}", msg.to_str().unwrap());
+    }
+    Ok(ptr)
+}
+
+#[cfg(windows)]
+unsafe fn alloc_aligned(size: usize, align: usize) -> Result<*mut u8, &'static str> {
+    use alloc::heap;
+    use alloc::allocator::Alloc;
+    
+    let align = heap::Layout::from_size_align(size, align).unwrap();
+    match heap::Heap.alloc(align) {
+        Ok(ptr) => Ok(ptr),
+        Err(_) => Err("Cannot allocate"),
+    }
+}
 
 /// Fixed-length heap-allocated vector.
 /// This is basically a `Box<[T]>`, except that that type can't actually be constructed.
@@ -56,17 +84,8 @@ impl<T: TensorType> Buffer<T> {
         let elem_size = mem::size_of::<T>();
         let alloc_size = len * elem_size;
         let align = cmp::max(mem::align_of::<T>(), mem::size_of::<*const c_void>());
-        // posix_memalign requires the alignment to be at least sizeof(void*).
-        // TODO: Use alloc::heap::allocate once it's stable, or at least
-        // libc::aligned_alloc once it exists
-        let mut ptr = ptr::null::<c_void>() as *mut c_void;
-        let err = libc::posix_memalign(&mut ptr, align, alloc_size);
-        if err != 0 {
-            let c_msg = libc::strerror(err);
-            let msg = CStr::from_ptr(c_msg);
-            panic!("Failed to allocate: {}", msg.to_str().unwrap());
-        }
-        (*inner).data = ptr as *mut std_c_void;
+        
+        (*inner).data = alloc_aligned(alloc_size, align).unwrap() as *mut std_c_void;
         (*inner).length = len;
         (*inner).data_deallocator = Some(deallocator);
         Buffer {
