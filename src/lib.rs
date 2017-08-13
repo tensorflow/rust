@@ -14,7 +14,7 @@ extern crate libc;
 extern crate num_complex;
 extern crate tensorflow_sys as tf;
 
-use libc::{c_int, c_uint, size_t};
+use libc::{c_int, c_uint};
 use num_complex::Complex;
 use std::cmp::Ordering;
 use std::error::Error;
@@ -30,7 +30,6 @@ use std::ops::Deref;
 use std::ops::DerefMut;
 use std::ops::Drop;
 use std::ops::Index;
-use std::os::raw::c_void as std_c_void;
 use std::str::Utf8Error;
 
 ////////////////////////
@@ -661,12 +660,6 @@ pub struct Tensor<T: TensorType> {
     owned: bool,
 }
 
-unsafe extern "C" fn noop_deallocator(_: *mut std_c_void, _: size_t, _: *mut std_c_void) -> () {}
-
-unsafe extern "C" fn deallocator(_: *mut std_c_void, _: size_t, buffer: *mut std_c_void) -> () {
-    tf::TF_DeleteBuffer(buffer as *mut tf::TF_Buffer);
-}
-
 #[inline]
 fn product(values: &[u64]) -> u64 {
     values.iter().product()
@@ -692,18 +685,6 @@ impl<T: TensorType> Tensor<T> {
         }
     }
 
-    /// Returns the tensor's data.
-    #[deprecated(note="Deref the tensor as a slice instead.")]
-    pub fn data(&self) -> &Buffer<T> {
-        &self.data
-    }
-
-    /// Returns the tensor's data.
-    #[deprecated(note="Deref the tensor as a slice instead.")]
-    pub fn data_mut(&mut self) -> &mut Buffer<T> {
-        &mut self.data
-    }
-
     /// Returns the tensor's dimensions.
     pub fn dims(&self) -> &[u64] {
         &self.dims
@@ -725,13 +706,6 @@ impl<T: TensorType> Tensor<T> {
             dims: dims,
             owned: true,
         })
-    }
-
-    /// The caller is responsible for deleting the tensor.
-    unsafe fn into_ptr(mut self) -> *mut tf::TF_Tensor {
-        // This flag is used by drop.
-        self.owned = false;
-        self.inner
     }
 }
 
@@ -836,9 +810,6 @@ pub fn version() -> std::result::Result<String, Utf8Error> {
 }
 
 ////////////////////////
-
-#[deprecated(note="Use Shape instead.")]
-pub type TensorShape = Shape;
 
 /// A Shape is the shape of a tensor.  A Shape may be an unknown rank, or it may
 /// have a known rank with each dimension being known or unknown.
