@@ -32,6 +32,7 @@ use std::ops::Deref;
 use std::ops::DerefMut;
 use std::ops::Drop;
 use std::ops::Index;
+use std::os::raw::c_char;
 use std::ptr;
 use std::slice;
 use std::str::Utf8Error;
@@ -436,6 +437,12 @@ impl From<NulError> for Status {
     }
 }
 
+impl From<Utf8Error> for Status {
+    fn from(_e: Utf8Error) -> Self {
+        invalid_arg!("String contained invalid UTF-8")
+    }
+}
+
 impl Error for Status {
     fn description(&self) -> &str {
         unsafe {
@@ -512,7 +519,6 @@ pub type Result<T> = std::result::Result<T, Status>;
 /// types (such as `bool` and `String`) don't implement them and we need to
 /// supply custom implementations.
 pub trait TensorType: Default + Clone + Display + Debug + 'static {
-    // TODO: Use associated constants when/if available
     /// Returns the DataType that corresponds to this type.
     fn data_type() -> DataType;
 
@@ -584,7 +590,6 @@ tensor_type!(i32, Int32, 0, 1);
 tensor_type!(u8, UInt8, 0, 1);
 tensor_type!(i16, Int16, 0, 1);
 tensor_type!(i8, Int8, 0, 1);
-// TODO: provide type for String
 tensor_type!(Complex<f32>, Complex64, Complex::new(0.0, 0.0), Complex::new(1.0, 0.0));
 tensor_type!(Complex<f64>, Complex128, Complex::new(0.0, 0.0), Complex::new(1.0, 0.0));
 tensor_type!(i64, Int64, 0, 1);
@@ -681,6 +686,79 @@ tensor_type!(BFloat16, BFloat16, BFloat16::from(0.0f32), BFloat16::from(1.0f32))
 
 ////////////////////////
 
+impl TensorType for String {
+    fn data_type() -> DataType {
+        DataType::String
+    }
+
+    fn zero() -> Self {
+        "".to_string()
+    }
+
+    fn one() -> Self {
+        "\u{0001}".to_string()
+    }
+
+    fn is_repr_c() -> bool {
+        false
+    }
+
+    fn unpack(data: &[u8], count: usize) -> Result<Vec<Self>> {
+        let offsets = unsafe { slice::from_raw_parts(data.as_ptr() as *const u64, count) };
+        let mut out = Vec::with_capacity(count);
+        let mut status = Status::new();
+        let base_offset = mem::size_of::<u64>() * count;
+        for offset in offsets {
+            let off = *offset as usize + base_offset;
+            #[allow(trivial_casts)]
+            let src = &data[off] as *const u8 as *const c_char;
+            let src_len = data.len() - off;
+            let mut dst_len: usize = 0;
+            let mut dst: *const c_char = ptr::null();
+            unsafe {
+                tf::TF_StringDecode(src, src_len, &mut dst, &mut dst_len, status.inner());
+            }
+            if !status.is_ok() {
+                return Err(status);
+            }
+            let string_data = unsafe { slice::from_raw_parts(dst as *const u8, dst_len) };
+            out.push(std::str::from_utf8(string_data)?.to_string());
+        }
+        Ok(out)
+    }
+
+    fn packed_size(data: &[Self]) -> usize {
+        let string_data: usize = data.iter()
+            .map(|s| unsafe { tf::TF_StringEncodedSize(s.len()) })
+            .sum();
+        mem::size_of::<u64>() * data.len() + string_data
+    }
+
+    fn pack(data: &[Self], buffer: &mut [u8]) -> Result<()> {
+        let mut offsets: &mut [u64] =
+            unsafe { slice::from_raw_parts_mut(buffer.as_mut_ptr() as *mut u64, data.len()) };
+        let base_offset = mem::size_of::<u64>() * data.len();
+        let mut offset = base_offset;
+        let mut status = Status::new();
+        for i in 0..data.len() {
+            offsets[i] = (offset - base_offset) as u64;
+            let src = data[i].as_ptr() as *const c_char;
+            let src_len = data[i].len();
+            let dst: *mut u8 = &mut buffer[offset];
+            let dst_len = buffer.len() - offset;
+            offset += unsafe {
+                tf::TF_StringEncode(src, src_len, dst as *mut c_char, dst_len, status.inner())
+            };
+            if !status.is_ok() {
+                return Err(status);
+            }
+        }
+        Ok(())
+    }
+}
+
+////////////////////////
+
 trait AnyTensor: Debug {
     fn inner(&self) -> Result<*mut tf::TF_Tensor>;
 }
@@ -689,16 +767,14 @@ trait AnyTensor: Debug {
 
 /// Holds a multi-dimensional array of elements of a single data type.
 ///
-/// For all types other than strings, the data buffer stores elements
-/// in row major order.  E.g. if data is treated as a vector of `T`:
+/// The data buffer stores elements in row major order.  E.g. if data is treated
+/// as a vector of `T`:
 ///
 /// ```text
 ///   element 0:   index (0, ..., 0)
 ///   element 1:   index (0, ..., 1)
 ///   ...
 /// ```
-///
-/// The layout for strings is currently undefined.
 #[derive(Debug)]
 pub struct Tensor<T: TensorType> {
     inner: Cell<*mut tf::TF_Tensor>,
@@ -1099,5 +1175,37 @@ mod tests {
         }
         assert_eq!(<BFloat16 as Into<f32>>::into(BFloat16::default()), 0.0f32);
         assert_eq!(BFloat16::from(1.5f32).to_string(), "1.5");
+    }
+
+    #[test]
+    fn test_strings() {
+        let mut g = Graph::new();
+        let x_op = {
+            let mut nd = g.new_operation("Placeholder", "x").unwrap();
+            nd.set_attr_type("dtype", DataType::String).unwrap();
+            nd.set_attr_shape("shape", &Shape(Some(vec![]))).unwrap();
+            nd.finish().unwrap()
+        };
+        let y_op = {
+            let mut nd = g.new_operation("EncodeBase64", "y").unwrap();
+            nd.add_input(Output {
+                operation: x_op.clone(),
+                index: 0,
+            });
+            nd.finish().unwrap()
+        };
+        let options = SessionOptions::new();
+        let mut session = Session::new(&options, &g).unwrap();
+        let mut x = <Tensor<String>>::new(&[2]);
+        x[0] = "foo".to_string();
+        x[1] = "bar".to_string();
+        let mut step = StepWithGraph::new();
+        step.add_input(&x_op, 0, &x);
+        let output_ix = step.request_output(&y_op, 0);
+        session.run(&mut step).unwrap();
+        let output_tensor = step.take_output::<String>(output_ix).unwrap();
+        assert_eq!(output_tensor.len(), 2);
+        assert_eq!(output_tensor[0], "Zm9v");
+        assert_eq!(output_tensor[1], "YmFy");
     }
 }
