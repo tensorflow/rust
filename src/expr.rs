@@ -119,7 +119,7 @@ impl<T: TensorType> ExprImpl<T> for T {
         let mut nd = graph.new_operation("Const", &id_gen())?;
         nd.set_attr_type("dtype", DataType::Float)?;
         let mut value = Tensor::new(&[1]);
-        value[0] = *self;
+        value[0] = self.clone();
         nd.set_attr_tensor("value", value)?;
         nd.finish()
     }

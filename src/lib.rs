@@ -507,7 +507,7 @@ pub type Result<T> = std::result::Result<T, Status>;
 /// This trait doesn't require `num::Zero` or `num::One` because some tensor
 /// types (such as `bool` and `String`) don't implement them and we need to
 /// supply custom implementations.
-pub trait TensorType: Default + Clone + Copy + Display + Debug + 'static {
+pub trait TensorType: Default + Clone + Display + Debug + 'static {
     // TODO: Use associated constants when/if available
     /// Returns the DataType that corresponds to this type.
     fn data_type() -> DataType;
@@ -747,7 +747,7 @@ impl<'a, T: TensorType> From<&'a [T]> for Tensor<T> {
     fn from(value: &'a [T]) -> Self {
         let mut tensor = Tensor::new(&[value.len() as u64]);
         for i in 0..value.len() {
-            tensor[i] = value[i];
+            tensor[i] = value[i].clone();
         }
         tensor
     }
