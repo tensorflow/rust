@@ -30,6 +30,7 @@ use std::ops::Deref;
 use std::ops::DerefMut;
 use std::ops::Drop;
 use std::ops::Index;
+use std::slice;
 use std::str::Utf8Error;
 
 ////////////////////////
@@ -640,6 +641,12 @@ tensor_type!(BFloat16, BFloat16, BFloat16::from(0.0f32), BFloat16::from(1.0f32))
 
 ////////////////////////
 
+trait AnyTensor: Debug {
+    fn inner(&self) -> Result<*mut tf::TF_Tensor>;
+}
+
+////////////////////////
+
 /// Holds a multi-dimensional array of elements of a single data type.
 ///
 /// For all types other than strings, the data buffer stores elements
@@ -655,7 +662,8 @@ tensor_type!(BFloat16, BFloat16, BFloat16::from(0.0f32), BFloat16::from(1.0f32))
 #[derive(Debug)]
 pub struct Tensor<T: TensorType> {
     inner: *mut tf::TF_Tensor,
-    data: Buffer<T>,
+    data: *mut T,
+    data_count: usize,
     dims: Vec<u64>,
     owned: bool,
 }
@@ -678,7 +686,8 @@ impl<T: TensorType> Tensor<T> {
                                               total as usize * mem::size_of::<T>());
             Tensor {
                 inner: inner,
-                data: Buffer::from_ptr(tf::TF_TensorData(inner) as *mut T, total as usize),
+                data: tf::TF_TensorData(inner) as *mut T,
+                data_count: total as usize,
                 dims: Vec::from(dims),
                 owned: true,
             }
@@ -699,10 +708,10 @@ impl<T: TensorType> Tensor<T> {
         for i in 0..dims.capacity() {
             dims.push(tf::TF_Dim(tensor, i as c_int) as u64);
         }
-        let data = Buffer::from_ptr(tf::TF_TensorData(tensor) as *mut _, product(&dims) as usize);
         Some(Tensor {
             inner: tensor,
-            data: data,
+            data: tf::TF_TensorData(tensor) as *mut _,
+            data_count: product(&dims) as usize,
             dims: dims,
             owned: true,
         })
@@ -719,19 +728,25 @@ impl<T: TensorType> Drop for Tensor<T> {
     }
 }
 
+impl<T: TensorType> AnyTensor for Tensor<T> {
+    fn inner(&self) -> Result<*mut tf::TF_Tensor> {
+        Ok(self.inner)
+    }
+}
+
 impl<T: TensorType> Deref for Tensor<T> {
     type Target = [T];
 
     #[inline]
     fn deref(&self) -> &[T] {
-        &self.data
+        unsafe { slice::from_raw_parts(self.data, self.data_count) }
     }
 }
 
 impl<T: TensorType> DerefMut for Tensor<T> {
     #[inline]
     fn deref_mut(&mut self) -> &mut [T] {
-        &mut self.data
+        unsafe { slice::from_raw_parts_mut(self.data, self.data_count) }
     }
 }
 
