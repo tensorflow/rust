@@ -518,6 +518,23 @@ pub trait TensorType: Default + Clone + Display + Debug + 'static {
 
     /// Returns the one value.
     fn one() -> Self;
+
+    /// Return true if the data has the same representation in C and Rust and
+    /// can be written/read directly.
+    fn is_repr_c() -> bool;
+
+    /// Unpacks data from C. Returns an error if `is_repr_c()` is true for this
+    /// type or some other error occurred.
+    fn unpack(data: &[u8], count: usize) -> Result<Vec<Self>>;
+
+    /// Returns the number of bytes in the packed representation.  If
+    /// `is_repr_c()` returns true, this will return 0.
+    fn packed_size(data: &[Self]) -> usize;
+
+    /// Packs data for sending to C.  Returns an error if `is_repr_c()` returns
+    /// true for this type or some other error occurred.  The size of the buffer
+    /// must be at least as large as the value returned by `packed_size(data)`.
+    fn pack(data: &[Self], buffer: &mut [u8]) -> Result<()>;
 }
 
 macro_rules! tensor_type {
@@ -533,6 +550,26 @@ macro_rules! tensor_type {
 
       fn one() -> Self {
         $one
+      }
+
+      fn is_repr_c() -> bool {
+        true
+      }
+
+      fn unpack(_data: &[u8], _count: usize) -> Result<Vec<Self>> {
+        Err(Status::new_set(
+            Code::Unimplemented,
+            concat!("Unpacking is not necessary for ", stringify!($rust_type))).unwrap())
+      }
+
+      fn packed_size(_data: &[Self]) -> usize {
+        0
+      }
+
+      fn pack(_data: &[Self], _buffer: &mut [u8]) -> Result<()> {
+        Err(Status::new_set(
+            Code::Unimplemented,
+            concat!("Packing is not necessary for ", stringify!($rust_type))).unwrap())
       }
     }
   }
