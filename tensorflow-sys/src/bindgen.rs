@@ -22,11 +22,11 @@ pub const __USE_FORTIFY_LEVEL: ::std::os::raw::c_uint = 0;
 pub const _STDC_PREDEF_H: ::std::os::raw::c_uint = 1;
 pub const __STDC_IEC_559__: ::std::os::raw::c_uint = 1;
 pub const __STDC_IEC_559_COMPLEX__: ::std::os::raw::c_uint = 1;
-pub const __STDC_ISO_10646__: ::std::os::raw::c_uint = 201605;
+pub const __STDC_ISO_10646__: ::std::os::raw::c_uint = 201505;
 pub const __STDC_NO_THREADS__: ::std::os::raw::c_uint = 1;
 pub const __GNU_LIBRARY__: ::std::os::raw::c_uint = 6;
 pub const __GLIBC__: ::std::os::raw::c_uint = 2;
-pub const __GLIBC_MINOR__: ::std::os::raw::c_uint = 24;
+pub const __GLIBC_MINOR__: ::std::os::raw::c_uint = 23;
 pub const _SYS_CDEFS_H: ::std::os::raw::c_uint = 1;
 pub const __WORDSIZE: ::std::os::raw::c_uint = 64;
 pub const __WORDSIZE_TIME64_COMPAT32: ::std::os::raw::c_uint = 1;
@@ -1082,6 +1082,45 @@ extern "C" {
                    noutputs: ::std::os::raw::c_int,
                    target_oper_names: *mut *const ::std::os::raw::c_char,
                    ntargets: ::std::os::raw::c_int, arg2: *mut TF_Status);
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct TF_DeviceList {
+    _unused: [u8; 0],
+}
+extern "C" {
+    pub fn TF_SessionListDevices(session: *mut TF_Session,
+                                 status: *mut TF_Status)
+     -> *mut TF_DeviceList;
+}
+extern "C" {
+    pub fn TF_DeprecatedSessionListDevices(session: *mut TF_DeprecatedSession,
+                                           status: *mut TF_Status)
+     -> *mut TF_DeviceList;
+}
+extern "C" {
+    pub fn TF_DeleteDeviceList(list: *mut TF_DeviceList);
+}
+extern "C" {
+    pub fn TF_DeviceListCount(list: *const TF_DeviceList)
+     -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn TF_DeviceListName(list: *const TF_DeviceList,
+                             index: ::std::os::raw::c_int,
+                             arg1: *mut TF_Status)
+     -> *const ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn TF_DeviceListType(list: *const TF_DeviceList,
+                             index: ::std::os::raw::c_int,
+                             arg1: *mut TF_Status)
+     -> *const ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn TF_DeviceListMemoryBytes(list: *const TF_DeviceList,
+                                    index: ::std::os::raw::c_int,
+                                    arg1: *mut TF_Status) -> i64;
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
