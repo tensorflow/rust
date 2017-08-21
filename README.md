@@ -3,14 +3,14 @@
 [![Status](https://travis-ci.org/tensorflow/rust.svg?branch=master)](https://travis-ci.org/tensorflow/rust)
 
 TensorFlow Rust provides idiomatic [Rust](https://www.rust-lang.org) language
-bindings for [TensorFlow](http://tensorflow.org).
+bindings for [TensorFlow](https://tensorflow.org).
 
 **Notice:** This project is still under active development and not guaranteed to have a
 stable API. This is especially true because the underlying TensorFlow C API has not yet
 been stabilized as well.
 
 * [Documentation](https://tensorflow.github.io/rust/tensorflow/)
-* [TensorFlow website](http://tensorflow.org)
+* [TensorFlow website](https://tensorflow.org)
 * [TensorFlow GitHub page](https://github.com/tensorflow/tensorflow)
 
 ## Getting Started
@@ -68,7 +68,7 @@ In short:
 
 1. Install [SWIG](http://www.swig.org) and [NumPy](http://www.numpy.org).  The
    version from your distro's package manager should be fine for these two.
-2. [Install Bazel](http://bazel.io/docs/install.html), which you may need to do
+2. [Install Bazel](https://bazel.io/docs/install.html), which you may need to do
    from source.
 3. `git clone https://github.com/tensorflow/tensorflow`
 4. `cd tensorflow`
@@ -84,11 +84,8 @@ If this is not possible, add `$TENSORFLOW_SRC/bazel-bin/tensorflow` to
 
 You may need to run `ldconfig` to reset `ld`'s cache after copying `libtensorflow.so`.
 
-**OSX Note**: If you are running on OSX, there is a
-[Homebrew PR](https://github.com/Homebrew/homebrew-core/pull/10273) in process which, once merged,
-will make it easy to install `libtensorflow` wihout hassle. In the meantime, you can take a look at
-[snipsco/tensorflow-build](https://github.com/snipsco/tensorflow-build) which provides a homebrew
-tap that does essentially the same.
+**macOS Note**: Via [Homebrew](https://brew.sh/) in process which, you can just run
+`brew install libtensorflow`.
 
 ## FAQ's
 
@@ -101,16 +98,16 @@ use. See http://doc.crates.io/manifest.html#the-features-section.
 
 ## Contributing
 Developers and users are welcome to join
-[#tensorflow-rust](http://chat.mibbit.com/?server=irc.mozilla.org&channel=%23tensorflow-rust)
+[#tensorflow-rust](https://chat.mibbit.com/?server=irc.mozilla.org&channel=%23tensorflow-rust)
 on irc.mozilla.org.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for information on how to contribute code.
+Please read the [contribution guidelines](CONTRIBUTING.md) on how to contribute code.
 
 This is not an official Google product.
 
 RFCs are [issues tagged with RFC](https://github.com/tensorflow/rust/labels/rfc).
-Check them out and comment. Discussions are welcome. After all, thats what a Request For
-Comment is for!
+Check them out and comment. Discussions are welcomed. After all, that is the purpose of
+Request For Comment!
 
 ## License
-This project is licensed under the terms of the [Apache 2.0 license](https://github.com/tensorflow/rust/blob/master/LICENSE).
+This project is licensed under the terms of the [Apache 2.0 license](LICENSE).
