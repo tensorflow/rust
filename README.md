@@ -3,7 +3,7 @@
 [![Status](https://travis-ci.org/tensorflow/rust.svg?branch=master)](https://travis-ci.org/tensorflow/rust)
 
 TensorFlow Rust provides idiomatic [Rust](https://www.rust-lang.org) language
-bindings for [TensorFlow](https://tensorflow.org).
+bindings for [TensorFlow](https://www.tensorflow.org).
 
 **Notice:** This project is still under active development and not guaranteed to have a
 stable API. This is especially true because the underlying TensorFlow C API has not yet
