@@ -45,11 +45,15 @@ and this to your crate root:
 extern crate tensorflow;
 ```
 
-Then run `cargo build -j 1`. Since TensorFlow is built during this process, and
-the TensorFlow build is very memory intensive, we recommend using the `-j 1`
-flag which tells cargo to use only one task, which in turn tells TensorFlow to
-build with only one task. Of course, if you have a lot of RAM, you can use a
-higher value.
+Then run `cargo build -j 1`. The tensorflow-sys crate's 
+[`build.rs`](https://github.com/tensorflow/rust/blob/f204b39/tensorflow-sys/build.rs#L44-L52)
+now either downloads a pre-built, basic CPU only binary
+([the default](https://github.com/tensorflow/rust/pull/65))
+or compiles TensorFlow if forced to by an environment variable. If TensorFlow
+is compiled during this process, since the full compilation is very memory
+intensive, we recommend using the `-j 1` flag which tells cargo to use only one
+task, which in turn tells TensorFlow to build with only one task. Though, if
+you have a lot of RAM, you can obviously use a higher value.
 
 To include the especially unstable API (which is currently the `expr` module),
 use `--features tensorflow_unstable`.
