@@ -84,7 +84,7 @@ If this is not possible, add `$TENSORFLOW_SRC/bazel-bin/tensorflow` to
 
 You may need to run `ldconfig` to reset `ld`'s cache after copying `libtensorflow.so`.
 
-**macOS Note**: Via [Homebrew](https://brew.sh/) in process which, you can just run
+**macOS Note**: Via [Homebrew](https://brew.sh/), you can just run
 `brew install libtensorflow`.
 
 ## FAQ's
