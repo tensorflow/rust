@@ -10,7 +10,7 @@ stable API. This is especially true because the underlying TensorFlow C API has 
 been stabilized as well.
 
 * [Documentation](https://tensorflow.github.io/rust/tensorflow/)
-* [TensorFlow website](https://tensorflow.org)
+* [TensorFlow website](https://www.tensorflow.org)
 * [TensorFlow GitHub page](https://github.com/tensorflow/tensorflow)
 
 ## Getting Started
