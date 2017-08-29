@@ -4,6 +4,7 @@ use std::ffi::CString;
 use std::marker;
 use std::path::Path;
 use std::ptr;
+use super::AnyTensor;
 use super::{Buffer, BufferTrait};
 use super::Code;
 use super::DataType;
@@ -146,12 +147,14 @@ impl Session {
         step.drop_output_tensors();
 
         let mut status = Status::new();
+        let maybe_tensors: Result<_> = step.input_tensors.iter().map(|t| t.inner()).collect();
+        let input_tensors: Vec<_> = maybe_tensors?;
         unsafe {
             tf::TF_SessionRun(self.inner,
                               ptr::null(),
                               step.input_ports.as_ptr(),
-                              step.input_tensors.as_ptr() as *const *const tf::TF_Tensor,
-                              step.input_tensors.len() as c_int,
+                              input_tensors.as_ptr() as *const *const tf::TF_Tensor,
+                              input_tensors.len() as c_int,
                               step.output_ports.as_ptr(),
                               step.output_tensors.as_mut_ptr(),
                               step.output_tensors.len() as c_int,
@@ -192,7 +195,7 @@ pub struct OutputToken {
 #[derive(Debug)]
 pub struct StepWithGraph<'l> {
     input_ports: Vec<tf::TF_Output>,
-    input_tensors: Vec<*mut tf::TF_Tensor>,
+    input_tensors: Vec<&'l AnyTensor>,
 
     output_ports: Vec<tf::TF_Output>,
     output_tensors: Vec<*mut tf::TF_Tensor>,
@@ -227,7 +230,7 @@ impl<'l> StepWithGraph<'l> {
                                   oper: operation.inner(),
                                   index: index,
                               });
-        self.input_tensors.push(tensor.inner);
+        self.input_tensors.push(tensor);
     }
 
     /// Requests that an output is fetched from the graph after running this step.
