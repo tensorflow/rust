@@ -1,5 +1,6 @@
 use tf;
 use libc::{c_char, c_int};
+use std::ffi::CStr;
 use std::ffi::CString;
 use std::marker;
 use std::path::Path;
@@ -165,6 +166,43 @@ impl Session {
         };
         status.into_result()
     }
+
+    /// Lists all devices in a session.
+    pub fn device_list(&self) -> Result<Vec<Device>> {
+        let status = Status::new();
+        unsafe {
+            let list = tf::TF_SessionListDevices(self.inner, status.inner);
+            if !status.is_ok() {
+                return Err(status);
+            }
+            let result = (|| {
+                let n = tf::TF_DeviceListCount(list);
+                let mut devices = Vec::with_capacity(n as usize);
+                for i in 0..n {
+                    let c_name = tf::TF_DeviceListName(list, i, status.inner);
+                    if !status.is_ok() {
+                        return Err(status);
+                    }
+                    let c_type = tf::TF_DeviceListType(list, i, status.inner);
+                    if !status.is_ok() {
+                        return Err(status);
+                    }
+                    let bytes = tf::TF_DeviceListMemoryBytes(list, i, status.inner);
+                    if !status.is_ok() {
+                        return Err(status);
+                    }
+                    devices.push(Device {
+                        name: CStr::from_ptr(c_name).to_str()?.to_string(),
+                        device_type: CStr::from_ptr(c_type).to_str()?.to_string(),
+                        memory_bytes: bytes,
+                    });
+                }
+                Ok(devices)
+            })();
+            tf::TF_DeleteDeviceList(list);
+            result
+        }
+    }
 }
 
 impl Drop for Session {
@@ -314,6 +352,21 @@ impl<'l> Drop for StepWithGraph<'l> {
 
 ////////////////////////
 
+/// Metadata about a device.
+#[derive(Debug,Eq,PartialEq,Clone,Hash)]
+pub struct Device {
+    /// Full name of the device (e.g. /job:worker/replica:0/...)
+    pub name: String,
+
+    /// Type of device.
+    pub device_type: String,
+
+    /// Amount of memory on the device.
+    pub memory_bytes: i64,
+}
+
+////////////////////////
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -421,5 +474,12 @@ mod tests {
         session.run(&mut step).unwrap();
         let output_tensor = step.take_output::<f32>(output_token).unwrap();
         assert_eq!(output_tensor.len(), 1);
+    }
+
+    #[test]
+    fn test_device_list() {
+        let (session, _, _) = create_session();
+        let devices = session.device_list().unwrap();
+        assert!(devices.iter().any(|d| d.device_type == "CPU"), "devices: {:?}", devices);
     }
 }
