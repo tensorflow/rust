@@ -15,6 +15,7 @@ use std::ptr;
 use std::slice;
 use std::str::Utf8Error;
 use std::sync::Arc;
+use super::AnyTensor;
 use super::buffer::Buffer;
 use super::BufferTrait;
 use super::Code;
@@ -972,7 +973,7 @@ impl<'a> OperationDescription<'a> {
         unsafe {
             tf::TF_SetAttrTensor(self.inner,
                                  c_attr_name.as_ptr(),
-                                 value.inner,
+                                 value.inner()?,
                                  status.inner());
         }
         status.into_result()
@@ -990,7 +991,8 @@ impl<'a> OperationDescription<'a> {
         let c_attr_name = CString::new(attr_name)?;
         let mut status = Status::new();
         unsafe {
-            let ptrs: Vec<*mut tf::TF_Tensor> = value.into_iter().map(|x| x.inner).collect();
+            let maybe_ptrs: Result<_> = value.into_iter().map(|x| x.inner()).collect();
+            let ptrs: Vec<*mut tf::TF_Tensor> = maybe_ptrs?;
             tf::TF_SetAttrTensorList(self.inner,
                                      c_attr_name.as_ptr(),
                                      ptrs.as_ptr() as *const *const tf::TF_Tensor,

@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -ev
+
+URL="tensorflow/index.html"
+
+HTML="<!DOCTYPE html>
+<link rel='canonical' href='${URL}'>
+<meta http-equiv='refresh' content='0; url=${URL}'>
+<script>window.location='${URL}'</script>"
+
+echo "${HTML}" > target/doc/index.html
+
+export PYTHONUSERBASE="${HOME}/.local"
+pip install ghp-import --user
+${PYTHONUSERBASE}/bin/ghp-import -m 'Update the documentation' -n target/doc
+
+git push -qf git@github.com:tensorflow/rust.git gh-pages
