@@ -20,7 +20,7 @@ libc = "0.2"
 curl = "0.4"
 flate2 = "0.2"
 pkg-config = "0.3"
-semver = "0.5"
+semver = "0.8"
 tar = "0.4"
 
 [features]

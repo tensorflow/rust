@@ -11,7 +11,7 @@ documentation = "https://tensorflow.github.io/rust/tensorflow"
 
 [dependencies]
 libc = "0.2"
-num-complex = { version = "0.1.35", default-features = false }
+num-complex = { version = "0.1.40", default-features = false }
 tensorflow-sys = { version = "0.9.0", path = "tensorflow-sys" }
 
 [dev-dependencies]
