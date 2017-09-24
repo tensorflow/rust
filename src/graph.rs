@@ -569,15 +569,6 @@ pub struct Input<'a> {
     pub index: c_int,
 }
 
-impl<'a> Input<'a> {
-    fn to_c(&self) -> tf::TF_Input {
-        tf::TF_Input {
-            oper: self.operation.inner,
-            index: self.index,
-        }
-    }
-}
-
 ////////////////////////
 
 /// A `Output` is one end of a graph edge.

@@ -738,7 +738,7 @@ impl TensorType for String {
     }
 
     fn pack(data: &[Self], buffer: &mut [u8]) -> Result<()> {
-        let mut offsets: &mut [u64] =
+        let offsets: &mut [u64] =
             unsafe { slice::from_raw_parts_mut(buffer.as_mut_ptr() as *mut u64, data.len()) };
         let base_offset = mem::size_of::<u64>() * data.len();
         let mut offset = base_offset;
@@ -916,7 +916,7 @@ impl<T: TensorType> AnyTensor for Tensor<T> {
                     self.dims.len() as c_int,
                     packed_size,
                 );
-                let mut buf =
+                let buf =
                     slice::from_raw_parts_mut(tf::TF_TensorData(inner) as *mut u8, packed_size);
                 T::pack(data, buf)?;
                 inner

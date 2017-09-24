@@ -332,7 +332,7 @@ impl<'l> StepWithGraph<'l> {
     }
 
     fn drop_output_tensors(&mut self) {
-        for mut tensor in &mut self.output_tensors {
+        for tensor in &mut self.output_tensors {
             // TODO: Is TF_DeleteTensor NULL safe?
             if !tensor.is_null() {
                 unsafe {
