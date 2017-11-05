@@ -835,6 +835,24 @@ impl<T: TensorType> Tensor<T> {
         }
     }
 
+    /// Sets (copies) the tensor values to the provided ones.
+    /// 
+    /// ```
+    /// # use tensorflow::Tensor;
+    /// let a = Tensor::new(&[2, 2]).with_values(&[0_i32, 1, 2, 3]).unwrap();
+    /// ```
+    pub fn with_values(mut self, value: &[T]) -> Result<Self> {
+        if self.len() != value.len() { 
+            return Err(invalid_arg!(
+                "length of values array ({}) is not equal to tensor total elements ({})", 
+                value.len(), self.len()));
+        }
+        for (e, v) in self.iter_mut().zip(value) {
+            e.clone_from(v);
+        }
+        Ok(self)
+    }
+
     /// Returns the tensor's dimensions.
     pub fn dims(&self) -> &[u64] {
         &self.dims
@@ -957,9 +975,9 @@ impl<T: TensorType> From<T> for Tensor<T> {
 
 impl<'a, T: TensorType> From<&'a [T]> for Tensor<T> {
     fn from(value: &'a [T]) -> Self {
-        let mut tensor = Tensor::new(&[value.len() as u64]);
-        for i in 0..value.len() {
-            tensor[i] = value[i].clone();
+        let mut tensor: Tensor<T> = Tensor::new(&[value.len() as u64]);
+        for (e, v) in tensor.iter_mut().zip(value) {
+            e.clone_from(v);
         }
         tensor
     }
