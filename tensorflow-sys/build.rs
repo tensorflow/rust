@@ -18,13 +18,15 @@ use flate2::read::GzDecoder;
 use semver::Version;
 use tar::Archive;
 
+const FRAMEWORK_LIBRARY: &'static str = "tensorflow_framework";
 const LIBRARY: &'static str = "tensorflow";
 const REPOSITORY: &'static str = "https://github.com/tensorflow/tensorflow.git";
+const FRAMEWORK_TARGET: &'static str = "tensorflow:libtensorflow_framework.so";
 const TARGET: &'static str = "tensorflow:libtensorflow.so";
 // `VERSION` and `TAG` are separate because the tag is not always `'v' + VERSION`.
-const VERSION: &'static str = "1.3.0";
-const TAG: &'static str = "v1.3.0";
-const MIN_BAZEL: &'static str = "0.3.2";
+const VERSION: &'static str = "1.4.0";
+const TAG: &'static str = "v1.4.0";
+const MIN_BAZEL: &'static str = "0.5.4";
 
 macro_rules! get(($name:expr) => (ok!(env::var($name))));
 macro_rules! ok(($expression:expr) => ($expression.unwrap()));
@@ -112,19 +114,22 @@ fn install_prebuilt() {
     // Extract the tarball.
     let unpacked_dir = download_dir.join(base_name);
     let lib_dir = unpacked_dir.join("lib");
+    let framework_library_file = format!("lib{}.so", FRAMEWORK_LIBRARY);
     let library_file = format!("lib{}.so", LIBRARY);
+    let framework_library_full_path = lib_dir.join(&framework_library_file);
     let library_full_path = lib_dir.join(&library_file);
-    if !library_full_path.exists() {
+    if !framework_library_full_path.exists() || !library_full_path.exists() {
         extract(file_name, &unpacked_dir);
     }
 
-    //run("find", |command| command); // TODO: remove
-    run("ls", |command| {
-        command.arg("-l").arg(lib_dir.to_str().unwrap())
-        }); // TODO: remove
-
+    println!("cargo:rustc-link-lib=dylib={}", FRAMEWORK_LIBRARY);
     println!("cargo:rustc-link-lib=dylib={}", LIBRARY);
     let output = PathBuf::from(&get!("OUT_DIR"));
+    let new_framework_library_full_path = output.join(&framework_library_file);
+    if new_framework_library_full_path.exists() {
+        log!("File {} already exists, deleting.", new_framework_library_full_path.display());
+        std::fs::remove_file(&new_framework_library_full_path).unwrap();
+    }
     let new_library_full_path = output.join(&library_file);
     if new_library_full_path.exists() {
         log!("File {} already exists, deleting.", new_library_full_path.display());
@@ -133,6 +138,8 @@ fn install_prebuilt() {
 
     log!("Copying {} to {}...", library_full_path.display(), new_library_full_path.display());
     std::fs::copy(&library_full_path, &new_library_full_path).unwrap();
+    log!("Copying {} to {}...", framework_library_full_path.display(), new_framework_library_full_path.display());
+    std::fs::copy(&framework_library_full_path, &new_framework_library_full_path).unwrap();
     println!("cargo:rustc-link-search={}", output.display());
 }
 
@@ -149,10 +156,12 @@ fn build_from_src() {
         log!("Creating directory {:?}", lib_dir);
         fs::create_dir(lib_dir.clone()).unwrap();
     }
+    let framework_library_path = lib_dir.join(format!("lib{}.so", FRAMEWORK_LIBRARY));
+    log_var!(framework_library_path);
     let library_path = lib_dir.join(format!("lib{}.so", LIBRARY));
     log_var!(library_path);
-    if library_path.exists() {
-        log!("{:?} already exists, not building", library_path);
+    if library_path.exists() && framework_library_path.exists() {
+        log!("{:?} and {:?} already exist, not building", library_path, framework_library_path);
     } else {
         if let Err(e) = check_bazel() {
             println!("cargo:error=Bazel must be installed at version {} or greater. (Error: {})",
@@ -160,6 +169,8 @@ fn build_from_src() {
                      e);
             process::exit(1);
         }
+        let framework_target_path = &FRAMEWORK_TARGET.replace(":", "/");
+        log_var!(framework_target_path);
         let target_path = &TARGET.replace(":", "/");
         log_var!(target_path);
         if !Path::new(&source.join(".git")).exists() {
@@ -192,11 +203,15 @@ fn build_from_src() {
                 .arg("--copt=-march=native")
                 .arg(TARGET)
         });
+        let framework_target_bazel_bin = source.join("bazel-bin").join(framework_target_path);
+        log!("Copying {:?} to {:?}", framework_target_bazel_bin, framework_library_path);
+        fs::copy(framework_target_bazel_bin, framework_library_path).unwrap();
         let target_bazel_bin = source.join("bazel-bin").join(target_path);
         log!("Copying {:?} to {:?}", target_bazel_bin, library_path);
         fs::copy(target_bazel_bin, library_path).unwrap();
     }
 
+    println!("cargo:rustc-link-lib=dylib={}", FRAMEWORK_LIBRARY);
     println!("cargo:rustc-link-lib=dylib={}", LIBRARY);
     println!("cargo:rustc-link-search={}", lib_dir.display());
 }
