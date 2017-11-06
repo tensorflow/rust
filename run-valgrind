@@ -17,6 +17,9 @@ tensorflow_version=1.4.0
 valgrind_log=valgrind.log
 truncate --size=0 "$valgrind_log"
 
+rel_log=$(readlink -f "$PWD"/"$valgrind_log")
+echo "Writing valgrind output to $rel_log."
+
 # Disable jemalloc in TensorFlow.
 export TF_NEED_JEMALLOC=0
 
@@ -24,25 +27,40 @@ export TF_NEED_JEMALLOC=0
 export TF_RUST_BUILD_FROM_SRC=true
 
 # Don't need to rebuild the world, and `cargo clean --package tensorflow-sys` doesn't seem to do the job.
-rm -rf tensorflow-sys/target
+rm -rf tensorflow-sys/target/*
+rm -rf target/debug/build/tensorflow-sys-*
+
+echo "Building libtensorflow.so"
 
 # This is the very expensive step.
-cargo +nightly build --features=nightly -p tensorflow-sys -vvv
+cargo +nightly build --features=nightly -p tensorflow-sys -vvv -j 1
 
 # Run valgrind against all the things.
 export LD_LIBRARY_PATH="$(echo "$PWD"/target/debug/build/tensorflow-sys-*/out/lib-v$tensorflow_version)"
 echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
+echo "Testing tensorflow examples"
 for example in addition regression expressions; do
     cargo +nightly build --features='nightly tensorflow_unstable' --example="$example"
     valgrind --leak-check=full target/debug/examples/"$example" >> "$valgrind_log" 2>&1
 done
 
-rel_log=$(readlink -f "$PWD"/"$valgrind_log")
-if grep -i 'error summary' < "$valgrind_log" > /dev/null; then
-    echo "Error running valgrind.  See $rel_log"
-fi
+# Build tests and grab the path to the test binary, because we can't properly run valgrind through cargo.
+# The filename parsing is a hack because we're not really parsing JSON.
+test_binary=$(cargo +nightly test --features='nightly tensorflow_unstable' --message-format=json --no-run \
+                    2>/dev/null | \
+                  sed -En 's|^.*"([^"]*/target/debug/tensorflow-[^"]*)".*$|\1|p')
+
+# Run valgrind against the tests.
+echo "Testing tests"
+valgrind --leak-check=full "$test_binary" >> "$valgrind_log" 2>&1
 
 # Aggregate results.
-lost_bytes=$(awk '/(definitely|indirectly) lost:/{sum+=gensub(",","","g",$4)}END{print sum}' < "$valgrind_log")
-echo "Lost bytes: $lost_bytes"
-echo "For details, see $rel_log"
+printf "Definitely lost bytes: %9d\n" $(awk '/definitely lost:/{sum+=gensub(",","","g",$4)}END{print sum}' < "$valgrind_log")
+printf "Indirectly lost bytes: %9d\n" $(awk '/indirectly lost:/{sum+=gensub(",","","g",$4)}END{print sum}' < "$valgrind_log")
+printf "Possibly lost bytes:   %9d\n" $(awk '/possibly lost:/{sum+=gensub(",","","g",$4)}END{print sum}' < "$valgrind_log")
+printf "Still reachable bytes: %9d\n" $(awk '/still reachable:/{sum+=gensub(",","","g",$4)}END{print sum}' < "$valgrind_log")
+
+if egrep -i -q "invalid read|invalid write" "$valgrind_log"; then
+    echo "Invalid operations detected"
+    exit 1
+fi
