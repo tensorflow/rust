@@ -19,4 +19,5 @@ cargo run --example regression
 cargo run --features tensorflow_unstable --example expressions
 cargo doc -vv --features tensorflow_unstable
 # TODO(#66): Re-enable: (cd tensorflow-sys && cargo test -vv -j 1)
+(cd tensorflow-sys && cargo run --example multiplication)
 (cd tensorflow-sys && cargo doc -vv)

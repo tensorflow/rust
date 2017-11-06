@@ -44,6 +44,12 @@ for example in addition regression expressions; do
     valgrind --leak-check=full target/debug/examples/"$example" >> "$valgrind_log" 2>&1
 done
 
+echo "Testing tensorflow-sys examples"
+for example in multiplication; do
+    cargo +nightly build --features='nightly' --example="$example" -p tensorflow-sys
+    (cd tensorflow-sys && valgrind --leak-check=full ../target/debug/examples/"$example") >> "$valgrind_log" 2>&1
+done
+
 # Build tests and grab the path to the test binary, because we can't properly run valgrind through cargo.
 # The filename parsing is a hack because we're not really parsing JSON.
 test_binary=$(cargo +nightly test --features='nightly tensorflow_unstable' --message-format=json --no-run \
