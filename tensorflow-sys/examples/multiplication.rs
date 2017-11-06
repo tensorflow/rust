@@ -6,7 +6,9 @@ extern crate tensorflow_sys as ffi;
 
 use libc::{c_int, int64_t, size_t};
 use std::ffi::{CStr, CString};
+use std::mem;
 use std::path::Path;
+use std::os::raw::c_void;
 
 macro_rules! nonnull(
     ($pointer:expr) => ({
@@ -32,17 +34,25 @@ fn main() {
     unsafe {
         let options = nonnull!(ffi::TF_NewSessionOptions());
         let status = nonnull!(ffi::TF_NewStatus());
-        let session = nonnull!(ffi::TF_NewDeprecatedSession(options, status));
+        let graph = nonnull!(ffi::TF_NewGraph());
 
-        let graph = read("examples/assets/multiplication.pb"); // c = a * b
-        ffi::TF_ExtendGraph(session,
-                            graph.as_ptr() as *const _,
-                            graph.len() as size_t,
-                            status);
+        let graph_def = read("examples/assets/multiplication.pb"); // c = a * b
+        let opts = nonnull!(ffi::TF_NewImportGraphDefOptions());
+        let graph_def_buf = ffi::TF_Buffer{
+            data: graph_def.as_ptr() as *const c_void,
+            length: graph_def.len(),
+            data_deallocator: None,
+        };
+        ffi::TF_GraphImportGraphDef(graph,
+                                    &graph_def_buf,
+                                    opts,
+                                    status);
+        ffi::TF_DeleteImportGraphDefOptions(opts);
         ok!(status);
 
-        let mut input_names = vec![];
+        let session = nonnull!(ffi::TF_NewSession(graph, options, status));
         let mut inputs = vec![];
+        let mut input_tensors: Vec<*const ffi::TF_Tensor> = vec![];
 
         let name = CString::new("a").unwrap();
         let mut data = vec![1f32, 2.0, 3.0];
@@ -51,12 +61,16 @@ fn main() {
                                                 dims.as_ptr(),
                                                 dims.len() as c_int,
                                                 data.as_mut_ptr() as *mut _,
-                                                data.len() as size_t,
+                                                data.len() as size_t * mem::size_of::<f32>(),
                                                 Some(noop),
                                                 null_mut()));
 
-        input_names.push(name.as_ptr());
-        inputs.push(tensor);
+        let input_op = nonnull!(ffi::TF_GraphOperationByName(graph, name.as_ptr()));
+        inputs.push(ffi::TF_Output{
+            oper: input_op,
+            index: 0,
+        });
+        input_tensors.push(tensor);
 
         let name = CString::new("b").unwrap();
         let mut data = vec![4f32, 5.0, 6.0];
@@ -65,47 +79,56 @@ fn main() {
                                                 dims.as_ptr(),
                                                 dims.len() as c_int,
                                                 data.as_mut_ptr() as *mut _,
-                                                data.len() as size_t,
+                                                data.len() as size_t as size_t * mem::size_of::<f32>(),
                                                 Some(noop),
                                                 null_mut()));
 
-        input_names.push(name.as_ptr());
-        inputs.push(tensor);
+        let input_op = nonnull!(ffi::TF_GraphOperationByName(graph, name.as_ptr()));
+        inputs.push(ffi::TF_Output{
+            oper: input_op,
+            index: 0,
+        });
+        input_tensors.push(tensor);
 
-        let mut output_names = vec![];
         let mut outputs = vec![];
+        let mut output_tensors = vec![];
 
         let name = CString::new("c").unwrap();
 
-        output_names.push(name.as_ptr());
-        outputs.push(null_mut());
+        let output_op = nonnull!(ffi::TF_GraphOperationByName(graph, name.as_ptr()));
+        outputs.push(ffi::TF_Output{
+            oper: output_op,
+            index: 0,
+        });
+        output_tensors.push(null_mut());
 
         let mut target_names = vec![];
 
-        ffi::TF_Run(session,
+        ffi::TF_SessionRun(session,
                     null(),
-                    input_names.as_mut_ptr(),
                     inputs.as_mut_ptr(),
-                    input_names.len() as c_int,
-                    output_names.as_mut_ptr(),
+                    input_tensors.as_ptr(),
+                    inputs.len() as c_int,
                     outputs.as_mut_ptr(),
-                    output_names.len() as c_int,
+                    output_tensors.as_mut_ptr(),
+                    outputs.len() as c_int,
                     target_names.as_mut_ptr(),
                     target_names.len() as c_int,
                     null_mut(),
                     status);
         ok!(status);
 
-        let tensor = nonnull!(outputs[0]);
+        let tensor = nonnull!(output_tensors[0]);
         let data = nonnull!(ffi::TF_TensorData(tensor)) as *const f32;
         let data = from_raw_parts(data, ffi::TF_TensorByteSize(tensor) / size_of::<f32>());
 
         assert_eq!(data, &[1.0 * 4.0, 2.0 * 5.0, 3.0 * 6.0]);
 
-        ffi::TF_CloseDeprecatedSession(session, status);
+        ffi::TF_CloseSession(session, status);
 
+        ffi::TF_DeleteSession(session, status);
+        ffi::TF_DeleteGraph(graph);
         ffi::TF_DeleteTensor(tensor);
-        ffi::TF_DeleteDeprecatedSession(session, status);
         ffi::TF_DeleteStatus(status);
         ffi::TF_DeleteSessionOptions(options);
     }
