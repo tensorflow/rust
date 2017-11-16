@@ -1009,6 +1009,24 @@ impl<'a> OperationDescription<'a> {
 
 ////////////////////////
 
+/// Options that can be passed during function creation.
+#[derive(Debug)]
+#[allow(missing_copy_implementations)]
+pub struct FunctionOptions {
+    inner: *mut tf::TF_FunctionOptions,
+}
+
+impl FunctionOptions {
+    /// Creates a blank set of options.
+    fn new() -> Self {
+        FunctionOptions {
+            inner: ptr::null_mut(), // TODO: Use real options when they become available
+        }
+    }
+}
+
+////////////////////////
+
 #[cfg(test)]
 mod tests {
     use super::*;
