@@ -810,6 +810,12 @@ impl<T: TensorType> Tensor<T> {
                     dims.len() as c_int,
                     total * mem::size_of::<T>(),
                 );
+
+                // Zero-initialize allocated memory.
+                let data = tf::TF_TensorData(inner);
+                let byte_size = tf::TF_TensorByteSize(inner);
+                libc::memset(data as *mut libc::c_void, 0, byte_size);
+
                 Tensor {
                     inner: Cell::new(inner),
                     data: Cell::new(tf::TF_TensorData(inner) as *mut T),
@@ -1125,6 +1131,17 @@ mod tests {
         let mut tensor = <Tensor<f32>>::new(&[2, 3]);
         assert_eq!(tensor.len(), 6);
         tensor[0] = 1.0;
+    }
+
+    #[test]
+    fn test_tensor_native_type_zero() {
+        let mut tensor = <Tensor<i32>>::new(&[1000]);
+
+        // Checking against null-initialized slice/vector makes
+        // the unit test succeed often on repeated runs.
+        for v in tensor.as_ref() {
+            assert_eq!(0, *v);
+        }
     }
 
     #[test]
