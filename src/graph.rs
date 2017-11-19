@@ -1027,6 +1027,18 @@ impl FunctionOptions {
 
 ////////////////////////
 
+/// Function is a grouping of operations with defined inputs and outputs.
+/// Once created and added to graphs, functions can be invoked by creating an
+/// operation whose operation type matches the function name.
+#[derive(Debug)]
+pub struct Function {
+    inner: *mut tf::TF_Function,
+}
+
+impl_drop!(Function, TF_DeleteFunction);
+
+////////////////////////
+
 #[cfg(test)]
 mod tests {
     use super::*;
