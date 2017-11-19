@@ -1066,6 +1066,25 @@ impl Function {
             Ok(Function { inner })
         }
     }
+
+    /// Sets function attribute named `attr_name` to value stored in `proto`. If
+    /// this attribute is already set to another value, it is overriden. `proto`
+    /// should be a sequence of bytes representing a binary serialization of an
+    /// AttrValue protocol buffer.
+    pub fn set_attr_value_proto(&mut self, attr_name: &str, proto: &[u8]) -> Result<()> {
+        let status = Status::new();
+        let attr_name_cstr = CString::new(attr_name)?;
+        unsafe {
+            tf::TF_FunctionSetAttrValueProto(
+                self.inner,
+                attr_name_cstr.as_ptr(),
+                proto.as_ptr() as *const std_c_void,
+                proto.len(),
+                status.inner,
+            );
+        }
+        status.into_result()
+    }
 }
 
 ////////////////////////
