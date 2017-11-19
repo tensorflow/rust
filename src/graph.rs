@@ -1037,6 +1037,22 @@ pub struct Function {
 
 impl_drop!(Function, TF_DeleteFunction);
 
+impl Function {
+    /// Returns a serialized representation of the function (as a FunctionDef
+    /// protocol message).
+    ///
+    /// May fail on very large graphs in the future.
+    pub fn to_function_def(&self) -> Result<Vec<u8>> {
+        let status = Status::new();
+        unsafe {
+            let mut buf = Buffer::from_ptr(ptr::null_mut(), 0);
+            tf::TF_FunctionToFunctionDef(self.inner, buf.inner_mut(), status.inner);
+            status.into_result()?;
+            Ok(buf.into())
+        }
+    }
+}
+
 ////////////////////////
 
 #[cfg(test)]
