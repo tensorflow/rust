@@ -1051,6 +1051,21 @@ impl Function {
             Ok(buf.into())
         }
     }
+
+    /// Construct and return the function whose FunctionDef representation is
+    /// serialized in `proto`. Returns a newly created `Function` instance.
+    pub fn import_function_def(proto: &[u8]) -> Result<Function> {
+        let status = Status::new();
+        unsafe {
+            let inner = tf::TF_FunctionImportFunctionDef(
+                proto.as_ptr() as *const std_c_void,
+                proto.len(),
+                status.inner,
+            );
+            status.into_result()?;
+            Ok(Function { inner })
+        }
+    }
 }
 
 ////////////////////////
