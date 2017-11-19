@@ -1085,6 +1085,25 @@ impl Function {
         }
         status.into_result()
     }
+
+    /// Returns the binary-serialized AttrValue proto representation of the
+    /// value of the `attr_name` attr of the function. If `attr_name` attribute
+    /// is not present, returns an error.
+    pub fn get_attr_value_proto(&self, attr_name: &str) -> Result<Vec<u8>> {
+        let status = Status::new();
+        let attr_name_cstr = CString::new(attr_name)?;
+        unsafe {
+            let mut buf = Buffer::from_ptr(ptr::null_mut(), 0);
+            tf::TF_FunctionGetAttrValueProto(
+                self.inner,
+                attr_name_cstr.as_ptr(),
+                buf.inner_mut(),
+                status.inner,
+            );
+            status.into_result()?;
+            Ok(buf.into())
+        }
+    }
 }
 
 ////////////////////////
