@@ -38,6 +38,11 @@ macro_rules! log {
 macro_rules! log_var(($var:ident) => (log!(concat!(stringify!($var), " = {:?}"), $var)));
 
 fn main() {
+    if let Ok(prebuilt) = env::var("TF_RUST_PREBUILT_DIR") {
+        use_prebuilt(&PathBuf::from(prebuilt));
+        return;
+    }
+
     if pkg_config::find_library(LIBRARY).is_ok() {
         log!("Returning early because {} was already found", LIBRARY);
         return;
@@ -270,4 +275,11 @@ fn check_bazel() -> Result<(), Box<Error>> {
         return Err("Did not find version number in `bazel version` output.".into());
     }
     Ok(())
+}
+
+fn use_prebuilt(path: &Path) {
+    log!("Using prebuilt at {}", path.display());
+
+    println!("cargo:rustc-link-lib=dylib={}", LIBRARY);
+    println!("cargo:rustc-link-search={}", path.display());
 }

@@ -10,9 +10,12 @@
         unused_import_braces,
         unused_qualifications)]
 
+#![cfg_attr(windows, feature(alloc, allocator_api))]
+
 extern crate libc;
 extern crate num_complex;
 extern crate tensorflow_sys as tf;
+#[cfg(windows)] extern crate alloc;
 
 use libc::{c_int, c_uint};
 use num_complex::Complex;
@@ -735,7 +738,7 @@ impl TensorType for String {
     }
 
     fn pack(data: &[Self], buffer: &mut [u8]) -> Result<()> {
-        let mut offsets: &mut [u64] =
+        let offsets: &mut [u64] =
             unsafe { slice::from_raw_parts_mut(buffer.as_mut_ptr() as *mut u64, data.len()) };
         let base_offset = mem::size_of::<u64>() * data.len();
         let mut offset = base_offset;
@@ -937,7 +940,7 @@ impl<T: TensorType> AnyTensor for Tensor<T> {
                     self.dims.len() as c_int,
                     packed_size,
                 );
-                let mut buf =
+                let buf =
                     slice::from_raw_parts_mut(tf::TF_TensorData(inner) as *mut u8, packed_size);
                 T::pack(data, buf)?;
                 inner
