@@ -68,7 +68,6 @@ impl<T: TensorType> Buffer<T> {
             if len > 0 {
                 panic!("Failed to allocate {} aligned by {}", alloc_size, align);
             }
-            (*inner).data_deallocator = Some(do_nothing);
         } else {
             (*inner).data_deallocator = Some(deallocator);
         }
@@ -145,9 +144,6 @@ impl<T: TensorType> BufferTrait for Buffer<T> {
 
 unsafe extern "C" fn deallocator(data: *mut std_c_void, _length: size_t) {
     aligned_alloc::aligned_free(data as *mut ());
-}
-
-unsafe extern "C" fn do_nothing(data: *mut std_c_void, _length: size_t) {
 }
 
 impl<T: TensorType> Drop for Buffer<T> {
