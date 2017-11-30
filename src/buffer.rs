@@ -64,12 +64,10 @@ impl<T: TensorType> Buffer<T> {
 
         // We cannot be sure that we can deallocate always.
         // For Linux it would be OK, but for Windows it's not.
-        if ptr.is_null() {
-            if len > 0 {
-                panic!("Failed to allocate {} aligned by {}", alloc_size, align);
-            }
-        } else {
+        if !ptr.is_null() {
             (*inner).data_deallocator = Some(deallocator);
+        } else if len > 0 {
+            panic!("Failed to allocate {} aligned by {}", alloc_size, align);
         }
         (*inner).data = ptr as *mut std_c_void;
         (*inner).length = len;

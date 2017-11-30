@@ -20,7 +20,6 @@ use tar::Archive;
 
 const FRAMEWORK_LIBRARY: &'static str = "tensorflow_framework";
 const LIBRARY: &'static str = "tensorflow";
-const WINDOWS_LIB: &'static str = "tensorflow.lib";
 const REPOSITORY: &'static str = "https://github.com/tensorflow/tensorflow.git";
 const FRAMEWORK_TARGET: &'static str = "tensorflow:libtensorflow_framework.so";
 const TARGET: &'static str = "tensorflow:libtensorflow.so";
@@ -40,7 +39,7 @@ macro_rules! log_var(($var:ident) => (log!(concat!(stringify!($var), " = {:?}"),
 
 fn main() {
     if check_windows_lib() {
-        log!("Returning early because {} was already found", WINDOWS_LIB);
+        log!("Returning early because {} was already found", LIBRARY);
         return;
     }
 
@@ -68,9 +67,10 @@ fn check_windows_lib() -> bool {
 
 #[cfg(target_env = "msvc")]
 fn check_windows_lib() -> bool {
+    let windows_lib: &str = &format!("{}.lib", LIBRARY);
     if let Ok(path) = env::var("PATH") {
         for p in path.split(";") {
-            let path = Path::new(p).join(WINDOWS_LIB);
+            let path = Path::new(p).join(windows_lib);
             if path.exists() {
                 println!("cargo:rustc-link-lib=dylib={}", LIBRARY);
                 println!("cargo:rustc-link-search=native={}", p);
