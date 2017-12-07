@@ -38,6 +38,11 @@ macro_rules! log {
 macro_rules! log_var(($var:ident) => (log!(concat!(stringify!($var), " = {:?}"), $var)));
 
 fn main() {
+    if check_windows_lib() {
+        log!("Returning early because {} was already found", LIBRARY);
+        return;
+    }
+
     if pkg_config::find_library(LIBRARY).is_ok() {
         log!("Returning early because {} was already found", LIBRARY);
         return;
@@ -47,11 +52,33 @@ fn main() {
         Ok(s) => s == "true",
         Err(_) => false,
     };
+
     if !force_src && env::consts::ARCH == "x86_64" && (env::consts::OS == "linux" || env::consts::OS == "macos") {
         install_prebuilt();
     } else {
         build_from_src();
     }
+}
+
+#[cfg(not(target_env = "msvc"))]
+fn check_windows_lib() -> bool {
+    false
+}
+
+#[cfg(target_env = "msvc")]
+fn check_windows_lib() -> bool {
+    let windows_lib: &str = &format!("{}.lib", LIBRARY);
+    if let Ok(path) = env::var("PATH") {
+        for p in path.split(";") {
+            let path = Path::new(p).join(windows_lib);
+            if path.exists() {
+                println!("cargo:rustc-link-lib=dylib={}", LIBRARY);
+                println!("cargo:rustc-link-search=native={}", p);
+                return true
+            }
+        }
+    }
+    false
 }
 
 fn remove_suffix(value: &mut String, suffix: &str) {

@@ -1,4 +1,5 @@
 extern crate tensorflow_sys as tf;
+extern crate aligned_alloc;
 
 use libc;
 use libc::c_void;
@@ -59,16 +60,17 @@ impl<T: TensorType> Buffer<T> {
         // posix_memalign requires the alignment to be at least sizeof(void*).
         // TODO: Use alloc::heap::allocate once it's stable, or at least
         // libc::aligned_alloc once it exists
-        let mut ptr = ptr::null::<c_void>() as *mut c_void;
-        let err = libc::posix_memalign(&mut ptr, align, alloc_size);
-        if err != 0 {
-            let c_msg = libc::strerror(err);
-            let msg = CStr::from_ptr(c_msg);
-            panic!("Failed to allocate: {}", msg.to_str().unwrap());
+        let mut ptr = aligned_alloc::aligned_alloc(alloc_size, align);
+
+        // We cannot be sure that we can deallocate always.
+        // For Linux it would be OK, but for Windows it's not.
+        if !ptr.is_null() {
+            (*inner).data_deallocator = Some(deallocator);
+        } else if len > 0 {
+            panic!("Failed to allocate {} aligned by {}", alloc_size, align);
         }
         (*inner).data = ptr as *mut std_c_void;
         (*inner).length = len;
-        (*inner).data_deallocator = Some(deallocator);
         Buffer {
             inner: inner,
             owned: true,
@@ -139,7 +141,7 @@ impl<T: TensorType> BufferTrait for Buffer<T> {
 }
 
 unsafe extern "C" fn deallocator(data: *mut std_c_void, _length: size_t) {
-    libc::free(data as *mut c_void);
+    aligned_alloc::aligned_free(data as *mut ());
 }
 
 impl<T: TensorType> Drop for Buffer<T> {
