@@ -973,7 +973,7 @@ impl<T: TensorType> DerefMut for Tensor<T> {
 
 impl<T: TensorType> From<T> for Tensor<T> {
     fn from(value: T) -> Self {
-        let mut tensor = Tensor::new(&[1]);
+        let mut tensor = Tensor::new(&[]);
         tensor[0] = value;
         tensor
     }
