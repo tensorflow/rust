@@ -485,8 +485,8 @@ impl SessionOptions {
 
     /// Set the config.
     ///
-    /// `config` should be a serialized brain.ConfigProto proto.
-    /// Returns an error if config was not parsed successfully as a ConfigProto.
+    /// `config` should be a serialized [`ConfigProto` proto](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/protobuf/config.proto).
+    /// Returns an error if config was not parsed successfully as a `ConfigProto`.
     pub fn set_config(&mut self, config: &[u8]) -> Result<()> {
         let mut status = Status::new();
         unsafe {
@@ -842,15 +842,15 @@ impl<T: TensorType> Tensor<T> {
     }
 
     /// Sets (copies) the tensor values to the provided ones.
-    /// 
+    ///
     /// ```
     /// # use tensorflow::Tensor;
     /// let a = Tensor::new(&[2, 2]).with_values(&[0_i32, 1, 2, 3]).unwrap();
     /// ```
     pub fn with_values(mut self, value: &[T]) -> Result<Self> {
-        if self.len() != value.len() { 
+        if self.len() != value.len() {
             return Err(invalid_arg!(
-                "length of values array ({}) is not equal to tensor total elements ({})", 
+                "length of values array ({}) is not equal to tensor total elements ({})",
                 value.len(), self.len()));
         }
         for (e, v) in self.iter_mut().zip(value) {
