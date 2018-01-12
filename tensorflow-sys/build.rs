@@ -222,12 +222,20 @@ fn build_from_src() {
                 .arg("yes ''|./configure"));
             File::create(configure_hint_file).unwrap();
         }
+        // Allows us to pass in --incompatible_load_argument_is_label=false
+        // to work around https://github.com/tensorflow/tensorflow/issues/15492
+        let bazel_args_string = if let Ok(args) = env::var("TF_RUST_BAZEL_OPTS") {
+            args
+        } else {
+            "".to_string()
+        };
         run("bazel", |command| {
             command.current_dir(&source)
                 .arg("build")
                 .arg(format!("--jobs={}", get!("NUM_JOBS")))
                 .arg("--compilation_mode=opt")
                 .arg("--copt=-march=native")
+                .args(bazel_args_string.split_whitespace())
                 .arg(TARGET)
         });
         let framework_target_bazel_bin = source.join("bazel-bin").join(framework_target_path);

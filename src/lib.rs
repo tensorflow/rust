@@ -350,6 +350,9 @@ c_enum!("Type of a single tensor element.", TF_DataType, DataType {
 
   /// TensorFlow Resource (name, container, device,...)
   value Resource = 20,
+
+  /// A dynamic type similar to std::any::Any.
+  value Variant = 21,
 });
 
 ////////////////////////

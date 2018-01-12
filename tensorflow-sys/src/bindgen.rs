@@ -22,11 +22,11 @@ pub const __USE_FORTIFY_LEVEL: ::std::os::raw::c_uint = 0;
 pub const _STDC_PREDEF_H: ::std::os::raw::c_uint = 1;
 pub const __STDC_IEC_559__: ::std::os::raw::c_uint = 1;
 pub const __STDC_IEC_559_COMPLEX__: ::std::os::raw::c_uint = 1;
-pub const __STDC_ISO_10646__: ::std::os::raw::c_uint = 201505;
+pub const __STDC_ISO_10646__: ::std::os::raw::c_uint = 201605;
 pub const __STDC_NO_THREADS__: ::std::os::raw::c_uint = 1;
 pub const __GNU_LIBRARY__: ::std::os::raw::c_uint = 6;
 pub const __GLIBC__: ::std::os::raw::c_uint = 2;
-pub const __GLIBC_MINOR__: ::std::os::raw::c_uint = 23;
+pub const __GLIBC_MINOR__: ::std::os::raw::c_uint = 24;
 pub const _SYS_CDEFS_H: ::std::os::raw::c_uint = 1;
 pub const __WORDSIZE: ::std::os::raw::c_uint = 64;
 pub const __WORDSIZE_TIME64_COMPAT32: ::std::os::raw::c_uint = 1;
@@ -115,6 +115,7 @@ pub enum TF_DataType {
     TF_COMPLEX128 = 18,
     TF_HALF = 19,
     TF_RESOURCE = 20,
+    TF_VARIANT = 21,
 }
 extern "C" {
     pub fn TF_DataTypeSize(dt: TF_DataType) -> usize;
@@ -362,6 +363,16 @@ fn bindgen_test_layout_TF_Output() {
 }
 impl Clone for TF_Output {
     fn clone(&self) -> Self { *self }
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct TF_Function {
+    _unused: [u8; 0],
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct TF_FunctionOptions {
+    _unused: [u8; 0],
 }
 extern "C" {
     pub fn TF_GraphSetTensorShape(graph: *mut TF_Graph, output: TF_Output,
@@ -866,6 +877,11 @@ extern "C" {
                                   status: *mut TF_Status);
 }
 extern "C" {
+    pub fn TF_GraphCopyFunction(g: *mut TF_Graph, func: *const TF_Function,
+                                grad: *const TF_Function,
+                                status: *mut TF_Status);
+}
+extern "C" {
     pub fn TF_OperationToNodeDef(oper: *mut TF_Operation,
                                  output_node_def: *mut TF_Buffer,
                                  status: *mut TF_Status);
@@ -949,6 +965,51 @@ extern "C" {
                            ny: ::std::os::raw::c_int, x: *mut TF_Output,
                            nx: ::std::os::raw::c_int, dx: *mut TF_Output,
                            status: *mut TF_Status, dy: *mut TF_Output);
+}
+extern "C" {
+    pub fn TF_GraphToFunction(fn_body: *const TF_Graph,
+                              fn_name: *const ::std::os::raw::c_char,
+                              append_hash_to_fn_name: ::std::os::raw::c_uchar,
+                              num_opers: ::std::os::raw::c_int,
+                              opers: *const *const TF_Operation,
+                              ninputs: ::std::os::raw::c_int,
+                              inputs: *const TF_Output,
+                              noutputs: ::std::os::raw::c_int,
+                              outputs: *const TF_Output,
+                              output_names:
+                                  *const *const ::std::os::raw::c_char,
+                              opts: *const TF_FunctionOptions,
+                              description: *const ::std::os::raw::c_char,
+                              status: *mut TF_Status) -> *mut TF_Function;
+}
+extern "C" {
+    pub fn TF_FunctionToFunctionDef(func: *mut TF_Function,
+                                    output_func_def: *mut TF_Buffer,
+                                    status: *mut TF_Status);
+}
+extern "C" {
+    pub fn TF_FunctionImportFunctionDef(proto: *const ::std::os::raw::c_void,
+                                        proto_len: usize,
+                                        status: *mut TF_Status)
+     -> *mut TF_Function;
+}
+extern "C" {
+    pub fn TF_FunctionSetAttrValueProto(func: *mut TF_Function,
+                                        attr_name:
+                                            *const ::std::os::raw::c_char,
+                                        proto: *const ::std::os::raw::c_void,
+                                        proto_len: usize,
+                                        status: *mut TF_Status);
+}
+extern "C" {
+    pub fn TF_FunctionGetAttrValueProto(func: *mut TF_Function,
+                                        attr_name:
+                                            *const ::std::os::raw::c_char,
+                                        output_attr_value: *mut TF_Buffer,
+                                        status: *mut TF_Status);
+}
+extern "C" {
+    pub fn TF_DeleteFunction(func: *mut TF_Function);
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]

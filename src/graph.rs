@@ -1009,6 +1009,105 @@ impl<'a> OperationDescription<'a> {
 
 ////////////////////////
 
+/// Options that can be passed during function creation.
+#[derive(Debug)]
+#[allow(missing_copy_implementations)]
+pub struct FunctionOptions {
+    inner: *mut tf::TF_FunctionOptions,
+}
+
+impl FunctionOptions {
+    /// Creates a blank set of options.
+    fn new() -> Self {
+        FunctionOptions {
+            inner: ptr::null_mut(), // TODO: Use real options when they become available
+        }
+    }
+}
+
+////////////////////////
+
+/// Function is a grouping of operations with defined inputs and outputs.
+/// Once created and added to graphs, functions can be invoked by creating an
+/// operation whose operation type matches the function name.
+#[derive(Debug)]
+pub struct Function {
+    inner: *mut tf::TF_Function,
+}
+
+impl_drop!(Function, TF_DeleteFunction);
+
+impl Function {
+    /// Returns a serialized representation of the function (as a FunctionDef
+    /// protocol message).
+    ///
+    /// May fail on very large graphs in the future.
+    pub fn to_function_def(&self) -> Result<Vec<u8>> {
+        let status = Status::new();
+        unsafe {
+            let mut buf = Buffer::from_ptr(ptr::null_mut(), 0);
+            tf::TF_FunctionToFunctionDef(self.inner, buf.inner_mut(), status.inner);
+            status.into_result()?;
+            Ok(buf.into())
+        }
+    }
+
+    /// Construct and return the function whose FunctionDef representation is
+    /// serialized in `proto`. Returns a newly created `Function` instance.
+    pub fn import_function_def(proto: &[u8]) -> Result<Function> {
+        let status = Status::new();
+        unsafe {
+            let inner = tf::TF_FunctionImportFunctionDef(
+                proto.as_ptr() as *const std_c_void,
+                proto.len(),
+                status.inner,
+            );
+            status.into_result()?;
+            Ok(Function { inner })
+        }
+    }
+
+    /// Sets function attribute named `attr_name` to value stored in `proto`. If
+    /// this attribute is already set to another value, it is overriden. `proto`
+    /// should be a sequence of bytes representing a binary serialization of an
+    /// AttrValue protocol buffer.
+    pub fn set_attr_value_proto(&mut self, attr_name: &str, proto: &[u8]) -> Result<()> {
+        let status = Status::new();
+        let attr_name_cstr = CString::new(attr_name)?;
+        unsafe {
+            tf::TF_FunctionSetAttrValueProto(
+                self.inner,
+                attr_name_cstr.as_ptr(),
+                proto.as_ptr() as *const std_c_void,
+                proto.len(),
+                status.inner,
+            );
+        }
+        status.into_result()
+    }
+
+    /// Returns the binary-serialized AttrValue proto representation of the
+    /// value of the `attr_name` attr of the function. If `attr_name` attribute
+    /// is not present, returns an error.
+    pub fn get_attr_value_proto(&self, attr_name: &str) -> Result<Vec<u8>> {
+        let status = Status::new();
+        let attr_name_cstr = CString::new(attr_name)?;
+        unsafe {
+            let mut buf = Buffer::from_ptr(ptr::null_mut(), 0);
+            tf::TF_FunctionGetAttrValueProto(
+                self.inner,
+                attr_name_cstr.as_ptr(),
+                buf.inner_mut(),
+                status.inner,
+            );
+            status.into_result()?;
+            Ok(buf.into())
+        }
+    }
+}
+
+////////////////////////
+
 #[cfg(test)]
 mod tests {
     use super::*;
