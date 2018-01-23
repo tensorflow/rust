@@ -86,22 +86,10 @@ macro_rules! impl_drop {
 
 ////////////////////////
 
-// We would like to use the pattern:
-//   ($doc:expr, $c_name:ident, $enum_name:ident
-//      { $( $(#[$attr:meta])* $name:ident = $num:expr),* })
-// so the enum variants would look like:
-//   /// Denotes a foo.
-//   Foo = 1,
-// but the compiler complains:
-//   error: local ambiguity: multiple parsing options: built-in NTs ident ('name')
-//   or 1 other option.
-// This is https://github.com/rust-lang/rust/issues/24189. Rather than make our
-// macro rules inscrutably convoluted, we'll just make our grammar slightly
-// noisier and insert a 'value' token before the variant name.
 macro_rules! c_enum {
-  ($doc:expr, $c_name:ident, $enum_name:ident { $( $(#[$attr:meta])* value
+  ($c_name:ident, $(#[$enum_attr:meta])* $enum_name:ident { $( $(#[$attr:meta])*
       $name:ident = $num:expr),* }) => {
-    #[doc = $doc]
+    $(#[$enum_attr])*
     #[derive(PartialEq,Eq,PartialOrd,Ord,Debug,Copy,Clone)]
     pub enum $enum_name {
       /// Represents an unrecognized value.
@@ -151,9 +139,21 @@ macro_rules! c_enum {
       }
     }
   };
-  ($doc:expr, $c_name:ident, $enum_name:ident { $( $(#[$attr:meta])* value
+  ($c_name:ident, $(#[$enum_attr:meta])* $enum_name:ident { $( $(#[$attr:meta])*
       $name:ident = $num:expr,)* }) => {
-    c_enum!($doc, $c_name, $enum_name { $( $(#[$attr])* value $name = $num),* });
+    c_enum!($c_name, $(#[$enum_attr])* $enum_name { $( $(#[$attr])* $name = $num),* });
+  };
+  // Deprecated pattern.
+  ($doc:expr, $c_name:ident, $(#[$enum_attr:meta])* $enum_name:ident { $( $(#[$attr:meta])* value
+      $name:ident = $num:expr),* }) => {
+    c_enum!($c_name, #[doc = $doc] $(#[$enum_attr])*
+            $enum_name { $( $(#[$attr])* $name = $num),* });
+  };
+  // Deprecated pattern.
+  ($doc:expr, $c_name:ident, $(#[$enum_attr:meta])* $enum_name:ident { $( $(#[$attr:meta])* value
+      $name:ident = $num:expr,)* }) => {
+    c_enum!($c_name, #[doc = $doc] $(#[$enum_attr])*
+            $enum_name { $( $(#[$attr])* $name = $num),* });
   }
 }
 
