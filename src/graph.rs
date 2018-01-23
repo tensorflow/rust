@@ -1,5 +1,6 @@
 extern crate tensorflow_sys as tf;
 
+use libc::c_char;
 use libc::c_float;
 use libc::c_int;
 use libc::c_uchar;
@@ -308,6 +309,181 @@ impl Graph {
                .iter()
                .map(|x| Output::from_c(self, x))
                .collect())
+    }
+
+    /// Adds a copy of function `func` and optionally its gradient function
+    /// `grad` to the graph. Once `func`/`grad` is added to the graph, it can be
+    /// called by creating an operation using the function's name. Any changes
+    /// to `func`/`grad` (including deleting it) done after this method returns,
+    /// won't affect the copy of `func`/`grad` in the graph. If `func` or `grad`
+    /// are already in the graph, `copy_function` has no effect on them, but can
+    /// establish the function->gradient relationship between them if `func`
+    /// does not already have a gradient. If `func` already has a gradient
+    /// different from `grad`, an error is returned.
+    ///
+    /// If `grad` is None and `func` is not in the graph, `func` is added
+    /// without a gradient. If `grad` is None and `func` is in the graph,
+    /// `copy_function` is a noop. `grad` must have appropriate signature as
+    /// described in the doc of GradientDef in
+    /// tensorflow/core/framework/function.proto.
+    ///
+    /// If successful, returns () and `func` and `grad` are added to the graph.
+    /// Otherwise, an error is returned and the graph is unmodified.
+    pub fn copy_function(&mut self, func: &Function, grad: Option<&Function>) -> Result<()> {
+        let mut status = Status::new();
+        unsafe {
+            tf::TF_GraphCopyFunction(
+                self.inner(),
+                func.inner,
+                match grad {
+                    None => ptr::null(),
+                    Some(g) => g.inner,
+                },
+                status.inner(),
+            );
+        }
+        status.into_result()
+    }
+
+    /// Create a `Function` from a `Graph`.
+    ///
+    /// # Arguments
+    ///
+    /// * `fn_name` - the name of the new `Function`. Should match the operation
+    ///   name (OpDef.name) regexp [A-Z][A-Za-z0-9_.\\-/]*. If
+    ///   `append_hash_to_fn_name` is false, `fn_name` must be distinct from
+    ///   other function and operation names (at least those registered in
+    ///   graphs where this function will be used).
+    /// * `append_hash_to_fn_name` - If true, the actual name of the function
+    ///   will be `fn_name` appended with
+    ///   '_<hash_of_this_function's_definition>'. If false, the function's name
+    ///   will be `fn_name`.
+    /// * `opers` - Array of operations to become the body of the function or
+    ///   null.
+    ///   * If `None`, all the operations in the graph will become part of the
+    ///     function except operations referenced in `inputs`. These operations
+    ///     must have a single output (these operations are typically
+    ///     placeholders created for the sole purpose of representing an input.
+    ///     We can relax this constraint if there are compelling use cases).
+    ///   * If `Some`, all operations in it will become part of the function. In
+    ///     particular, no automatic skipping of dummy input operations is
+    ///     performed.
+    /// * `inputs` - array of `Output`s that specify the inputs to the function.
+    ///   The names used for function inputs are normalized names of the
+    ///   operations (usually placeholders) pointed to by `inputs`. These
+    ///   operation names should start with a letter. Normalization will convert
+    ///   all letters to lowercase and non-alphanumeric characters to '_' to
+    ///   make resulting names match the "[a-z][a-z0-9_]*" pattern for operation
+    ///   argument names. `inputs` cannot contain the same tensor twice.
+    /// * `outputs` - array of `Output`s that specify the outputs of the
+    ///   function. `outputs` can contain the same tensor more than once.
+    /// * `output_names` - The names of the function's outputs. `output_names`
+    ///   array must either have the same length as `outputs` or be None. In the
+    ///   former case, the names should match the regular expression for ArgDef
+    ///   names - "[a-z][a-z0-9_]*". In the latter case, names for outputs will
+    ///   be generated automatically.
+    /// * `opts` - various options for the function, e.g. XLA's inlining control.
+    /// * `description` - optional human-readable description of this function.
+    ///
+    /// Note that when the same `Output` is listed as both an input and an
+    /// output, the corresponding function's output will equal to this input,
+    /// instead of the original node's output.
+    ///
+    /// Callers must also satisfy the following constraints:
+    ///
+    /// * `inputs` cannot refer to `Output`s within a control flow context. For
+    ///   example, one cannot use the output of "switch" node as input.
+    /// * `inputs` and `outputs` cannot have reference types. Reference types
+    ///   are not exposed through C API and are being replaced with Resources.
+    ///   We support reference types inside function's body to support legacy
+    ///   code. Do not use them in new code.
+    /// * Every node in the function's body must have all of its inputs
+    ///   (including control inputs). In other words, for every node in the
+    ///   body, each input must be either listed in `inputs` or must come from
+    ///   another node in the body. In particular, it is an error to have a
+    ///   control edge going from a node outside of the body into a node in the
+    ///   body. This applies to control edges going from nodes referenced in
+    ///   `inputs` to nodes in the body when the former nodes are not in the
+    ///   body (automatically skipped or not included in explicitly specified
+    ///   body).
+    ///
+    /// # Returns
+    ///
+    ///  A newly created `Function` instance.
+    pub fn to_function<S: AsRef<str>>(
+        &self,
+        fn_name: &str,
+        append_hash_to_fn_name: bool,
+        opers: Option<&[&Operation]>,
+        inputs: &[Output],
+        outputs: &[Output],
+        output_names: Option<&[S]>,
+        opts: &FunctionOptions,
+        description: Option<&str>,
+    ) -> Result<Function> {
+        let fn_name_cstr = CString::new(fn_name)?;
+        let num_opers: c_int = if let &Some(ops) = &opers {
+            ops.len() as c_int
+        } else {
+            -1
+        };
+        #[allow(trivial_casts)]
+        let c_opers: Option<Vec<_>> =
+            opers.map(|s| s.iter().map(|op| op.inner as *const _).collect());
+        let c_opers_ptr: *const *const tf::TF_Operation = if let &Some(ref ops) = &c_opers {
+            ops.as_ptr()
+        } else {
+            ptr::null()
+        };
+        let c_inputs: Vec<_> = inputs.iter().map(|x| x.to_c()).collect();
+        let c_outputs: Vec<_> = outputs.iter().map(|x| x.to_c()).collect();
+        let output_names_cstrs: Option<::std::result::Result<Vec<CString>, NulError>> =
+            output_names.map(|slice: &[S]| {
+                slice.iter().map(|s: &S| CString::new(s.as_ref())).collect()
+            });
+        let output_names_cstrs: Option<Vec<CString>> = match output_names_cstrs {
+            None => None,
+            Some(r) => Some(r?),
+        };
+        // Don't use Option::map because the CStrings need to outlive the
+        // pointers and Option::map consumes the Option.
+        let output_names_ptrs: Option<Vec<*const c_char>> = match &output_names_cstrs {
+            &None => None,
+            &Some(ref slice) => Some(slice.iter().map(|s| s.as_ptr()).collect()),
+        };
+        let output_names_ptrs_ptr = match &output_names_ptrs {
+            &None => ptr::null(),
+            &Some(ref v) => v.as_ptr(),
+        };
+        let description_cstr = match description {
+            None => None,
+            Some(d) => Some(CString::new(d)?),
+        };
+        let description_ptr: *const c_char = if let &Some(ref cstr) = &description_cstr {
+            cstr.as_ptr()
+        } else {
+            ptr::null()
+        };
+        let status = Status::new();
+        let f = unsafe {
+            tf::TF_GraphToFunction(
+                self.inner(),
+                fn_name_cstr.as_ptr(),
+                if append_hash_to_fn_name { 1 } else { 0 },
+                num_opers,
+                c_opers_ptr,
+                c_inputs.len() as c_int,
+                c_inputs.as_ptr(),
+                c_outputs.len() as c_int,
+                c_outputs.as_ptr(),
+                output_names_ptrs_ptr,
+                opts.inner,
+                description_ptr,
+                status.inner,
+            )
+        };
+        status.into_result()?;
+        Ok(Function { inner: f })
     }
 }
 
@@ -1173,5 +1349,68 @@ mod tests {
                           })
             .unwrap();
         assert_eq!(shape, Shape(Some(vec![Some(3_i64), Some(3_i64)])));
+    }
+
+    #[test]
+    fn graph_to_function() {
+        let mut g = Graph::new();
+        let x = {
+            let mut nd = g.new_operation("Placeholder", "x").unwrap();
+            nd.set_attr_type("dtype", DataType::Float).unwrap();
+            nd.set_attr_shape("shape", &Shape(Some(vec![]))).unwrap();
+            nd.finish().unwrap()
+        };
+        let two = {
+            let mut nd = g.new_operation("Const", "two").unwrap();
+            nd.set_attr_type("dtype", DataType::Float).unwrap();
+            let mut value = Tensor::new(&[1]);
+            value[0] = 2.0f32;
+            nd.set_attr_tensor("value", value).unwrap();
+            nd.finish().unwrap()
+        };
+        let y = {
+            let mut nd = g.new_operation("Mul", "y").unwrap();
+            nd.add_input(Output {
+                operation: two.clone(),
+                index: 0,
+            });
+            nd.add_input(Output {
+                operation: x.clone(),
+                index: 0,
+            });
+            nd.finish().unwrap()
+        };
+        let opers = vec![&y];
+        let inputs = vec![
+            Output {
+                operation: x.clone(),
+                index: 0,
+            },
+            Output {
+                operation: two.clone(),
+                index: 0,
+            },
+        ];
+        let outputs = vec![
+            Output {
+                operation: y.clone(),
+                index: 0,
+            },
+        ];
+        let output_names = vec!["result"];
+        let description = "Multiplies by 2";
+        let opts = FunctionOptions::new();
+        let f = g.to_function(
+            "times_two",
+            false,
+            Some(&opers),
+            &inputs,
+            &outputs,
+            Some(&output_names),
+            &opts,
+            Some(description),
+        ).unwrap();
+        let mut g2 = Graph::new();
+        g2.copy_function(&f, None).unwrap();
     }
 }
