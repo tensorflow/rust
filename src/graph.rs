@@ -4,6 +4,7 @@ use libc::c_char;
 use libc::c_float;
 use libc::c_int;
 use libc::c_uchar;
+use libc::c_uint;
 use libc::c_void;
 use libc::size_t;
 use std;
@@ -524,6 +525,25 @@ impl<'a> Iterator for OperationIter<'a> {
         }
     }
 }
+
+////////////////////////
+
+c_enum!(
+    TF_AttrType,
+    // TODO: Provide docs on variants once they are added to c_api.h.
+    /// Describes the type of the value of an attribute on an operation.
+    #[allow(missing_docs)]
+    AttrType {
+        String = 0,
+        Int = 1,
+        Float = 2,
+        Bool = 3,
+        Type = 4,
+        Shape = 5,
+        Tensor = 6,
+        Placeholder = 7,
+        Func = 8,
+    });
 
 ////////////////////////
 
