@@ -19,6 +19,7 @@ tensorflow-sys = { version = "0.9.0", path = "tensorflow-sys" }
 random = "0.12"
 
 [features]
+tensorflow_gpu = ["tensorflow-sys/tensorflow_gpu"]
 tensorflow_unstable = []
 # This is for testing purposes; users should not use this.
 nightly = []
