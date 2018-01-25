@@ -868,13 +868,6 @@ where
     }
 }
 
-impl<T> TensorDataCRepr<T>
-where
-    T: TensorType,
-{
-    fn drop_tensor(&mut self) {}
-}
-
 impl<T: TensorType> Deref for TensorDataCRepr<T> {
     type Target = [T];
 
