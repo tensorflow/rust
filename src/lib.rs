@@ -805,6 +805,9 @@ where
     phantom: PhantomData<T>,
 }
 
+unsafe impl<T> Send for TensorDataCRepr<T> where T: TensorType {}
+unsafe impl<T> Sync for TensorDataCRepr<T> where T: TensorType {}
+
 impl<T: TensorType> Drop for TensorDataCRepr<T> {
     fn drop(&mut self) {
         if !self.inner.is_null() {
