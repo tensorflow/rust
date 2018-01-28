@@ -523,7 +523,7 @@ pub type Result<T> = std::result::Result<T, Status>;
 /// types (such as `bool` and `String`) don't implement them and we need to
 /// supply custom implementations.
 pub trait TensorType: Default + Clone + Display + Debug + 'static {
-    /// Tensor representation this type. Normally `TensorDataCRepr` for types
+    /// Tensor representation for this type. Normally `TensorDataCRepr` for types
     /// that have the same representation in Rust; or `TensorDataNoCRepr` for
     /// types where the Rust and C representations differ.
     type InnerType: TensorInner<Self>;
@@ -1028,10 +1028,8 @@ impl<T: TensorType> DerefMut for TensorDataNoCRepr<T> {
     #[inline]
     fn deref_mut(&mut self) -> &mut [T] {
         self.unpack();
-        if !T::is_repr_c() {
-            // If the slice is modified, the tensor is stale.
-            self.drop_tensor();
-        }
+        // If the slice is modified, the tensor is stale.
+        self.drop_tensor();
         unsafe { slice::from_raw_parts_mut(self.data.get(), self.data_count) }
     }
 }
@@ -1048,7 +1046,7 @@ impl<T: TensorType> DerefMut for TensorDataNoCRepr<T> {
 /// ```
 #[derive(Debug)]
 pub struct Tensor<T: TensorType> {
-    inner: <T as TensorType>::InnerType,
+    inner: T::InnerType,
     dims: Vec<u64>,
 }
 
@@ -1063,7 +1061,7 @@ impl<T: TensorType> Tensor<T> {
     /// The data is initialized to zeros.
     pub fn new(dims: &[u64]) -> Self {
         Tensor {
-            inner: <T as TensorType>::InnerType::new_inner(dims),
+            inner: T::InnerType::new_inner(dims),
             dims: Vec::from(dims),
         }
     }
@@ -1093,16 +1091,13 @@ impl<T: TensorType> Tensor<T> {
 
     // Wraps a TF_Tensor. Returns None if types don't match.
     unsafe fn from_tf_tensor(tensor: *mut tf::TF_Tensor) -> Option<Self> {
-        if DataType::from_c(tf::TF_TensorType(tensor)) != T::data_type() {
-            return None;
-        }
         let mut dims = Vec::with_capacity(tf::TF_NumDims(tensor) as usize);
         for i in 0..dims.capacity() {
             dims.push(tf::TF_Dim(tensor, i as c_int) as u64);
         }
 
         Some(Tensor {
-            inner: <T as TensorType>::InnerType::from_tf_tensor(tensor)?,
+            inner: T::InnerType::from_tf_tensor(tensor)?,
             dims: dims,
         })
     }
