@@ -866,7 +866,7 @@ where
         })
     }
 
-    fn as_mut_ptr(&self, dims: &Vec<u64>) -> Result<*mut tf::TF_Tensor> {
+    fn as_mut_ptr(&self, _dims: &Vec<u64>) -> Result<*mut tf::TF_Tensor> {
         assert!(!self.inner.is_null());
         Ok(self.inner)
     }
