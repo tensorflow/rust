@@ -778,15 +778,19 @@ trait AnyTensor: Debug {
 
 ////////////////////////
 
-trait TensorInner<T>: Debug
+/// Inner representation of `Tensor`s.
+pub trait TensorInner<T>: Debug
 where
     Self: Sized + Deref<Target = [T]> + DerefMut<Target = [T]>,
 {
+    /// Return the inner representation of a tensor with the given
+    /// dimensions.
     fn new_inner(dims: &[u64]) -> Self;
 
     /// Wraps a TF_Tensor. Returns None if types don't match.
     unsafe fn from_tf_tensor(tensor: *mut tf::TF_Tensor) -> Option<Self>;
 
+    /// Return a mutable pointer to the C tensor.
     fn as_mut_ptr(&self, dims: &Vec<u64>) -> Result<*mut tf::TF_Tensor>;
 }
 
