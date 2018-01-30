@@ -13,6 +13,7 @@ use std::ffi::CString;
 use std::ffi::NulError;
 use std::os::raw::c_void as std_c_void;
 use std::ptr;
+use std::slice;
 use std::str::Utf8Error;
 use std::sync::Arc;
 use super::AnyTensor;
@@ -804,6 +805,71 @@ impl Operation {
             } else {
                 Err(status)
             }
+        }
+    }
+
+    /// Returns the value of the attribute `attr_name`.
+    pub fn get_attr_string(&self, attr_name: &str) -> Result<String> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        unsafe {
+            let metadata =
+                tf::TF_OperationGetAttrMetadata(self.inner, c_attr_name.as_ptr(), status.inner());
+            if !status.is_ok() {
+                return Err(status);
+            }
+            let mut v: Vec<u8> = Vec::with_capacity(metadata.total_size as usize);
+            v.set_len(metadata.total_size as usize);
+            tf::TF_OperationGetAttrString(
+                self.inner,
+                c_attr_name.as_ptr(),
+                v.as_mut_ptr() as *mut std::os::raw::c_void,
+                metadata.total_size as usize,
+                status.inner(),
+            );
+            if !status.is_ok() {
+                return Err(status);
+            }
+            Ok(CString::new(v)?.into_string()?)
+        }
+    }
+
+    /// Get the list of strings in the value of the attribute `attr_name`.
+    pub fn get_attr_string_list(&self, attr_name: &str) -> Result<Vec<String>> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        unsafe {
+            let metadata =
+                tf::TF_OperationGetAttrMetadata(self.inner, c_attr_name.as_ptr(), status.inner());
+            if !status.is_ok() {
+                return Err(status);
+            }
+            let mut storage: Vec<u8> = Vec::with_capacity(metadata.total_size as usize);
+            storage.set_len(metadata.total_size as usize);
+            let mut values: Vec<*const std::os::raw::c_char> =
+                Vec::with_capacity(metadata.list_size as usize);
+            let mut lengths: Vec<size_t> = Vec::with_capacity(metadata.list_size as usize);
+            tf::TF_OperationGetAttrStringList(
+                self.inner,
+                c_attr_name.as_ptr(),
+                values.as_mut_ptr() as *mut *mut std::os::raw::c_void,
+                lengths.as_mut_ptr(),
+                metadata.list_size as i32,
+                storage.as_mut_ptr() as *mut std::os::raw::c_void,
+                metadata.total_size as usize,
+                status.inner(),
+            );
+            if !status.is_ok() {
+                return Err(status);
+            }
+            values.set_len(metadata.list_size as usize);
+            lengths.set_len(metadata.list_size as usize);
+            let mut strings = Vec::with_capacity(metadata.list_size as usize);
+            for i in 0..metadata.list_size as usize {
+                let s = slice::from_raw_parts(values[i] as *const u8, lengths[i]);
+                strings.push(std::str::from_utf8(s)?.to_string());
+            }
+            Ok(strings)
         }
     }
 }

@@ -22,6 +22,7 @@ use std::cmp::Ordering;
 use std::error::Error;
 use std::ffi::CStr;
 use std::ffi::CString;
+use std::ffi::IntoStringError;
 use std::ffi::NulError;
 use std::fmt::Debug;
 use std::fmt::Display;
@@ -444,6 +445,15 @@ impl From<NulError> for Status {
 impl From<Utf8Error> for Status {
     fn from(_e: Utf8Error) -> Self {
         invalid_arg!("String contained invalid UTF-8")
+    }
+}
+
+impl From<IntoStringError> for Status {
+    fn from(e: IntoStringError) -> Self {
+        invalid_arg!(
+            "Error converting C string to Rust string: {}",
+            e.description()
+        )
     }
 }
 
