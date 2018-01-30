@@ -872,6 +872,51 @@ impl Operation {
             Ok(strings)
         }
     }
+
+    /// Returns the value of the attribute `attr_name`.
+    pub fn get_attr_int(&self, attr_name: &str) -> Result<i64> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        let mut value: i64 = 0;
+        unsafe {
+            tf::TF_OperationGetAttrInt(
+                self.inner,
+                c_attr_name.as_ptr(),
+                &mut value,
+                status.inner(),
+            );
+        }
+        if !status.is_ok() {
+            return Err(status);
+        }
+        Ok(value)
+    }
+
+    /// Get the list of ints in the value of the attribute `attr_name`.
+    pub fn get_attr_int_list(&self, attr_name: &str) -> Result<Vec<i64>> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        unsafe {
+            let metadata =
+                tf::TF_OperationGetAttrMetadata(self.inner, c_attr_name.as_ptr(), status.inner());
+            if !status.is_ok() {
+                return Err(status);
+            }
+            let mut values: Vec<i64> = Vec::with_capacity(metadata.list_size as usize);
+            values.set_len(metadata.list_size as usize);
+            tf::TF_OperationGetAttrIntList(
+                self.inner,
+                c_attr_name.as_ptr(),
+                values.as_mut_ptr(),
+                metadata.list_size as c_int,
+                status.inner(),
+            );
+            if !status.is_ok() {
+                return Err(status);
+            }
+            Ok(values)
+        }
+    }
 }
 
 impl OperationTrait for Operation {
