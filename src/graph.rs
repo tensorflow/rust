@@ -545,6 +545,47 @@ c_enum!(
         Func = 8,
     });
 
+/// AttrMetadata describes the value of an attribute on an operation.
+#[derive(Clone, Debug, Copy)]
+pub struct AttrMetadata {
+    /// Length of the list, or None if the attribute is not a list.
+    pub list_size: Option<i64>,
+
+    /// Type of elements of the list if the attribute is a list.
+    /// Type of the single value stored in the attribute if not a list.
+    pub attr_type: AttrType,
+
+    /// Total size the attribute value.
+    /// The units of total_size depend on list_size and attr_type.
+    /// 1. If attr_type == AttrType::String and list_size == None
+    ///    then total_size is the byte size of the string valued attribute.
+    /// 2. If attr_type == AttrType::String and list_size == Some(_)
+    ///    then total_size is the cumulative byte size of all the strings in the
+    ///    list.
+    /// 3. If attr_type == AttrType::Shape and list_size == None
+    ///    then total_size is the number of dimensions of the shape valued
+    ///    attribute, or -1 if its rank is unknown.
+    /// 4. If attr_type == AttrType::SHAPE and list_size == Some(_)
+    ///    then total_size is the cumulative number of dimensions of all shapes
+    ///    in the list.
+    /// 4. Otherwise, total_size is undefined.
+    pub total_size: i64,
+}
+
+impl AttrMetadata {
+    fn from_c(metadata: tf::TF_AttrMetadata) -> Self {
+        AttrMetadata {
+            list_size: if metadata.is_list == 0 {
+                None
+            } else {
+                Some(metadata.list_size)
+            },
+            attr_type: AttrType::from_c(metadata.type_),
+            total_size: metadata.total_size,
+        }
+    }
+}
+
 ////////////////////////
 
 /// An `Operation` is a node in a `Graph`.
@@ -748,6 +789,21 @@ impl Operation {
                     }
                 })
                 .collect()
+        }
+    }
+
+    /// Returns metadata about the value of the attribute `attr_name`.
+    pub fn get_attr_metadata(&self, attr_name: &str) -> Result<AttrMetadata> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        unsafe {
+            let metadata =
+                tf::TF_OperationGetAttrMetadata(self.inner, c_attr_name.as_ptr(), status.inner());
+            if status.is_ok() {
+                Ok(AttrMetadata::from_c(metadata))
+            } else {
+                Err(status)
+            }
         }
     }
 }
