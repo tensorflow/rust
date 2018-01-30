@@ -35,6 +35,9 @@ struct GraphImpl {
     inner: *mut tf::TF_Graph,
 }
 
+unsafe impl Send for GraphImpl {}
+unsafe impl Sync for GraphImpl {}
+
 impl Drop for GraphImpl {
     /// Graph will be deleted once no more Sessions are referencing it.
     fn drop(&mut self) {
@@ -531,6 +534,9 @@ pub struct Operation {
     inner: *mut tf::TF_Operation,
     gimpl: Arc<GraphImpl>,
 }
+
+unsafe impl Send for Operation {}
+unsafe impl Sync for Operation {}
 
 impl Operation {
     /// Returns the name of the operation.
