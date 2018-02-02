@@ -1010,6 +1010,51 @@ impl Operation {
             Ok(values.iter().map(|f| *f != 0).collect())
         }
     }
+
+    /// Returns the value of the attribute `attr_name`.
+    pub fn get_attr_type(&self, attr_name: &str) -> Result<DataType> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        let mut value: tf::TF_DataType = tf::TF_FLOAT;
+        unsafe {
+            tf::TF_OperationGetAttrType(
+                self.inner,
+                c_attr_name.as_ptr(),
+                &mut value,
+                status.inner(),
+            );
+        }
+        if !status.is_ok() {
+            return Err(status);
+        }
+        Ok(DataType::from_c(value))
+    }
+
+    /// Get the list of types in the value of the attribute `attr_name`.
+    pub fn get_attr_type_list(&self, attr_name: &str) -> Result<Vec<DataType>> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        unsafe {
+            let metadata =
+                tf::TF_OperationGetAttrMetadata(self.inner, c_attr_name.as_ptr(), status.inner());
+            if !status.is_ok() {
+                return Err(status);
+            }
+            let mut values: Vec<tf::TF_DataType> = Vec::with_capacity(metadata.list_size as usize);
+            values.set_len(metadata.list_size as usize);
+            tf::TF_OperationGetAttrTypeList(
+                self.inner,
+                c_attr_name.as_ptr(),
+                values.as_mut_ptr(),
+                metadata.list_size as c_int,
+                status.inner(),
+            );
+            if !status.is_ok() {
+                return Err(status);
+            }
+            Ok(values.iter().map(|x| DataType::from_c(*x)).collect())
+        }
+    }
 }
 
 impl OperationTrait for Operation {
