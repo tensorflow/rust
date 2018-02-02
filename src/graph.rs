@@ -1055,6 +1055,87 @@ impl Operation {
             Ok(values.iter().map(|x| DataType::from_c(*x)).collect())
         }
     }
+
+    /// Returns the value of the attribute `attr_name`.
+    pub fn get_attr_shape(&self, attr_name: &str) -> Result<Shape> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        unsafe {
+            let metadata =
+                tf::TF_OperationGetAttrMetadata(self.inner, c_attr_name.as_ptr(), status.inner());
+            if !status.is_ok() {
+                return Err(status);
+            }
+            if metadata.total_size == -1 {
+                return Ok(Shape(None));
+            }
+            let mut v: Vec<i64> = Vec::with_capacity(metadata.total_size as usize);
+            v.set_len(metadata.total_size as usize);
+            tf::TF_OperationGetAttrShape(
+                self.inner,
+                c_attr_name.as_ptr(),
+                v.as_mut_ptr(),
+                metadata.total_size as c_int,
+                status.inner(),
+            );
+            if !status.is_ok() {
+                return Err(status);
+            }
+            Ok(Shape(Some(
+                v.iter()
+                    .map(|x| if *x < 0 { None } else { Some(*x) })
+                    .collect(),
+            )))
+        }
+    }
+
+    /// Get the list of shapes in the value of the attribute `attr_name`.
+    pub fn get_attr_shape_list(&self, attr_name: &str) -> Result<Vec<Shape>> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        unsafe {
+            let metadata =
+                tf::TF_OperationGetAttrMetadata(self.inner, c_attr_name.as_ptr(), status.inner());
+            if !status.is_ok() {
+                return Err(status);
+            }
+            let mut storage: Vec<i64> = Vec::with_capacity(metadata.total_size as usize);
+            storage.set_len(metadata.total_size as usize);
+            let mut dims: Vec<*mut i64> = Vec::with_capacity(metadata.list_size as usize);
+            let mut num_dims: Vec<c_int> = Vec::with_capacity(metadata.list_size as usize);
+            tf::TF_OperationGetAttrShapeList(
+                self.inner,
+                c_attr_name.as_ptr(),
+                dims.as_mut_ptr(),
+                num_dims.as_mut_ptr(),
+                metadata.list_size as i32,
+                storage.as_mut_ptr(),
+                metadata.total_size as c_int,
+                status.inner(),
+            );
+            if !status.is_ok() {
+                return Err(status);
+            }
+            dims.set_len(metadata.list_size as usize);
+            num_dims.set_len(metadata.list_size as usize);
+            let mut shapes = Vec::with_capacity(metadata.list_size as usize);
+            for i in 0..metadata.list_size as usize {
+                shapes.push(Shape(if num_dims[i] == -1 {
+                    None
+                } else {
+                    let mut v = Vec::new();
+                    for j in 0..num_dims[i] {
+                        v.push(match *dims[i].offset(j as isize) {
+                            -1 => None,
+                            x => Some(x),
+                        });
+                    }
+                    Some(v)
+                }));
+            }
+            Ok(shapes)
+        }
+    }
 }
 
 impl OperationTrait for Operation {
