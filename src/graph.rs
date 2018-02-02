@@ -964,6 +964,52 @@ impl Operation {
             Ok(values.iter().map(|f| *f as f32).collect())
         }
     }
+
+    /// Returns the value of the attribute `attr_name`.
+    pub fn get_attr_bool(&self, attr_name: &str) -> Result<bool> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        let mut value: c_uchar = 0;
+        unsafe {
+            tf::TF_OperationGetAttrBool(
+                self.inner,
+                c_attr_name.as_ptr(),
+                &mut value,
+                status.inner(),
+            );
+        }
+        if !status.is_ok() {
+            return Err(status);
+        }
+        Ok(value != 0)
+    }
+
+    /// Get the list of bools in the value of the attribute `attr_name`.
+    pub fn get_attr_bool_list(&self, attr_name: &str) -> Result<Vec<bool>> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        unsafe {
+            let metadata =
+                tf::TF_OperationGetAttrMetadata(self.inner, c_attr_name.as_ptr(), status.inner());
+            if !status.is_ok() {
+                return Err(status);
+            }
+            let mut values: Vec<c_uchar> = Vec::with_capacity(metadata.list_size as usize);
+            values.set_len(metadata.list_size as usize);
+            tf::TF_OperationGetAttrBoolList(
+                self.inner,
+                c_attr_name.as_ptr(),
+                values.as_mut_ptr(),
+                metadata.list_size as c_int,
+                status.inner(),
+            );
+            if !status.is_ok() {
+                return Err(status);
+            }
+            #[allow(trivial_numeric_casts)]
+            Ok(values.iter().map(|f| *f != 0).collect())
+        }
+    }
 }
 
 impl OperationTrait for Operation {
