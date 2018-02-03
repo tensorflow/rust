@@ -1188,6 +1188,66 @@ impl Operation {
                 .collect())
         }
     }
+
+    /// Returns the value of the attribute `attr_name`. Returns an error if the
+    /// type of the tensor value does not match the type of the generic
+    /// argument.
+    pub fn get_attr_tensor<T: TensorType>(&self, attr_name: &str) -> Result<Tensor<T>> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        unsafe {
+            let mut c_tensor: *mut tf::TF_Tensor = ptr::null_mut();
+            tf::TF_OperationGetAttrTensor(
+                self.inner,
+                c_attr_name.as_ptr(),
+                &mut c_tensor,
+                status.inner(),
+            );
+            if !status.is_ok() {
+                return Err(status);
+            }
+            match Tensor::from_tf_tensor(c_tensor) {
+                None => Err(invalid_arg!("Tensor types do not match")),
+                Some(t) => Ok(t),
+            }
+        }
+    }
+
+    /// Get the list of tensors in the value of the attribute `attr_name`.
+    /// Returns an error if the type of the tensor value does not match the type
+    /// of the generic argument.
+    pub fn get_attr_tensor_list<T: TensorType>(&self, attr_name: &str) -> Result<Vec<Tensor<T>>> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        unsafe {
+            let metadata =
+                tf::TF_OperationGetAttrMetadata(self.inner, c_attr_name.as_ptr(), status.inner());
+            if !status.is_ok() {
+                return Err(status);
+            }
+            let mut c_tensors = Vec::with_capacity(metadata.list_size as usize);
+            for _ in 0..metadata.list_size {
+                c_tensors.push(ptr::null_mut());
+            }
+            tf::TF_OperationGetAttrTensorList(
+                self.inner,
+                c_attr_name.as_ptr(),
+                c_tensors.as_mut_ptr(),
+                metadata.list_size as c_int,
+                status.inner(),
+            );
+            if !status.is_ok() {
+                return Err(status);
+            }
+            c_tensors
+                .iter()
+                .map(|t| match Tensor::from_tf_tensor(*t) {
+                    None => Err(invalid_arg!("Tensor types do not match")),
+                    Some(t) => Ok(t),
+                })
+                .collect()
+        }
+    }
 }
 
 impl OperationTrait for Operation {
@@ -1618,7 +1678,9 @@ impl<'a> OperationDescription<'a> {
         let c_attr_name = CString::new(attr_name)?;
         let mut status = Status::new();
         unsafe {
-            let maybe_ptrs: Result<_> = value.into_iter().map(|x| x.inner()).collect();
+            // These have to stay alive durng the TF_SetAttrTensorList call.
+            let tensors: Vec<_> = value.into_iter().collect();
+            let maybe_ptrs: Result<_> = tensors.iter().map(|x| x.inner()).collect();
             let ptrs: Vec<*mut tf::TF_Tensor> = maybe_ptrs?;
             tf::TF_SetAttrTensorList(self.inner,
                                      c_attr_name.as_ptr(),
