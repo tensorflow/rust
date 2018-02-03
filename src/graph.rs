@@ -1136,6 +1136,58 @@ impl Operation {
             Ok(shapes)
         }
     }
+
+    /// Returns the binary-serialized TensorShapeProto value of the attribute
+    /// `attr_name`.
+    pub fn get_attr_tensor_shape_proto(&self, attr_name: &str) -> Result<Vec<u8>> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        unsafe {
+            let mut buf = Buffer::<u8>::new_unallocated();
+            tf::TF_OperationGetAttrTensorShapeProto(
+                self.inner,
+                c_attr_name.as_ptr(),
+                buf.inner_mut(),
+                status.inner(),
+            );
+            if !status.is_ok() {
+                return Err(status);
+            }
+            Ok(buf.into())
+        }
+    }
+
+    /// Get the list of binary-serialized TensorShapeProtos in the value of the
+    /// attribute `attr_name`.
+    pub fn get_attr_tensor_shape_proto_list(&self, attr_name: &str) -> Result<Vec<Vec<u8>>> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        unsafe {
+            let metadata =
+                tf::TF_OperationGetAttrMetadata(self.inner, c_attr_name.as_ptr(), status.inner());
+            if !status.is_ok() {
+                return Err(status);
+            }
+            let mut c_buffers = Vec::with_capacity(metadata.list_size as usize);
+            for _ in 0..metadata.list_size {
+                c_buffers.push(ptr::null_mut());
+            }
+            tf::TF_OperationGetAttrTensorShapeProtoList(
+                self.inner,
+                c_attr_name.as_ptr(),
+                c_buffers.as_mut_ptr(),
+                metadata.list_size as c_int,
+                status.inner(),
+            );
+            if !status.is_ok() {
+                return Err(status);
+            }
+            Ok(c_buffers
+                .iter()
+                .map(|b| Buffer::from_c(*b, true).into())
+                .collect())
+        }
+    }
 }
 
 impl OperationTrait for Operation {
