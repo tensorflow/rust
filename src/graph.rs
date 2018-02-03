@@ -1248,6 +1248,24 @@ impl Operation {
                 .collect()
         }
     }
+
+    /// Returns the binary-serialized AttrValue proto representation of the
+    /// value of the `attr_name` attr.
+    pub fn get_attr_value_proto(&self, attr_name: &str) -> Result<Vec<u8>> {
+        let status = Status::new();
+        let attr_name_cstr = CString::new(attr_name)?;
+        unsafe {
+            let mut buf = Buffer::new_unallocated();
+            tf::TF_OperationGetAttrValueProto(
+                self.inner,
+                attr_name_cstr.as_ptr(),
+                buf.inner_mut(),
+                status.inner,
+            );
+            status.into_result()?;
+            Ok(buf.into())
+        }
+    }
 }
 
 impl OperationTrait for Operation {
