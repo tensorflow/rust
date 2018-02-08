@@ -1710,8 +1710,14 @@ impl<'a> OperationDescription<'a> {
     }
 
     /// Sets an attribute with an `AttrValue` proto.
-    #[allow(trivial_numeric_casts)]
+    #[deprecated(since = "0.7.0", note = "Use set_attr_value_proto instead.")]
     pub fn set_attr_to_attr_value_proto(&mut self, attr_name: &str, value: &[u8]) -> Result<()> {
+        self.set_attr_value_proto(attr_name, value)
+    }
+
+    /// Sets an attribute with an `AttrValue` proto.
+    #[allow(trivial_numeric_casts)]
+    pub fn set_attr_value_proto(&mut self, attr_name: &str, value: &[u8]) -> Result<()> {
         let c_attr_name = CString::new(attr_name)?;
         let mut status = Status::new();
         unsafe {
