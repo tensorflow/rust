@@ -78,6 +78,15 @@ impl<T: TensorType> Buffer<T> {
         }
     }
 
+    /// Creates a new buffer with no memory allocated.
+    pub unsafe fn new_unallocated() -> Self {
+        Buffer {
+            inner: tf::TF_NewBuffer(),
+            owned: true,
+            phantom: PhantomData,
+        }
+    }
+
     /// Creates a buffer from data owned by the C API.
     ///
     /// `len` is the number of elements.

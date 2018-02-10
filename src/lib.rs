@@ -22,6 +22,7 @@ use std::cmp::Ordering;
 use std::error::Error;
 use std::ffi::CStr;
 use std::ffi::CString;
+use std::ffi::IntoStringError;
 use std::ffi::NulError;
 use std::fmt::Debug;
 use std::fmt::Display;
@@ -86,22 +87,10 @@ macro_rules! impl_drop {
 
 ////////////////////////
 
-// We would like to use the pattern:
-//   ($doc:expr, $c_name:ident, $enum_name:ident
-//      { $( $(#[$attr:meta])* $name:ident = $num:expr),* })
-// so the enum variants would look like:
-//   /// Denotes a foo.
-//   Foo = 1,
-// but the compiler complains:
-//   error: local ambiguity: multiple parsing options: built-in NTs ident ('name')
-//   or 1 other option.
-// This is https://github.com/rust-lang/rust/issues/24189. Rather than make our
-// macro rules inscrutably convoluted, we'll just make our grammar slightly
-// noisier and insert a 'value' token before the variant name.
 macro_rules! c_enum {
-  ($doc:expr, $c_name:ident, $enum_name:ident { $( $(#[$attr:meta])* value
+  ($c_name:ident, $(#[$enum_attr:meta])* $enum_name:ident { $( $(#[$attr:meta])*
       $name:ident = $num:expr),* }) => {
-    #[doc = $doc]
+    $(#[$enum_attr])*
     #[derive(PartialEq,Eq,PartialOrd,Ord,Debug,Copy,Clone)]
     pub enum $enum_name {
       /// Represents an unrecognized value.
@@ -151,9 +140,21 @@ macro_rules! c_enum {
       }
     }
   };
-  ($doc:expr, $c_name:ident, $enum_name:ident { $( $(#[$attr:meta])* value
+  ($c_name:ident, $(#[$enum_attr:meta])* $enum_name:ident { $( $(#[$attr:meta])*
       $name:ident = $num:expr,)* }) => {
-    c_enum!($doc, $c_name, $enum_name { $( $(#[$attr])* value $name = $num),* });
+    c_enum!($c_name, $(#[$enum_attr])* $enum_name { $( $(#[$attr])* $name = $num),* });
+  };
+  // Deprecated pattern.
+  ($doc:expr, $c_name:ident, $(#[$enum_attr:meta])* $enum_name:ident { $( $(#[$attr:meta])* value
+      $name:ident = $num:expr),* }) => {
+    c_enum!($c_name, #[doc = $doc] $(#[$enum_attr])*
+            $enum_name { $( $(#[$attr])* $name = $num),* });
+  };
+  // Deprecated pattern.
+  ($doc:expr, $c_name:ident, $(#[$enum_attr:meta])* $enum_name:ident { $( $(#[$attr:meta])* value
+      $name:ident = $num:expr,)* }) => {
+    c_enum!($c_name, #[doc = $doc] $(#[$enum_attr])*
+            $enum_name { $( $(#[$attr])* $name = $num),* });
   }
 }
 
@@ -444,6 +445,15 @@ impl From<NulError> for Status {
 impl From<Utf8Error> for Status {
     fn from(_e: Utf8Error) -> Self {
         invalid_arg!("String contained invalid UTF-8")
+    }
+}
+
+impl From<IntoStringError> for Status {
+    fn from(e: IntoStringError) -> Self {
+        invalid_arg!(
+            "Error converting C string to Rust string: {}",
+            e.description()
+        )
     }
 }
 
@@ -778,8 +788,16 @@ trait AnyTensor: Debug {
 
 ////////////////////////
 
+unsafe fn tensor_dims(tensor: *mut tf::TF_Tensor) -> Vec<u64> {
+    let mut dims = Vec::with_capacity(tf::TF_NumDims(tensor) as usize);
+    for i in 0..dims.capacity() {
+        dims.push(tf::TF_Dim(tensor, i as c_int) as u64);
+    }
+    dims
+}
+
 /// Inner representation of `Tensor`s.
-pub trait TensorInner<T>: Debug
+pub trait TensorInner<T>: Debug + Clone
 where
     Self: Sized + Deref<Target = [T]> + DerefMut<Target = [T]>,
 {
@@ -825,7 +843,7 @@ impl<T: TensorType> Drop for TensorDataCRepr<T> {
 
 impl<T> TensorInner<T> for TensorDataCRepr<T>
 where
-    T: Debug + TensorType,
+    T: Debug + TensorType + Copy,
 {
     fn new_inner(dims: &[u64]) -> Self {
         let total = product(dims) as usize;
@@ -855,13 +873,9 @@ where
         if DataType::from_c(tf::TF_TensorType(tensor)) != T::data_type() {
             return None;
         }
-        let mut dims = Vec::with_capacity(tf::TF_NumDims(tensor) as usize);
-        for i in 0..dims.capacity() {
-            dims.push(tf::TF_Dim(tensor, i as c_int) as u64);
-        }
         Some(TensorDataCRepr {
             inner: tensor,
-            data_count: product(&dims) as usize,
+            data_count: product(&tensor_dims(tensor)) as usize,
             phantom: PhantomData,
         })
     }
@@ -887,6 +901,29 @@ impl<T: TensorType> DerefMut for TensorDataCRepr<T> {
     fn deref_mut(&mut self) -> &mut [T] {
         let data = unsafe { tf::TF_TensorData(self.inner) } as *mut T;
         unsafe { slice::from_raw_parts_mut(data, self.data_count) }
+    }
+}
+
+impl<T: TensorType + Copy> Clone for TensorDataCRepr<T> {
+    fn clone(&self) -> Self {
+        let (inner, total) = unsafe {
+            let dims = tensor_dims(self.inner);
+            let total = product(&dims) as usize;
+            let inner = tf::TF_AllocateTensor(
+                T::data_type().to_c(),
+                dims.as_ptr() as *const _,
+                dims.len() as c_int,
+                total * mem::size_of::<T>(),
+            );
+            (inner, total)
+        };
+        let mut clone = TensorDataCRepr {
+            inner,
+            data_count: total,
+            phantom: PhantomData,
+        };
+        clone.deref_mut().copy_from_slice(self.deref());
+        clone
     }
 }
 
@@ -936,14 +973,10 @@ where
         if DataType::from_c(tf::TF_TensorType(tensor)) != T::data_type() {
             return None;
         }
-        let mut dims = Vec::with_capacity(tf::TF_NumDims(tensor) as usize);
-        for i in 0..dims.capacity() {
-            dims.push(tf::TF_Dim(tensor, i as c_int) as u64);
-        }
         Some(TensorDataNoCRepr {
             inner: Cell::new(tensor),
             data: Cell::new(tf::TF_TensorData(tensor) as *mut _),
-            data_count: product(&dims) as usize,
+            data_count: product(&tensor_dims(tensor)) as usize,
             unpacked: Cell::new(false),
             unpacked_data: RefCell::new(None),
         })
@@ -1038,6 +1071,15 @@ impl<T: TensorType> DerefMut for TensorDataNoCRepr<T> {
     }
 }
 
+impl<T: TensorType> Clone for TensorDataNoCRepr<T> {
+    fn clone(&self) -> Self {
+        let dims = unsafe { tensor_dims(self.inner.get()) };
+        let mut clone = TensorDataNoCRepr::new_inner(&dims);
+        clone.deref_mut().clone_from_slice(self.deref());
+        clone
+    }
+}
+
 /// Holds a multi-dimensional array of elements of a single data type.
 ///
 /// The data buffer stores elements in row major order.  E.g. if data is treated
@@ -1048,7 +1090,7 @@ impl<T: TensorType> DerefMut for TensorDataNoCRepr<T> {
 ///   element 1:   index (0, ..., 1)
 ///   ...
 /// ```
-#[derive(Debug)]
+#[derive(Debug, Clone, Eq)]
 pub struct Tensor<T: TensorType> {
     inner: T::InnerType,
     dims: Vec<u64>,
@@ -1144,6 +1186,12 @@ impl<'a, T: TensorType> From<&'a [T]> for Tensor<T> {
             e.clone_from(v);
         }
         tensor
+    }
+}
+
+impl<T: TensorType + PartialEq> PartialEq for Tensor<T> {
+    fn eq(&self, other: &Tensor<T>) -> bool {
+        self.dims == other.dims && self.deref() == other.deref()
     }
 }
 
@@ -1400,5 +1448,23 @@ mod tests {
         assert_eq!(output_tensor.len(), 2);
         assert_eq!(output_tensor[0], "Zm9v");
         assert_eq!(output_tensor[1], "YmFy");
+    }
+
+    #[test]
+    fn tensor_clone() {
+        let x = Tensor::<i32>::new(&[3]).with_values(&[1, 2, 3]).unwrap();
+        let clone = x.clone();
+        assert_eq!(x, clone);
+    }
+
+    #[test]
+    fn tensor_eq() {
+        let a = Tensor::<i32>::new(&[3]).with_values(&[1, 2, 3]).unwrap();
+        let b = Tensor::<i32>::new(&[3]).with_values(&[1, 2, 3]).unwrap();
+        let c = Tensor::<i32>::new(&[3]).with_values(&[1, 2, 4]).unwrap();
+        let d = Tensor::<i32>::new(&[3, 1]).with_values(&[1, 2, 3]).unwrap();
+        assert_eq!(a, b);
+        assert_ne!(a, c);
+        assert_ne!(a, d);
     }
 }

@@ -4,6 +4,7 @@ use libc::c_char;
 use libc::c_float;
 use libc::c_int;
 use libc::c_uchar;
+use libc::c_uint;
 use libc::c_void;
 use libc::size_t;
 use std;
@@ -12,6 +13,7 @@ use std::ffi::CString;
 use std::ffi::NulError;
 use std::os::raw::c_void as std_c_void;
 use std::ptr;
+use std::slice;
 use std::str::Utf8Error;
 use std::sync::Arc;
 use super::AnyTensor;
@@ -527,6 +529,66 @@ impl<'a> Iterator for OperationIter<'a> {
 
 ////////////////////////
 
+c_enum!(
+    TF_AttrType,
+    // TODO: Provide docs on variants once they are added to c_api.h.
+    /// Describes the type of the value of an attribute on an operation.
+    #[allow(missing_docs)]
+    AttrType {
+        String = 0,
+        Int = 1,
+        Float = 2,
+        Bool = 3,
+        Type = 4,
+        Shape = 5,
+        Tensor = 6,
+        Placeholder = 7,
+        Func = 8,
+    });
+
+/// AttrMetadata describes the value of an attribute on an operation.
+#[derive(Clone, Debug, Copy)]
+pub struct AttrMetadata {
+    /// Length of the list, or None if the attribute is not a list.
+    pub list_size: Option<i64>,
+
+    /// Type of elements of the list if the attribute is a list.
+    /// Type of the single value stored in the attribute if not a list.
+    pub attr_type: AttrType,
+
+    /// Total size the attribute value.
+    /// The units of total_size depend on list_size and attr_type.
+    /// 1. If attr_type == AttrType::String and list_size == None
+    ///    then total_size is the byte size of the string valued attribute.
+    /// 2. If attr_type == AttrType::String and list_size == Some(_)
+    ///    then total_size is the cumulative byte size of all the strings in the
+    ///    list.
+    /// 3. If attr_type == AttrType::Shape and list_size == None
+    ///    then total_size is the number of dimensions of the shape valued
+    ///    attribute, or -1 if its rank is unknown.
+    /// 4. If attr_type == AttrType::SHAPE and list_size == Some(_)
+    ///    then total_size is the cumulative number of dimensions of all shapes
+    ///    in the list.
+    /// 4. Otherwise, total_size is undefined.
+    pub total_size: i64,
+}
+
+impl AttrMetadata {
+    fn from_c(metadata: tf::TF_AttrMetadata) -> Self {
+        AttrMetadata {
+            list_size: if metadata.is_list == 0 {
+                None
+            } else {
+                Some(metadata.list_size)
+            },
+            attr_type: AttrType::from_c(metadata.type_),
+            total_size: metadata.total_size,
+        }
+    }
+}
+
+////////////////////////
+
 /// An `Operation` is a node in a `Graph`.
 /// It is a computation which accepts inputs and produces outputs.
 #[derive(Debug,Clone)]
@@ -728,6 +790,480 @@ impl Operation {
                     }
                 })
                 .collect()
+        }
+    }
+
+    /// Returns metadata about the value of the attribute `attr_name`.
+    pub fn get_attr_metadata(&self, attr_name: &str) -> Result<AttrMetadata> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        unsafe {
+            let metadata =
+                tf::TF_OperationGetAttrMetadata(self.inner, c_attr_name.as_ptr(), status.inner());
+            if status.is_ok() {
+                Ok(AttrMetadata::from_c(metadata))
+            } else {
+                Err(status)
+            }
+        }
+    }
+
+    /// Returns the value of the attribute `attr_name`.
+    pub fn get_attr_string(&self, attr_name: &str) -> Result<String> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        unsafe {
+            let metadata =
+                tf::TF_OperationGetAttrMetadata(self.inner, c_attr_name.as_ptr(), status.inner());
+            if !status.is_ok() {
+                return Err(status);
+            }
+            let mut v: Vec<u8> = Vec::with_capacity(metadata.total_size as usize);
+            v.set_len(metadata.total_size as usize);
+            tf::TF_OperationGetAttrString(
+                self.inner,
+                c_attr_name.as_ptr(),
+                v.as_mut_ptr() as *mut std::os::raw::c_void,
+                metadata.total_size as usize,
+                status.inner(),
+            );
+            if !status.is_ok() {
+                return Err(status);
+            }
+            Ok(CString::new(v)?.into_string()?)
+        }
+    }
+
+    /// Get the list of strings in the value of the attribute `attr_name`.
+    pub fn get_attr_string_list(&self, attr_name: &str) -> Result<Vec<String>> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        unsafe {
+            let metadata =
+                tf::TF_OperationGetAttrMetadata(self.inner, c_attr_name.as_ptr(), status.inner());
+            if !status.is_ok() {
+                return Err(status);
+            }
+            let mut storage: Vec<u8> = Vec::with_capacity(metadata.total_size as usize);
+            storage.set_len(metadata.total_size as usize);
+            let mut values: Vec<*const std::os::raw::c_char> =
+                Vec::with_capacity(metadata.list_size as usize);
+            let mut lengths: Vec<size_t> = Vec::with_capacity(metadata.list_size as usize);
+            tf::TF_OperationGetAttrStringList(
+                self.inner,
+                c_attr_name.as_ptr(),
+                values.as_mut_ptr() as *mut *mut std::os::raw::c_void,
+                lengths.as_mut_ptr(),
+                metadata.list_size as i32,
+                storage.as_mut_ptr() as *mut std::os::raw::c_void,
+                metadata.total_size as usize,
+                status.inner(),
+            );
+            if !status.is_ok() {
+                return Err(status);
+            }
+            values.set_len(metadata.list_size as usize);
+            lengths.set_len(metadata.list_size as usize);
+            let mut strings = Vec::with_capacity(metadata.list_size as usize);
+            for i in 0..metadata.list_size as usize {
+                let s = slice::from_raw_parts(values[i] as *const u8, lengths[i]);
+                strings.push(std::str::from_utf8(s)?.to_string());
+            }
+            Ok(strings)
+        }
+    }
+
+    /// Returns the value of the attribute `attr_name`.
+    pub fn get_attr_int(&self, attr_name: &str) -> Result<i64> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        let mut value: i64 = 0;
+        unsafe {
+            tf::TF_OperationGetAttrInt(
+                self.inner,
+                c_attr_name.as_ptr(),
+                &mut value,
+                status.inner(),
+            );
+        }
+        if !status.is_ok() {
+            return Err(status);
+        }
+        Ok(value)
+    }
+
+    /// Get the list of ints in the value of the attribute `attr_name`.
+    pub fn get_attr_int_list(&self, attr_name: &str) -> Result<Vec<i64>> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        unsafe {
+            let metadata =
+                tf::TF_OperationGetAttrMetadata(self.inner, c_attr_name.as_ptr(), status.inner());
+            if !status.is_ok() {
+                return Err(status);
+            }
+            let mut values: Vec<i64> = Vec::with_capacity(metadata.list_size as usize);
+            values.set_len(metadata.list_size as usize);
+            tf::TF_OperationGetAttrIntList(
+                self.inner,
+                c_attr_name.as_ptr(),
+                values.as_mut_ptr(),
+                metadata.list_size as c_int,
+                status.inner(),
+            );
+            if !status.is_ok() {
+                return Err(status);
+            }
+            Ok(values)
+        }
+    }
+
+    /// Returns the value of the attribute `attr_name`.
+    pub fn get_attr_float(&self, attr_name: &str) -> Result<f32> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        let mut value: c_float = 0.0;
+        unsafe {
+            tf::TF_OperationGetAttrFloat(
+                self.inner,
+                c_attr_name.as_ptr(),
+                &mut value,
+                status.inner(),
+            );
+        }
+        if !status.is_ok() {
+            return Err(status);
+        }
+        #[allow(trivial_numeric_casts)]
+        Ok(value as f32)
+    }
+
+    /// Get the list of floats in the value of the attribute `attr_name`.
+    pub fn get_attr_float_list(&self, attr_name: &str) -> Result<Vec<f32>> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        unsafe {
+            let metadata =
+                tf::TF_OperationGetAttrMetadata(self.inner, c_attr_name.as_ptr(), status.inner());
+            if !status.is_ok() {
+                return Err(status);
+            }
+            let mut values: Vec<c_float> = Vec::with_capacity(metadata.list_size as usize);
+            values.set_len(metadata.list_size as usize);
+            tf::TF_OperationGetAttrFloatList(
+                self.inner,
+                c_attr_name.as_ptr(),
+                values.as_mut_ptr(),
+                metadata.list_size as c_int,
+                status.inner(),
+            );
+            if !status.is_ok() {
+                return Err(status);
+            }
+            #[allow(trivial_numeric_casts)]
+            Ok(values.iter().map(|f| *f as f32).collect())
+        }
+    }
+
+    /// Returns the value of the attribute `attr_name`.
+    pub fn get_attr_bool(&self, attr_name: &str) -> Result<bool> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        let mut value: c_uchar = 0;
+        unsafe {
+            tf::TF_OperationGetAttrBool(
+                self.inner,
+                c_attr_name.as_ptr(),
+                &mut value,
+                status.inner(),
+            );
+        }
+        if !status.is_ok() {
+            return Err(status);
+        }
+        Ok(value != 0)
+    }
+
+    /// Get the list of bools in the value of the attribute `attr_name`.
+    pub fn get_attr_bool_list(&self, attr_name: &str) -> Result<Vec<bool>> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        unsafe {
+            let metadata =
+                tf::TF_OperationGetAttrMetadata(self.inner, c_attr_name.as_ptr(), status.inner());
+            if !status.is_ok() {
+                return Err(status);
+            }
+            let mut values: Vec<c_uchar> = Vec::with_capacity(metadata.list_size as usize);
+            values.set_len(metadata.list_size as usize);
+            tf::TF_OperationGetAttrBoolList(
+                self.inner,
+                c_attr_name.as_ptr(),
+                values.as_mut_ptr(),
+                metadata.list_size as c_int,
+                status.inner(),
+            );
+            if !status.is_ok() {
+                return Err(status);
+            }
+            #[allow(trivial_numeric_casts)]
+            Ok(values.iter().map(|f| *f != 0).collect())
+        }
+    }
+
+    /// Returns the value of the attribute `attr_name`.
+    pub fn get_attr_type(&self, attr_name: &str) -> Result<DataType> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        let mut value: tf::TF_DataType = tf::TF_FLOAT;
+        unsafe {
+            tf::TF_OperationGetAttrType(
+                self.inner,
+                c_attr_name.as_ptr(),
+                &mut value,
+                status.inner(),
+            );
+        }
+        if !status.is_ok() {
+            return Err(status);
+        }
+        Ok(DataType::from_c(value))
+    }
+
+    /// Get the list of types in the value of the attribute `attr_name`.
+    pub fn get_attr_type_list(&self, attr_name: &str) -> Result<Vec<DataType>> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        unsafe {
+            let metadata =
+                tf::TF_OperationGetAttrMetadata(self.inner, c_attr_name.as_ptr(), status.inner());
+            if !status.is_ok() {
+                return Err(status);
+            }
+            let mut values: Vec<tf::TF_DataType> = Vec::with_capacity(metadata.list_size as usize);
+            values.set_len(metadata.list_size as usize);
+            tf::TF_OperationGetAttrTypeList(
+                self.inner,
+                c_attr_name.as_ptr(),
+                values.as_mut_ptr(),
+                metadata.list_size as c_int,
+                status.inner(),
+            );
+            if !status.is_ok() {
+                return Err(status);
+            }
+            Ok(values.iter().map(|x| DataType::from_c(*x)).collect())
+        }
+    }
+
+    /// Returns the value of the attribute `attr_name`.
+    pub fn get_attr_shape(&self, attr_name: &str) -> Result<Shape> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        unsafe {
+            let metadata =
+                tf::TF_OperationGetAttrMetadata(self.inner, c_attr_name.as_ptr(), status.inner());
+            if !status.is_ok() {
+                return Err(status);
+            }
+            if metadata.total_size == -1 {
+                return Ok(Shape(None));
+            }
+            let mut v: Vec<i64> = Vec::with_capacity(metadata.total_size as usize);
+            v.set_len(metadata.total_size as usize);
+            tf::TF_OperationGetAttrShape(
+                self.inner,
+                c_attr_name.as_ptr(),
+                v.as_mut_ptr(),
+                metadata.total_size as c_int,
+                status.inner(),
+            );
+            if !status.is_ok() {
+                return Err(status);
+            }
+            Ok(Shape(Some(
+                v.iter()
+                    .map(|x| if *x < 0 { None } else { Some(*x) })
+                    .collect(),
+            )))
+        }
+    }
+
+    /// Get the list of shapes in the value of the attribute `attr_name`.
+    pub fn get_attr_shape_list(&self, attr_name: &str) -> Result<Vec<Shape>> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        unsafe {
+            let metadata =
+                tf::TF_OperationGetAttrMetadata(self.inner, c_attr_name.as_ptr(), status.inner());
+            if !status.is_ok() {
+                return Err(status);
+            }
+            let mut storage: Vec<i64> = Vec::with_capacity(metadata.total_size as usize);
+            storage.set_len(metadata.total_size as usize);
+            let mut dims: Vec<*mut i64> = Vec::with_capacity(metadata.list_size as usize);
+            let mut num_dims: Vec<c_int> = Vec::with_capacity(metadata.list_size as usize);
+            tf::TF_OperationGetAttrShapeList(
+                self.inner,
+                c_attr_name.as_ptr(),
+                dims.as_mut_ptr(),
+                num_dims.as_mut_ptr(),
+                metadata.list_size as i32,
+                storage.as_mut_ptr(),
+                metadata.total_size as c_int,
+                status.inner(),
+            );
+            if !status.is_ok() {
+                return Err(status);
+            }
+            dims.set_len(metadata.list_size as usize);
+            num_dims.set_len(metadata.list_size as usize);
+            let mut shapes = Vec::with_capacity(metadata.list_size as usize);
+            for i in 0..metadata.list_size as usize {
+                shapes.push(Shape(if num_dims[i] == -1 {
+                    None
+                } else {
+                    let mut v = Vec::new();
+                    for j in 0..num_dims[i] {
+                        v.push(match *dims[i].offset(j as isize) {
+                            -1 => None,
+                            x => Some(x),
+                        });
+                    }
+                    Some(v)
+                }));
+            }
+            Ok(shapes)
+        }
+    }
+
+    /// Returns the binary-serialized TensorShapeProto value of the attribute
+    /// `attr_name`.
+    pub fn get_attr_tensor_shape_proto(&self, attr_name: &str) -> Result<Vec<u8>> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        unsafe {
+            let mut buf = Buffer::<u8>::new_unallocated();
+            tf::TF_OperationGetAttrTensorShapeProto(
+                self.inner,
+                c_attr_name.as_ptr(),
+                buf.inner_mut(),
+                status.inner(),
+            );
+            if !status.is_ok() {
+                return Err(status);
+            }
+            Ok(buf.into())
+        }
+    }
+
+    /// Get the list of binary-serialized TensorShapeProtos in the value of the
+    /// attribute `attr_name`.
+    pub fn get_attr_tensor_shape_proto_list(&self, attr_name: &str) -> Result<Vec<Vec<u8>>> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        unsafe {
+            let metadata =
+                tf::TF_OperationGetAttrMetadata(self.inner, c_attr_name.as_ptr(), status.inner());
+            if !status.is_ok() {
+                return Err(status);
+            }
+            let mut c_buffers = Vec::with_capacity(metadata.list_size as usize);
+            for _ in 0..metadata.list_size {
+                c_buffers.push(ptr::null_mut());
+            }
+            tf::TF_OperationGetAttrTensorShapeProtoList(
+                self.inner,
+                c_attr_name.as_ptr(),
+                c_buffers.as_mut_ptr(),
+                metadata.list_size as c_int,
+                status.inner(),
+            );
+            if !status.is_ok() {
+                return Err(status);
+            }
+            Ok(c_buffers
+                .iter()
+                .map(|b| Buffer::from_c(*b, true).into())
+                .collect())
+        }
+    }
+
+    /// Returns the value of the attribute `attr_name`. Returns an error if the
+    /// type of the tensor value does not match the type of the generic
+    /// argument.
+    pub fn get_attr_tensor<T: TensorType>(&self, attr_name: &str) -> Result<Tensor<T>> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        unsafe {
+            let mut c_tensor: *mut tf::TF_Tensor = ptr::null_mut();
+            tf::TF_OperationGetAttrTensor(
+                self.inner,
+                c_attr_name.as_ptr(),
+                &mut c_tensor,
+                status.inner(),
+            );
+            if !status.is_ok() {
+                return Err(status);
+            }
+            match Tensor::from_tf_tensor(c_tensor) {
+                None => Err(invalid_arg!("Tensor types do not match")),
+                Some(t) => Ok(t),
+            }
+        }
+    }
+
+    /// Get the list of tensors in the value of the attribute `attr_name`.
+    /// Returns an error if the type of the tensor value does not match the type
+    /// of the generic argument.
+    pub fn get_attr_tensor_list<T: TensorType>(&self, attr_name: &str) -> Result<Vec<Tensor<T>>> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        unsafe {
+            let metadata =
+                tf::TF_OperationGetAttrMetadata(self.inner, c_attr_name.as_ptr(), status.inner());
+            if !status.is_ok() {
+                return Err(status);
+            }
+            let mut c_tensors = Vec::with_capacity(metadata.list_size as usize);
+            for _ in 0..metadata.list_size {
+                c_tensors.push(ptr::null_mut());
+            }
+            tf::TF_OperationGetAttrTensorList(
+                self.inner,
+                c_attr_name.as_ptr(),
+                c_tensors.as_mut_ptr(),
+                metadata.list_size as c_int,
+                status.inner(),
+            );
+            if !status.is_ok() {
+                return Err(status);
+            }
+            c_tensors
+                .iter()
+                .map(|t| match Tensor::from_tf_tensor(*t) {
+                    None => Err(invalid_arg!("Tensor types do not match")),
+                    Some(t) => Ok(t),
+                })
+                .collect()
+        }
+    }
+
+    /// Returns the binary-serialized AttrValue proto representation of the
+    /// value of the `attr_name` attr.
+    pub fn get_attr_value_proto(&self, attr_name: &str) -> Result<Vec<u8>> {
+        let status = Status::new();
+        let attr_name_cstr = CString::new(attr_name)?;
+        unsafe {
+            let mut buf = Buffer::new_unallocated();
+            tf::TF_OperationGetAttrValueProto(
+                self.inner,
+                attr_name_cstr.as_ptr(),
+                buf.inner_mut(),
+                status.inner,
+            );
+            status.into_result()?;
+            Ok(buf.into())
         }
     }
 }
@@ -1160,7 +1696,9 @@ impl<'a> OperationDescription<'a> {
         let c_attr_name = CString::new(attr_name)?;
         let mut status = Status::new();
         unsafe {
-            let maybe_ptrs: Result<_> = value.into_iter().map(|x| x.inner()).collect();
+            // These have to stay alive durng the TF_SetAttrTensorList call.
+            let tensors: Vec<_> = value.into_iter().collect();
+            let maybe_ptrs: Result<_> = tensors.iter().map(|x| x.inner()).collect();
             let ptrs: Vec<*mut tf::TF_Tensor> = maybe_ptrs?;
             tf::TF_SetAttrTensorList(self.inner,
                                      c_attr_name.as_ptr(),
@@ -1172,8 +1710,14 @@ impl<'a> OperationDescription<'a> {
     }
 
     /// Sets an attribute with an `AttrValue` proto.
-    #[allow(trivial_numeric_casts)]
+    #[deprecated(since = "0.7.0", note = "Use set_attr_value_proto instead.")]
     pub fn set_attr_to_attr_value_proto(&mut self, attr_name: &str, value: &[u8]) -> Result<()> {
+        self.set_attr_value_proto(attr_name, value)
+    }
+
+    /// Sets an attribute with an `AttrValue` proto.
+    #[allow(trivial_numeric_casts)]
+    pub fn set_attr_value_proto(&mut self, attr_name: &str, value: &[u8]) -> Result<()> {
         let c_attr_name = CString::new(attr_name)?;
         let mut status = Status::new();
         unsafe {
@@ -1418,5 +1962,169 @@ mod tests {
         ).unwrap();
         let mut g2 = Graph::new();
         g2.copy_function(&f, None).unwrap();
+    }
+
+    // This test checks that Operation::get_attr_* returns the value passed in
+    // by OperationDescription::set_attr_*.  It's long and tedious because we
+    // need to create several different ops to cover all the different types,
+    // and the ops have requirements that have to be set up, first.  Once we can
+    // define our own ops, we may be able to just define a single op with
+    // attributes for all of the types.
+    #[test]
+    #[allow(trivial_casts)] // so we can do assert_eq!(slice, &some_vec as &[_])
+    fn operation_attributes() {
+        let mut g = Graph::new();
+
+        let shape = Shape(Some(vec![None, Some(3)]));
+        let variable_op = {
+            let mut nd = g.new_operation("Variable", "Variable").unwrap();
+            nd.set_attr_type("dtype", DataType::Int32).unwrap();
+            nd.set_attr_shape("shape", &shape).unwrap();
+            nd.set_attr_string("shared_name", "bar").unwrap();
+            nd.finish().unwrap()
+        };
+        assert_eq!("bar", variable_op.get_attr_string("shared_name").unwrap());
+        assert_eq!(DataType::Int32, variable_op.get_attr_type("dtype").unwrap());
+        assert_eq!(shape, variable_op.get_attr_shape("shape").unwrap());
+
+        let op = {
+            let mut nd = g.new_operation("Variable", "Variable_unknown_rank")
+                .unwrap();
+            nd.set_attr_type("dtype", DataType::Int32).unwrap();
+            nd.set_attr_shape("shape", &Shape(None)).unwrap();
+            nd.finish().unwrap()
+        };
+        assert_eq!(Shape(None), op.get_attr_shape("shape").unwrap());
+
+        let mut value = Tensor::<i32>::new(&[1, 3]).with_values(&[1, 2, 3]).unwrap();
+        let const_op = {
+            let mut nd = g.new_operation("Const", "Const").unwrap();
+            nd.set_attr_tensor("value", value.clone()).unwrap();
+            nd.set_attr_type("dtype", DataType::Int32).unwrap();
+            nd.finish().unwrap()
+        };
+        assert_eq!(value, const_op.get_attr_tensor("value").unwrap());
+
+        let op = {
+            let mut nd = g.new_operation("Assign", "Assign").unwrap();
+            nd.add_input(Output {
+                operation: variable_op.clone(),
+                index: 0,
+            });
+            nd.add_input(Output {
+                operation: const_op.clone(),
+                index: 0,
+            });
+            nd.set_attr_bool("validate_shape", true);
+            nd.set_attr_bool("use_locking", false);
+            nd.finish().unwrap()
+        };
+        assert_eq!(true, op.get_attr_bool("validate_shape").unwrap());
+        assert_eq!(false, op.get_attr_bool("use_locking").unwrap());
+
+        let op = {
+            let variable_op = {
+                let mut nd = g.new_operation("Variable", "MaxPool_in1").unwrap();
+                nd.set_attr_type("dtype", DataType::Int32).unwrap();
+                nd.set_attr_shape(
+                    "shape",
+                    &Shape(Some(vec![Some(5), Some(5), Some(5), Some(5)])),
+                ).unwrap();
+                nd.finish().unwrap()
+            };
+            let mut nd = g.new_operation("MaxPool", "MaxPool").unwrap();
+            nd.add_input(Output {
+                operation: variable_op,
+                index: 0,
+            });
+            nd.set_attr_int_list("ksize", &[1, 2, 3, 4]).unwrap();
+            nd.set_attr_int_list("strides", &[1, 1, 1, 1]).unwrap();
+            nd.set_attr_string("padding", "VALID").unwrap();
+            nd.finish().unwrap()
+        };
+        assert_eq!(
+            &[1, 2, 3, 4],
+            &op.get_attr_int_list("ksize").unwrap() as &[i64]
+        );
+
+        let op = {
+            let mut nd = g.new_operation("TensorSummary", "TensorSummary").unwrap();
+            nd.add_input(Output {
+                operation: variable_op.clone(),
+                index: 0,
+            });
+            nd.set_attr_string_list("labels", &["foo", "bar"]).unwrap();
+            nd.finish().unwrap()
+        };
+        assert_eq!(
+            &["foo".to_string(), "bar".to_string()],
+            &op.get_attr_string_list("labels").unwrap() as &[_]
+        );
+
+        let op = {
+            let mut nd = g.new_operation("ApproximateEqual", "ApproximateEqual")
+                .unwrap();
+            nd.add_input(Output {
+                operation: variable_op.clone(),
+                index: 0,
+            });
+            nd.add_input(Output {
+                operation: variable_op.clone(),
+                index: 0,
+            });
+            nd.set_attr_float("tolerance", 3.14).unwrap();
+            nd.finish().unwrap()
+        };
+        assert_eq!(3.14, op.get_attr_float("tolerance").unwrap());
+
+        let op = {
+            let mut nd = g.new_operation("Bucketize", "Bucketize").unwrap();
+            nd.add_input(Output {
+                operation: variable_op.clone(),
+                index: 0,
+            });
+            nd.set_attr_float_list("boundaries", &[0.1, 2.3]).unwrap();
+            nd.finish().unwrap()
+        };
+        assert_eq!(
+            &[0.1f32, 2.3],
+            &op.get_attr_float_list("boundaries").unwrap() as &[_]
+        );
+
+        let shape_list = &[
+            Shape(None),
+            Shape(Some(vec![])),
+            Shape(Some(vec![None])),
+            Shape(Some(vec![Some(1)])),
+        ];
+        let op = {
+            let mut nd = g.new_operation("RandomShuffleQueue", "RandomShuffleQueue")
+                .unwrap();
+            nd.set_attr_shape_list("shapes", shape_list).unwrap();
+            nd.set_attr_type_list("component_types", &[DataType::Float, DataType::Int32])
+                .unwrap();
+            nd.set_attr_int("seed", 42).unwrap();
+            nd.finish().unwrap()
+        };
+        assert_eq!(
+            shape_list,
+            &op.get_attr_shape_list("shapes").unwrap() as &[_]
+        );
+        assert_eq!(
+            &[DataType::Float, DataType::Int32],
+            &op.get_attr_type_list("component_types").unwrap() as &[_]
+        );
+        assert_eq!(42, op.get_attr_int("seed").unwrap());
+
+        // TODO: Support get_attr_*/set_attr_*:
+        // - bool_list
+        // - tensor_list
+        // - tensor_shape_proto
+        // - tensor_shape_proto_list
+        // - value_proto
+        // The protos are tricky because we don't currently support proto
+        // serialization/deserialization, and bool_list and tensor_list (a.k.a.
+        // list(bool) and list(tensor)) don't seem to be used for any standard
+        // ops.
     }
 }
