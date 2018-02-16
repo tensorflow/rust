@@ -90,7 +90,7 @@ fn remove_suffix(value: &mut String, suffix: &str) {
 
 fn extract<P: AsRef<Path>, P2: AsRef<Path>>(archive_path: P, extract_to: P2) {
     let file = File::open(archive_path).unwrap();
-    let unzipped = GzDecoder::new(file).unwrap();
+    let unzipped = GzDecoder::new(file);
     let mut a = Archive::new(unzipped);
     a.unpack(extract_to).unwrap();
 }

@@ -14,6 +14,16 @@ if [[ "${version_build_script}" != "${version_run_valgrind}" ]]; then
     exit 1
 fi
 
+# Make sure the crate version matches the one in README.md.
+version_crate=`grep "^version =" Cargo.toml | sed 's|.*= "\(.*\)"|\1|g'`
+version_readme=`grep "tensorflow =" README.md | sed 's|.*= "\(.*\)"|\1|g'`
+if [[ "${version_crate}" != "${version_readme}" ]]; then
+    echo "ERROR: Crate version does not match the one in README.md."
+    echo "       Cargo.toml: ${version_crate}"
+    echo "       README.md: ${version_readme}"
+    exit 1
+fi
+
 cargo test -vv -j 2 --features tensorflow_unstable
 cargo run --example regression
 cargo run --features tensorflow_unstable --example expressions
