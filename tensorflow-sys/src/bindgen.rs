@@ -116,6 +116,8 @@ pub enum TF_DataType {
     TF_HALF = 19,
     TF_RESOURCE = 20,
     TF_VARIANT = 21,
+    TF_UINT32 = 22,
+    TF_UINT64 = 23,
 }
 extern "C" {
     pub fn TF_DataTypeSize(dt: TF_DataType) -> usize;
@@ -475,6 +477,12 @@ extern "C" {
                               num_values: ::std::os::raw::c_int);
 }
 extern "C" {
+    pub fn TF_SetAttrFuncName(desc: *mut TF_OperationDescription,
+                              attr_name: *const ::std::os::raw::c_char,
+                              value: *const ::std::os::raw::c_char,
+                              length: usize);
+}
+extern "C" {
     pub fn TF_SetAttrShape(desc: *mut TF_OperationDescription,
                            attr_name: *const ::std::os::raw::c_char,
                            dims: *const i64, num_dims: ::std::os::raw::c_int);
@@ -804,6 +812,17 @@ extern "C" {
                               output_graph_def: *mut TF_Buffer,
                               status: *mut TF_Status);
 }
+extern "C" {
+    pub fn TF_GraphGetOpDef(graph: *mut TF_Graph,
+                            op_name: *const ::std::os::raw::c_char,
+                            output_op_def: *mut TF_Buffer,
+                            status: *mut TF_Status);
+}
+extern "C" {
+    pub fn TF_GraphVersions(graph: *mut TF_Graph,
+                            output_version_def: *mut TF_Buffer,
+                            status: *mut TF_Status);
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct TF_ImportGraphDefOptions {
@@ -821,6 +840,18 @@ extern "C" {
                                                  *mut TF_ImportGraphDefOptions,
                                              prefix:
                                                  *const ::std::os::raw::c_char);
+}
+extern "C" {
+    pub fn TF_ImportGraphDefOptionsSetUniquifyNames(opts:
+                                                        *mut TF_ImportGraphDefOptions,
+                                                    uniquify_names:
+                                                        ::std::os::raw::c_uchar);
+}
+extern "C" {
+    pub fn TF_ImportGraphDefOptionsSetUniquifyPrefix(opts:
+                                                         *mut TF_ImportGraphDefOptions,
+                                                     uniquify_prefix:
+                                                         ::std::os::raw::c_uchar);
 }
 extern "C" {
     pub fn TF_ImportGraphDefOptionsAddInputMapping(opts:
@@ -859,6 +890,60 @@ extern "C" {
      -> ::std::os::raw::c_int;
 }
 extern "C" {
+    pub fn TF_ImportGraphDefOptionsAddReturnOperation(opts:
+                                                          *mut TF_ImportGraphDefOptions,
+                                                      oper_name:
+                                                          *const ::std::os::raw::c_char);
+}
+extern "C" {
+    pub fn TF_ImportGraphDefOptionsNumReturnOperations(opts:
+                                                           *const TF_ImportGraphDefOptions)
+     -> ::std::os::raw::c_int;
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct TF_ImportGraphDefResults {
+    _unused: [u8; 0],
+}
+extern "C" {
+    pub fn TF_ImportGraphDefResultsReturnOutputs(results:
+                                                     *mut TF_ImportGraphDefResults,
+                                                 num_outputs:
+                                                     *mut ::std::os::raw::c_int,
+                                                 outputs:
+                                                     *mut *mut TF_Output);
+}
+extern "C" {
+    pub fn TF_ImportGraphDefResultsReturnOperations(results:
+                                                        *mut TF_ImportGraphDefResults,
+                                                    num_opers:
+                                                        *mut ::std::os::raw::c_int,
+                                                    opers:
+                                                        *mut *mut *mut TF_Operation);
+}
+extern "C" {
+    pub fn TF_ImportGraphDefResultsMissingUnusedInputMappings(results:
+                                                                  *mut TF_ImportGraphDefResults,
+                                                              num_missing_unused_input_mappings:
+                                                                  *mut ::std::os::raw::c_int,
+                                                              src_names:
+                                                                  *mut *mut *const ::std::os::raw::c_char,
+                                                              src_indexes:
+                                                                  *mut *mut ::std::os::raw::c_int);
+}
+extern "C" {
+    pub fn TF_DeleteImportGraphDefResults(results:
+                                              *mut TF_ImportGraphDefResults);
+}
+extern "C" {
+    pub fn TF_GraphImportGraphDefWithResults(graph: *mut TF_Graph,
+                                             graph_def: *const TF_Buffer,
+                                             options:
+                                                 *const TF_ImportGraphDefOptions,
+                                             status: *mut TF_Status)
+     -> *mut TF_ImportGraphDefResults;
+}
+extern "C" {
     pub fn TF_GraphImportGraphDefWithReturnOutputs(graph: *mut TF_Graph,
                                                    graph_def:
                                                        *const TF_Buffer,
@@ -880,6 +965,16 @@ extern "C" {
     pub fn TF_GraphCopyFunction(g: *mut TF_Graph, func: *const TF_Function,
                                 grad: *const TF_Function,
                                 status: *mut TF_Status);
+}
+extern "C" {
+    pub fn TF_GraphNumFunctions(g: *mut TF_Graph) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn TF_GraphGetFunctions(g: *mut TF_Graph,
+                                funcs: *mut *mut TF_Function,
+                                max_func: ::std::os::raw::c_int,
+                                status: *mut TF_Status)
+     -> ::std::os::raw::c_int;
 }
 extern "C" {
     pub fn TF_OperationToNodeDef(oper: *mut TF_Operation,
@@ -1200,4 +1295,27 @@ extern "C" {
 }
 extern "C" {
     pub fn TF_GetAllOpList() -> *mut TF_Buffer;
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct TF_ApiDefMap {
+    _unused: [u8; 0],
+}
+extern "C" {
+    pub fn TF_NewApiDefMap(op_list_buffer: *mut TF_Buffer,
+                           status: *mut TF_Status) -> *mut TF_ApiDefMap;
+}
+extern "C" {
+    pub fn TF_DeleteApiDefMap(apimap: *mut TF_ApiDefMap);
+}
+extern "C" {
+    pub fn TF_ApiDefMapPut(api_def_map: *mut TF_ApiDefMap,
+                           text: *const ::std::os::raw::c_char,
+                           text_len: usize, status: *mut TF_Status);
+}
+extern "C" {
+    pub fn TF_ApiDefMapGet(api_def_map: *mut TF_ApiDefMap,
+                           name: *const ::std::os::raw::c_char,
+                           name_len: usize, status: *mut TF_Status)
+     -> *mut TF_Buffer;
 }
