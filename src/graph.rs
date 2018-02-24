@@ -240,6 +240,7 @@ impl Graph {
     /// If the number of dimensions in the shape is unknown, returns -1.
     ///
     /// Returns an error if:
+    ///
     ///   * `output` is not in `graph`.
     pub fn num_dims(&self, output: Output) -> Result<c_int> {
         let mut status = Status::new();
@@ -252,6 +253,7 @@ impl Graph {
     /// Returns the shape of the Tensor referenced by `output`.
     ///
     /// Returns an error if:
+    ///
     ///   * `output` is not in `graph`.
     pub fn tensor_shape(&self, output: Output) -> Result<Shape> {
         let mut status = Status::new();
@@ -361,8 +363,8 @@ impl Graph {
     ///   graphs where this function will be used).
     /// * `append_hash_to_fn_name` - If true, the actual name of the function
     ///   will be `fn_name` appended with
-    ///   '_<hash_of_this_function's_definition>'. If false, the function's name
-    ///   will be `fn_name`.
+    ///   '_&lt;hash_of_this_function's_definition&gt;'. If false, the
+    ///   function's name will be `fn_name`.
     /// * `opers` - Array of operations to become the body of the function or
     ///   null.
     ///   * If `None`, all the operations in the graph will become part of the
@@ -377,7 +379,7 @@ impl Graph {
     ///   The names used for function inputs are normalized names of the
     ///   operations (usually placeholders) pointed to by `inputs`. These
     ///   operation names should start with a letter. Normalization will convert
-    ///   all letters to lowercase and non-alphanumeric characters to '_' to
+    ///   all letters to lowercase and non-alphanumeric characters to '\_' to
     ///   make resulting names match the "[a-z][a-z0-9_]*" pattern for operation
     ///   argument names. `inputs` cannot contain the same tensor twice.
     /// * `outputs` - array of `Output`s that specify the outputs of the
@@ -558,6 +560,7 @@ pub struct AttrMetadata {
 
     /// Total size the attribute value.
     /// The units of total_size depend on list_size and attr_type.
+    ///
     /// 1. If attr_type == AttrType::String and list_size == None
     ///    then total_size is the byte size of the string valued attribute.
     /// 2. If attr_type == AttrType::String and list_size == Some(_)
