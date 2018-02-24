@@ -1287,15 +1287,6 @@ pub struct Input<'a> {
     pub index: c_int,
 }
 
-impl<'a> Input<'a> {
-    fn to_c(&self) -> tf::TF_Input {
-        tf::TF_Input {
-            oper: self.operation.inner,
-            index: self.index,
-        }
-    }
-}
-
 ////////////////////////
 
 /// A `Output` is one end of a graph edge.
@@ -1744,7 +1735,7 @@ pub struct FunctionOptions {
 
 impl FunctionOptions {
     /// Creates a blank set of options.
-    fn new() -> Self {
+    pub fn new() -> Self {
         FunctionOptions {
             inner: ptr::null_mut(), // TODO: Use real options when they become available
         }
@@ -1996,7 +1987,7 @@ mod tests {
         };
         assert_eq!(Shape(None), op.get_attr_shape("shape").unwrap());
 
-        let mut value = Tensor::<i32>::new(&[1, 3]).with_values(&[1, 2, 3]).unwrap();
+        let value = Tensor::<i32>::new(&[1, 3]).with_values(&[1, 2, 3]).unwrap();
         let const_op = {
             let mut nd = g.new_operation("Const", "Const").unwrap();
             nd.set_attr_tensor("value", value.clone()).unwrap();
@@ -2015,8 +2006,8 @@ mod tests {
                 operation: const_op.clone(),
                 index: 0,
             });
-            nd.set_attr_bool("validate_shape", true);
-            nd.set_attr_bool("use_locking", false);
+            nd.set_attr_bool("validate_shape", true).unwrap();
+            nd.set_attr_bool("use_locking", false).unwrap();
             nd.finish().unwrap()
         };
         assert_eq!(true, op.get_attr_bool("validate_shape").unwrap());

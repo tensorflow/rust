@@ -1,13 +1,11 @@
 extern crate tensorflow_sys as tf;
 extern crate aligned_alloc;
 
-use libc;
 use libc::c_void;
 use libc::size_t;
 use std::borrow::Borrow;
 use std::borrow::BorrowMut;
 use std::cmp;
-use std::ffi::CStr;
 use std::marker::PhantomData;
 use std::mem;
 use std::ops::Deref;
@@ -19,7 +17,6 @@ use std::ops::RangeFrom;
 use std::ops::RangeFull;
 use std::ops::RangeTo;
 use std::os::raw::c_void as std_c_void;
-use std::ptr;
 use std::slice;
 use super::BufferTrait;
 use super::TensorType;
@@ -60,7 +57,7 @@ impl<T: TensorType> Buffer<T> {
         // posix_memalign requires the alignment to be at least sizeof(void*).
         // TODO: Use alloc::heap::allocate once it's stable, or at least
         // libc::aligned_alloc once it exists
-        let mut ptr = aligned_alloc::aligned_alloc(alloc_size, align);
+        let ptr = aligned_alloc::aligned_alloc(alloc_size, align);
 
         // We cannot be sure that we can deallocate always.
         // For Linux it would be OK, but for Windows it's not.

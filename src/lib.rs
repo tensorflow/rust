@@ -758,7 +758,7 @@ impl TensorType for String {
     }
 
     fn pack(data: &[Self], buffer: &mut [u8]) -> Result<()> {
-        let mut offsets: &mut [u64] =
+        let offsets: &mut [u64] =
             unsafe { slice::from_raw_parts_mut(buffer.as_mut_ptr() as *mut u64, data.len()) };
         let base_offset = mem::size_of::<u64>() * data.len();
         let mut offset = base_offset;
@@ -995,7 +995,7 @@ where
                     dims.len() as c_int,
                     packed_size,
                 );
-                let mut buf =
+                let buf =
                     slice::from_raw_parts_mut(tf::TF_TensorData(inner) as *mut u8, packed_size);
                 T::pack(data, buf)?;
                 inner
@@ -1341,7 +1341,7 @@ mod tests {
 
     #[test]
     fn test_tensor_native_type_zero() {
-        let mut tensor = <Tensor<i32>>::new(&[1000]);
+        let tensor = <Tensor<i32>>::new(&[1000]);
 
         // Checking against null-initialized slice/vector makes
         // the unit test succeed often on repeated runs.
