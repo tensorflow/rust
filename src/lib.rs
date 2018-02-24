@@ -536,6 +536,7 @@ pub trait TensorType: Default + Clone + Display + Debug + 'static {
     /// Tensor representation for this type. Normally `TensorDataCRepr` for types
     /// that have the same representation in Rust; or `TensorDataNoCRepr` for
     /// types where the Rust and C representations differ.
+    #[doc(hidden)]
     type InnerType: TensorInner<Self>;
     
     /// Returns the DataType that corresponds to this type.
@@ -797,6 +798,7 @@ unsafe fn tensor_dims(tensor: *mut tf::TF_Tensor) -> Vec<u64> {
 }
 
 /// Inner representation of `Tensor`s.
+#[doc(hidden)]
 pub trait TensorInner<T>: Debug + Clone
 where
     Self: Sized + Deref<Target = [T]> + DerefMut<Target = [T]>,
@@ -817,6 +819,7 @@ where
 /// Inner representation for `Tensor`s of types where C and Rust have the
 /// same representation.
 #[derive(Debug)]
+#[doc(hidden)]
 pub struct TensorDataCRepr<T>
 where
     T: TensorType,
@@ -932,6 +935,7 @@ impl<T: TensorType + Copy> Clone for TensorDataCRepr<T> {
 /// Inner representation for `Tensor`s of types where C and Rust have
 /// different representations.
 #[derive(Debug)]
+#[doc(hidden)]
 pub struct TensorDataNoCRepr<T>
 where
     T: TensorType,
