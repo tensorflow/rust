@@ -255,7 +255,7 @@ c_enum!("Error values that can be returned.", TF_Code, Code {
   /// Unlike INVALID_ARGUMENT, this error indicates a problem that may
   /// be fixed if the system state changes. For example, a 32-bit file
   /// system will generate INVALID_ARGUMENT if asked to read at an
-  /// offset that is not in the range [0,2^32-1], but it will generate
+  /// offset that is not in the range [0,2<sup>32</sup>-1], but it will generate
   /// OUT_OF_RANGE if asked to read from an offset past the current
   /// file size.
   ///
@@ -536,6 +536,7 @@ pub trait TensorType: Default + Clone + Display + Debug + 'static {
     /// Tensor representation for this type. Normally `TensorDataCRepr` for types
     /// that have the same representation in Rust; or `TensorDataNoCRepr` for
     /// types where the Rust and C representations differ.
+    #[doc(hidden)]
     type InnerType: TensorInner<Self>;
     
     /// Returns the DataType that corresponds to this type.
@@ -758,7 +759,7 @@ impl TensorType for String {
     }
 
     fn pack(data: &[Self], buffer: &mut [u8]) -> Result<()> {
-        let mut offsets: &mut [u64] =
+        let offsets: &mut [u64] =
             unsafe { slice::from_raw_parts_mut(buffer.as_mut_ptr() as *mut u64, data.len()) };
         let base_offset = mem::size_of::<u64>() * data.len();
         let mut offset = base_offset;
@@ -797,6 +798,7 @@ unsafe fn tensor_dims(tensor: *mut tf::TF_Tensor) -> Vec<u64> {
 }
 
 /// Inner representation of `Tensor`s.
+#[doc(hidden)]
 pub trait TensorInner<T>: Debug + Clone
 where
     Self: Sized + Deref<Target = [T]> + DerefMut<Target = [T]>,
@@ -817,6 +819,7 @@ where
 /// Inner representation for `Tensor`s of types where C and Rust have the
 /// same representation.
 #[derive(Debug)]
+#[doc(hidden)]
 pub struct TensorDataCRepr<T>
 where
     T: TensorType,
@@ -932,6 +935,7 @@ impl<T: TensorType + Copy> Clone for TensorDataCRepr<T> {
 /// Inner representation for `Tensor`s of types where C and Rust have
 /// different representations.
 #[derive(Debug)]
+#[doc(hidden)]
 pub struct TensorDataNoCRepr<T>
 where
     T: TensorType,
@@ -995,7 +999,7 @@ where
                     dims.len() as c_int,
                     packed_size,
                 );
-                let mut buf =
+                let buf =
                     slice::from_raw_parts_mut(tf::TF_TensorData(inner) as *mut u8, packed_size);
                 T::pack(data, buf)?;
                 inner
@@ -1341,7 +1345,7 @@ mod tests {
 
     #[test]
     fn test_tensor_native_type_zero() {
-        let mut tensor = <Tensor<i32>>::new(&[1000]);
+        let tensor = <Tensor<i32>>::new(&[1000]);
 
         // Checking against null-initialized slice/vector makes
         // the unit test succeed often on repeated runs.

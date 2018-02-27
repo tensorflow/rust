@@ -50,7 +50,7 @@ pub enum OpLevel {
 /// A operation in an expression tree, which is a thin wrapper around an ExprImpl.
 ///
 /// This is separate from ExprImpl because we want expressions to be wrapped in an Rc,
-/// and we can't directly implement std::ops::Add, etc., for Rc<E: ExprImpl<T>>.
+/// and we can't directly implement std::ops::Add, etc., for Rc&lt;E: ExprImpl&lt;Tgt;&gt;.
 #[derive(Debug,Clone)]
 pub struct Expr<T: TensorType> {
     expr: Rc<ExprImpl<T>>,
