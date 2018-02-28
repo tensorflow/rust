@@ -648,6 +648,16 @@ impl Graph {
             status.into_result().map(|()| buffer.into())
         }
     }
+
+    /// Returns the serialized VersionDef proto for this graph.
+    pub fn versions(&self) -> Result<Vec<u8>> {
+        let status = Status::new();
+        unsafe {
+            let mut buffer = Buffer::new_unallocated();
+            tf::TF_GraphVersions(self.inner(), buffer.inner_mut(), status.inner);
+            status.into_result().map(|()| buffer.into())
+        }
+    }
 }
 
 impl GraphTrait for Graph {
@@ -2386,5 +2396,12 @@ mod tests {
         let g = Graph::new();
         // We don't want to compare the actual proto because it may change across releases.
         assert!(g.get_op_def("Const").unwrap().len() > 0);
+    }
+
+    #[test]
+    fn graph_versions() {
+        let g = Graph::new();
+        // We don't want to compare the actual proto because it may change across releases.
+        assert!(g.versions().unwrap().len() > 0);
     }
 }
