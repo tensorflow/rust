@@ -135,6 +135,32 @@ impl ImportGraphDefOptions {
     pub fn num_return_outputs(&self) -> usize {
         unsafe { tf::TF_ImportGraphDefOptionsNumReturnOutputs(self.inner) as usize }
     }
+
+    /// Set whether to uniquify imported operation names. If true, imported operation
+    /// names will be modified if their name already exists in the graph. If false,
+    /// conflicting names will be treated as an error. Note that this option has no
+    /// effect if a prefix is set, since the prefix will guarantee all names are
+    /// unique. Defaults to false.
+    pub fn set_uniquify_names(&mut self, uniquify_names: bool) {
+        unsafe {
+            tf::TF_ImportGraphDefOptionsSetUniquifyNames(
+                self.inner,
+                if uniquify_names { 1 } else { 0 },
+            );
+        }
+    }
+
+    /// If true, the specified prefix will be modified if it already exists as an
+    /// operation name or prefix in the graph. If false, a conflicting prefix will be
+    /// treated as an error. This option has no effect if no prefix is specified.
+    pub fn set_uniquify_prefix(&mut self, uniquify_prefix: bool) {
+        unsafe {
+            tf::TF_ImportGraphDefOptionsSetUniquifyPrefix(
+                self.inner,
+                if uniquify_prefix { 1 } else { 0 },
+            );
+        }
+    }
 }
 
 ////////////////////////
@@ -2120,5 +2146,56 @@ mod tests {
         // serialization/deserialization, and bool_list and tensor_list (a.k.a.
         // list(bool) and list(tensor)) don't seem to be used for any standard
         // ops.
+    }
+
+    // Returns a serialized GraphDef proto with variables "a" and "b" and op "a_times_b".
+    fn graph_def() -> Vec<u8> {
+        let mut g = Graph::new();
+        let a = {
+            let mut nd = g.new_operation("Variable", "a").unwrap();
+            nd.set_attr_type("dtype", DataType::Int32).unwrap();
+            nd.set_attr_shape("shape", &Shape(None)).unwrap();
+            nd.finish().unwrap()
+        };
+        let b = {
+            let mut nd = g.new_operation("Variable", "b").unwrap();
+            nd.set_attr_type("dtype", DataType::Int32).unwrap();
+            nd.set_attr_shape("shape", &Shape(None)).unwrap();
+            nd.finish().unwrap()
+        };
+        {
+            let mut nd = g.new_operation("Mul", "a_times_b").unwrap();
+            nd.add_input(Output {
+                operation: a,
+                index: 0,
+            });
+            nd.add_input(Output {
+                operation: b,
+                index: 0,
+            });
+            nd.finish().unwrap();
+        }
+        g.graph_def().unwrap()
+    }
+
+    #[test]
+    fn import_graph_def_uniquify_names() {
+        let mut g = Graph::new();
+        let mut opts = ImportGraphDefOptions::new();
+        g.import_graph_def(&graph_def(), &opts).unwrap();
+        opts.set_uniquify_names(true);
+        g.import_graph_def(&graph_def(), &opts).unwrap();
+        g.operation_by_name_required("a_1").unwrap();
+    }
+
+    #[test]
+    fn import_graph_def_uniquify_prefix() {
+        let mut g = Graph::new();
+        let mut opts = ImportGraphDefOptions::new();
+        opts.set_prefix("prefix").unwrap();
+        g.import_graph_def(&graph_def(), &opts).unwrap();
+        opts.set_uniquify_prefix(true);
+        g.import_graph_def(&graph_def(), &opts).unwrap();
+        g.operation_by_name_required("prefix_1/a").unwrap();
     }
 }
