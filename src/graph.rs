@@ -636,6 +636,18 @@ impl Graph {
         status.into_result()?;
         Ok(Function { inner: f })
     }
+
+    /// Returns the serialized OpDef proto with name `op_name`, or a bad status if no
+    /// such op exists. This can return OpDefs of functions copied into the graph.
+    pub fn get_op_def(&self, op_name: &str) -> Result<Vec<u8>> {
+        let status = Status::new();
+        let c_op_name = CString::new(op_name)?;
+        unsafe {
+            let mut buffer = Buffer::new_unallocated();
+            tf::TF_GraphGetOpDef(self.inner(), c_op_name.as_ptr(), buffer.inner_mut(), status.inner);
+            status.into_result().map(|()| buffer.into())
+        }
+    }
 }
 
 impl GraphTrait for Graph {
@@ -2367,5 +2379,12 @@ mod tests {
         assert_eq!(missing.len(), 1);
         assert_eq!(missing[0].0, "bar");
         assert_eq!(missing[0].1, 3);
+    }
+
+    #[test]
+    fn graph_get_op_def() {
+        let g = Graph::new();
+        // We don't want to compare the actual proto because it may change across releases.
+        assert!(g.get_op_def("Const").unwrap().len() > 0);
     }
 }
