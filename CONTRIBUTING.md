@@ -14,3 +14,27 @@ Please fill out either the individual or corporate Contributor License Agreement
 Follow either of the two links above to access the appropriate CLA and instructions for how to sign and return it. Once we receive it, we'll be able to accept your pull requests.
 
 ***NOTE***: Only original source code from you and other people that have signed the CLA can be accepted into the main repository.
+
+### GitHub Issues
+
+If you want to work on a GitHub issue, check to make sure it's not assigned to someone first.
+If it's not assigned to anyone, assign yourself once you start writing code.
+(Please don't assign yourself just because you'd like to work on the issue, but only when you actually start.)
+This helps avoid duplicate work.
+
+If you start working on an issue but find that you won't be able to finish, please un-assign yourself so other people know the issue is available.
+If you assign yourself but aren't making progress, we may assign the issue to someone else.
+
+If you're working on issue 123, please put "Fixes #123" (without quotes) in the commit message below everything else and separated by a blank line.
+For example, if issue 123 is a feature request to add foobar, the commit message might look like:
+```
+Add foobar
+
+Some longer description goes here, if you
+want to describe your change in detail.
+
+Fixes #123
+```
+This will [close the bug once your pull request is merged](https://help.github.com/articles/closing-issues-using-keywords/).
+
+If you're a first-time contributor, try looking for an issue with the label "good first issue", which should be easier for someone unfamiliar with the codebase to work on.
