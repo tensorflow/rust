@@ -15,6 +15,11 @@ Follow either of the two links above to access the appropriate CLA and instructi
 
 ***NOTE***: Only original source code from you and other people that have signed the CLA can be accepted into the main repository.
 
+Make sure that your [email address in the commit](https://help.github.com/articles/setting-your-commit-email-address-in-git/)
+matches the email address you use to sign the CLA, or we won't be able to merge your pull request.
+Do this *before* creating the commits.
+If you've already created the commits with a different email address, you should be able to sign the CLA again with that email address.
+
 ### GitHub Issues
 
 If you want to work on a GitHub issue, check to make sure it's not assigned to someone first.
@@ -38,3 +43,12 @@ Fixes #123
 This will [close the bug once your pull request is merged](https://help.github.com/articles/closing-issues-using-keywords/).
 
 If you're a first-time contributor, try looking for an issue with the label "good first issue", which should be easier for someone unfamiliar with the codebase to work on.
+
+### Git
+
+Please check out a recent version of `master` before starting work, and rebase onto `master` before creating a pull request.
+This helps keep the commit graph clean and easy to follow.
+
+As noted in the CLA section, make sure that your [email address in the commit](https://help.github.com/articles/setting-your-commit-email-address-in-git/)
+matches the email address you use to sign the CLA, or we won't be able to merge your pull request.
+Do this *before* creating the commits.
