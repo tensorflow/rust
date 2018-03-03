@@ -131,6 +131,16 @@ impl ImportGraphDefOptions {
         Ok(())
     }
 
+    /// Add an operation in `graph_def` to be returned via the `return_opers` output
+    /// parameter of import_graph_def().
+    pub fn add_return_operation(&mut self, oper_name: &str) -> std::result::Result<(), NulError> {
+        let s = CString::new(oper_name)?;
+        unsafe {
+            tf::TF_ImportGraphDefOptionsAddReturnOperation(self.inner, s.as_ptr());
+        }
+        Ok(())
+    }
+
     /// Returns the number of return outputs added via `add_return_output()`.
     pub fn num_return_outputs(&self) -> usize {
         unsafe { tf::TF_ImportGraphDefOptionsNumReturnOutputs(self.inner) as usize }
