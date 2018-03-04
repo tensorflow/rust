@@ -227,6 +227,33 @@ impl ImportGraphDefResults {
                 .collect()
         }
     }
+
+    /// Fetches any input mappings requested via
+    /// ImportGraphDefOptions::add_input_mapping() that didn't appear in the GraphDef
+    /// and weren't used as input to any node in the imported graph def.
+    pub fn missing_unused_input_mappings(
+        &self,
+    ) -> std::result::Result<Vec<(&str, c_int)>, Utf8Error> {
+        unsafe {
+            let mut n: c_int = 0;
+            let mut c_src_names: *mut *const c_char = ptr::null_mut();
+            let mut src_indexes: *mut c_int = ptr::null_mut();
+            tf::TF_ImportGraphDefResultsMissingUnusedInputMappings(
+                self.inner,
+                &mut n,
+                &mut c_src_names,
+                &mut src_indexes,
+            );
+            let c_name_slice = slice::from_raw_parts(c_src_names, n as usize);
+            let index_slice = slice::from_raw_parts(src_indexes, n as usize);
+            let mut v = Vec::new();
+            for i in 0..n as usize {
+                let s = CStr::from_ptr(c_name_slice[i]).to_str()?;
+                v.push((s, index_slice[i]));
+            }
+            Ok(v)
+        }
+    }
 }
 
 impl_drop!(ImportGraphDefResults, TF_DeleteImportGraphDefResults);
@@ -2317,5 +2344,28 @@ mod tests {
         let ops = result.return_operations();
         assert_eq!(ops.len(), 1);
         assert_eq!(ops[0].name().unwrap(), "a_times_b");
+    }
+
+    #[test]
+    fn import_graph_def_results_missing_unused_input_mappings() {
+        let mut g = Graph::new();
+        let op = {
+            let mut nd = g.new_operation("Variable", "foo").unwrap();
+            nd.set_attr_type("dtype", DataType::Int32).unwrap();
+            nd.set_attr_shape("shape", &Shape(None)).unwrap();
+            nd.finish().unwrap()
+        };
+        let output = Output {
+            operation: op,
+            index: 0,
+        };
+        let mut opts = ImportGraphDefOptions::new();
+        opts.add_input_mapping("bar", 3, &output).unwrap();
+        // An empty array is a valid proto, since all fields are optional.
+        let result = g.import_graph_def_with_results(&[], &opts).unwrap();
+        let missing = result.missing_unused_input_mappings().unwrap();
+        assert_eq!(missing.len(), 1);
+        assert_eq!(missing[0].0, "bar");
+        assert_eq!(missing[0].1, 3);
     }
 }
