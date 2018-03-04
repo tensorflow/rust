@@ -194,17 +194,37 @@ impl ImportGraphDefResults {
         unsafe {
             let mut num_outputs: c_int = 0;
             let mut c_outputs: *mut tf::TF_Output = ptr::null_mut();
-            tf::TF_ImportGraphDefResultsReturnOutputs(
-                self.inner, &mut num_outputs, &mut c_outputs);
-            slice::from_raw_parts(c_outputs, num_outputs as usize).iter().map(|output| {
-                Output {
+            tf::TF_ImportGraphDefResultsReturnOutputs(self.inner, &mut num_outputs, &mut c_outputs);
+            slice::from_raw_parts(c_outputs, num_outputs as usize)
+                .iter()
+                .map(|output| Output {
                     operation: Operation {
                         inner: output.oper,
                         gimpl: self.gimpl.clone(),
                     },
                     index: output.index,
-                }
-            }).collect()
+                })
+                .collect()
+        }
+    }
+
+    /// Fetches the return operations requested via ImportGraphDefOptions::add_return_operation().
+    pub fn return_operations(&self) -> Vec<Operation> {
+        unsafe {
+            let mut num_operations: c_int = 0;
+            let mut c_operations: *mut *mut tf::TF_Operation = ptr::null_mut();
+            tf::TF_ImportGraphDefResultsReturnOperations(
+                self.inner,
+                &mut num_operations,
+                &mut c_operations,
+            );
+            slice::from_raw_parts(c_operations, num_operations as usize)
+                .iter()
+                .map(|operation| Operation {
+                    inner: *operation,
+                    gimpl: self.gimpl.clone(),
+                })
+                .collect()
         }
     }
 }
@@ -376,11 +396,16 @@ impl Graph {
         let buf = Buffer::from(graph_def);
         let mut status = Status::new();
         unsafe {
-            let result = tf::TF_GraphImportGraphDefWithResults(self.gimpl.inner,
-                                                               buf.inner(),
-                                                               options.inner,
-                                                               status.inner());
-            status.into_result().map(|()| ImportGraphDefResults {inner: result, gimpl: self.gimpl.clone()})
+            let result = tf::TF_GraphImportGraphDefWithResults(
+                self.gimpl.inner,
+                buf.inner(),
+                options.inner,
+                status.inner(),
+            );
+            status.into_result().map(|()| ImportGraphDefResults {
+                inner: result,
+                gimpl: self.gimpl.clone(),
+            })
         }
     }
 
@@ -2272,10 +2297,25 @@ mod tests {
         assert_eq!(opts.num_return_outputs(), 0);
         opts.add_return_output("a_times_b", 0).unwrap();
         assert_eq!(opts.num_return_outputs(), 1);
-        let result = g.import_graph_def_with_results(&graph_def(), &opts).unwrap();
+        let result = g.import_graph_def_with_results(&graph_def(), &opts)
+            .unwrap();
         let ops = result.return_outputs();
         assert_eq!(ops.len(), 1);
         assert_eq!(ops[0].operation.name().unwrap(), "a_times_b");
         assert_eq!(ops[0].index, 0);
+    }
+
+    #[test]
+    fn import_graph_def_results_return_operations() {
+        let mut g = Graph::new();
+        let mut opts = ImportGraphDefOptions::new();
+        assert_eq!(opts.num_return_operations(), 0);
+        opts.add_return_operation("a_times_b").unwrap();
+        assert_eq!(opts.num_return_operations(), 1);
+        let result = g.import_graph_def_with_results(&graph_def(), &opts)
+            .unwrap();
+        let ops = result.return_operations();
+        assert_eq!(ops.len(), 1);
+        assert_eq!(ops[0].name().unwrap(), "a_times_b");
     }
 }
