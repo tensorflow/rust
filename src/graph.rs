@@ -637,6 +637,19 @@ impl Graph {
         Ok(Function { inner: f })
     }
 
+    /// Returns functions registered in the graph.
+    pub fn get_functions(&self) -> Result<Vec<Function>> {
+        unsafe {
+            let num = tf::TF_GraphNumFunctions(self.inner());
+            let mut funcs = Vec::with_capacity(num as usize);
+            let status = Status::new();
+            let num = tf::TF_GraphGetFunctions(self.inner(), funcs.as_mut_ptr(), num, status.inner);
+            status.into_result()?;
+            funcs.set_len(num as usize);
+            Ok(funcs.iter().map(|f| Function {inner: *f}).collect())
+        }
+    }
+
     /// Returns the serialized OpDef proto with name `op_name`, or a bad status if no
     /// such op exists. This can return OpDefs of functions copied into the graph.
     pub fn get_op_def(&self, op_name: &str) -> Result<Vec<u8>> {
@@ -2121,7 +2134,9 @@ mod tests {
             Some(description),
         ).unwrap();
         let mut g2 = Graph::new();
+        assert_eq!(0, g2.get_functions().unwrap().len());
         g2.copy_function(&f, None).unwrap();
+        assert_eq!(1, g2.get_functions().unwrap().len());
     }
 
     // This test checks that Operation::get_attr_* returns the value passed in
