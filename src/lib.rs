@@ -355,6 +355,12 @@ c_enum!("Type of a single tensor element.", TF_DataType, DataType {
 
   /// A dynamic type similar to std::any::Any.
   value Variant = 21,
+
+  /// 32-bit unsigned integer.
+  value UInt32 = 22,
+
+  /// 64-bit unsigned integer.
+  value UInt64 = 23,
 });
 
 ////////////////////////
@@ -610,6 +616,9 @@ tensor_type!(f32, Float, 0.0, 1.0);
 tensor_type!(f64, Double, 0.0, 1.0);
 tensor_type!(i32, Int32, 0, 1);
 tensor_type!(u8, UInt8, 0, 1);
+tensor_type!(u16, UInt16, 0, 1);
+tensor_type!(u32, UInt32, 0, 1);
+tensor_type!(u64, UInt64, 0, 1);
 tensor_type!(i16, Int16, 0, 1);
 tensor_type!(i8, Int8, 0, 1);
 tensor_type!(Complex<f32>, Complex64, Complex::new(0.0, 0.0), Complex::new(1.0, 0.0));
