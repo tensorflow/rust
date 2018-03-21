@@ -637,6 +637,13 @@ impl Graph {
         Ok(Function { inner: f })
     }
 
+    /// Returns the number of functions registered in the graph.
+    pub fn num_functions(&self) -> c_int {
+        unsafe {
+            tf::TF_GraphNumFunctions(self.inner())
+        }
+    }
+
     /// Returns functions registered in the graph.
     pub fn get_functions(&self) -> Result<Vec<Function>> {
         unsafe {
@@ -2151,8 +2158,10 @@ mod tests {
             Some(description),
         ).unwrap();
         let mut g2 = Graph::new();
+        assert_eq!(0, g2.num_functions());
         assert_eq!(0, g2.get_functions().unwrap().len());
         g2.copy_function(&f, None).unwrap();
+        assert_eq!(1, g2.num_functions());
         assert_eq!(1, g2.get_functions().unwrap().len());
     }
 
