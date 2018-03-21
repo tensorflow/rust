@@ -1622,6 +1622,23 @@ impl<'a> OperationDescription<'a> {
         Ok(())
     }
 
+    /// Sets the value of a function attribute.
+    #[allow(trivial_numeric_casts)]
+    pub fn set_attr_func_name(&mut self,
+                              attr_name: &str,
+                              value: &str)
+                              -> std::result::Result<(), NulError> {
+        let c_attr_name = CString::new(attr_name)?;
+        let c_value = value.as_bytes();
+        unsafe {
+            tf::TF_SetAttrFuncName(self.inner,
+                                   c_attr_name.as_ptr(),
+                                   c_value.as_ptr() as *const c_char,
+                                   c_value.len() as size_t);
+        }
+        Ok(())
+    }
+
     /// Sets an int-valued attribute.
     pub fn set_attr_int(&mut self,
                         attr_name: &str,
@@ -2297,10 +2314,11 @@ mod tests {
         // - tensor_shape_proto
         // - tensor_shape_proto_list
         // - value_proto
+        // - func_name
         // The protos are tricky because we don't currently support proto
         // serialization/deserialization, and bool_list and tensor_list (a.k.a.
         // list(bool) and list(tensor)) don't seem to be used for any standard
-        // ops.
+        // ops. TF_GetAttrFuncName doesn't exist yet.
     }
 
     // Returns a serialized GraphDef proto with variables "a" and "b" and op "a_times_b".
