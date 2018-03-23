@@ -636,6 +636,48 @@ impl Graph {
         status.into_result()?;
         Ok(Function { inner: f })
     }
+
+    /// Returns the number of functions registered in the graph.
+    pub fn num_functions(&self) -> c_int {
+        unsafe {
+            tf::TF_GraphNumFunctions(self.inner())
+        }
+    }
+
+    /// Returns functions registered in the graph.
+    pub fn get_functions(&self) -> Result<Vec<Function>> {
+        unsafe {
+            let num = tf::TF_GraphNumFunctions(self.inner());
+            let mut funcs = Vec::with_capacity(num as usize);
+            let status = Status::new();
+            let num = tf::TF_GraphGetFunctions(self.inner(), funcs.as_mut_ptr(), num, status.inner);
+            status.into_result()?;
+            funcs.set_len(num as usize);
+            Ok(funcs.iter().map(|f| Function {inner: *f}).collect())
+        }
+    }
+
+    /// Returns the serialized OpDef proto with name `op_name`, or a bad status if no
+    /// such op exists. This can return OpDefs of functions copied into the graph.
+    pub fn get_op_def(&self, op_name: &str) -> Result<Vec<u8>> {
+        let status = Status::new();
+        let c_op_name = CString::new(op_name)?;
+        unsafe {
+            let mut buffer = Buffer::new_unallocated();
+            tf::TF_GraphGetOpDef(self.inner(), c_op_name.as_ptr(), buffer.inner_mut(), status.inner);
+            status.into_result().map(|()| buffer.into())
+        }
+    }
+
+    /// Returns the serialized VersionDef proto for this graph.
+    pub fn versions(&self) -> Result<Vec<u8>> {
+        let status = Status::new();
+        unsafe {
+            let mut buffer = Buffer::new_unallocated();
+            tf::TF_GraphVersions(self.inner(), buffer.inner_mut(), status.inner);
+            status.into_result().map(|()| buffer.into())
+        }
+    }
 }
 
 impl GraphTrait for Graph {
@@ -1587,6 +1629,23 @@ impl<'a> OperationDescription<'a> {
         Ok(())
     }
 
+    /// Sets the value of a function attribute.
+    #[allow(trivial_numeric_casts)]
+    pub fn set_attr_func_name(&mut self,
+                              attr_name: &str,
+                              value: &str)
+                              -> std::result::Result<(), NulError> {
+        let c_attr_name = CString::new(attr_name)?;
+        let c_value = value.as_bytes();
+        unsafe {
+            tf::TF_SetAttrFuncName(self.inner,
+                                   c_attr_name.as_ptr(),
+                                   c_value.as_ptr() as *const c_char,
+                                   c_value.len() as size_t);
+        }
+        Ok(())
+    }
+
     /// Sets an int-valued attribute.
     pub fn set_attr_int(&mut self,
                         attr_name: &str,
@@ -2099,7 +2158,11 @@ mod tests {
             Some(description),
         ).unwrap();
         let mut g2 = Graph::new();
+        assert_eq!(0, g2.num_functions());
+        assert_eq!(0, g2.get_functions().unwrap().len());
         g2.copy_function(&f, None).unwrap();
+        assert_eq!(1, g2.num_functions());
+        assert_eq!(1, g2.get_functions().unwrap().len());
     }
 
     // This test checks that Operation::get_attr_* returns the value passed in
@@ -2260,10 +2323,11 @@ mod tests {
         // - tensor_shape_proto
         // - tensor_shape_proto_list
         // - value_proto
+        // - func_name
         // The protos are tricky because we don't currently support proto
         // serialization/deserialization, and bool_list and tensor_list (a.k.a.
         // list(bool) and list(tensor)) don't seem to be used for any standard
-        // ops.
+        // ops. TF_GetAttrFuncName doesn't exist yet.
     }
 
     // Returns a serialized GraphDef proto with variables "a" and "b" and op "a_times_b".
@@ -2367,5 +2431,19 @@ mod tests {
         assert_eq!(missing.len(), 1);
         assert_eq!(missing[0].0, "bar");
         assert_eq!(missing[0].1, 3);
+    }
+
+    #[test]
+    fn graph_get_op_def() {
+        let g = Graph::new();
+        // We don't want to compare the actual proto because it may change across releases.
+        assert!(g.get_op_def("Const").unwrap().len() > 0);
+    }
+
+    #[test]
+    fn graph_versions() {
+        let g = Graph::new();
+        // We don't want to compare the actual proto because it may change across releases.
+        assert!(g.versions().unwrap().len() > 0);
     }
 }
