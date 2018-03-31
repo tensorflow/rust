@@ -17,6 +17,7 @@
 1. Run `cargo publish`. (Publish before tagging in case there are problems publishing and we need to add commits to fix them.)
 1. Add a `v${VERSION}` tag and push it
 1. Run `./update-docs`
+1. Announce the release to the mailing list
 
 ## Post-release
 
