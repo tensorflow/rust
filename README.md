@@ -101,9 +101,12 @@ use. See http://doc.crates.io/manifest.html#the-features-section.
 [doesn't exist](https://github.com/rust-lang/rfcs/issues/1491) yet.)
 
 ## Contributing
-Developers and users are welcome to join
+Developers and users are welcome to join the
+[TensorFlow Rust Google Group](https://groups.google.com/a/tensorflow.org/forum/#!forum/rust).
+
+Developers and users are also welcome to join
 [#tensorflow-rust](https://chat.mibbit.com/?server=irc.mozilla.org&channel=%23tensorflow-rust)
-on irc.mozilla.org.
+on irc.mozilla.org, although the Google Group is more likely to provide a response.
 
 Please read the [contribution guidelines](CONTRIBUTING.md) on how to contribute code.
 
