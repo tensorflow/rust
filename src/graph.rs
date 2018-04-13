@@ -678,6 +678,39 @@ impl Graph {
             status.into_result().map(|()| buffer.into())
         }
     }
+
+    /// Attempts to evaluate `output`. This will only be possible if `output`
+    /// doesn't depend on any graph inputs (this function is safe to call if
+    /// this isn't the case though).
+    ///
+    /// If the evaluation is successful, this function returns the tensor.
+    /// Otherwise returns None. An error status is returned if something is
+    /// wrong with the graph or input or the type requested doesn't match the
+    /// type of the tensor.
+    pub fn try_evaluate_constant<T: TensorType>(
+        &self,
+        output: &Output,
+    ) -> Result<Option<Tensor<T>>> {
+        let status = Status::new();
+        unsafe {
+            let mut c_tensor: *mut tf::TF_Tensor = ptr::null_mut();
+            let success = tf::TF_TryEvaluateConstant(
+                self.inner(),
+                output.to_c(),
+                &mut c_tensor,
+                status.inner,
+            );
+            status.into_result()?;
+            if success != 0 {
+                match Tensor::from_tf_tensor(c_tensor) {
+                    None => Err(invalid_arg!("Tensor types do not match")),
+                    Some(t) => Ok(Some(t)),
+                }
+            } else {
+                Ok(None)
+            }
+        }
+    }
 }
 
 impl GraphTrait for Graph {

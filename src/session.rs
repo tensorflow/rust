@@ -85,6 +85,8 @@ pub struct Session {
 
 impl Session {
     /// Creates a session.
+    /// `graph` will be be kept alive for the lifetime of the returned session.
+    /// New nodes can still be added to `graph` after this call.
     pub fn new(options: &SessionOptions, graph: &Graph) -> Result<Self> {
         let mut status = Status::new();
         let inner = unsafe { tf::TF_NewSession(graph.inner(), options.inner, status.inner()) };
