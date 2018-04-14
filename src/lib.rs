@@ -1,5 +1,8 @@
 //! This crate provides Rust bindings for the
 //! [`TensorFlow`](https://www.tensorflow.org) machine learning library.
+//!
+//! If you aren't sure how to use something, please see the
+//! [examples](https://github.com/tensorflow/rust/tree/master/examples) folder.
 
 #![warn(missing_copy_implementations,
         missing_debug_implementations,

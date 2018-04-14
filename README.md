@@ -10,17 +10,22 @@ stable API. This is especially true because the underlying TensorFlow C API has 
 been stabilized as well.
 
 * [Documentation](https://tensorflow.github.io/rust/tensorflow/)
+* [TensorFlow Rust Google Group](https://groups.google.com/a/tensorflow.org/forum/#!forum/rust)
 * [TensorFlow website](https://www.tensorflow.org)
 * [TensorFlow GitHub page](https://github.com/tensorflow/tensorflow)
 
 ## Getting Started
-Since this crate depends on the TensorFlow C API, it needs to be compiled first. This crate will
-automatically compile TensorFlow for you, but it is also possible to manually install TensorFlow
-and the crate will pick it up accordingly.
+Since this crate depends on the TensorFlow C API, it needs to be downloaded or compiled first. This
+crate will automatically download or compile the TensorFlow shared libraries for you, but it is also
+possible to manually install TensorFlow and the crate will pick it up accordingly.
 
 ### Prerequisites
-The following dependencies are needed to compile and build this crate (assuming TensorFlow itself
-  should also be compiled transparently):
+If the TensorFlow shared libraries can already be found on your system, they will be used.  If your
+system is x86-64 Linux or Mac, a prebuilt binary will be downloaded, and no special prerequisites
+are needed.
+
+Otherwise, the following dependencies are needed to compile and build this crate, which involves
+compiling TensorFlow itself:
 
  - git
  - [bazel](https://bazel.build/)
@@ -30,6 +35,9 @@ The following dependencies are needed to compile and build this crate (assuming 
 The TensorFlow website provides detailed instructions on how to obtain and install said dependencies,
 so if you are unsure please [check out the docs](https://www.tensorflow.org/install/install_sources)
  for further details.
+
+Some of the examples use TensorFlow code written in Python and require a full TensorFlow
+intallation.
 
 ### Usage
 Add this to your `Cargo.toml`:
@@ -73,7 +81,7 @@ In short:
 1. Install [SWIG](http://www.swig.org) and [NumPy](http://www.numpy.org).  The
    version from your distro's package manager should be fine for these two.
 2. [Install Bazel](https://bazel.io/docs/install.html), which you may need to do
-   from source.
+   from source.  You will likely need an up-to-date version.
 3. `git clone https://github.com/tensorflow/tensorflow`
 4. `cd tensorflow`
 5. `./configure`
@@ -82,8 +90,8 @@ In short:
    Using `--jobs=1` is recommended unless you have a lot of RAM, because
    TensorFlow's build is very memory intensive.
 
-Copy `$TENSORFLOW_SRC/bazel-bin/tensorflow/libtensorflow.so` to `/usr/local/lib`.
-If this is not possible, add `$TENSORFLOW_SRC/bazel-bin/tensorflow` to
+Copy `$TENSORFLOW_SRC/bazel-bin/tensorflow/libtensorflow.so` and `libtensorflow_framework.so` to
+`/usr/local/lib`.  If this is not possible, add `$TENSORFLOW_SRC/bazel-bin/tensorflow` to
 `LD_LIBRARY_PATH`.
 
 You may need to run `ldconfig` to reset `ld`'s cache after copying `libtensorflow.so`.
@@ -99,6 +107,12 @@ feature-gated behind the feature `tensorflow_unstable` to prevent accidental
 use. See http://doc.crates.io/manifest.html#the-features-section.
 (We would prefer using an `#[unstable]` attribute, but that
 [doesn't exist](https://github.com/rust-lang/rfcs/issues/1491) yet.)
+
+### How do I...?
+Try the [documentation](https://tensorflow.github.io/rust/tensorflow/) first, and see if it answers
+your question.  If not, take a look at the examples folder.  Note that there may not be an example
+for your exact question, but it may be answered by an example demonstrating something else.
+
 
 ## Contributing
 Developers and users are welcome to join the
