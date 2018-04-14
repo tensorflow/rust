@@ -94,7 +94,7 @@ You may need to run `ldconfig` to reset `ld`'s cache after copying `libtensorflo
 ## FAQ's
 
 ### Why does the compiler say that parts of the API don't exist?
-The especially unstable parts of the API (which is currently the `expr` modul) are
+The especially unstable parts of the API (which is currently the `expr` module) are
 feature-gated behind the feature `tensorflow_unstable` to prevent accidental
 use. See http://doc.crates.io/manifest.html#the-features-section.
 (We would prefer using an `#[unstable]` attribute, but that
