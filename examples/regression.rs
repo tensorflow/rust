@@ -34,7 +34,7 @@ fn main() {
 }
 
 fn run() -> Result<(), Box<Error>> {
-    let filename = "examples/regression-model/model.pb"; // y = w * x + b
+    let filename = "examples/regression/model.pb"; // y = w * x + b
     if !Path::new(filename).exists() {
         return Err(Box::new(Status::new_set(Code::NotFound,
                                             &format!("Run 'python regression.py' to generate \
@@ -71,8 +71,6 @@ fn run() -> Result<(), Box<Error>> {
 
     // Load the test data into the session.
     let mut init_step = StepWithGraph::new();
-    init_step.add_input(&op_x, 0, &x);
-    init_step.add_input(&op_y, 0, &y);
     init_step.add_target(&op_init);
     session.run(&mut init_step)?;
 

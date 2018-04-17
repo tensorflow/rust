@@ -31,7 +31,7 @@ fn main() {
 }
 
 fn run() -> Result<(), Box<Error>> {
-    let export_dir = "examples/saved-regression-model"; // y = w * x + b
+    let export_dir = "examples/regression_savedmodel"; // y = w * x + b
     if !Path::new(export_dir).exists() {
         return Err(Box::new(Status::new_set(Code::NotFound,
                                             &format!("Run 'python regression_savedmodel.py' to generate \
