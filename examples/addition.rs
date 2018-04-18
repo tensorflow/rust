@@ -32,7 +32,7 @@ fn main() {
 }
 
 fn run() -> Result<(), Box<Error>> {
-    let filename = "examples/addition-model/model.pb"; // z = x + y
+    let filename = "examples/addition/model.pb"; // z = x + y
     if !Path::new(filename).exists() {
         return Err(Box::new(Status::new_set(Code::NotFound,
                                             &format!("Run 'python addition.py' to generate {} \

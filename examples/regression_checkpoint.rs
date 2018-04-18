@@ -6,11 +6,14 @@ extern crate tensorflow;
 
 use random::Source;
 use std::error::Error;
+use std::fs::File;
+use std::io::Read;
 use std::result::Result;
 use std::path::Path;
 use std::process::exit;
 use tensorflow::Code;
 use tensorflow::Graph;
+use tensorflow::ImportGraphDefOptions;
 use tensorflow::Session;
 use tensorflow::SessionOptions;
 use tensorflow::Status;
@@ -31,12 +34,12 @@ fn main() {
 }
 
 fn run() -> Result<(), Box<Error>> {
-    let export_dir = "examples/regression_savedmodel"; // y = w * x + b
-    if !Path::new(export_dir).exists() {
+    let filename = "examples/regression_checkpoint/model.pb"; // y = w * x + b
+    if !Path::new(filename).exists() {
         return Err(Box::new(Status::new_set(Code::NotFound,
-                                            &format!("Run 'python regression_savedmodel.py' to generate \
+                                            &format!("Run 'python regression_checkpoint.py' to generate \
                                                       {} and try again.",
-                                                     export_dir))
+                                                     filename))
             .unwrap()));
     }
 
@@ -53,19 +56,28 @@ fn run() -> Result<(), Box<Error>> {
         y[i] = w * x[i] + b;
     }
 
-    // Load the saved model exported by regression_savedmodel.py.
+    // Load the computation graph defined by regression.py.
     let mut graph = Graph::new();
-    let mut session = Session::from_saved_model(&SessionOptions::new(), 
-                                                &["train", "serve"],
-                                                &mut graph,
-                                                export_dir)?;
+    let mut proto = Vec::new();
+    File::open(filename)?.read_to_end(&mut proto)?;
+    graph.import_graph_def(&proto, &ImportGraphDefOptions::new())?;
+    let mut session = Session::new(&SessionOptions::new(), &graph)?;
     let op_x = graph.operation_by_name_required("x")?;
     let op_y = graph.operation_by_name_required("y")?;
+    let op_init = graph.operation_by_name_required("init")?;
     let op_train = graph.operation_by_name_required("train")?;
     let op_w = graph.operation_by_name_required("w")?;
     let op_b = graph.operation_by_name_required("b")?;
+    let op_file_path = graph.operation_by_name_required("save/Const")?;
+    let op_save = graph.operation_by_name_required("save/control_dependency")?;
+    let file_path_tensor: Tensor<String> = Tensor::from(String::from("examples/regression_checkpoint/saved.ckpt"));
 
-    // Train the model (e.g. for fine tuning).
+    // Load the test data into the session.
+    let mut init_step = StepWithGraph::new();
+    init_step.add_target(&op_init);
+    session.run(&mut init_step)?;
+
+    // Train the model.
     let mut train_step = StepWithGraph::new();
     train_step.add_input(&op_x, 0, &x);
     train_step.add_input(&op_y, 0, &y);
@@ -73,6 +85,22 @@ fn run() -> Result<(), Box<Error>> {
     for _ in 0..steps {
         session.run(&mut train_step)?;
     }
+
+    // Save the model.
+    let mut step = StepWithGraph::new();
+    step.add_input(&op_file_path, 0, &file_path_tensor);
+    step.add_target(&op_save);
+    session.run(&mut step)?;
+
+    // Initialize variables, to erase trained data.
+    session.run(&mut init_step)?;
+
+    // Load the model.
+    let op_load = graph.operation_by_name_required("save/restore_all")?;
+    let mut step = StepWithGraph::new();
+    step.add_input(&op_file_path, 0, &file_path_tensor);
+    step.add_target(&op_load);
+    session.run(&mut step)?;
 
     // Grab the data out of the session.
     let mut output_step = StepWithGraph::new();

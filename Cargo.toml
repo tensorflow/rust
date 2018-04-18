@@ -38,3 +38,6 @@ name = "regression"
 
 [[example]]
 name = "regression_savedmodel"
+
+[[example]]
+name = "regression_checkpoint"

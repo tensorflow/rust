@@ -18,7 +18,7 @@ train = optimizer.minimize(loss, name='train')
 
 init = tf.variables_initializer(tf.global_variables(), name='init')
 
-directory = 'examples/saved-regression-model'
+directory = 'examples/regression_savedmodel'
 builder = SavedModelBuilder(directory)
 
 with tf.Session(graph=tf.get_default_graph()) as sess:
