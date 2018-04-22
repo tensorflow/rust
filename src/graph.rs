@@ -333,6 +333,32 @@ impl Graph {
         }
     }
 
+    /// Finds a unique operation name.  The pattern must contain exactly one
+    /// '{}' placeholder to indicate where a unique ID can be inserted, e.g.
+    /// 'Add_{}' or 'while_loop_{}/Merge', and the function returns an integer
+    /// which, when inserted into the placeholder, yields an operation name
+    /// which does not appear in the graph.
+    pub(crate) fn generate_operation_name(&self, operation_name_pattern: &str) -> Result<i64> {
+        let parts: Vec<_> = operation_name_pattern.split("{}").collect();
+        if parts.len() != 2 {
+            return Err(invalid_arg!(
+                "operation_name_pattern must contain placeholder"
+            ));
+        }
+        // Can't use format! because its argument must be a string literal.
+        let mut i = 0;
+        loop {
+            let name = format!("{}{}{}", parts[0], i, parts[1]);
+            let c_name = CString::new(name)?;
+            unsafe {
+                if tf::TF_GraphOperationByName(self.gimpl.inner, c_name.as_ptr()).is_null() {
+                    return Ok(i);
+                }
+            }
+            i += 1;
+        }
+    }
+
     /// Iterates over the operations in the graph.
     pub fn operation_iter(&self) -> OperationIter {
         OperationIter {
@@ -2478,5 +2504,18 @@ mod tests {
         let g = Graph::new();
         // We don't want to compare the actual proto because it may change across releases.
         assert!(g.versions().unwrap().len() > 0);
+    }
+
+    #[test]
+    fn graph_generate_operation_name() {
+        let mut g = Graph::new();
+        for i in 0..5 {
+            assert_eq!(i, g.generate_operation_name("foo_{}").unwrap());
+            let mut nd = g.new_operation("Placeholder", &format!("foo_{}", i))
+                .unwrap();
+            nd.set_attr_type("dtype", DataType::Float).unwrap();
+            nd.set_attr_shape("shape", &Shape(Some(vec![]))).unwrap();
+            nd.finish().unwrap();
+        }
     }
 }
