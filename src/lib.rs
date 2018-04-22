@@ -47,11 +47,11 @@ use std::str::Utf8Error;
 /// Will panic if `msg` contains an embedded 0 byte.
 macro_rules! invalid_arg {
   ($fmt:expr) => {
-    Status::new_set(Code::InvalidArgument, $fmt).unwrap()
+    ::Status::new_set(::Code::InvalidArgument, $fmt).unwrap()
   };
   ($fmt:expr, $($arg:tt)*) => ({
     let msg = format!($fmt, $($arg)*);
-    Status::new_set(Code::InvalidArgument, &msg).unwrap()
+    ::Status::new_set(::Code::InvalidArgument, &msg).unwrap()
   });
 }
 
@@ -1240,6 +1240,8 @@ impl Library {
 
 ////////////////////////
 
+// TODO: Replace these with pub(crate)
+
 /// This exposes Buffer behavior without making it public.
 trait BufferTrait {
     fn is_owned(&self) -> bool;
@@ -1251,6 +1253,7 @@ trait BufferTrait {
 /// This exposes Graph behavior without making it public.
 trait GraphTrait {
     fn inner(&self) -> *mut tf::TF_Graph;
+    unsafe fn from_c(inner: *mut tf::TF_Graph) -> Self;
 }
 
 
@@ -1320,6 +1323,11 @@ impl Display for Shape {
         self.0.fmt(f)
     }
 }
+
+////////////////////////
+
+mod while_loop;
+pub use while_loop::*;
 
 ////////////////////////
 

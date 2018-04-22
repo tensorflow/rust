@@ -35,6 +35,7 @@ struct GraphLifetime;
 #[derive(Debug)]
 struct GraphImpl {
     inner: *mut tf::TF_Graph,
+    owned: bool,
 }
 
 unsafe impl Send for GraphImpl {}
@@ -43,8 +44,10 @@ unsafe impl Sync for GraphImpl {}
 impl Drop for GraphImpl {
     /// Graph will be deleted once no more Sessions are referencing it.
     fn drop(&mut self) {
-        unsafe {
-            tf::TF_DeleteGraph(self.inner);
+        if self.owned {
+            unsafe {
+                tf::TF_DeleteGraph(self.inner);
+            }
         }
     }
 }
@@ -273,7 +276,10 @@ impl Graph {
     pub fn new() -> Graph {
         unsafe {
             Graph {
-                gimpl: Arc::new(GraphImpl { inner: tf::TF_NewGraph() }),
+                gimpl: Arc::new(GraphImpl {
+                    inner: tf::TF_NewGraph(),
+                    owned: true,
+                }),
                 lifetime: GraphLifetime,
             }
         }
@@ -742,6 +748,16 @@ impl Graph {
 impl GraphTrait for Graph {
     fn inner(&self) -> *mut tf::TF_Graph {
         self.gimpl.inner
+    }
+
+    unsafe fn from_c(inner: *mut tf::TF_Graph) -> Self {
+        Graph {
+            gimpl: Arc::new(GraphImpl {
+                inner,
+                owned: false,
+            }),
+            lifetime: GraphLifetime,
+        }
     }
 }
 
@@ -1549,14 +1565,14 @@ pub struct Output {
 }
 
 impl Output {
-    fn to_c(&self) -> tf::TF_Output {
+    pub(crate) fn to_c(&self) -> tf::TF_Output {
         tf::TF_Output {
             oper: self.operation.inner,
             index: self.index,
         }
     }
 
-    fn from_c(graph: &Graph, output: &tf::TF_Output) -> Self {
+    pub(crate) fn from_c(graph: &Graph, output: &tf::TF_Output) -> Self {
         Output {
             operation: Operation {
                 inner: output.oper,
