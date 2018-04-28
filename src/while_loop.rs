@@ -30,17 +30,17 @@ impl Drop for CWhileParams {
     }
 }
 
-/// A WhileParams is used to build a while loop.
+/// A WhileBuilder is used to build a while loop.
 #[derive(Debug)]
-pub struct WhileParams<'a> {
+pub struct WhileBuilder<'a> {
     graph: &'a mut Graph,
     inner: CWhileParams,
     name: Option<CString>,
     c_inputs: Vec<tf::TF_Output>, // must live until TF_FinishWhile
 }
 
-impl<'a> WhileParams<'a> {
-    /// Creates a WhileParams for creating a while loop.
+impl<'a> WhileBuilder<'a> {
+    /// Creates a WhileBuilder for creating a while loop.
     ///
     /// The loop is not actually added to the graph until `finish` is called.
     ///
@@ -56,7 +56,7 @@ impl<'a> WhileParams<'a> {
     ///
     /// # Returns
     ///
-    /// A unfinished WhileParams.
+    /// A unfinished WhileBuilder.
     pub fn new<
         CF: Fn(&mut Graph, &[Output]) -> Result<Output>,
         BF: Fn(&mut Graph, &[Output]) -> Result<Vec<Output>>,
@@ -117,7 +117,7 @@ impl<'a> WhileParams<'a> {
             c_body_out[i] = body_out[i].to_c();
         }
 
-        Ok(WhileParams {
+        Ok(WhileBuilder {
             graph,
             inner,
             name: None,
@@ -127,9 +127,9 @@ impl<'a> WhileParams<'a> {
 
     /// Sets a unique name for this while loop. This is used as a prefix
     /// for created operations. If not set, a unique prefix will be generated.
-    pub fn set_name(&mut self, name: &str) -> result::Result<(), NulError> {
+    pub fn name(mut self, name: &str) -> result::Result<Self, NulError> {
         self.name = Some(CString::new(name)?);
-        Ok(())
+        Ok(self)
     }
 
     /// Builds the while loop and returns the output tensors of the while loop.
@@ -231,28 +231,11 @@ mod tests {
         ])
     }
 
-    fn while_loop<
-        CF: Fn(&mut Graph, &[Output]) -> Result<Output>,
-        BF: Fn(&mut Graph, &[Output]) -> Result<Vec<Output>>,
-    >(
-        graph: &mut Graph,
-        cond: CF,
-        body: BF,
-        inputs: &[Output],
-        name: Option<&str>,
-    ) -> Result<Vec<Output>> {
-        let mut params = WhileParams::new(graph, cond, body, inputs)?;
-        if let Some(name) = name {
-            params.set_name(name)?;
-        }
-        params.finish()
-    }
-
     #[test]
     fn simple_while() {
         let mut main_graph = Graph::new();
         let one = constant(&mut main_graph, "one", 1);
-        let output = while_loop(
+        let output = WhileBuilder::new(
             &mut main_graph,
             while_cond,
             while_body,
@@ -262,8 +245,11 @@ mod tests {
                     index: 0,
                 },
             ],
-            Some("foo"),
-        ).unwrap();
+        ).unwrap()
+            .name("foo")
+            .unwrap()
+            .finish()
+            .unwrap();
         assert_eq!(1, output.len());
         let options = SessionOptions::new();
         let mut session = Session::new(&options, &main_graph).unwrap();
@@ -279,7 +265,7 @@ mod tests {
         // Make sure that TensorFlow doesn't complain about duplicate names
         let mut main_graph = Graph::new();
         let one = constant(&mut main_graph, "one", 1);
-        while_loop(
+        WhileBuilder::new(
             &mut main_graph,
             while_cond,
             while_body,
@@ -289,9 +275,10 @@ mod tests {
                     index: 0,
                 },
             ],
-            None,
-        ).unwrap();
-        while_loop(
+        ).unwrap()
+            .finish()
+            .unwrap();
+        WhileBuilder::new(
             &mut main_graph,
             while_cond,
             while_body,
@@ -301,7 +288,8 @@ mod tests {
                     index: 0,
                 },
             ],
-            None,
-        ).unwrap();
+        ).unwrap()
+            .finish()
+            .unwrap();
     }
 }
