@@ -12,7 +12,7 @@ set -e
 
 cd $(dirname $(readlink -f "$0"))
 
-tensorflow_version=1.7.0
+tensorflow_version=1.8.0
 
 valgrind_log=valgrind.log
 truncate --size=0 "$valgrind_log"
