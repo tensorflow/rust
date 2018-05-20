@@ -16,8 +16,6 @@
 extern crate libc;
 extern crate num_complex;
 extern crate tensorflow_sys as tf;
-#[macro_use]
-extern crate lazy_static;
 
 use libc::{c_int, c_uint};
 use num_complex::Complex;

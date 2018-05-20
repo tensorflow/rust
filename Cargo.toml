@@ -15,7 +15,7 @@ aligned_alloc = "0.1"
 num-complex = { version = "0.1.40", default-features = false }
 tensorflow-sys = { version = "0.12.0", path = "tensorflow-sys" }
 byteorder = "1.2.3"
-lazy_static = "1.0"
+crc = "1.0.0"
 
 [dev-dependencies]
 random = "0.12"
