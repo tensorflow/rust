@@ -174,6 +174,8 @@ pub use session::*;
 
 pub mod expr;
 
+pub mod io;
+
 ////////////////////////
 
 c_enum!("Error values that can be returned.", TF_Code, Code {
