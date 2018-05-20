@@ -6,7 +6,7 @@ extern crate byteorder;
 extern crate crc;
 
 use std::io;
-use std::io::prelude::*;
+use std::io::Write;
 use self::byteorder::WriteBytesExt;
 use self::crc::crc32;
 
@@ -35,19 +35,19 @@ impl<W> RecordWriter<W> where W: Write {
         [1] https://en.wikipedia.org/wiki/Cyclic_redundancy_check
         masked_crc = ((crc >> 15) | (crc << 17)) + 0xa282ead8ul
         */
-        let mut len_bytes = vec![];
-        len_bytes.write_u64::<byteorder::LittleEndian>(bytes.len() as u64)?;
+        let mut len_bytes = [0u8; 8];
+        (&mut len_bytes[..]).write_u64::<byteorder::LittleEndian>(bytes.len() as u64)?;
 
         let masked_len_crc32c = Self::mask(crc32::checksum_castagnoli(&len_bytes));
-        let mut len_crc32c_bytes: Vec<u8> = vec![];
-        len_crc32c_bytes.write_u32::<byteorder::LittleEndian>(masked_len_crc32c)?;
+        let mut len_crc32_bytes = [0u8; 4];
+        (&mut len_crc32_bytes[..]).write_u32::<byteorder::LittleEndian>(masked_len_crc32c)?;
 
         let masked_bytes_crc32c = Self::mask(crc32::checksum_castagnoli(&bytes));
-        let mut bytes_crc32_bytes: Vec<u8> = vec![];
-        bytes_crc32_bytes.write_u32::<byteorder::LittleEndian>(masked_bytes_crc32c)?;
+        let mut bytes_crc32_bytes = [0u8; 4];
+        (& mut bytes_crc32_bytes[..]).write_u32::<byteorder::LittleEndian>(masked_bytes_crc32c)?;
 
         self.writer.write(&len_bytes)?;
-        self.writer.write(&len_crc32c_bytes)?;
+        self.writer.write(&len_crc32_bytes)?;
         self.writer.write(bytes)?;
         self.writer.write(&bytes_crc32_bytes)?;
         Ok(())
@@ -64,6 +64,7 @@ impl<W> RecordWriter<W> where W: Write {
 mod tests {
     use super::*;
     use std::fs::File;
+    use std::io::Read;
 
     #[test]
     fn writer_identical_to_python() {
