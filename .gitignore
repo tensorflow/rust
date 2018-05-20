@@ -5,3 +5,4 @@ target
 travis-ci/travis_rsa
 **/*.iml
 .idea
+test_resources/io/actual.tfrecord
