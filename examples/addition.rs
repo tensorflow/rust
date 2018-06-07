@@ -14,8 +14,8 @@ use tensorflow::Graph;
 use tensorflow::ImportGraphDefOptions;
 use tensorflow::Session;
 use tensorflow::SessionOptions;
+use tensorflow::SessionRunArgs;
 use tensorflow::Status;
-use tensorflow::StepWithGraph;
 use tensorflow::Tensor;
 
 fn main() {
@@ -54,15 +54,15 @@ fn run() -> Result<(), Box<Error>> {
     graph.import_graph_def(&proto, &ImportGraphDefOptions::new())?;
     let mut session = Session::new(&SessionOptions::new(), &graph)?;
 
-    // Run the Step
-    let mut step = StepWithGraph::new();
-    step.add_input(&graph.operation_by_name_required("x")?, 0, &x);
-    step.add_input(&graph.operation_by_name_required("y")?, 0, &y);
-    let z = step.request_output(&graph.operation_by_name_required("z")?, 0);
-    session.run(&mut step)?;
+    // Run the graph.
+    let mut args = SessionRunArgs::new();
+    args.add_input(&graph.operation_by_name_required("x")?, 0, &x);
+    args.add_input(&graph.operation_by_name_required("y")?, 0, &y);
+    let z = args.request_output(&graph.operation_by_name_required("z")?, 0);
+    session.run(&mut args)?;
 
     // Check our results.
-    let z_res: i32 = step.take_output(z)?[0];
+    let z_res: i32 = args.take_output(z)?[0];
     println!("{:?}", z_res);
 
     Ok(())

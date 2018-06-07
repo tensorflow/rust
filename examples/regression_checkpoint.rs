@@ -16,8 +16,8 @@ use tensorflow::Graph;
 use tensorflow::ImportGraphDefOptions;
 use tensorflow::Session;
 use tensorflow::SessionOptions;
+use tensorflow::SessionRunArgs;
 use tensorflow::Status;
-use tensorflow::StepWithGraph;
 use tensorflow::Tensor;
 
 fn main() {
@@ -73,12 +73,12 @@ fn run() -> Result<(), Box<Error>> {
     let file_path_tensor: Tensor<String> = Tensor::from(String::from("examples/regression_checkpoint/saved.ckpt"));
 
     // Load the test data into the session.
-    let mut init_step = StepWithGraph::new();
+    let mut init_step = SessionRunArgs::new();
     init_step.add_target(&op_init);
     session.run(&mut init_step)?;
 
     // Train the model.
-    let mut train_step = StepWithGraph::new();
+    let mut train_step = SessionRunArgs::new();
     train_step.add_input(&op_x, 0, &x);
     train_step.add_input(&op_y, 0, &y);
     train_step.add_target(&op_train);
@@ -87,7 +87,7 @@ fn run() -> Result<(), Box<Error>> {
     }
 
     // Save the model.
-    let mut step = StepWithGraph::new();
+    let mut step = SessionRunArgs::new();
     step.add_input(&op_file_path, 0, &file_path_tensor);
     step.add_target(&op_save);
     session.run(&mut step)?;
@@ -97,13 +97,13 @@ fn run() -> Result<(), Box<Error>> {
 
     // Load the model.
     let op_load = graph.operation_by_name_required("save/restore_all")?;
-    let mut step = StepWithGraph::new();
+    let mut step = SessionRunArgs::new();
     step.add_input(&op_file_path, 0, &file_path_tensor);
     step.add_target(&op_load);
     session.run(&mut step)?;
 
     // Grab the data out of the session.
-    let mut output_step = StepWithGraph::new();
+    let mut output_step = SessionRunArgs::new();
     let w_ix = output_step.request_output(&op_w, 0);
     let b_ix = output_step.request_output(&op_b, 0);
     session.run(&mut output_step)?;

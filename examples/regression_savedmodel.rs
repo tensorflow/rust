@@ -13,8 +13,8 @@ use tensorflow::Code;
 use tensorflow::Graph;
 use tensorflow::Session;
 use tensorflow::SessionOptions;
+use tensorflow::SessionRunArgs;
 use tensorflow::Status;
-use tensorflow::StepWithGraph;
 use tensorflow::Tensor;
 
 fn main() {
@@ -66,7 +66,7 @@ fn run() -> Result<(), Box<Error>> {
     let op_b = graph.operation_by_name_required("b")?;
 
     // Train the model (e.g. for fine tuning).
-    let mut train_step = StepWithGraph::new();
+    let mut train_step = SessionRunArgs::new();
     train_step.add_input(&op_x, 0, &x);
     train_step.add_input(&op_y, 0, &y);
     train_step.add_target(&op_train);
@@ -75,7 +75,7 @@ fn run() -> Result<(), Box<Error>> {
     }
 
     // Grab the data out of the session.
-    let mut output_step = StepWithGraph::new();
+    let mut output_step = SessionRunArgs::new();
     let w_ix = output_step.request_output(&op_w, 0);
     let b_ix = output_step.request_output(&op_b, 0);
     session.run(&mut output_step)?;

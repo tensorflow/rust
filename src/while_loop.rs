@@ -178,7 +178,7 @@ mod tests {
     use super::super::Operation;
     use super::super::Session;
     use super::super::SessionOptions;
-    use super::super::StepWithGraph;
+    use super::super::SessionRunArgs;
     use super::super::Tensor;
     use super::*;
 
@@ -253,7 +253,7 @@ mod tests {
         assert_eq!(1, output.len());
         let options = SessionOptions::new();
         let mut session = Session::new(&options, &main_graph).unwrap();
-        let mut step = StepWithGraph::new();
+        let mut step = SessionRunArgs::new();
         let output_token = step.request_output(&output[0].operation, 0);
         session.run(&mut step).unwrap();
         let output_tensor = step.take_output::<i32>(output_token).unwrap();

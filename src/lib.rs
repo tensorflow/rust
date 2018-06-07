@@ -1411,7 +1411,7 @@ mod tests {
         let mut x = <Tensor<f32>>::new(&[2]);
         x[0] = 2.0;
         x[1] = 3.0;
-        let mut step = StepWithGraph::new();
+        let mut step = SessionRunArgs::new();
         let x_op = graph.operation_by_name_required("x").unwrap();
         step.add_input(&x_op, 0, &x);
         let y_op = graph.operation_by_name_required("y").unwrap();
@@ -1466,7 +1466,7 @@ mod tests {
         let mut x = <Tensor<String>>::new(&[2]);
         x[0] = "foo".to_string();
         x[1] = "bar".to_string();
-        let mut step = StepWithGraph::new();
+        let mut step = SessionRunArgs::new();
         step.add_input(&x_op, 0, &x);
         let output_ix = step.request_output(&y_op, 0);
         session.run(&mut step).unwrap();
