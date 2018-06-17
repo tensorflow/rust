@@ -56,13 +56,13 @@ fn run() -> Result<(), Box<Error>> {
 
     // Run the graph.
     let mut args = SessionRunArgs::new();
-    args.add_input(&graph.operation_by_name_required("x")?, 0, &x);
-    args.add_input(&graph.operation_by_name_required("y")?, 0, &y);
-    let z = args.request_output(&graph.operation_by_name_required("z")?, 0);
+    args.add_feed(&graph.operation_by_name_required("x")?, 0, &x);
+    args.add_feed(&graph.operation_by_name_required("y")?, 0, &y);
+    let z = args.request_fetch(&graph.operation_by_name_required("z")?, 0);
     session.run(&mut args)?;
 
     // Check our results.
-    let z_res: i32 = args.take_output(z)?[0];
+    let z_res: i32 = args.fetch(z)?[0];
     println!("{:?}", z_res);
 
     Ok(())

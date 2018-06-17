@@ -254,9 +254,9 @@ mod tests {
         let options = SessionOptions::new();
         let mut session = Session::new(&options, &main_graph).unwrap();
         let mut step = SessionRunArgs::new();
-        let output_token = step.request_output(&output[0].operation, 0);
+        let output_token = step.request_fetch(&output[0].operation, 0);
         session.run(&mut step).unwrap();
-        let output_tensor = step.take_output::<i32>(output_token).unwrap();
+        let output_tensor = step.fetch::<i32>(output_token).unwrap();
         assert_eq!(&output_tensor[..], &[16i32]);
     }
 

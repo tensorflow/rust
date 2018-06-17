@@ -1413,11 +1413,11 @@ mod tests {
         x[1] = 3.0;
         let mut step = SessionRunArgs::new();
         let x_op = graph.operation_by_name_required("x").unwrap();
-        step.add_input(&x_op, 0, &x);
+        step.add_feed(&x_op, 0, &x);
         let y_op = graph.operation_by_name_required("y").unwrap();
-        let output_ix = step.request_output(&y_op, 0);
+        let output_ix = step.request_fetch(&y_op, 0);
         session.run(&mut step).unwrap();
-        let output_tensor = step.take_output::<f32>(output_ix).unwrap();
+        let output_tensor = step.fetch::<f32>(output_ix).unwrap();
         assert_eq!(output_tensor.len(), 2);
         assert_eq!(output_tensor[0], 4.0);
         assert_eq!(output_tensor[1], 6.0);
@@ -1467,10 +1467,10 @@ mod tests {
         x[0] = "foo".to_string();
         x[1] = "bar".to_string();
         let mut step = SessionRunArgs::new();
-        step.add_input(&x_op, 0, &x);
-        let output_ix = step.request_output(&y_op, 0);
+        step.add_feed(&x_op, 0, &x);
+        let output_ix = step.request_fetch(&y_op, 0);
         session.run(&mut step).unwrap();
-        let output_tensor = step.take_output::<String>(output_ix).unwrap();
+        let output_tensor = step.fetch::<String>(output_ix).unwrap();
         assert_eq!(output_tensor.len(), 2);
         assert_eq!(output_tensor[0], "Zm9v");
         assert_eq!(output_tensor[1], "YmFy");
