@@ -145,7 +145,7 @@ impl Session {
     }
 
     /// Runs the graph, feeding the inputs and then fetching the outputs requested in the step.
-    pub fn run(&mut self, step: &mut StepWithGraph) -> Result<()> {
+    pub fn run(&mut self, step: &mut SessionRunArgs) -> Result<()> {
         // In case we're running it a second time and not all outputs were taken out.
         step.drop_output_tensors();
 
@@ -221,9 +221,13 @@ impl Drop for Session {
 
 /// An opaque token for retrieving an output from a computation.
 #[derive(Copy,Clone,Debug)]
-pub struct OutputToken {
+pub struct FetchToken {
     index: usize,
 }
+
+/// Deprecated alias for FetchToken.
+#[deprecated(note="Use FetchToken instead.")]
+pub type OutputToken = FetchToken;
 
 /// Manages the inputs and outputs for a single execution of a graph.
 ///
@@ -231,9 +235,20 @@ pub struct OutputToken {
 /// adding some inputs to it, requesting some outputs, passing it to `Session::run`
 /// and then taking the outputs out of it.
 ///
-/// This will be renamed to Step once the old API goes away.
+/// Example:
+///
+/// ```rust,ignore
+/// let mut args = SessionRunArgs::new();
+/// args.add_feed(&op1, 0, &tensor1);
+/// args.add_feed(&op2, 0, &tensor2);
+/// let result_token = args.request_fetch(&op3, 0);
+/// session.run(&mut args)?;
+/// let result_tensor = args.fetch(result_token)?;
+/// ```
+///
+/// See examples/addition.rs for a more concrete example.
 #[derive(Debug)]
-pub struct StepWithGraph<'l> {
+pub struct SessionRunArgs<'l> {
     input_ports: Vec<tf::TF_Output>,
     input_tensors: Vec<&'l AnyTensor>,
 
@@ -245,10 +260,10 @@ pub struct StepWithGraph<'l> {
     phantom: marker::PhantomData<&'l ()>,
 }
 
-impl<'l> StepWithGraph<'l> {
-    /// Creates a StepWithGraph.
+impl<'l> SessionRunArgs<'l> {
+    /// Creates a SessionRunArgs.
     pub fn new() -> Self {
-        StepWithGraph {
+        SessionRunArgs {
             input_ports: vec![],
             input_tensors: vec![],
 
@@ -261,11 +276,13 @@ impl<'l> StepWithGraph<'l> {
         }
     }
 
-    /// Adds an input to be fed to the graph.
-    pub fn add_input<T: TensorType>(&mut self,
-                                    operation: &Operation,
-                                    index: c_int,
-                                    tensor: &'l Tensor<T>) {
+    /// Adds an input to be fed to the graph. The index selects which output of
+    /// the operation to feed. For most operations, there is only one output,
+    /// so the index should be 0.
+    pub fn add_feed<T: TensorType>(&mut self,
+                                   operation: &Operation,
+                                   index: c_int,
+                                   tensor: &'l Tensor<T>) {
         self.input_ports.push(tf::TF_Output {
                                   oper: operation.inner(),
                                   index: index,
@@ -273,22 +290,41 @@ impl<'l> StepWithGraph<'l> {
         self.input_tensors.push(tensor);
     }
 
-    /// Requests that an output is fetched from the graph after running this step.
-    /// Returns an index that you can then use to fetch this output from the step after running it.
-    pub fn request_output(&mut self, operation: &Operation, index: c_int) -> OutputToken {
+    /// Deprecated alias for add_feed.
+    #[deprecated(note="Use add_feed instead.")]
+    pub fn add_input<T: TensorType>(&mut self,
+                                    operation: &Operation,
+                                    index: c_int,
+                                    tensor: &'l Tensor<T>) {
+        self.add_feed(operation, index, tensor)
+    }
+
+    /// Requests that an output is fetched from the graph after running this
+    /// step. The index selects which output of the operation to return. For
+    /// most operations, there is only one output, so the index should be 0.
+    /// Returns a token that you can then use to fetch this output from the args
+    /// after running it.
+    pub fn request_fetch(&mut self, operation: &Operation, index: c_int) -> FetchToken {
         self.output_ports.push(tf::TF_Output {
                                    oper: operation.inner(),
                                    index: index,
                                });
         self.output_tensors.push(ptr::null_mut());
-        OutputToken { index: self.output_tensors.len() - 1 }
+        FetchToken { index: self.output_tensors.len() - 1 }
     }
 
-    /// Extracts a tensor output given an index. A given index can only be extracted
-    /// once per `Session::run`.
-    /// Returns an error if output_idx is out of range, output is unavailable or the
-    /// requested type does not match the type of the actual tensor.
-    pub fn take_output<T: TensorType>(&mut self, token: OutputToken) -> Result<Tensor<T>> {
+    /// Deprecated alias for request_fetch.
+    #[deprecated(note="Use request_fetch instead.")]
+    #[allow(deprecated)]
+    pub fn request_output(&mut self, operation: &Operation, index: c_int) -> OutputToken {
+        self.request_fetch(operation, index)
+    }
+
+    /// Extracts a tensor output given a token. A given token can only be
+    /// extracted once per `Session::run`. Returns an error if the token is
+    /// invalid, output is unavailable or the requested type does not match the
+    /// type of the actual tensor.
+    pub fn fetch<T: TensorType>(&mut self, token: FetchToken) -> Result<Tensor<T>> {
         let output_idx = token.index;
         if output_idx >= self.output_tensors.len() {
             return Err(Status::new_set(Code::OutOfRange,
@@ -314,6 +350,13 @@ impl<'l> StepWithGraph<'l> {
         let tensor = unsafe { Tensor::from_tf_tensor(self.output_tensors[output_idx]).unwrap() };
         self.output_tensors[output_idx] = ptr::null_mut();
         Ok(tensor)
+    }
+
+    /// Deprecated alias for fetch.
+    #[deprecated(note="Use fetch instead.")]
+    #[allow(deprecated)]
+    pub fn take_output<T: TensorType>(&mut self, token: OutputToken) -> Result<Tensor<T>> {
+        self.fetch(token)
     }
 
     /// Adds a target operation to be executed when running the graph.
@@ -346,11 +389,15 @@ impl<'l> StepWithGraph<'l> {
     }
 }
 
-impl<'l> Drop for StepWithGraph<'l> {
+impl<'l> Drop for SessionRunArgs<'l> {
     fn drop(&mut self) {
         self.drop_output_tensors();
     }
 }
+
+/// Deprecated alias for SessionRunArgs.
+#[deprecated(note="Use SessionRunArgs instead.")]
+pub type StepWithGraph<'l> = SessionRunArgs<'l>;
 
 ////////////////////////
 
@@ -433,11 +480,11 @@ mod tests {
         let mut x = <Tensor<f32>>::new(&[2]);
         x[0] = 2.0;
         x[1] = 3.0;
-        let mut step = StepWithGraph::new();
-        step.add_input(&x_operation, 0, &x);
-        let output_token = step.request_output(&y_operation, 0);
+        let mut step = SessionRunArgs::new();
+        step.add_feed(&x_operation, 0, &x);
+        let output_token = step.request_fetch(&y_operation, 0);
         session.run(&mut step).unwrap();
-        let output_tensor = step.take_output::<f32>(output_token).unwrap();
+        let output_tensor = step.fetch::<f32>(output_token).unwrap();
         assert_eq!(output_tensor.len(), 2);
         assert_eq!(output_tensor[0], 4.0);
         assert_eq!(output_tensor[1], 6.0);
@@ -469,12 +516,12 @@ mod tests {
         x[0] = 2.0;
         let mut y = <Tensor<f32>>::new(&[1]);
         y[0] = 4.0;
-        let mut step = StepWithGraph::new();
-        step.add_input(&x_op, 0, &x);
-        step.add_input(&y_op, 0, &y);
-        let output_token = step.request_output(&y_hat_op, 0);
+        let mut step = SessionRunArgs::new();
+        step.add_feed(&x_op, 0, &x);
+        step.add_feed(&y_op, 0, &y);
+        let output_token = step.request_fetch(&y_hat_op, 0);
         session.run(&mut step).unwrap();
-        let output_tensor = step.take_output::<f32>(output_token).unwrap();
+        let output_tensor = step.fetch::<f32>(output_token).unwrap();
         assert_eq!(output_tensor.len(), 1);
     }
 

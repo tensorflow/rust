@@ -12,8 +12,8 @@ use tensorflow::expr::{Compiler, Placeholder};
 use tensorflow::Graph;
 use tensorflow::Session;
 use tensorflow::SessionOptions;
+use tensorflow::SessionRunArgs;
 use tensorflow::Status;
-use tensorflow::StepWithGraph;
 use tensorflow::Tensor;
 
 fn main() {
@@ -85,13 +85,13 @@ fn run() -> Result<(), Box<Error>> {
     let mut x = <Tensor<f32>>::new(&[2]);
     x[0] = 2.0;
     x[1] = 3.0;
-    let mut step = StepWithGraph::new();
-    step.add_input(&x_node, 0, &x);
-    let output_token = step.request_output(&y_node, 0);
+    let mut step = SessionRunArgs::new();
+    step.add_feed(&x_node, 0, &x);
+    let output_token = step.request_fetch(&y_node, 0);
     session.run(&mut step).unwrap();
 
     // Check our results.
-    let output_tensor = step.take_output::<f32>(output_token)?;
+    let output_tensor = step.fetch::<f32>(output_token)?;
     let mut checker = Checker::new(1e-3);
     checker.check("output_tensor[0]", 5.0, output_tensor[0]);
     checker.check("output_tensor[1]", 7.0, output_tensor[1]);
