@@ -1,6 +1,6 @@
 [package]
 name = "tensorflow"
-version = "0.9.0"
+version = "0.10.0"
 authors = ["Adam Crume <acrume@google.com>"]
 description = "Rust language bindings for TensorFlow."
 license = "Apache-2.0"
@@ -13,7 +13,7 @@ documentation = "https://tensorflow.github.io/rust/tensorflow"
 libc = "0.2"
 aligned_alloc = "0.1"
 num-complex = { version = "0.1.40", default-features = false }
-tensorflow-sys = { version = "0.12.0", path = "tensorflow-sys" }
+tensorflow-sys = { version = "0.13.0", path = "tensorflow-sys" }
 byteorder = "1.2.3"
 crc = "1.0.0"
 
