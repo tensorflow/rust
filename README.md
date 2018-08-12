@@ -113,6 +113,8 @@ Try the [documentation](https://tensorflow.github.io/rust/tensorflow/) first, an
 your question.  If not, take a look at the examples folder.  Note that there may not be an example
 for your exact question, but it may be answered by an example demonstrating something else.
 
+If none of the above help, you can ask your question on
+[TensorFlow Rust Google Group](https://groups.google.com/a/tensorflow.org/forum/#!forum/rust).
 
 ## Contributing
 Developers and users are welcome to join the
