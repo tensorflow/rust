@@ -15,12 +15,25 @@ if [[ "${version_build_script}" != "${version_run_valgrind}" ]]; then
 fi
 
 # Make sure the crate version matches the one in README.md.
-version_crate=`grep "^version =" Cargo.toml | sed 's|.*= "\(.*\)"|\1|g'`
-version_readme=`grep "tensorflow =" README.md | sed 's|.*= "\(.*\)"|\1|g'`
-if [[ "${version_crate}" != "${version_readme}" ]]; then
-    echo "ERROR: Crate version does not match the one in README.md."
-    echo "       Cargo.toml: ${version_crate}"
-    echo "       README.md: ${version_readme}"
+version_tensorflow_crate=`grep "^version =" Cargo.toml | sed 's|.*= "\(.*\)"|\1|g'`
+version_tensorflow_readme=`sed -En 's|tensorflow *= *"([^"]*)"|\1|p' < README.md`
+version_tensorflow_readme2=`sed -En 's|tensorflow *= *\{ *version *= *"([^"]*)".*$|\1|p' < README.md`
+if [[ "${version_tensorflow_crate}" != "${version_tensorflow_readme}" || \
+          "${version_tensorflow_crate}" != "${version_tensorflow_readme2}" ]]; then
+    echo "ERROR: tensorflow crate version does not match the ones in README.md."
+    echo "       Cargo.toml: ${version_tensorflow_crate}"
+    echo "       README.md: ${version_tensorflow_readme}"
+    echo "       README.md: ${version_tensorflow_readme2}"
+    exit 1
+fi
+
+# Make sure the crate version matches the one in README.md for tensorflow-sys.
+version_tensorflow_sys_crate=`grep "^version =" tensorflow-sys/Cargo.toml | sed 's|.*= "\(.*\)"|\1|g'`
+version_tensorflow_sys_readme=`sed -En 's|tensorflow-sys *= *\{ *version *= *"([^"]*)".*$|\1|p' < tensorflow-sys/README.md`
+if [[ "${version_tensorflow_sys_crate}" != "${version_tensorflow_sys_readme}" ]]; then
+    echo "ERROR: tensorflow-sys crate version does not match the one in README.md."
+    echo "       Cargo.toml: ${version_tensorflow_sys_crate}"
+    echo "       README.md: ${version_tensorflow_sys_readme}"
     exit 1
 fi
 

@@ -69,35 +69,21 @@ use `--features tensorflow_unstable`.
 For now, please see the [Examples](https://github.com/tensorflow/rust/tree/master/examples) for more
 details on how to use this binding.
 
+## GPU Support
+
+To enable GPU support, use the `tensorflow_gpu` feature in your Cargo.toml:
+
+```
+[dependencies]
+tensorflow = { version = "0.10.0", features = ["tensorflow_gpu"] }
+```
+
 ## Manual TensorFlow Compilation
-If you don't want to build TensorFlow after every `cargo clean` or you want to work against
-unreleased/unsupported TensorFlow versions, manual compilation is the way to go.
 
-See [TensorFlow from source](https://www.tensorflow.org/install/install_sources) first.
-The Python/pip steps are not necessary, but building `tensorflow:libtensorflow.so` is.
+If you want to work against unreleased/unsupported TensorFlow versions or use a build optimized for
+your machine, manual compilation is the way to go.
 
-In short:
-
-1. Install [SWIG](http://www.swig.org) and [NumPy](http://www.numpy.org).  The
-   version from your distro's package manager should be fine for these two.
-2. [Install Bazel](https://bazel.io/docs/install.html), which you may need to do
-   from source.  You will likely need an up-to-date version.
-3. `git clone https://github.com/tensorflow/tensorflow`
-4. `cd tensorflow`
-5. `./configure`
-6. `bazel build --compilation_mode=opt --copt=-march=native --jobs=1 tensorflow:libtensorflow.so`
-
-   Using `--jobs=1` is recommended unless you have a lot of RAM, because
-   TensorFlow's build is very memory intensive.
-
-Copy `$TENSORFLOW_SRC/bazel-bin/tensorflow/libtensorflow.so` and `libtensorflow_framework.so` to
-`/usr/local/lib`.  If this is not possible, add `$TENSORFLOW_SRC/bazel-bin/tensorflow` to
-`LD_LIBRARY_PATH`.
-
-You may need to run `ldconfig` to reset `ld`'s cache after copying `libtensorflow.so`.
-
-**macOS Note**: Via [Homebrew](https://brew.sh/), you can just run
-`brew install libtensorflow`.
+See [tensorflow-sys/README.md](tensorflow-sys/README.md) for details.
 
 ## FAQ's
 
