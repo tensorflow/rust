@@ -10,12 +10,12 @@ repository = "https://github.com/tensorflow/rust"
 documentation = "https://tensorflow.github.io/rust/tensorflow"
 
 [dependencies]
-libc = "0.2"
-aligned_alloc = "0.1"
-num-complex = { version = "0.1.40", default-features = false }
+libc = "0.2.43"
+aligned_alloc = "0.1.3"
+num-complex = { version = "0.2.0", default-features = false }
 tensorflow-sys = { version = "0.13.0", path = "tensorflow-sys" }
-byteorder = "1.2.3"
-crc = "1.0.0"
+byteorder = "1.2.4"
+crc = "1.8.1"
 
 [dev-dependencies]
 random = "0.12"
