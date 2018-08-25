@@ -51,13 +51,40 @@ pub enum OpLevel {
 ///
 /// This is separate from ExprImpl because we want expressions to be wrapped in an Rc,
 /// and we can't directly implement std::ops::Add, etc., for Rc&lt;E: ExprImpl&lt;Tgt;&gt;.
-#[derive(Debug,Clone)]
+#[derive(Debug, Clone)]
 pub struct Expr<T: TensorType> {
     expr: Rc<ExprImpl<T>>,
 }
 
 impl<T: TensorType> Expr<T> {
-    /// Returns the derivative of the expression with respect to the given variable.
+    pub fn new<I>(expr: I) -> Expr<T>
+    where
+        I: ExprImpl<T> + 'static,
+    {
+        Expr {
+            expr: Rc::new(expr),
+        }
+    }
+}
+
+impl<T: TensorType> ExprImpl<T> for Expr<T> {
+    fn op_level(&self) -> OpLevel {
+        self.expr.op_level()
+    }
+
+    fn children(&self) -> Vec<Box<AnyExpr>> {
+        self.expr.children()
+    }
+
+    fn create_operation(
+        &self,
+        graph: &mut Graph,
+        children: &[Operation],
+        id_gen: &mut FnMut() -> String,
+    ) -> Result<Operation, Status> {
+        self.expr.create_operation(graph, children, id_gen)
+    }
+
     pub fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
         self.expr.derivative_by_variable(var)
     }
@@ -71,7 +98,7 @@ impl<T: TensorType> Display for Expr<T> {
 
 impl<T: TensorType> From<T> for Expr<T> {
     fn from(value: T) -> Self {
-        Expr { expr: Rc::new(value) }
+        Expr::new(value)
     }
 }
 
@@ -145,12 +172,10 @@ macro_rules! impl_bin_op {
       type Output = Expr<T>;
 
       fn $fn_name(self, rhs: Expr<T>) -> Expr<T> {
-        Expr {
-          expr: Rc::new($name {
+        Expr::new($name {
             left: self,
             right: rhs,
-          }),
-        }
+        })
       }
     }
 
@@ -158,12 +183,10 @@ macro_rules! impl_bin_op {
       type Output = Expr<T>;
 
       fn $fn_name(self, rhs: T) -> Expr<T> {
-        Expr {
-          expr: Rc::new($name {
+        Expr::new($name {
             left: self,
             right: Expr::from(rhs),
-          }),
-        }
+        })
       }
     }
 
@@ -266,7 +289,7 @@ impl<T: TensorType> TruncateDiv<T> {
 
     /// Creates an expression that divides `left` by `right` and rounds toward zero.
     pub fn new_expr(left: Expr<T>, right: Expr<T>) -> Expr<T> {
-        Expr { expr: Rc::new(TruncateDiv::new(left, right)) }
+        Expr::new(TruncateDiv::new(left, right))
     }
 }
 
@@ -325,7 +348,7 @@ impl<T: TensorType> ops::Neg for Expr<T> {
     type Output = Expr<T>;
 
     fn neg(self) -> Expr<T> {
-        Expr { expr: Rc::new(Neg { expr: self }) }
+        Expr::new(Neg { expr: self })
     }
 }
 
@@ -388,7 +411,7 @@ impl<T: TensorType> Variable<T> {
 
     /// Creates an `Expr` for a variable.
     pub fn new_expr(shape: &[u64], name: &str) -> Expr<T> {
-        Expr { expr: Rc::new(Variable::new(shape, name)) }
+        Expr::new(Variable::new(shape, name))
     }
 }
 
@@ -448,7 +471,7 @@ impl<T: TensorType> Placeholder<T> {
 
     /// Creates an `Expr` for a placeholder.
     pub fn new_expr(shape: &[u64], name: &str) -> Expr<T> {
-        Expr { expr: Rc::new(Placeholder::new(shape, name)) }
+        Expr::new(Placeholder::new(shape, name))
     }
 }
 
@@ -502,7 +525,7 @@ impl<T: TensorType> Assign<T> {
 
     /// Creates an expression that assigns `value` to `variable`.
     pub fn new_expr(variable: Expr<T>, value: Expr<T>) -> Expr<T> {
-        Expr { expr: Rc::new(Assign::new(variable, value)) }
+        Expr::new(Assign::new(variable, value))
     }
 }
 
