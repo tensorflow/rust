@@ -85,7 +85,7 @@ impl<T: TensorType> ExprImpl<T> for Expr<T> {
         self.expr.create_operation(graph, children, id_gen)
     }
 
-    pub fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
+    fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
         self.expr.derivative_by_variable(var)
     }
 }
