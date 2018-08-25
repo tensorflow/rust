@@ -372,13 +372,13 @@ impl<T: TensorType> ExprImpl<T> for Neg<T> {
 /// Expression for a variable.
 #[derive(Debug)]
 pub struct Variable<T: TensorType> {
-    shape: Vec<u64>,
+    shape: Vec<i64>,
     name: String,
     phantom: PhantomData<T>,
 }
 
 impl<T: TensorType> Variable<T> {
-    fn new(shape: &[u64], name: &str) -> Self {
+    fn new(shape: &[i64], name: &str) -> Self {
         Variable {
             shape: Vec::from(shape),
             name: name.to_string(),
@@ -387,8 +387,10 @@ impl<T: TensorType> Variable<T> {
     }
 
     /// Creates an `Expr` for a variable.
-    pub fn new_expr(shape: &[u64], name: &str) -> Expr<T> {
-        Expr { expr: Rc::new(Variable::new(shape, name)) }
+    pub fn new_expr(shape: &[i64], name: &str) -> Expr<T> {
+        Expr {
+            expr: Rc::new(Variable::new(shape, name)),
+        }
     }
 }
 
@@ -413,8 +415,11 @@ impl<T: TensorType> ExprImpl<T> for Variable<T> {
                         _id_gen: &mut FnMut() -> String)
                         -> Result<Operation, Status> {
         let mut nd = graph.new_operation("Variable", &self.name)?;
+        let shape = self.shape.iter().map(|dim_size| Some(*dim_size));
+
         nd.set_attr_type("dtype", T::data_type()).unwrap();
-        nd.set_attr_shape("shape", &Shape(Some(vec![]))).unwrap();
+        nd.set_attr_shape("shape", &Shape(Some(shape.collect())))
+            .unwrap();
         nd.finish()
     }
 
@@ -432,13 +437,13 @@ impl<T: TensorType> ExprImpl<T> for Variable<T> {
 /// Expression for a placeholder.
 #[derive(Debug)]
 pub struct Placeholder<T: TensorType> {
-    shape: Vec<u64>,
+    shape: Vec<i64>,
     name: String,
     phantom: PhantomData<T>,
 }
 
 impl<T: TensorType> Placeholder<T> {
-    fn new(shape: &[u64], name: &str) -> Self {
+    fn new(shape: &[i64], name: &str) -> Self {
         Placeholder {
             shape: Vec::from(shape),
             name: name.to_string(),
@@ -447,8 +452,10 @@ impl<T: TensorType> Placeholder<T> {
     }
 
     /// Creates an `Expr` for a placeholder.
-    pub fn new_expr(shape: &[u64], name: &str) -> Expr<T> {
-        Expr { expr: Rc::new(Placeholder::new(shape, name)) }
+    pub fn new_expr(shape: &[i64], name: &str) -> Expr<T> {
+        Expr {
+            expr: Rc::new(Placeholder::new(shape, name)),
+        }
     }
 }
 
@@ -473,8 +480,11 @@ impl<T: TensorType> ExprImpl<T> for Placeholder<T> {
                         _id_gen: &mut FnMut() -> String)
                         -> Result<Operation, Status> {
         let mut nd = graph.new_operation("Placeholder", &self.name)?;
+        let shape = self.shape.iter().map(|dim_size| Some(*dim_size));
+
         nd.set_attr_type("dtype", T::data_type()).unwrap();
-        nd.set_attr_shape("shape", &Shape(Some(vec![]))).unwrap();
+        nd.set_attr_shape("shape", &Shape(Some(shape.collect())))
+            .unwrap();
         nd.finish()
     }
 
