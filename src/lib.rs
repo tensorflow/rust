@@ -1213,6 +1213,40 @@ impl<T: TensorType + PartialEq> PartialEq for Tensor<T> {
     }
 }
 
+impl<T: TensorType> Display for Tensor<T> {
+    fn fmt(&self, f: &mut Formatter) -> ::std::fmt::Result {
+        let dim_len = self.dims.len();
+
+        if dim_len == 0 {
+            write!(f, "{}", self[0])
+        } else {
+            for _ in 0..dim_len - 1 {
+                write!(f, "[")?;
+            }
+
+            let inner_dim = self.dims[dim_len - 1];
+
+            if inner_dim != 0 {
+                let mut chunks = self.chunks(inner_dim as usize);
+
+                if let Some(chunk) = chunks.next() {
+                    write!(f, "{:?}", chunk)?;
+                }
+
+                while let Some(chunk) = chunks.next() {
+                    write!(f, ", {:?}", chunk)?;
+                }
+            }
+
+            for _ in 0..dim_len - 1 {
+                write!(f, "]")?
+            }
+
+            Ok(())
+        }
+    }
+}
+
 ////////////////////////
 
 /// Dynamically loaded plugins.
