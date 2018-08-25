@@ -117,7 +117,7 @@ impl<T: TensorType> ExprImpl<T> for T {
                         id_gen: &mut FnMut() -> String)
                         -> Result<Operation, Status> {
         let mut nd = graph.new_operation("Const", &id_gen())?;
-        nd.set_attr_type("dtype", DataType::Float)?;
+        nd.set_attr_type("dtype", T::data_type())?;
         let mut value = Tensor::new(&[1]);
         value[0] = self.clone();
         nd.set_attr_tensor("value", value)?;
@@ -413,7 +413,7 @@ impl<T: TensorType> ExprImpl<T> for Variable<T> {
                         _id_gen: &mut FnMut() -> String)
                         -> Result<Operation, Status> {
         let mut nd = graph.new_operation("Variable", &self.name)?;
-        nd.set_attr_type("dtype", DataType::Float).unwrap();
+        nd.set_attr_type("dtype", T::data_type()).unwrap();
         nd.set_attr_shape("shape", &Shape(Some(vec![]))).unwrap();
         nd.finish()
     }
@@ -473,7 +473,7 @@ impl<T: TensorType> ExprImpl<T> for Placeholder<T> {
                         _id_gen: &mut FnMut() -> String)
                         -> Result<Operation, Status> {
         let mut nd = graph.new_operation("Placeholder", &self.name)?;
-        nd.set_attr_type("dtype", DataType::Float).unwrap();
+        nd.set_attr_type("dtype", T::data_type()).unwrap();
         nd.set_attr_shape("shape", &Shape(Some(vec![]))).unwrap();
         nd.finish()
     }
