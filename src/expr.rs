@@ -110,9 +110,10 @@ pub trait ExprImpl<T: TensorType>: Display + Debug {
     /// Returns the derivative of the expression with respect to the given variable.
     fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status>;
 
+    /// Returns a hint about the expression's shape.
     fn shape_hint(&self) -> ShapeHint {
         ShapeHint::Unknown
-}
+    }
 }
 
 impl<T: TensorType> ExprImpl<T> for T {
@@ -446,7 +447,7 @@ impl<T: TensorType> ExprImpl<T> for Variable<T> {
 
     fn shape_hint(&self) -> ShapeHint {
         ShapeHint::Exactly(&self.shape)
-}
+    }
 }
 
 ////////////////////////
@@ -511,7 +512,7 @@ impl<T: TensorType> ExprImpl<T> for Placeholder<T> {
 
     fn shape_hint(&self) -> ShapeHint {
         ShapeHint::Exactly(&self.shape)
-}
+    }
 }
 
 ////////////////////////
