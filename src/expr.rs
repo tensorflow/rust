@@ -429,10 +429,13 @@ impl<T: TensorType> ExprImpl<T> for Variable<T> {
                         _id_gen: &mut FnMut() -> String)
                         -> Result<Operation, Status> {
         let mut nd = graph.new_operation("Variable", &self.name)?;
-        let shape = self.shape.iter().map(|dim_size| Some(*dim_size as i64));
+        let shape = self.shape
+            .iter()
+            .map(|dim_size| Some(*dim_size as i64))
+            .collect();
 
         nd.set_attr_type("dtype", T::data_type()).unwrap();
-        nd.set_attr_shape("shape", &Shape(Some(shape.collect())))
+        nd.set_attr_shape("shape", &Shape(Some(shape)))
             .unwrap();
         nd.finish()
     }
@@ -498,10 +501,13 @@ impl<T: TensorType> ExprImpl<T> for Placeholder<T> {
                         _id_gen: &mut FnMut() -> String)
                         -> Result<Operation, Status> {
         let mut nd = graph.new_operation("Placeholder", &self.name)?;
-        let shape = self.shape.iter().map(|dim_size| Some(*dim_size as i64));
+        let shape = self.shape
+            .iter()
+            .map(|dim_size| Some(*dim_size as i64))
+            .collect();
 
         nd.set_attr_type("dtype", T::data_type()).unwrap();
-        nd.set_attr_shape("shape", &Shape(Some(shape.collect())))
+        nd.set_attr_shape("shape", &Shape(Some(shape)))
             .unwrap();
         nd.finish()
     }
