@@ -594,7 +594,7 @@ impl<T: TensorType> Assign<T> {
     pub fn to(variable: Expr<T>, iterable: impl Iterator<Item = T>) -> Expr<T> {
         let constant = if let ShapeHint::Exactly(shape) = variable.expr.shape_hint() {
             let values: Vec<_> = iterable
-                .take(shape.iter().fold(1, |size, dim| size * dim) as usize)
+                .take(shape.iter().product() as usize)
                 .collect();
 
             Constant::new_expr(
