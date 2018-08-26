@@ -1527,4 +1527,24 @@ mod tests {
         assert_ne!(a, c);
         assert_ne!(a, d);
     }
+
+    #[test]
+    fn tensor_display() {
+        let tests = [
+                ("1", &[][..], &[1][..]),
+                ("[1]", &[1], &[1]),
+                ("[1, 2]", &[2], &[1, 2]),
+                ("[[1, 2], [3, 4]]", &[2, 2], &[1, 2, 3, 4]),
+                ("[[[1], [2]], [[3], [4]]]", &[2, 2, 1], &[1, 2, 3, 4]),
+                ("[[], []]", &[2, 0], &[]),
+                ("[[], []]", &[2, 0, 2], &[]),
+                ("[]", &[0], &[]),
+                ("[]", &[0, 0], &[]),
+            ];
+
+        for &(expected, shape, values) in tests.iter() {
+            let tensor = Tensor::<i32>::new(shape).with_values(values).unwrap();
+            assert_eq!(expected, format!("{}", tensor));
+        }
+    }
 }
