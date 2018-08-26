@@ -591,7 +591,7 @@ impl<T: TensorType> Assign<T> {
     }
 
     /// Creates an expression that takes values from `iterable` to fill `variable`.
-    pub fn to(variable: Expr<T>, iterable: impl Iterator<Item = T>) -> Expr<T> {
+    pub fn to(variable: Expr<T>, iterable: impl Iterator<Item = T>) -> ::Result<Expr<T>> {
         let constant = if let ShapeHint::Exactly(shape) = variable.expr.shape_hint() {
             let values: Vec<_> = iterable
                 .take(shape.iter().product::<u64>() as usize)
@@ -599,14 +599,13 @@ impl<T: TensorType> Assign<T> {
 
             Constant::new_expr(
                 Tensor::new(shape)
-                    .with_values(&values)
-                    .expect("iterable to contain enough values to fill variable"),
+                    .with_values(&values)?
             )
         } else {
             panic!("Cannot assign to expression with unknown size!")
         };
 
-        Assign::new_expr(variable, constant)
+        Ok(Assign::new_expr(variable, constant))
     }
 }
 
@@ -836,10 +835,7 @@ mod tests {
             .compile(x * w.clone() / w.clone() % w.clone() + w.clone() - w.clone())
             .unwrap();
 
-        let a = Assign::to(w, ::std::iter::repeat(1.));
-        println!("{}", a);
-
-        compiler.compile(a).unwrap();
+        compiler.compile(Assign::to(w, ::std::iter::repeat(1.)).unwrap()).unwrap();
     }
 
     #[test]
