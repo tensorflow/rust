@@ -1213,37 +1213,63 @@ impl<T: TensorType + PartialEq> PartialEq for Tensor<T> {
     }
 }
 
-impl<T: TensorType> Display for Tensor<T> {
-    fn fmt(&self, f: &mut Formatter) -> ::std::fmt::Result {
-        let dim_len = self.dims.len();
+fn write_tensor_recursive<T: Display + Debug>(f: &mut Formatter, shape: &[u64], values: &[T]) -> ::std::fmt::Result {
+    match shape.len() {
+        // Handle special case of a scalar tensor.
+        0 => write!(f, "{}", values[0]),
+        1 => {
+            // Base case for recursion
+            // Print comma separated T's surrounded by brackets.
+            let mut values = values.iter().take(shape[0] as usize);
 
-        if dim_len == 0 {
-            write!(f, "{}", self[0])
-        } else {
-            for _ in 0..dim_len - 1 {
-                write!(f, "[")?;
+            write!(f, "[")?;
+
+            if let Some(value) = values.next() {
+                write!(f, "{}", value)?;
             }
 
-            let inner_dim = self.dims[dim_len - 1];
+            while let Some(value) = values.next() {
+                write!(f, ", {}", value)?;
+            }
 
-            if inner_dim != 0 {
-                let mut chunks = self.chunks(inner_dim as usize);
+            write!(f, "]")
+        },
+        _ => {
+            // Recur with values split into chunks of the next dims size,
+            // Surround with brackets and separate with comma.
+            write!(f, "[")?;
+
+            if shape[1] != 0 {
+                let mut chunks = values.chunks(shape[1] as usize);
+                debug_assert!(chunks.len() == shape[0] as usize);
 
                 if let Some(chunk) = chunks.next() {
-                    write!(f, "{:?}", chunk)?;
+                    write_tensor_recursive(f, &shape[1..], chunk)?;
                 }
 
                 while let Some(chunk) = chunks.next() {
-                    write!(f, ", {:?}", chunk)?;
+                    write!(f, ", ")?;
+                    write_tensor_recursive(f, &shape[1..], chunk)?;
+                }
+            } else {
+                if shape[0] > 0 {
+                    write_tensor_recursive::<T>(f, &shape[1..], &[])?;
+                }
+
+                for _ in 1..shape[0] {
+                    write!(f, ", ")?;
+                    write_tensor_recursive::<T>(f, &shape[1..], &[])?;
                 }
             }
 
-            for _ in 0..dim_len - 1 {
-                write!(f, "]")?
-            }
+            write!(f, "]")
+        },
+    }
+}
 
-            Ok(())
-        }
+impl<T: TensorType> Display for Tensor<T> {
+    fn fmt(&self, f: &mut Formatter) -> ::std::fmt::Result {
+        write_tensor_recursive(f, &self.dims, self)
     }
 }
 
