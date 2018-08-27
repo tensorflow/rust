@@ -610,7 +610,10 @@ impl<T: TensorType> Assign<T> {
                     .with_values(&values)?
             )
         } else {
-            panic!("Cannot assign to expression with unknown size!")
+            return Err(invalid_arg!(
+                "Cannot assign to expression {} with unknown size!", 
+                variable
+            ));
         };
 
         Ok(Assign::new_expr(variable, constant))
