@@ -78,6 +78,7 @@ impl<T: TensorType> From<T> for Expr<T> {
 ////////////////////////
 
 /// Enum of an expr's possible shape states
+#[derive(Debug)]
 pub enum ShapeHint<'a> {
     /// Unknown shape
     Unknown,
