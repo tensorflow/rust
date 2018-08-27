@@ -78,9 +78,11 @@ impl<T: TensorType> From<T> for Expr<T> {
 ////////////////////////
 
 /// Enum of an expr's possible shape states
-
 pub enum ShapeHint<'a> {
+    /// Unknown shape
     Unknown,
+
+    /// Well defined shape that exactly matches contained value
     Exactly(&'a [u64]),
 }
 
