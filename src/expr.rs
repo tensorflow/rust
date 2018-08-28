@@ -67,26 +67,11 @@ impl<T: TensorType> Expr<T> {
     }
 }
 
-impl<T: TensorType> ExprImpl<T> for Expr<T> {
-    fn op_level(&self) -> OpLevel {
-        self.expr.op_level()
-    }
+impl<T: TensorType> ops::Deref for Expr<T> {
+    type Target = ExprImpl<T>;
 
-    fn children(&self) -> Vec<Box<AnyExpr>> {
-        self.expr.children()
-    }
-
-    fn create_operation(
-        &self,
-        graph: &mut Graph,
-        children: &[Operation],
-        id_gen: &mut FnMut() -> String,
-    ) -> Result<Operation, Status> {
-        self.expr.create_operation(graph, children, id_gen)
-    }
-
-    fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
-        self.expr.derivative_by_variable(var)
+    fn deref(&self) -> &Self::Target {
+        self.expr.deref()
     }
 }
 
@@ -192,16 +177,16 @@ macro_rules! impl_bin_op {
 
     impl<T: TensorType> Display for $name<T> {
       fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-        if self.left.expr.op_level() < OpLevel::$op_level {
+        if self.left.op_level() < OpLevel::$op_level {
           write!(f, "({})", self.left)?;
         } else {
           write!(f, "{}", self.left)?;
         }
         write!(f, concat!(" ", $op, " "))?;
         let paren = if $assoc {
-          self.right.expr.op_level() < OpLevel::$op_level
+          self.right.op_level() < OpLevel::$op_level
         } else {
-          self.right.expr.op_level() <= OpLevel::$op_level
+          self.right.op_level() <= OpLevel::$op_level
         };
         if paren {
           write!(f, "({})", self.right)
@@ -355,7 +340,7 @@ impl<T: TensorType> ops::Neg for Expr<T> {
 impl<T: TensorType> Display for Neg<T> {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
         write!(f, "-")?;
-        if self.expr.expr.op_level() <= OpLevel::Unary {
+        if self.expr.op_level() <= OpLevel::Unary {
             write!(f, "({})", self.expr)
         } else {
             write!(f, "{}", self.expr)
