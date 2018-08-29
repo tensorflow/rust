@@ -1239,26 +1239,15 @@ fn write_tensor_recursive<T: Display>(f: &mut Formatter, shape: &[u64], values: 
             // Surround with brackets and separate with comma.
             write!(f, "[")?;
 
-            if shape[1] != 0 {
-                let mut chunks = values.chunks(shape[1] as usize);
-                debug_assert!(chunks.len() == shape[0] as usize);
+            if shape[0] > 0 {
+                let chunk_size = values.len() / shape[0] as usize;
 
-                if let Some(chunk) = chunks.next() {
-                    write_tensor_recursive(f, &shape[1..], chunk)?;
-                }
+                for i in 0..shape[0] as usize {
+                    if i != 0 {
+                        write!(f, ", ")?;
+                    }
 
-                while let Some(chunk) = chunks.next() {
-                    write!(f, ", ")?;
-                    write_tensor_recursive(f, &shape[1..], chunk)?;
-                }
-            } else {
-                if shape[0] > 0 {
-                    write_tensor_recursive::<T>(f, &shape[1..], &[])?;
-                }
-
-                for _ in 1..shape[0] {
-                    write!(f, ", ")?;
-                    write_tensor_recursive::<T>(f, &shape[1..], &[])?;
+                    write_tensor_recursive(f, &shape[1..], &values[i*chunk_size..(i+1)*chunk_size])?;
                 }
             }
 
