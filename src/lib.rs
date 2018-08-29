@@ -1213,7 +1213,7 @@ impl<T: TensorType + PartialEq> PartialEq for Tensor<T> {
     }
 }
 
-fn write_tensor_recursive<T: Display + Debug>(f: &mut Formatter, shape: &[u64], values: &[T]) -> ::std::fmt::Result {
+fn write_tensor_recursive<T: Display>(f: &mut Formatter, shape: &[u64], values: &[T]) -> ::std::fmt::Result {
     match shape.len() {
         // Handle special case of a scalar tensor.
         0 => write!(f, "{}", values[0]),
