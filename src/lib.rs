@@ -1214,46 +1214,27 @@ impl<T: TensorType + PartialEq> PartialEq for Tensor<T> {
 }
 
 fn write_tensor_recursive<T: Display>(f: &mut Formatter, shape: &[u64], values: &[T]) -> ::std::fmt::Result {
-    match shape.len() {
+    if shape.len() == 0 {
         // Handle special case of a scalar tensor.
-        0 => write!(f, "{}", values[0]),
-        1 => {
-            // Base case for recursion
-            // Print comma separated T's surrounded by brackets.
-            debug_assert!(values.len() == shape[0] as usize);
+        write!(f, "{}", values[0])
+    } else {
+        // Recur with values split into chunks of the next dims size,
+        // Surround with brackets and separate with comma.
+        write!(f, "[")?;
 
-            write!(f, "[")?;
-            let mut values = values.iter();
+        if shape[0] > 0 {
+            let chunk_size = values.len() / shape[0] as usize;
 
-            if let Some(value) = values.next() {
-                write!(f, "{}", value)?;
-            }
-
-            while let Some(value) = values.next() {
-                write!(f, ", {}", value)?;
-            }
-
-            write!(f, "]")
-        },
-        _ => {
-            // Recur with values split into chunks of the next dims size,
-            // Surround with brackets and separate with comma.
-            write!(f, "[")?;
-
-            if shape[0] > 0 {
-                let chunk_size = values.len() / shape[0] as usize;
-
-                for i in 0..shape[0] as usize {
-                    if i != 0 {
-                        write!(f, ", ")?;
-                    }
-
-                    write_tensor_recursive(f, &shape[1..], &values[i*chunk_size..(i+1)*chunk_size])?;
+            for i in 0..shape[0] as usize {
+                if i != 0 {
+                    write!(f, ", ")?;
                 }
-            }
 
-            write!(f, "]")
-        },
+                write_tensor_recursive(f, &shape[1..], &values[i*chunk_size..(i+1)*chunk_size])?;
+            }
+        }
+
+        write!(f, "]")
     }
 }
 
