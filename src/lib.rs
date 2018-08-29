@@ -1220,9 +1220,10 @@ fn write_tensor_recursive<T: Display>(f: &mut Formatter, shape: &[u64], values: 
         1 => {
             // Base case for recursion
             // Print comma separated T's surrounded by brackets.
-            let mut values = values.iter().take(shape[0] as usize);
+            debug_assert!(values.len() == shape[0] as usize);
 
             write!(f, "[")?;
+            let mut values = values.iter();
 
             if let Some(value) = values.next() {
                 write!(f, "{}", value)?;
