@@ -1213,6 +1213,37 @@ impl<T: TensorType + PartialEq> PartialEq for Tensor<T> {
     }
 }
 
+fn write_tensor_recursive<T: Display>(f: &mut Formatter, shape: &[u64], values: &[T]) -> ::std::fmt::Result {
+    if shape.len() == 0 {
+        // Handle special case of a scalar tensor.
+        write!(f, "{}", values[0])
+    } else {
+        // Recur with values split into chunks of the next dims size,
+        // Surround with brackets and separate with comma.
+        write!(f, "[")?;
+
+        if shape[0] > 0 {
+            let chunk_size = values.len() / shape[0] as usize;
+
+            for i in 0..shape[0] as usize {
+                if i != 0 {
+                    write!(f, ", ")?;
+                }
+
+                write_tensor_recursive(f, &shape[1..], &values[i*chunk_size..(i+1)*chunk_size])?;
+            }
+        }
+
+        write!(f, "]")
+    }
+}
+
+impl<T: TensorType> Display for Tensor<T> {
+    fn fmt(&self, f: &mut Formatter) -> ::std::fmt::Result {
+        write_tensor_recursive(f, &self.dims, self)
+    }
+}
+
 ////////////////////////
 
 /// Dynamically loaded plugins.
@@ -1492,5 +1523,27 @@ mod tests {
         assert_eq!(a, b);
         assert_ne!(a, c);
         assert_ne!(a, d);
+    }
+
+    #[test]
+    fn tensor_display() {
+        let tests = [
+                ("1", &[][..], &[1][..]),
+                ("[1]", &[1], &[1]),
+                ("[1, 2]", &[2], &[1, 2]),
+                ("[[1, 2], [3, 4]]", &[2, 2], &[1, 2, 3, 4]),
+                ("[[[1], [2]], [[3], [4]]]", &[2, 2, 1], &[1, 2, 3, 4]),
+                ("[[[1, 2]], [[3, 4]]]", &[2, 1, 2], &[1, 2, 3, 4]),
+                ("[[[[], []]], [[[], []]]]", &[2, 1, 2, 0], &[]),
+                ("[[], []]", &[2, 0], &[]),
+                ("[[], []]", &[2, 0, 2], &[]),
+                ("[]", &[0], &[]),
+                ("[]", &[0, 0], &[]),
+            ];
+
+        for &(expected, shape, values) in tests.iter() {
+            let tensor = Tensor::<i32>::new(shape).with_values(values).unwrap();
+            assert_eq!(expected, format!("{}", tensor));
+        }
     }
 }

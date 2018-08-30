@@ -89,6 +89,18 @@ impl<T: TensorType> From<T> for Expr<T> {
 
 ////////////////////////
 
+/// Enum of an expr's possible shape states
+#[derive(Debug)]
+pub enum ShapeHint<'a> {
+    /// Unknown shape
+    Unknown,
+
+    /// Well defined shape that exactly matches contained value
+    Exactly(&'a [u64]),
+}
+
+////////////////////////
+
 /// Trait implemented by all expression types.
 /// Most users will want to store an Expr instead.
 pub trait ExprImpl<T: TensorType>: Display + Debug {
@@ -112,6 +124,11 @@ pub trait ExprImpl<T: TensorType>: Display + Debug {
 
     /// Returns the derivative of the expression with respect to the given variable.
     fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status>;
+
+    /// Returns a hint about the expression's shape.
+    fn shape_hint(&self) -> ShapeHint {
+        ShapeHint::Unknown
+    }
 }
 
 impl<T: TensorType> ExprImpl<T> for T {
@@ -421,8 +438,14 @@ impl<T: TensorType> ExprImpl<T> for Variable<T> {
                         _id_gen: &mut FnMut() -> String)
                         -> Result<Operation, Status> {
         let mut nd = graph.new_operation("Variable", &self.name)?;
+        let shape = self.shape
+            .iter()
+            .map(|dim_size| Some(*dim_size as i64))
+            .collect();
+
         nd.set_attr_type("dtype", T::data_type()).unwrap();
-        nd.set_attr_shape("shape", &Shape(Some(vec![]))).unwrap();
+        nd.set_attr_shape("shape", &Shape(Some(shape)))
+            .unwrap();
         nd.finish()
     }
 
@@ -432,6 +455,10 @@ impl<T: TensorType> ExprImpl<T> for Variable<T> {
         } else {
             Expr::from(T::zero())
         })
+    }
+
+    fn shape_hint(&self) -> ShapeHint {
+        ShapeHint::Exactly(&self.shape)
     }
 }
 
@@ -481,8 +508,69 @@ impl<T: TensorType> ExprImpl<T> for Placeholder<T> {
                         _id_gen: &mut FnMut() -> String)
                         -> Result<Operation, Status> {
         let mut nd = graph.new_operation("Placeholder", &self.name)?;
+        let shape = self.shape
+            .iter()
+            .map(|dim_size| Some(*dim_size as i64))
+            .collect();
+
         nd.set_attr_type("dtype", T::data_type()).unwrap();
-        nd.set_attr_shape("shape", &Shape(Some(vec![]))).unwrap();
+        nd.set_attr_shape("shape", &Shape(Some(shape)))
+            .unwrap();
+        nd.finish()
+    }
+
+    fn derivative_by_variable(&self, _var: &str) -> Result<Expr<T>, Status> {
+        Ok(Expr::from(T::zero()))
+    }
+
+    fn shape_hint(&self) -> ShapeHint {
+        ShapeHint::Exactly(&self.shape)
+    }
+}
+
+////////////////////////
+
+/// Expression for a constant.
+#[derive(Debug)]
+pub struct Constant<T: TensorType> {
+    tensor: Tensor<T>,
+}
+
+impl<T: TensorType> Constant<T> {
+    pub fn new(tensor: Tensor<T>) -> Self {
+        Constant { tensor }
+    }
+
+    pub fn new_expr(tensor: Tensor<T>) -> Expr<T> {
+        Expr::new(Constant { tensor })
+    }
+}
+
+impl<T: TensorType> Display for Constant<T> {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        write!(f, "{}", self.tensor)
+    }
+}
+
+impl<T: TensorType> ExprImpl<T> for Constant<T> {
+    fn op_level(&self) -> OpLevel {
+        OpLevel::Atom
+    }
+
+    fn children(&self) -> Vec<Box<AnyExpr>> {
+        vec![]
+    }
+
+    fn create_operation(
+        &self,
+        graph: &mut Graph,
+        _children: &[Operation],
+        id_gen: &mut FnMut() -> String,
+    ) -> Result<Operation, Status> {
+        let mut nd = graph.new_operation("Const", &id_gen())?;
+
+        nd.set_attr_type("dtype", T::data_type())?;
+        nd.set_attr_tensor("value", self.tensor.clone())?;
         nd.finish()
     }
 
@@ -511,6 +599,27 @@ impl<T: TensorType> Assign<T> {
     /// Creates an expression that assigns `value` to `variable`.
     pub fn new_expr(variable: Expr<T>, value: Expr<T>) -> Expr<T> {
         Expr::new(Assign::new(variable, value))
+    }
+
+    /// Creates an expression that takes values from `iterable` to fill `variable`.
+    pub fn to(variable: Expr<T>, iterable: impl Iterator<Item = T>) -> ::Result<Expr<T>> {
+        let constant = if let ShapeHint::Exactly(shape) = variable.expr.shape_hint() {
+            let values: Vec<_> = iterable
+                .take(shape.iter().product::<u64>() as usize)
+                .collect();
+
+            Constant::new_expr(
+                Tensor::new(shape)
+                    .with_values(&values)?
+            )
+        } else {
+            return Err(invalid_arg!(
+                "Cannot assign to expression {} with unknown size!", 
+                variable
+            ));
+        };
+
+        Ok(Assign::new_expr(variable, constant))
     }
 }
 
@@ -730,12 +839,17 @@ mod tests {
     #[test]
     fn test_compile() {
         let mut g = Graph::new();
-        let w = <Variable<f32>>::new_expr(&vec![2, 3], "w");
+
         let x = <Placeholder<f32>>::new_expr(&vec![2, 3], "x");
+        let w = <Variable<f32>>::new_expr(&vec![2, 3], "w");
+
         let mut compiler = Compiler::new(&mut g);
-        compiler.compile(x * w.clone() / w.clone() % w.clone() + w.clone() - w.clone()).unwrap();
-        let one = Expr::from(1.0f32);
-        compiler.compile(Assign::new_expr(w, one)).unwrap();
+
+        compiler
+            .compile(x * w.clone() / w.clone() % w.clone() + w.clone() - w.clone())
+            .unwrap();
+
+        compiler.compile(Assign::to(w, ::std::iter::repeat(1.)).unwrap()).unwrap();
     }
 
     #[test]
