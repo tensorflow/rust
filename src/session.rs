@@ -226,7 +226,7 @@ pub struct FetchToken {
 }
 
 /// Deprecated alias for FetchToken.
-#[deprecated(note="Use FetchToken instead.")]
+#[deprecated(note="Use FetchToken instead.", since="0.10.0")]
 pub type OutputToken = FetchToken;
 
 /// Manages the inputs and outputs for a single execution of a graph.
@@ -291,7 +291,7 @@ impl<'l> SessionRunArgs<'l> {
     }
 
     /// Deprecated alias for add_feed.
-    #[deprecated(note="Use add_feed instead.")]
+    #[deprecated(note="Use add_feed instead.", since="0.10.0")]
     pub fn add_input<T: TensorType>(&mut self,
                                     operation: &Operation,
                                     index: c_int,
@@ -314,7 +314,7 @@ impl<'l> SessionRunArgs<'l> {
     }
 
     /// Deprecated alias for request_fetch.
-    #[deprecated(note="Use request_fetch instead.")]
+    #[deprecated(note="Use request_fetch instead.", since="0.10.0")]
     #[allow(deprecated)]
     pub fn request_output(&mut self, operation: &Operation, index: c_int) -> OutputToken {
         self.request_fetch(operation, index)
@@ -353,7 +353,7 @@ impl<'l> SessionRunArgs<'l> {
     }
 
     /// Deprecated alias for fetch.
-    #[deprecated(note="Use fetch instead.")]
+    #[deprecated(note="Use fetch instead.", since="0.10.0")]
     #[allow(deprecated)]
     pub fn take_output<T: TensorType>(&mut self, token: OutputToken) -> Result<Tensor<T>> {
         self.fetch(token)
@@ -396,7 +396,7 @@ impl<'l> Drop for SessionRunArgs<'l> {
 }
 
 /// Deprecated alias for SessionRunArgs.
-#[deprecated(note="Use SessionRunArgs instead.")]
+#[deprecated(note="Use SessionRunArgs instead.", since="0.10.0")]
 pub type StepWithGraph<'l> = SessionRunArgs<'l>;
 
 ////////////////////////
