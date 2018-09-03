@@ -15,8 +15,6 @@ use std::hash::Hasher;
 use std::marker::PhantomData;
 use std::ops;
 use std::rc::Rc;
-use super::Code;
-use super::DataType;
 use super::Graph;
 use super::Operation;
 use super::Output;
@@ -57,6 +55,7 @@ pub struct Expr<T: TensorType> {
 }
 
 impl<T: TensorType> Expr<T> {
+    /// Wraps an ExprImpl.
     pub fn new<I>(expr: I) -> Expr<T>
     where
         I: ExprImpl<T> + 'static,
@@ -537,10 +536,12 @@ pub struct Constant<T: TensorType> {
 }
 
 impl<T: TensorType> Constant<T> {
+    /// Creates a constant with the given value.
     pub fn new(tensor: Tensor<T>) -> Self {
         Constant { tensor }
     }
 
+    /// Creates a constant with the given value.
     pub fn new_expr(tensor: Tensor<T>) -> Expr<T> {
         Expr::new(Constant { tensor })
     }

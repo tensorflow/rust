@@ -44,3 +44,17 @@ cargo doc -vv --features tensorflow_unstable
 # TODO(#66): Re-enable: (cd tensorflow-sys && cargo test -vv -j 1)
 (cd tensorflow-sys && cargo run --example multiplication)
 (cd tensorflow-sys && cargo doc -vv)
+
+bad_deprecations="$(grep -n '#\[deprecated' src -r --include=*.rs | grep -E -v '([^"\\]|\\.|"([^"\\]|\\.)*")*since' || true)"
+if [[ "${bad_deprecations}" != "" ]]; then
+    echo "ERROR: #[deprecated] attribute(s) found with no 'since' key:"
+    echo "${bad_deprecations}"
+    exit 1
+fi
+
+bad_deprecations="$(grep -n '#\[deprecated' src -r --include=*.rs | grep -E -v '([^"\\]|\\.|"([^"\\]|\\.)*")*note' || true)"
+if [[ "${bad_deprecations}" != "" ]]; then
+    echo "ERROR: #[deprecated] attribute(s) found with no 'note' key:"
+    echo "${bad_deprecations}"
+    exit 1
+fi
