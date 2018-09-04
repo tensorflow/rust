@@ -12,7 +12,7 @@ set -e
 
 cd $(dirname $(readlink -f "$0"))
 
-tensorflow_version=1.9.0
+tensorflow_version=1.10.1
 
 valgrind_log=valgrind.log
 truncate --size=0 "$valgrind_log"
@@ -33,7 +33,6 @@ rm -rf target/debug/build/tensorflow-sys-*
 echo "Building libtensorflow.so"
 
 # This is the very expensive step.
-export TF_RUST_BAZEL_OPTS=--incompatible_load_argument_is_label=false
 cargo +nightly build --features=nightly -p tensorflow-sys -vvv -j 1
 
 # Run valgrind against all the things.
