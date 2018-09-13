@@ -4,18 +4,15 @@ extern crate alloc_system;
 extern crate tensorflow;
 
 use std::error::Error;
-use std::fs::File;
-use std::io::Read;
 use std::result::Result;
-use std::path::Path;
 use std::process::exit;
-use tensorflow::Code;
+use tensorflow::DataType;
 use tensorflow::Graph;
-use tensorflow::ImportGraphDefOptions;
+use tensorflow::Output;
 use tensorflow::Session;
 use tensorflow::SessionOptions;
 use tensorflow::SessionRunArgs;
-use tensorflow::Status;
+use tensorflow::Shape;
 use tensorflow::Tensor;
 
 fn main() {
@@ -32,33 +29,47 @@ fn main() {
 }
 
 fn run() -> Result<(), Box<Error>> {
-    let filename = "examples/addition/model.pb"; // z = x + y
-    if !Path::new(filename).exists() {
-        return Err(Box::new(Status::new_set(Code::NotFound,
-                                            &format!("Run 'python addition.py' to generate {} \
-                                                      and try again.",
-                                                     filename))
-            .unwrap()));
-    }
-
-    // Create input variables for our addition
     let mut x = Tensor::new(&[1]);
     x[0] = 2i32;
     let mut y = Tensor::new(&[1]);
     y[0] = 40i32;
 
-    // Load the computation graph defined by regression.py.
     let mut graph = Graph::new();
-    let mut proto = Vec::new();
-    File::open(filename)?.read_to_end(&mut proto)?;
-    graph.import_graph_def(&proto, &ImportGraphDefOptions::new())?;
+
+    let x_in = {
+        let mut nd = graph.new_operation("Placeholder", "x").unwrap();
+        nd.set_attr_type("dtype", DataType::Int32).unwrap();
+        nd.set_attr_shape("shape", &Shape::from(Some(vec![]))).unwrap();
+        nd.finish().unwrap()
+    };
+
+    let y_in = {
+        let mut nd = graph.new_operation("Placeholder", "y").unwrap();
+        nd.set_attr_type("dtype", DataType::Int32).unwrap();
+        nd.set_attr_shape("shape", &Shape::from(Some(vec![]))).unwrap();
+        nd.finish().unwrap()
+    };
+
+    let sum = {
+        let mut nd = graph.new_operation("Add", "sum").unwrap();
+        nd.add_input(Output {
+            operation: x_in.clone(),
+            index: 0,
+        });
+        nd.add_input(Output {
+            operation: y_in.clone(),
+            index: 0,
+        });
+        nd.finish().unwrap()
+    };
+
     let mut session = Session::new(&SessionOptions::new(), &graph)?;
 
     // Run the graph.
     let mut args = SessionRunArgs::new();
-    args.add_feed(&graph.operation_by_name_required("x")?, 0, &x);
-    args.add_feed(&graph.operation_by_name_required("y")?, 0, &y);
-    let z = args.request_fetch(&graph.operation_by_name_required("z")?, 0);
+    args.add_feed(&x_in, 0, &x);
+    args.add_feed(&y_in, 0, &y);
+    let z = args.request_fetch(&sum, 0);
     session.run(&mut args)?;
 
     // Check our results.
