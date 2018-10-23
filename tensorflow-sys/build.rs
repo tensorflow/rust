@@ -67,7 +67,7 @@ fn check_windows_lib() -> bool {
 
 #[cfg(target_env = "msvc")]
 fn check_windows_lib() -> bool {
-    let windows_lib: &str = &format!("{}.lib", LIBRARY);
+    let windows_lib: &str = &format!("{}.dll", LIBRARY);
     if let Ok(path) = env::var("PATH") {
         for p in path.split(";") {
             let path = Path::new(p).join(windows_lib);
