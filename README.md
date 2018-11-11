@@ -44,7 +44,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-tensorflow = "0.10.0"
+tensorflow = "0.11.0"
 ```
 
 and this to your crate root:
@@ -75,7 +75,7 @@ To enable GPU support, use the `tensorflow_gpu` feature in your Cargo.toml:
 
 ```
 [dependencies]
-tensorflow = { version = "0.10.0", features = ["tensorflow_gpu"] }
+tensorflow = { version = "0.11.0", features = ["tensorflow_gpu"] }
 ```
 
 ## Manual TensorFlow Compilation
