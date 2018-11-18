@@ -193,10 +193,15 @@ impl Session {
                     if !status.is_ok() {
                         return Err(status);
                     }
+                    let incarnation = tf::TF_DeviceListIncarnation(list, i, status.inner);
+                    if !status.is_ok() {
+                        return Err(status);
+                    }
                     devices.push(Device {
                         name: CStr::from_ptr(c_name).to_str()?.to_string(),
                         device_type: CStr::from_ptr(c_type).to_str()?.to_string(),
                         memory_bytes: bytes,
+                        incarnation,
                     });
                 }
                 Ok(devices)
@@ -412,6 +417,9 @@ pub struct Device {
 
     /// Amount of memory on the device.
     pub memory_bytes: i64,
+
+    /// Incarnation number of the device.
+    pub incarnation: u64,
 }
 
 ////////////////////////
