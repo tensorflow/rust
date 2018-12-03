@@ -1303,6 +1303,35 @@ pub fn version() -> std::result::Result<String, Utf8Error> {
     unsafe { CStr::from_ptr(tf::TF_Version()).to_str().map(|s| s.to_string()) }
 }
 
+/// Returns a serialized KernelList protocol buffer containing KernelDefs for
+/// all registered kernels.
+pub fn get_all_registered_kernels() -> Result<Vec<u8>> {
+    let mut status = Status::new();
+    let buf = unsafe {
+        let buf = tf::TF_GetAllRegisteredKernels(status.inner());
+        if !status.is_ok() {
+            return Err(status);
+        }
+        Buffer::<u8>::from_c(buf, true)
+    };
+    Ok(Vec::from(buf.as_ref()))
+}
+
+/// Returns a serialized KernelList protocol buffer containing KernelDefs for
+/// all kernels registered for the operation named `name`.
+pub fn get_registered_kernels_for_op(name: &str) -> Result<Vec<u8>> {
+    let c_name = CString::new(name)?;
+    let mut status = Status::new();
+    let buf = unsafe {
+        let buf = tf::TF_GetRegisteredKernelsForOp(c_name.as_ptr(), status.inner());
+        if !status.is_ok() {
+            return Err(status);
+        }
+        Buffer::<u8>::from_c(buf, true)
+    };
+    Ok(Vec::from(buf.as_ref()))
+}
+
 ////////////////////////
 
 /// A Shape is the shape of a tensor.  A Shape may be an unknown rank, or it may
@@ -1545,5 +1574,15 @@ mod tests {
             let tensor = Tensor::<i32>::new(shape).with_values(values).unwrap();
             assert_eq!(expected, format!("{}", tensor));
         }
+    }
+
+    #[test]
+    fn test_get_all_registered_kernels() {
+        assert!(get_all_registered_kernels().unwrap().len() > 0);
+    }
+
+    #[test]
+    fn test_get_registered_kernels_for_op() {
+        assert!(get_registered_kernels_for_op("Add").unwrap().len() > 0);
     }
 }

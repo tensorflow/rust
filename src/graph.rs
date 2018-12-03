@@ -2102,6 +2102,15 @@ impl Function {
             Ok(buf.into())
         }
     }
+
+    /// Returns the name of the graph function.
+    pub fn get_name(&self) -> std::result::Result<String, Utf8Error> {
+        unsafe {
+            CStr::from_ptr(tf::TF_FunctionName(self.inner))
+                .to_str()
+                .map(|s| s.to_string())
+        }
+    }
 }
 
 ////////////////////////
@@ -2232,6 +2241,7 @@ mod tests {
             &opts,
             Some(description),
         ).unwrap();
+        assert_eq!("times_two", f.get_name().unwrap());
         let mut g2 = Graph::new();
         assert_eq!(0, g2.num_functions());
         assert_eq!(0, g2.get_functions().unwrap().len());

@@ -1151,6 +1151,17 @@ extern "C" {
                            status: *mut TF_Status, dy: *mut TF_Output);
 }
 extern "C" {
+    pub fn TF_AddGradientsWithPrefix(g: *mut TF_Graph,
+                                     prefix: *const ::std::os::raw::c_char,
+                                     y: *mut TF_Output,
+                                     ny: ::std::os::raw::c_int,
+                                     x: *mut TF_Output,
+                                     nx: ::std::os::raw::c_int,
+                                     dx: *mut TF_Output,
+                                     status: *mut TF_Status,
+                                     dy: *mut TF_Output);
+}
+extern "C" {
     pub fn TF_GraphToFunction(fn_body: *const TF_Graph,
                               fn_name: *const ::std::os::raw::c_char,
                               append_hash_to_fn_name: ::std::os::raw::c_uchar,
@@ -1165,6 +1176,10 @@ extern "C" {
                               opts: *const TF_FunctionOptions,
                               description: *const ::std::os::raw::c_char,
                               status: *mut TF_Status) -> *mut TF_Function;
+}
+extern "C" {
+    pub fn TF_FunctionName(func: *mut TF_Function)
+     -> *const ::std::os::raw::c_char;
 }
 extern "C" {
     pub fn TF_FunctionToFunctionDef(func: *mut TF_Function,
@@ -1359,19 +1374,24 @@ extern "C" {
 extern "C" {
     pub fn TF_DeviceListName(list: *const TF_DeviceList,
                              index: ::std::os::raw::c_int,
-                             arg1: *mut TF_Status)
+                             status: *mut TF_Status)
      -> *const ::std::os::raw::c_char;
 }
 extern "C" {
     pub fn TF_DeviceListType(list: *const TF_DeviceList,
                              index: ::std::os::raw::c_int,
-                             arg1: *mut TF_Status)
+                             status: *mut TF_Status)
      -> *const ::std::os::raw::c_char;
 }
 extern "C" {
     pub fn TF_DeviceListMemoryBytes(list: *const TF_DeviceList,
                                     index: ::std::os::raw::c_int,
-                                    arg1: *mut TF_Status) -> i64;
+                                    status: *mut TF_Status) -> i64;
+}
+extern "C" {
+    pub fn TF_DeviceListIncarnation(list: *const TF_DeviceList,
+                                    index: ::std::os::raw::c_int,
+                                    status: *mut TF_Status) -> u64;
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -1412,5 +1432,14 @@ extern "C" {
     pub fn TF_ApiDefMapGet(api_def_map: *mut TF_ApiDefMap,
                            name: *const ::std::os::raw::c_char,
                            name_len: usize, status: *mut TF_Status)
+     -> *mut TF_Buffer;
+}
+extern "C" {
+    pub fn TF_GetAllRegisteredKernels(status: *mut TF_Status)
+     -> *mut TF_Buffer;
+}
+extern "C" {
+    pub fn TF_GetRegisteredKernelsForOp(name: *const ::std::os::raw::c_char,
+                                        status: *mut TF_Status)
      -> *mut TF_Buffer;
 }
