@@ -24,7 +24,7 @@ random = "0.12.2"
 tensorflow_gpu = ["tensorflow-sys/tensorflow_gpu"]
 tensorflow_unstable = []
 # This is for testing purposes; users should not use this.
-nightly = []
+examples_system_alloc = []
 
 [workspace]
 
