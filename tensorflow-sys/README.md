@@ -14,7 +14,7 @@ To enable GPU support, use the `tensorflow_gpu` feature in your Cargo.toml:
 
 ```
 [dependencies]
-tensorflow-sys = { version = "0.14.0", features = ["tensorflow_gpu"] }
+tensorflow-sys = { version = "0.15.0", features = ["tensorflow_gpu"] }
 ```
 
 ## Manual TensorFlow Compilation
