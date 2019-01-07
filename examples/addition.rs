@@ -1,8 +1,6 @@
-#![cfg_attr(feature="nightly", feature(alloc_system))]
-#[cfg(feature="nightly")]
-extern crate alloc_system;
 extern crate tensorflow;
 
+use std::alloc::System;
 use std::error::Error;
 use std::fs::File;
 use std::io::Read;
@@ -17,6 +15,10 @@ use tensorflow::SessionOptions;
 use tensorflow::SessionRunArgs;
 use tensorflow::Status;
 use tensorflow::Tensor;
+
+#[cfg_attr(feature="examples_system_alloc", global_allocator)]
+#[cfg(feature="examples_system_alloc")]
+static ALLOCATOR: System = System;
 
 fn main() {
     // Putting the main code in another function serves two purposes:

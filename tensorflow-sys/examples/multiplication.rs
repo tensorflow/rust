@@ -1,10 +1,8 @@
-#![cfg_attr(feature="nightly", feature(alloc_system))]
-#[cfg(feature="nightly")]
-extern crate alloc_system;
 extern crate libc;
 extern crate tensorflow_sys as ffi;
 
 use libc::{c_int, int64_t, size_t};
+use std::alloc::System;
 use std::ffi::{CStr, CString};
 use std::mem;
 use std::path::Path;
@@ -25,6 +23,10 @@ macro_rules! ok(
         }
     });
 );
+
+#[cfg_attr(feature="examples_system_alloc", global_allocator)]
+#[cfg(feature="examples_system_alloc")]
+static ALLOCATOR: System = System;
 
 fn main() {
     use std::mem::size_of;

@@ -33,26 +33,26 @@ rm -rf target/debug/build/tensorflow-sys-*
 echo "Building libtensorflow.so"
 
 # This is the very expensive step.
-cargo +nightly build --features=nightly -p tensorflow-sys -vvv -j 1
+cargo build -p tensorflow-sys -vvv -j 1
 
 # Run valgrind against all the things.
 export LD_LIBRARY_PATH="$(echo "$PWD"/target/debug/build/tensorflow-sys-*/out/lib-v$tensorflow_version)"
 echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
 echo "Testing tensorflow examples"
 for example in addition regression expressions; do
-    cargo +nightly build --features='nightly tensorflow_unstable' --example="$example"
+    cargo build --features='examples_system_alloc tensorflow_unstable' --example="$example"
     valgrind --leak-check=full target/debug/examples/"$example" >> "$valgrind_log" 2>&1
 done
 
 echo "Testing tensorflow-sys examples"
 for example in multiplication; do
-    cargo +nightly build --features='nightly' --example="$example" -p tensorflow-sys
+    cargo build --features=examples_system_alloc --example="$example" -p tensorflow-sys
     (cd tensorflow-sys && valgrind --leak-check=full ../target/debug/examples/"$example") >> "$valgrind_log" 2>&1
 done
 
 # Build tests and grab the path to the test binary, because we can't properly run valgrind through cargo.
 # The filename parsing is a hack because we're not really parsing JSON.
-test_binary=$(cargo +nightly test --features='nightly tensorflow_unstable' --message-format=json --no-run \
+test_binary=$(cargo test --features='examples_system_alloc tensorflow_unstable' --message-format=json --no-run \
                     2>/dev/null | \
                   sed -En 's|^.*"([^"]*/target/debug/tensorflow-[^"]*)".*$|\1|p')
 
