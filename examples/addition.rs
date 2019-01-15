@@ -49,7 +49,7 @@ fn run() -> Result<(), Box<Error>> {
     let mut y = Tensor::new(&[1]);
     y[0] = 40i32;
 
-    // Load the computation graph defined by regression.py.
+    // Load the computation graph defined by addition.py.
     let mut graph = Graph::new();
     let mut proto = Vec::new();
     File::open(filename)?.read_to_end(&mut proto)?;
