@@ -2,7 +2,6 @@ extern crate random;
 extern crate tensorflow;
 
 use random::Source;
-use std::alloc::System;
 use std::error::Error;
 use std::fs::File;
 use std::io::Read;

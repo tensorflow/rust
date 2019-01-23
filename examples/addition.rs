@@ -1,6 +1,5 @@
 extern crate tensorflow;
 
-use std::alloc::System;
 use std::error::Error;
 use std::fs::File;
 use std::io::Read;
