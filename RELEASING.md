@@ -10,7 +10,14 @@
 1. Bump the version number in `Cargo.toml`
 1. Bump the version number in `README.md`
 1. Run `./test-all`
-1. Run `python examples/addition/addition.py`
+1. Run `python examples/addition/addition.py` using the version of TensorFlow being linked against.
+   (Use pip in a virtualenv, see https://www.tensorflow.org/install/pip#2-create-a-virtual-environment-recommended)
+   1. Run `virtualenv --system-site-packages -p python3 ~/tensorflow-${TENSORFLOW_VERSION}`
+   1. Run `source ~/tensorflow-${TENSORFLOW_VERSION}/bin/activate` to activate the virtualenv
+   1. Run `pip install --upgrade pip`
+   1. Run `pip install --upgrade tensorflow==${TENSORFLOW_VERSION}`
+   1. Run `python examples/addition/addition.py`
+   1. Run `deactivate` to exit the virtualenv
 1. Run `./run-valgrind`
 1. Commit and push the changes. (Push before publishing to ensure that the changes being published are up to date.)
 1. If the version of tensorflow-sys was bumped, run `cargo publish` for tensorflow-sys. (Publish before tagging in case there are problems publishing and we need to add commits to fix them.)
