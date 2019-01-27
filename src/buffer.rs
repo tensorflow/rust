@@ -1,6 +1,5 @@
-extern crate tensorflow_sys as tf;
-extern crate aligned_alloc;
-
+use super::BufferTrait;
+use super::TensorType;
 use libc::c_void;
 use libc::size_t;
 use std::borrow::Borrow;
@@ -18,8 +17,7 @@ use std::ops::RangeFull;
 use std::ops::RangeTo;
 use std::os::raw::c_void as std_c_void;
 use std::slice;
-use super::BufferTrait;
-use super::TensorType;
+use tensorflow_sys as tf;
 
 /// Fixed-length heap-allocated vector.
 /// This is basically a `Box<[T]>`, except that that type can't actually be constructed.

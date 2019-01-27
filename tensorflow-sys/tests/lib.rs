@@ -1,4 +1,4 @@
-extern crate tensorflow_sys as ffi;
+use tensorflow_sys as ffi;
 
 #[test]
 fn linkage() {

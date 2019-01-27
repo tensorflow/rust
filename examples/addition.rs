@@ -1,5 +1,3 @@
-extern crate tensorflow;
-
 use std::error::Error;
 use std::fs::File;
 use std::io::Read;
@@ -32,7 +30,7 @@ fn main() {
     })
 }
 
-fn run() -> Result<(), Box<Error>> {
+fn run() -> Result<(), Box<dyn Error>> {
     let filename = "examples/addition/model.pb"; // z = x + y
     if !Path::new(filename).exists() {
         return Err(Box::new(Status::new_set(Code::NotFound,

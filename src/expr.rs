@@ -603,7 +603,7 @@ impl<T: TensorType> Assign<T> {
     }
 
     /// Creates an expression that takes values from `iterable` to fill `variable`.
-    pub fn to(variable: Expr<T>, iterable: impl Iterator<Item = T>) -> ::Result<Expr<T>> {
+    pub fn to(variable: Expr<T>, iterable: impl Iterator<Item = T>) -> crate::Result<Expr<T>> {
         let constant = if let ShapeHint::Exactly(shape) = variable.expr.shape_hint() {
             let values: Vec<_> = iterable
                 .take(shape.iter().product::<u64>() as usize)

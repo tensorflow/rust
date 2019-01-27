@@ -12,6 +12,7 @@ homepage = "https://github.com/tensorflow/rust"
 repository = "https://github.com/tensorflow/rust"
 build = "build.rs"
 links = "tensorflow"
+edition = "2018"
 
 [dependencies]
 libc = "0.2.43"

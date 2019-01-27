@@ -8,6 +8,7 @@ keywords = ["TensorFlow", "bindings"]
 readme = "README.md"
 repository = "https://github.com/tensorflow/rust"
 documentation = "https://tensorflow.github.io/rust/tensorflow"
+edition = "2018"
 
 [dependencies]
 libc = "0.2.43"

@@ -1,10 +1,3 @@
-use tf;
-use libc::{c_char, c_int};
-use std::ffi::CStr;
-use std::ffi::CString;
-use std::marker;
-use std::path::Path;
-use std::ptr;
 use super::AnyTensor;
 use super::{Buffer, BufferTrait};
 use super::Code;
@@ -18,6 +11,13 @@ use super::SessionOptions;
 use super::Status;
 use super::Tensor;
 use super::TensorType;
+use crate::tf;
+use libc::{c_char, c_int};
+use std::ffi::CStr;
+use std::ffi::CString;
+use std::marker;
+use std::path::Path;
+use std::ptr;
 
 /// Aggregation type for a saved model bundle.
 #[derive(Debug)]
@@ -145,7 +145,7 @@ impl Session {
     }
 
     /// Runs the graph, feeding the inputs and then fetching the outputs requested in the step.
-    pub fn run(&mut self, step: &mut SessionRunArgs) -> Result<()> {
+    pub fn run(&mut self, step: &mut SessionRunArgs<'_>) -> Result<()> {
         // In case we're running it a second time and not all outputs were taken out.
         step.drop_output_tensors();
 
@@ -255,7 +255,7 @@ pub type OutputToken = FetchToken;
 #[derive(Debug)]
 pub struct SessionRunArgs<'l> {
     input_ports: Vec<tf::TF_Output>,
-    input_tensors: Vec<&'l AnyTensor>,
+    input_tensors: Vec<&'l dyn AnyTensor>,
 
     output_ports: Vec<tf::TF_Output>,
     output_tensors: Vec<*mut tf::TF_Tensor>,
@@ -382,7 +382,7 @@ impl<'l> SessionRunArgs<'l> {
     }
 
     fn drop_output_tensors(&mut self) {
-        for mut tensor in &mut self.output_tensors {
+        for tensor in &mut self.output_tensors {
             // TODO: Is TF_DeleteTensor NULL safe?
             if !tensor.is_null() {
                 unsafe {

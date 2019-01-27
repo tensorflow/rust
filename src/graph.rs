@@ -1,5 +1,15 @@
-extern crate tensorflow_sys as tf;
-
+use super::buffer::Buffer;
+use super::AnyTensor;
+use super::BufferTrait;
+use super::Code;
+use super::DataType;
+use super::GraphTrait;
+use super::OperationTrait;
+use super::Result;
+use super::Shape;
+use super::Status;
+use super::Tensor;
+use super::TensorType;
 use libc::c_char;
 use libc::c_float;
 use libc::c_int;
@@ -16,18 +26,7 @@ use std::ptr;
 use std::slice;
 use std::str::Utf8Error;
 use std::sync::Arc;
-use super::AnyTensor;
-use super::buffer::Buffer;
-use super::BufferTrait;
-use super::Code;
-use super::DataType;
-use super::GraphTrait;
-use super::OperationTrait;
-use super::Shape;
-use super::Status;
-use super::Result;
-use super::Tensor;
-use super::TensorType;
+use tensorflow_sys as tf;
 
 #[derive(Debug)]
 struct GraphLifetime;
@@ -288,10 +287,11 @@ impl Graph {
     /// Operation will only be added to graph when finish_operation() is called
     /// (assuming finish_operation() does not return an error).  graph must
     /// not be deleted until after finish_operation() is called.
-    pub fn new_operation(&mut self,
-                         op_type: &str,
-                         operation_name: &str)
-                         -> std::result::Result<OperationDescription, NulError> {
+    pub fn new_operation(
+        &mut self,
+        op_type: &str,
+        operation_name: &str,
+    ) -> std::result::Result<OperationDescription<'_>, NulError> {
         let c_op_type = CString::new(op_type)?;
         let c_operation_name = CString::new(operation_name)?;
         unsafe {
@@ -366,7 +366,7 @@ impl Graph {
     }
 
     /// Iterates over the operations in the graph.
-    pub fn operation_iter(&self) -> OperationIter {
+    pub fn operation_iter(&self) -> OperationIter<'_> {
         OperationIter {
             graph: self,
             pos: 0,

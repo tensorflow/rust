@@ -1,6 +1,4 @@
-extern crate random;
-extern crate tensorflow;
-
+use random;
 use random::Source;
 use std::error::Error;
 use std::result::Result;
@@ -31,7 +29,7 @@ fn main() {
     })
 }
 
-fn run() -> Result<(), Box<Error>> {
+fn run() -> Result<(), Box<dyn Error>> {
     let export_dir = "examples/regression_savedmodel"; // y = w * x + b
     if !Path::new(export_dir).exists() {
         return Err(Box::new(Status::new_set(Code::NotFound,

@@ -1,11 +1,9 @@
-extern crate libc;
-extern crate tensorflow_sys as ffi;
-
 use libc::{c_int, int64_t, size_t};
 use std::ffi::{CStr, CString};
 use std::mem;
 use std::path::Path;
 use std::os::raw::c_void;
+use tensorflow_sys as ffi;
 
 macro_rules! nonnull(
     ($pointer:expr) => ({
