@@ -1,7 +1,6 @@
 extern crate random;
 extern crate tensorflow;
 
-use std::alloc::System;
 use std::error::Error;
 use std::result::Result;
 use std::process::exit;

@@ -4,6 +4,6 @@
 
 include!("bindgen.rs");
 
-pub use TF_Code::*;
-pub use TF_DataType::*;
-pub use TF_AttrType::*;
+pub use crate::TF_Code::*;
+pub use crate::TF_DataType::*;
+pub use crate::TF_AttrType::*;

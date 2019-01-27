@@ -2,13 +2,11 @@
 //!
 //! See the [tensorflow docs](https://www.tensorflow.org/api_guides/python/python_io#tfrecords-format-details) for details of this format.
 
-extern crate byteorder;
-extern crate crc;
-
+use byteorder;
+use crc::crc32;
 use std::io;
 use std::io::Write;
 use self::byteorder::WriteBytesExt;
-use self::crc::crc32;
 
 /// A type for writing bytes in the TFRecords format.
 #[derive(Debug)]

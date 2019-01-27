@@ -1,8 +1,5 @@
-extern crate random;
-extern crate tensorflow;
-
+use random;
 use random::Source;
-use std::alloc::System;
 use std::error::Error;
 use std::fs::File;
 use std::io::Read;
@@ -35,7 +32,7 @@ fn main() {
     })
 }
 
-fn run() -> Result<(), Box<Error>> {
+fn run() -> Result<(), Box<dyn Error>> {
     let filename = "examples/regression_checkpoint/model.pb"; // y = w * x + b
     if !Path::new(filename).exists() {
         return Err(Box::new(Status::new_set(Code::NotFound,

@@ -13,10 +13,6 @@
         unused_import_braces,
         unused_qualifications)]
 
-extern crate libc;
-extern crate num_complex;
-extern crate tensorflow_sys as tf;
-
 use libc::{c_int, c_uint};
 use num_complex::Complex;
 use std::cell::Cell;
@@ -41,17 +37,18 @@ use std::os::raw::c_char;
 use std::ptr;
 use std::slice;
 use std::str::Utf8Error;
+use tensorflow_sys as tf;
 
 ////////////////////////
 
 /// Will panic if `msg` contains an embedded 0 byte.
 macro_rules! invalid_arg {
   ($fmt:expr) => {
-    ::Status::new_set(::Code::InvalidArgument, $fmt).unwrap()
+    crate::Status::new_set(crate::Code::InvalidArgument, $fmt).unwrap()
   };
   ($fmt:expr, $($arg:tt)*) => ({
     let msg = format!($fmt, $($arg)*);
-    ::Status::new_set(::Code::InvalidArgument, &msg).unwrap()
+    crate::Status::new_set(crate::Code::InvalidArgument, &msg).unwrap()
   });
 }
 
@@ -135,7 +132,7 @@ macro_rules! c_enum {
     }
 
     impl ::std::fmt::Display for $enum_name {
-      fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+      fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match self {
           $(&$enum_name::$name => f.write_str(stringify!($name)),)*
           &$enum_name::UnrecognizedEnumValue(c) => write!(f, "UnrecognizedEnumValue({})", c),
@@ -164,13 +161,13 @@ macro_rules! c_enum {
 ////////////////////////
 
 mod buffer;
-use buffer::Buffer;
+use crate::buffer::Buffer;
 
 mod graph;
-pub use graph::*;
+pub use crate::graph::*;
 
 mod session;
-pub use session::*;
+pub use crate::session::*;
 
 pub mod expr;
 
@@ -419,7 +416,7 @@ impl Status {
 }
 
 impl Display for Status {
-    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "{}: ", self.code())?;
         let msg = unsafe {
             match CStr::from_ptr(tf::TF_Message(self.inner)).to_str() {
@@ -432,7 +429,7 @@ impl Display for Status {
 }
 
 impl Debug for Status {
-    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "{{inner:{:?}, ", self.inner)?;
         write!(f, "{}: ", self.code())?;
         let msg = unsafe {
@@ -478,7 +475,7 @@ impl Error for Status {
         }
     }
 
-    fn cause(&self) -> Option<&Error> {
+    fn cause(&self) -> Option<&dyn Error> {
         None
     }
 }
@@ -638,7 +635,7 @@ macro_rules! q_type {
     pub struct $q_type($rust_type);
 
     impl Display for $q_type {
-      fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+      fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         <$rust_type as Display>::fmt(&self.0, f)
       }
     }
@@ -676,7 +673,7 @@ q_type!(i32,
 pub struct BFloat16(u16);
 
 impl Display for BFloat16 {
-    fn fmt(&self, f: &mut Formatter) -> ::std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> ::std::fmt::Result {
         let val: f32 = (*self).into();
         Display::fmt(&val, f)
     }
@@ -1213,7 +1210,11 @@ impl<T: TensorType + PartialEq> PartialEq for Tensor<T> {
     }
 }
 
-fn write_tensor_recursive<T: Display>(f: &mut Formatter, shape: &[u64], values: &[T]) -> ::std::fmt::Result {
+fn write_tensor_recursive<T: Display>(
+    f: &mut Formatter<'_>,
+    shape: &[u64],
+    values: &[T],
+) -> ::std::fmt::Result {
     if shape.len() == 0 {
         // Handle special case of a scalar tensor.
         write!(f, "{}", values[0])
@@ -1239,7 +1240,7 @@ fn write_tensor_recursive<T: Display>(f: &mut Formatter, shape: &[u64], values: 
 }
 
 impl<T: TensorType> Display for Tensor<T> {
-    fn fmt(&self, f: &mut Formatter) -> ::std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> ::std::fmt::Result {
         write_tensor_recursive(f, &self.dims, self)
     }
 }
@@ -1381,7 +1382,7 @@ impl Index<usize> for Shape {
 }
 
 impl Display for Shape {
-    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         self.0.fmt(f)
     }
 }
@@ -1389,7 +1390,7 @@ impl Display for Shape {
 ////////////////////////
 
 mod while_loop;
-pub use while_loop::*;
+pub use crate::while_loop::*;
 
 ////////////////////////
 

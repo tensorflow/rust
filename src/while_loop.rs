@@ -1,5 +1,3 @@
-extern crate tensorflow_sys as tf;
-
 use super::Graph;
 use super::GraphTrait;
 use super::Output;
@@ -12,6 +10,7 @@ use std::os::raw::c_int;
 use std::ptr;
 use std::result;
 use std::slice;
+use tensorflow_sys as tf;
 
 // This exists purely to ensure TF_AbortWhile gets called properly, even on panic.
 #[derive(Debug)]
