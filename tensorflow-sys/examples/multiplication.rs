@@ -56,7 +56,7 @@ fn main() {
         let name = CString::new("a").unwrap();
         let mut data = vec![1f32, 2.0, 3.0];
         let dims = vec![data.len() as int64_t];
-        let tensor = nonnull!(ffi::TF_NewTensor(ffi::TF_FLOAT,
+        let input_tensor1 = nonnull!(ffi::TF_NewTensor(ffi::TF_FLOAT,
                                                 dims.as_ptr(),
                                                 dims.len() as c_int,
                                                 data.as_mut_ptr() as *mut _,
@@ -69,12 +69,12 @@ fn main() {
             oper: input_op,
             index: 0,
         });
-        input_tensors.push(tensor);
+        input_tensors.push(input_tensor1);
 
         let name = CString::new("b").unwrap();
         let mut data = vec![4f32, 5.0, 6.0];
         let dims = vec![data.len() as int64_t];
-        let tensor = nonnull!(ffi::TF_NewTensor(ffi::TF_FLOAT,
+        let input_tensor2 = nonnull!(ffi::TF_NewTensor(ffi::TF_FLOAT,
                                                 dims.as_ptr(),
                                                 dims.len() as c_int,
                                                 data.as_mut_ptr() as *mut _,
@@ -87,7 +87,7 @@ fn main() {
             oper: input_op,
             index: 0,
         });
-        input_tensors.push(tensor);
+        input_tensors.push(input_tensor2);
 
         let mut outputs = vec![];
         let mut output_tensors = vec![];
@@ -117,9 +117,9 @@ fn main() {
                     status);
         ok!(status);
 
-        let tensor = nonnull!(output_tensors[0]);
-        let data = nonnull!(ffi::TF_TensorData(tensor)) as *const f32;
-        let data = from_raw_parts(data, ffi::TF_TensorByteSize(tensor) / size_of::<f32>());
+        let output_tensor = nonnull!(output_tensors[0]);
+        let data = nonnull!(ffi::TF_TensorData(output_tensor)) as *const f32;
+        let data = from_raw_parts(data, ffi::TF_TensorByteSize(output_tensor) / size_of::<f32>());
 
         assert_eq!(data, &[1.0 * 4.0, 2.0 * 5.0, 3.0 * 6.0]);
 
@@ -127,7 +127,9 @@ fn main() {
 
         ffi::TF_DeleteSession(session, status);
         ffi::TF_DeleteGraph(graph);
-        ffi::TF_DeleteTensor(tensor);
+        ffi::TF_DeleteTensor(output_tensor);
+        ffi::TF_DeleteTensor(input_tensor1);
+        ffi::TF_DeleteTensor(input_tensor2);
         ffi::TF_DeleteStatus(status);
         ffi::TF_DeleteSessionOptions(options);
     }
