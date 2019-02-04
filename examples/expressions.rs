@@ -15,7 +15,7 @@ use tensorflow::Tensor;
 
 #[cfg_attr(feature="examples_system_alloc", global_allocator)]
 #[cfg(feature="examples_system_alloc")]
-static ALLOCATOR: System = System;
+static ALLOCATOR: std::alloc::System = std::alloc::System;
 
 fn main() {
     // Putting the main code in another function serves two purposes:

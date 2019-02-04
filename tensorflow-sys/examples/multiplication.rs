@@ -23,7 +23,7 @@ macro_rules! ok(
 
 #[cfg_attr(feature="examples_system_alloc", global_allocator)]
 #[cfg(feature="examples_system_alloc")]
-static ALLOCATOR: System = System;
+static ALLOCATOR: std::alloc::System = std::alloc::System;
 
 fn main() {
     use std::mem::size_of;

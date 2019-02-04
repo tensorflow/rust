@@ -39,7 +39,7 @@ cargo build -p tensorflow-sys -vvv -j 1
 export LD_LIBRARY_PATH="$(echo "$PWD"/target/debug/build/tensorflow-sys-*/out/lib-v$tensorflow_version)"
 echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
 echo "Testing tensorflow examples"
-for example in addition regression expressions; do
+for example in addition regression expressions regression_checkpoint regression_savedmodel; do
     cargo build --features='examples_system_alloc tensorflow_unstable' --example="$example"
     valgrind --leak-check=full target/debug/examples/"$example" >> "$valgrind_log" 2>&1
 done
