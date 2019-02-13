@@ -743,6 +743,80 @@ impl Graph {
             }
         }
     }
+
+    /// Adds operations to compute the partial derivatives of sum of `y`s
+    /// w.r.t `x`s, i.e., d(y_1 + y_2 + ...)/dx_1, d(y_1 + y_2 + ...)/dx_2...
+    ///
+    /// `dx` are used as initial gradients (which represent the symbolic partial
+    /// derivatives of some loss function `L` w.r.t. `y`).
+    /// `dx` must be None or have the same length as `y`.
+    /// If `dx` is None, the implementation will use dx of `OnesLike` for all
+    /// shapes in `y`.
+    /// `prefix` names the scope into which all gradients operations are being
+    /// added.  `prefix` must be unique within the provided graph otherwise this
+    /// operation will fail. If `prefix` is None, gradient nodes are
+    /// automatically named under the "gradients/" prefix. To guarantee name
+    /// uniqueness, subsequent calls to the same graph will append an
+    /// incremental tag to the prefix: "gradients_1/", "gradients_2/", ...
+    ///
+    /// WARNING: This function does not yet support all the gradients that
+    /// python supports. See
+    /// https://www.tensorflow.org/code/tensorflow/cc/gradients/README.md
+    /// for instructions on how to add C++ more gradients.
+    pub fn add_gradients(
+        &mut self,
+        prefix: Option<&str>,
+        y: &[Output],
+        x: &[Output],
+        dx: Option<&[Output]>,
+    ) -> Result<Vec<Output>> {
+        if let Some(dx) = dx {
+            if dx.len() != y.len() {
+                return Err(invalid_arg!(
+                    "dx.len() must equal y.len() ({} vs. {})",
+                    dx.len(),
+                    y.len()
+                ));
+            }
+        }
+        let c_y: Vec<_> = y.iter().map(Output::to_c).collect();
+        let c_x: Vec<_> = x.iter().map(Output::to_c).collect();
+        let c_dx: Option<Vec<_>> = dx.map(|v| v.iter().map(Output::to_c).collect());
+        let dx_ptr = match c_dx {
+            Some(v) => v.as_ptr(),
+            None => ptr::null(),
+        };
+        let prefix_cstr = match prefix {
+            Some(s) => Some(CString::new(s)?),
+            None => None,
+        };
+        let prefix_ptr: *const c_char = if let &Some(ref cstr) = &prefix_cstr {
+            cstr.as_ptr()
+        } else {
+            ptr::null()
+        };
+        let mut dy = Vec::with_capacity(x.len());
+        let mut status = Status::new();
+        unsafe {
+            tf::TF_AddGradientsWithPrefix(
+                self.inner(),
+                prefix_ptr,
+                c_y.as_ptr() as *mut _,
+                y.len() as i32,
+                c_x.as_ptr() as *mut _,
+                x.len() as i32,
+                dx_ptr as *mut _,
+                status.inner(),
+                dy.as_mut_ptr(),
+            );
+            if status.is_ok() {
+                dy.set_len(x.len());
+                Ok(dy.iter().map(|o| Output::from_c(self, o)).collect())
+            } else {
+                Err(status)
+            }
+        }
+    }
 }
 
 impl GraphTrait for Graph {
@@ -2125,6 +2199,32 @@ mod tests {
         g.new_operation("Variable", "foo").unwrap();
     }
 
+    fn add(g: &mut Graph, op1: Operation, op2: Operation, name: &str) -> Result<Operation> {
+        let mut nd = g.new_operation("Add", name)?;
+        nd.add_input(Output {
+            operation: op1,
+            index: 0,
+        });
+        nd.add_input(Output {
+            operation: op2,
+            index: 0,
+        });
+        nd.finish()
+    }
+
+    fn multiply(g: &mut Graph, op1: Operation, op2: Operation, name: &str) -> Result<Operation> {
+        let mut nd = g.new_operation("Mul", name)?;
+        nd.add_input(Output {
+            operation: op1,
+            index: 0,
+        });
+        nd.add_input(Output {
+            operation: op2,
+            index: 0,
+        });
+        nd.finish()
+    }
+
     #[test]
     fn smoke() {
         let mut g = Graph::new();
@@ -2199,18 +2299,7 @@ mod tests {
             nd.set_attr_tensor("value", value).unwrap();
             nd.finish().unwrap()
         };
-        let y = {
-            let mut nd = g.new_operation("Mul", "y").unwrap();
-            nd.add_input(Output {
-                operation: two.clone(),
-                index: 0,
-            });
-            nd.add_input(Output {
-                operation: x.clone(),
-                index: 0,
-            });
-            nd.finish().unwrap()
-        };
+        let y = multiply(&mut g, two.clone(), x.clone(), "y").unwrap();
         let opers = vec![&y];
         let inputs = vec![
             Output {
@@ -2430,18 +2519,7 @@ mod tests {
             nd.set_attr_shape("shape", &Shape(None)).unwrap();
             nd.finish().unwrap()
         };
-        {
-            let mut nd = g.new_operation("Mul", "a_times_b").unwrap();
-            nd.add_input(Output {
-                operation: a,
-                index: 0,
-            });
-            nd.add_input(Output {
-                operation: b,
-                index: 0,
-            });
-            nd.finish().unwrap();
-        }
+        multiply(&mut g, a, b, "a_times_b").unwrap();
         g.graph_def().unwrap()
     }
 
@@ -2542,6 +2620,69 @@ mod tests {
             nd.set_attr_type("dtype", DataType::Float).unwrap();
             nd.set_attr_shape("shape", &Shape(Some(vec![]))).unwrap();
             nd.finish().unwrap();
+        }
+    }
+
+    #[test]
+    fn graph_add_gradients() {
+        // TODO: Add an integration test to verify that the gradient behaves as expected.
+        for (prefix, expected_prefix) in &[
+            (Some("arbitrary_prefix"), "arbitrary_prefix/"),
+            (None, "gradients/"),
+        ] {
+            let mut g = Graph::new();
+            let x = {
+                let mut nd = g.new_operation("Placeholder", "x").unwrap();
+                nd.set_attr_type("dtype", DataType::Float).unwrap();
+                nd.set_attr_shape("shape", &Shape(Some(vec![]))).unwrap();
+                nd.finish().unwrap()
+            };
+            let y = {
+                let mut nd = g.new_operation("Placeholder", "y").unwrap();
+                nd.set_attr_type("dtype", DataType::Float).unwrap();
+                nd.set_attr_shape("shape", &Shape(Some(vec![]))).unwrap();
+                nd.finish().unwrap()
+            };
+            let x_squared = multiply(&mut g, x.clone(), x.clone(), "x_squared").unwrap();
+            let x_times_y = multiply(&mut g, x.clone(), y.clone(), "x_times_y").unwrap();
+            let x_plus_y = add(&mut g, x.clone(), y.clone(), "x_plus_y").unwrap();
+            // y_outs and x_outs are intentionally different lengths, so we can test that the lengths line up properly.
+            let y_outs = vec![
+                Output {
+                    operation: x_squared,
+                    index: 0,
+                },
+                Output {
+                    operation: x_times_y,
+                    index: 0,
+                },
+                Output {
+                    operation: x_plus_y,
+                    index: 0,
+                },
+            ];
+            let x_outs = vec![
+                Output {
+                    operation: x,
+                    index: 0,
+                },
+                Output {
+                    operation: y,
+                    index: 0,
+                },
+            ];
+            let dy = g.add_gradients(*prefix, &y_outs, &x_outs, None).unwrap();
+            assert_eq!(dy.len(), 2);
+            for d in &dy {
+                assert_eq!(d.index, 0);
+                let name = d.operation.name().unwrap();
+                assert!(
+                    name.starts_with(expected_prefix),
+                    "name = {}, expected prefix = {}",
+                    name,
+                    expected_prefix
+                );
+            }
         }
     }
 }
