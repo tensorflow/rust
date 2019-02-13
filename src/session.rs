@@ -1,11 +1,9 @@
 use super::AnyTensor;
-use super::{Buffer, BufferTrait};
+use super::Buffer;
 use super::Code;
 use super::DataType;
 use super::Graph;
-use super::GraphTrait;
 use super::Operation;
-use super::OperationTrait;
 use super::Result;
 use super::SessionOptions;
 use super::Status;
