@@ -1274,30 +1274,6 @@ impl Library {
 
 ////////////////////////
 
-// TODO: Replace these with pub(crate)
-
-/// This exposes Buffer behavior without making it public.
-trait BufferTrait {
-    fn is_owned(&self) -> bool;
-    fn set_owned(&mut self, owned: bool);
-    fn inner(&self) -> *const tf::TF_Buffer;
-    fn inner_mut(&mut self) -> *mut tf::TF_Buffer;
-}
-
-/// This exposes Graph behavior without making it public.
-trait GraphTrait {
-    fn inner(&self) -> *mut tf::TF_Graph;
-    unsafe fn from_c(inner: *mut tf::TF_Graph) -> Self;
-}
-
-
-/// This exposes Operation behavior without making it public.
-trait OperationTrait {
-    fn inner(&self) -> *mut tf::TF_Operation;
-}
-
-////////////////////////
-
 /// Returns a string describing version information of the
 /// `TensorFlow` library. `TensorFlow` is using semantic versioning.
 pub fn version() -> std::result::Result<String, Utf8Error> {

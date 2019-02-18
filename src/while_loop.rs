@@ -1,5 +1,4 @@
 use super::Graph;
-use super::GraphTrait;
 use super::Output;
 use super::Result;
 use super::Status;

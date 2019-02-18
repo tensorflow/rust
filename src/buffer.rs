@@ -1,4 +1,3 @@
-use super::BufferTrait;
 use super::TensorType;
 use libc::c_void;
 use libc::size_t;
@@ -23,7 +22,7 @@ use tensorflow_sys as tf;
 /// This is basically a `Box<[T]>`, except that that type can't actually be constructed.
 /// Furthermore, `[T; N]` can't be constructed if N is not a compile-time constant.
 #[derive(Debug)]
-pub struct Buffer<T: TensorType> {
+pub(crate) struct Buffer<T: TensorType> {
     inner: *mut tf::TF_Buffer,
     owned: bool,
     phantom: PhantomData<T>,
@@ -124,22 +123,12 @@ impl<T: TensorType> Buffer<T> {
             phantom: PhantomData,
         }
     }
-}
 
-impl<T: TensorType> BufferTrait for Buffer<T> {
-    fn is_owned(&self) -> bool {
-        self.owned
-    }
-
-    fn set_owned(&mut self, owned: bool) {
-        self.owned = owned;
-    }
-
-    fn inner(&self) -> *const tf::TF_Buffer {
+    pub fn inner(&self) -> *const tf::TF_Buffer {
         self.inner
     }
 
-    fn inner_mut(&mut self) -> *mut tf::TF_Buffer {
+    pub fn inner_mut(&mut self) -> *mut tf::TF_Buffer {
         self.inner
     }
 }

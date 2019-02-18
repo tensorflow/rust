@@ -1,10 +1,7 @@
 use super::buffer::Buffer;
 use super::AnyTensor;
-use super::BufferTrait;
 use super::Code;
 use super::DataType;
-use super::GraphTrait;
-use super::OperationTrait;
 use super::Result;
 use super::Shape;
 use super::Status;
@@ -817,14 +814,12 @@ impl Graph {
             }
         }
     }
-}
 
-impl GraphTrait for Graph {
-    fn inner(&self) -> *mut tf::TF_Graph {
+    pub(crate) fn inner(&self) -> *mut tf::TF_Graph {
         self.gimpl.inner
     }
 
-    unsafe fn from_c(inner: *mut tf::TF_Graph) -> Self {
+    pub(crate) unsafe fn from_c(inner: *mut tf::TF_Graph) -> Self {
         Graph {
             gimpl: Arc::new(GraphImpl {
                 inner,
@@ -1604,10 +1599,8 @@ impl Operation {
             Ok(buf.into())
         }
     }
-}
 
-impl OperationTrait for Operation {
-    fn inner(&self) -> *mut tf::TF_Operation {
+    pub(crate) fn inner(&self) -> *mut tf::TF_Operation {
         self.inner
     }
 }
