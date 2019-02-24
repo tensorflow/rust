@@ -17,7 +17,6 @@ use std::ops;
 use std::rc::Rc;
 use super::Graph;
 use super::Operation;
-use super::Output;
 use super::Shape;
 use super::Status;
 use super::Tensor;
@@ -224,8 +223,8 @@ macro_rules! impl_bin_op {
       fn create_operation(&self, graph: &mut Graph, children: &[Operation],
           id_gen: &mut FnMut() -> String) -> Result<Operation, Status> {
         let mut nd = graph.new_operation($tf_op, &id_gen())?;
-        nd.add_input(Output {operation: children[0].clone(), index: 0});
-        nd.add_input(Output {operation: children[1].clone(), index: 0});
+        nd.add_input(children[0].clone());
+        nd.add_input(children[1].clone());
         nd.finish()
       }
 
@@ -315,14 +314,8 @@ impl<T: TensorType> ExprImpl<T> for TruncateDiv<T> {
                         id_gen: &mut FnMut() -> String)
                         -> Result<Operation, Status> {
         let mut nd = graph.new_operation("TruncateDiv", &id_gen())?;
-        nd.add_input(Output {
-                         operation: children[0].clone(),
-                         index: 0,
-                     });
-        nd.add_input(Output {
-                         operation: children[1].clone(),
-                         index: 0,
-                     });
+        nd.add_input(children[0].clone());
+        nd.add_input(children[1].clone());
         nd.finish()
     }
 
@@ -379,10 +372,7 @@ impl<T: TensorType> ExprImpl<T> for Neg<T> {
                         id_gen: &mut FnMut() -> String)
                         -> Result<Operation, Status> {
         let mut nd = graph.new_operation("Neg", &id_gen())?;
-        nd.add_input(Output {
-                         operation: children[0].clone(),
-                         index: 0,
-                     });
+        nd.add_input(children[0].clone());
         nd.finish()
     }
 
@@ -645,14 +635,8 @@ impl<T: TensorType> ExprImpl<T> for Assign<T> {
                         id_gen: &mut FnMut() -> String)
                         -> Result<Operation, Status> {
         let mut nd = graph.new_operation("Assign", &id_gen())?;
-        nd.add_input(Output {
-                         operation: children[0].clone(),
-                         index: 0,
-                     });
-        nd.add_input(Output {
-                         operation: children[1].clone(),
-                         index: 0,
-                     });
+        nd.add_input(children[0].clone());
+        nd.add_input(children[1].clone());
         nd.finish()
     }
 

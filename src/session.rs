@@ -428,7 +428,6 @@ mod tests {
     use super::super::DataType;
     use super::super::Graph;
     use super::super::Operation;
-    use super::super::Output;
     use super::super::SessionOptions;
     use super::super::Shape;
     use super::super::Tensor;
@@ -451,14 +450,8 @@ mod tests {
         };
         let y = {
             let mut nd = g.new_operation("Mul", "y").unwrap();
-            nd.add_input(Output {
-                             operation: two,
-                             index: 0,
-                         });
-            nd.add_input(Output {
-                             operation: x.clone(),
-                             index: 0,
-                         });
+            nd.add_input(two);
+            nd.add_input(x.clone());
             nd.finish().unwrap()
         };
         let options = SessionOptions::new();

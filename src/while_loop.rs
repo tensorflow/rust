@@ -193,20 +193,11 @@ mod tests {
         let counter = inputs[0].clone();
         let less = {
             let mut nd = graph.new_operation("Less", "less").unwrap();
-            nd.add_input(Output {
-                operation: counter.operation.clone(),
-                index: 0,
-            });
-            nd.add_input(Output {
-                operation: ten,
-                index: 0,
-            });
+            nd.add_input(counter.operation);
+            nd.add_input(ten);
             nd.finish().unwrap()
         };
-        Ok(Output {
-            operation: less,
-            index: 0,
-        })
+        Ok(less.into())
     }
 
     fn while_body(graph: &mut Graph, inputs: &[Output]) -> Result<Vec<Output>> {
@@ -215,18 +206,10 @@ mod tests {
         let mul = {
             let mut nd = graph.new_operation("Mul", "mul").unwrap();
             nd.add_input(counter);
-            nd.add_input(Output {
-                operation: two,
-                index: 0,
-            });
+            nd.add_input(two);
             nd.finish().unwrap()
         };
-        Ok(vec![
-            Output {
-                operation: mul,
-                index: 0,
-            },
-        ])
+        Ok(vec![mul.into()])
     }
 
     #[test]
@@ -237,12 +220,7 @@ mod tests {
             &mut main_graph,
             while_cond,
             while_body,
-            &[
-                Output {
-                    operation: one.clone(),
-                    index: 0,
-                },
-            ],
+            &[one.into()],
         ).unwrap()
             .name("foo")
             .unwrap()
@@ -267,12 +245,7 @@ mod tests {
             &mut main_graph,
             while_cond,
             while_body,
-            &[
-                Output {
-                    operation: one.clone(),
-                    index: 0,
-                },
-            ],
+            &[one.clone().into()],
         ).unwrap()
             .finish()
             .unwrap();
@@ -280,12 +253,7 @@ mod tests {
             &mut main_graph,
             while_cond,
             while_body,
-            &[
-                Output {
-                    operation: one,
-                    index: 0,
-                },
-            ],
+            &[one.into()],
         ).unwrap()
             .finish()
             .unwrap();
