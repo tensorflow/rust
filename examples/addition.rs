@@ -51,7 +51,7 @@ fn run() -> Result<(), Box<dyn Error>> {
     let mut proto = Vec::new();
     File::open(filename)?.read_to_end(&mut proto)?;
     graph.import_graph_def(&proto, &ImportGraphDefOptions::new())?;
-    let mut session = Session::new(&SessionOptions::new(), &graph)?;
+    let session = Session::new(&SessionOptions::new(), &graph)?;
 
     // Run the graph.
     let mut args = SessionRunArgs::new();

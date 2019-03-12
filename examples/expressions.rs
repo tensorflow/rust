@@ -80,7 +80,7 @@ fn run() -> Result<(), Box<Error>> {
     //   (x_node, y_node)
     // };
     let options = SessionOptions::new();
-    let mut session = Session::new(&options, &g)?;
+    let session = Session::new(&options, &g)?;
 
     // Evaluate the graph.
     let mut x = <Tensor<f32>>::new(&[2]);
