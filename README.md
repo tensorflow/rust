@@ -1,4 +1,4 @@
-# <img alt="TensorFlow" src="https://www.tensorflow.org/images/tf_logo_transp.png" width="170"/> Rust Binding
+# <img alt="SIG Rust TensorFlow" src="https://github.com/tensorflow/community/blob/master/sigs/logos/SIGRust.png" width="340"/>
 [![Version](https://img.shields.io/crates/v/tensorflow.svg)](https://crates.io/crates/tensorflow)
 [![Status](https://travis-ci.org/tensorflow/rust.svg?branch=master)](https://travis-ci.org/tensorflow/rust)
 
