@@ -228,7 +228,7 @@ mod tests {
             .unwrap();
         assert_eq!(1, output.len());
         let options = SessionOptions::new();
-        let mut session = Session::new(&options, &main_graph).unwrap();
+        let session = Session::new(&options, &main_graph).unwrap();
         let mut step = SessionRunArgs::new();
         let output_token = step.request_fetch(&output[0].operation, 0);
         session.run(&mut step).unwrap();

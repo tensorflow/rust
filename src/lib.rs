@@ -1441,7 +1441,7 @@ mod tests {
       0x1a, 0x01, 0x78, 0x1a, 0x03, 0x79, 0x2f, 0x79, 0x2a, 0x07, 0x0a, 0x01, 0x54,
       0x12, 0x02, 0x30, 0x01
     ];
-        let (mut session, mut graph) = create_session();
+        let (session, mut graph) = create_session();
         let opts = ImportGraphDefOptions::new();
         let status = graph.import_graph_def(&graph_proto, &opts);
         assert!(status.is_ok());
@@ -1496,7 +1496,7 @@ mod tests {
             nd.finish().unwrap()
         };
         let options = SessionOptions::new();
-        let mut session = Session::new(&options, &g).unwrap();
+        let session = Session::new(&options, &g).unwrap();
         let mut x = <Tensor<String>>::new(&[2]);
         x[0] = "foo".to_string();
         x[1] = "bar".to_string();

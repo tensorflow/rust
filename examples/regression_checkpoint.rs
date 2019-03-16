@@ -60,7 +60,7 @@ fn run() -> Result<(), Box<dyn Error>> {
     let mut proto = Vec::new();
     File::open(filename)?.read_to_end(&mut proto)?;
     graph.import_graph_def(&proto, &ImportGraphDefOptions::new())?;
-    let mut session = Session::new(&SessionOptions::new(), &graph)?;
+    let session = Session::new(&SessionOptions::new(), &graph)?;
     let op_x = graph.operation_by_name_required("x")?;
     let op_y = graph.operation_by_name_required("y")?;
     let op_init = graph.operation_by_name_required("init")?;

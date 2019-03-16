@@ -142,8 +142,11 @@ impl Session {
         status.into_result()
     }
 
-    /// Runs the graph, feeding the inputs and then fetching the outputs requested in the step.
-    pub fn run(&mut self, step: &mut SessionRunArgs<'_>) -> Result<()> {
+    /// Runs the graph, feeding the inputs and then fetching the outputs
+    /// requested in the step.  Note that the session has interior mutability;
+    /// this may mutate variables in the graph, and the caller is responsible
+    /// for handling race conditions.
+    pub fn run(&self, step: &mut SessionRunArgs<'_>) -> Result<()> {
         // In case we're running it a second time and not all outputs were taken out.
         step.drop_output_tensors();
 
@@ -219,6 +222,10 @@ impl Drop for Session {
         // TODO: What do we do with the status?
     }
 }
+
+unsafe impl Send for Session {}
+
+unsafe impl Sync for Session {}
 
 ////////////////////////
 
@@ -475,7 +482,7 @@ mod tests {
 
     #[test]
     fn test_run() {
-        let (mut session, x_operation, y_operation) = create_session();
+        let (session, x_operation, y_operation) = create_session();
         let mut x = <Tensor<f32>>::new(&[2]);
         x[0] = 2.0;
         x[1] = 3.0;
@@ -505,7 +512,7 @@ mod tests {
         let _train_op = graph.operation_by_name_required("train").unwrap();
 
         let SavedModelBundle {
-            mut session,
+            session,
             meta_graph_def,
         } = bundle;
 

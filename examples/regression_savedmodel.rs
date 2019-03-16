@@ -54,10 +54,10 @@ fn run() -> Result<(), Box<dyn Error>> {
 
     // Load the saved model exported by regression_savedmodel.py.
     let mut graph = Graph::new();
-    let mut session = Session::from_saved_model(&SessionOptions::new(), 
-                                                &["train", "serve"],
-                                                &mut graph,
-                                                export_dir)?;
+    let session = Session::from_saved_model(&SessionOptions::new(),
+                                            &["train", "serve"],
+                                            &mut graph,
+                                            export_dir)?;
     let op_x = graph.operation_by_name_required("x")?;
     let op_y = graph.operation_by_name_required("y")?;
     let op_train = graph.operation_by_name_required("train")?;
