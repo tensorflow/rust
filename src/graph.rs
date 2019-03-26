@@ -175,6 +175,16 @@ impl ImportGraphDefOptions {
             );
         }
     }
+
+    /// Set the execution device for nodes.
+    /// Only applies to nodes where a device was not already explicitly specified.
+    pub fn set_default_device(&mut self, device: &str) -> std::result::Result<(), NulError> {
+        let s = CString::new(device)?;
+        unsafe {
+            tf::TF_ImportGraphDefOptionsSetDefaultDevice(self.inner, s.as_ptr());
+        }
+        Ok(())
+    }
 }
 
 ////////////////////////
@@ -956,7 +966,9 @@ impl Operation {
     /// The empty string means unconstrained.
     pub fn device(&self) -> std::result::Result<String, Utf8Error> {
         unsafe {
-            CStr::from_ptr(tf::TF_OperationOpType(self.inner)).to_str().map(|x| x.to_string())
+            CStr::from_ptr(tf::TF_OperationDevice(self.inner))
+                .to_str()
+                .map(|x| x.to_string())
         }
     }
 
@@ -2498,6 +2510,18 @@ mod tests {
         opts.set_uniquify_prefix(true);
         g.import_graph_def(&graph_def(), &opts).unwrap();
         g.operation_by_name_required("prefix_1/a").unwrap();
+    }
+
+    #[test]
+    fn import_graph_def_set_default_device() {
+        let mut g = Graph::new();
+        let mut opts = ImportGraphDefOptions::new();
+        opts.set_default_device("fake_device").unwrap();
+        g.import_graph_def(&graph_def(), &opts).unwrap();
+        assert_eq!(
+            g.operation_by_name_required("a").unwrap().device().unwrap(),
+            "fake_device"
+        );
     }
 
     #[test]
