@@ -474,8 +474,8 @@ impl Graph {
     ) -> Result<Vec<Output>> {
         let buf = Buffer::from(graph_def);
         let mut status = Status::new();
-        let mut c_return_outputs = Vec::new();
         let n = options.num_return_outputs();
+        let mut c_return_outputs = Vec::with_capacity(n);
         unsafe {
             c_return_outputs.set_len(n);
             tf::TF_GraphImportGraphDefWithReturnOutputs(self.gimpl.inner,
@@ -2547,6 +2547,21 @@ mod tests {
         assert_eq!(missing.len(), 1);
         assert_eq!(missing[0].0, "bar");
         assert_eq!(missing[0].1, 3);
+    }
+
+    #[test]
+    fn import_graph_def_with_return_outputs() {
+        let mut g = Graph::new();
+        let mut opts = ImportGraphDefOptions::new();
+        assert_eq!(opts.num_return_outputs(), 0);
+        opts.add_return_output("a_times_b", 0).unwrap();
+        assert_eq!(opts.num_return_outputs(), 1);
+        let ops = g
+            .import_graph_def_with_return_outputs(&graph_def(), &opts)
+            .unwrap();
+        assert_eq!(ops.len(), 1);
+        assert_eq!(ops[0].operation.name().unwrap(), "a_times_b");
+        assert_eq!(ops[0].index, 0);
     }
 
     #[test]
