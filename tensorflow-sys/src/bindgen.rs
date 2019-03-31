@@ -931,6 +931,12 @@ extern "C" {
                                                  *const ::std::os::raw::c_char);
 }
 extern "C" {
+    pub fn TF_ImportGraphDefOptionsSetDefaultDevice(opts:
+                                                        *mut TF_ImportGraphDefOptions,
+                                                    device:
+                                                        *const ::std::os::raw::c_char);
+}
+extern "C" {
     pub fn TF_ImportGraphDefOptionsSetUniquifyNames(opts:
                                                         *mut TF_ImportGraphDefOptions,
                                                     uniquify_names:
@@ -1442,4 +1448,30 @@ extern "C" {
     pub fn TF_GetRegisteredKernelsForOp(name: *const ::std::os::raw::c_char,
                                         status: *mut TF_Status)
      -> *mut TF_Buffer;
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct TF_Server {
+    _unused: [u8; 0],
+}
+extern "C" {
+    pub fn TF_NewServer(proto: *const ::std::os::raw::c_void,
+                        proto_len: usize, status: *mut TF_Status)
+     -> *mut TF_Server;
+}
+extern "C" {
+    pub fn TF_ServerStart(server: *mut TF_Server, status: *mut TF_Status);
+}
+extern "C" {
+    pub fn TF_ServerStop(server: *mut TF_Server, status: *mut TF_Status);
+}
+extern "C" {
+    pub fn TF_ServerJoin(server: *mut TF_Server, status: *mut TF_Status);
+}
+extern "C" {
+    pub fn TF_ServerTarget(server: *mut TF_Server)
+     -> *const ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn TF_DeleteServer(server: *mut TF_Server);
 }
