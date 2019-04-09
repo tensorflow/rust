@@ -34,10 +34,9 @@ In short:
 3. `git clone https://github.com/tensorflow/tensorflow`
 4. `cd tensorflow`
 5. `./configure`
-6. `bazel build --compilation_mode=opt --copt=-march=native --jobs=1 tensorflow:libtensorflow.so`
+6. `bazel build --compilation_mode=opt --copt=-march=native tensorflow:libtensorflow.so`
 
-   Using `--jobs=1` is recommended unless you have a lot of RAM, because
-   TensorFlow's build is very memory intensive.
+   You can add the `--jobs=1` option if you run out of RAM.
 
 Copy `$TENSORFLOW_SRC/bazel-bin/tensorflow/libtensorflow.so` and `libtensorflow_framework.so` to
 `/usr/local/lib`.  You may need to run `ldconfig` to reset `ld`'s cache after copying
