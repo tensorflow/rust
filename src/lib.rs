@@ -850,6 +850,8 @@ impl TensorType for String {
 
 trait AnyTensor: Debug {
     fn inner(&self) -> Result<*mut tf::TF_Tensor>;
+
+    fn data_type(&self) -> DataType;
 }
 
 ////////////////////////
@@ -1228,6 +1230,10 @@ impl<T: TensorType> Tensor<T> {
 impl<T: TensorType> AnyTensor for Tensor<T> {
     fn inner(&self) -> Result<*mut tf::TF_Tensor> {
         self.inner.as_mut_ptr(&self.dims)
+    }
+
+    fn data_type(&self) -> DataType {
+        T::data_type()
     }
 }
 
