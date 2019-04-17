@@ -1206,6 +1206,11 @@ impl<T: TensorType> Tensor<T> {
         &self.dims
     }
 
+    /// Returns the tensor's dimensions as a Shape.
+    pub fn shape(&self) -> Shape {
+        Shape(Some(self.dims.iter().map(|d| Some(*d as i64)).collect()))
+    }
+
     // Wraps a TF_Tensor. Returns None if types don't match.
     unsafe fn from_tf_tensor(tensor: *mut tf::TF_Tensor) -> Option<Self> {
         let mut dims = Vec::with_capacity(tf::TF_NumDims(tensor) as usize);
