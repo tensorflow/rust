@@ -777,7 +777,7 @@ impl Graph {
         y: &[Output],
         x: &[Output],
         dx: Option<&[Output]>,
-    ) -> Result<Vec<Output>> {
+    ) -> Result<Vec<Option<Output>>> {
         if let Some(dx) = dx {
             if dx.len() != y.len() {
                 return Err(invalid_arg!(
@@ -819,7 +819,10 @@ impl Graph {
             );
             if status.is_ok() {
                 dy.set_len(x.len());
-                Ok(dy.iter().map(|o| Output::from_c(self, o)).collect())
+                Ok(dy
+                    .iter()
+                    .map(|o| Output::from_c_optional(self, o))
+                    .collect())
             } else {
                 Err(status)
             }
@@ -1669,6 +1672,20 @@ impl Output {
                 gimpl: graph.gimpl.clone(),
             },
             index: output.index,
+        }
+    }
+
+    pub(crate) fn from_c_optional(graph: &Graph, output: &tf::TF_Output) -> Option<Self> {
+        if output.oper.is_null() {
+            None
+        } else {
+            Some(Output {
+                operation: Operation {
+                    inner: output.oper,
+                    gimpl: graph.gimpl.clone(),
+                },
+                index: output.index,
+            })
         }
     }
 }
@@ -2650,7 +2667,8 @@ mod tests {
             ];
             let dy = g.add_gradients(*prefix, &y_outs, &x_outs, None).unwrap();
             assert_eq!(dy.len(), 2);
-            for d in &dy {
+            for d in dy {
+                let d = d.unwrap();
                 assert_eq!(d.index, 0);
                 let name = d.operation.name().unwrap();
                 assert!(
@@ -2660,6 +2678,73 @@ mod tests {
                     expected_prefix
                 );
             }
+        }
+    }
+
+    #[test]
+    fn graph_add_gradients_stopped_gradient() {
+        // TODO: Add an integration test to verify that the gradient behaves as expected.
+        for prefix in &[Some("arbitrary_prefix"), None] {
+            let mut g = Graph::new();
+            let zero = {
+                let mut nd = g.new_operation("Const", "zero").unwrap();
+                nd.set_attr_type("dtype", DataType::Int32).unwrap();
+                nd.set_attr_tensor("value", Tensor::<i32>::from(0)).unwrap();
+                nd.finish().unwrap()
+            };
+            let x = {
+                let mut nd = g.new_operation("Placeholder", "x").unwrap();
+                nd.set_attr_type("dtype", DataType::Float).unwrap();
+                nd.set_attr_shape("shape", &Shape(Some(vec![]))).unwrap();
+                nd.finish().unwrap()
+            };
+            let argmax_x = {
+                let mut nd = g.new_operation("ArgMax", "argmax_x").unwrap();
+                nd.add_input(x.clone());
+                nd.add_input(zero);
+                nd.finish().unwrap()
+            };
+            let stopped_gradient = {
+                let mut nd = g.new_operation("StopGradient", "stopped").unwrap();
+                nd.add_input(argmax_x.clone());
+                nd.finish().unwrap()
+            };
+            let y_outs = vec![stopped_gradient.into()];
+            let x_outs = vec![x.into()];
+            let dy = g.add_gradients(*prefix, &y_outs, &x_outs, None).unwrap();
+            assert_eq!(dy.len(), 1);
+            for d in &dy {
+                assert!(d.is_none());
+            }
+        }
+    }
+
+    #[test]
+    fn graph_add_gradients_no_gradient() {
+        // TODO: Add an integration test to verify that the gradient behaves as expected.
+        for prefix in &[Some("arbitrary_prefix"), None] {
+            let mut g = Graph::new();
+            let zero = {
+                let mut nd = g.new_operation("Const", "zero").unwrap();
+                nd.set_attr_type("dtype", DataType::Int32).unwrap();
+                nd.set_attr_tensor("value", Tensor::<i32>::from(0)).unwrap();
+                nd.finish().unwrap()
+            };
+            let x = {
+                let mut nd = g.new_operation("Placeholder", "x").unwrap();
+                nd.set_attr_type("dtype", DataType::Float).unwrap();
+                nd.set_attr_shape("shape", &Shape(Some(vec![]))).unwrap();
+                nd.finish().unwrap()
+            };
+            let argmax_x = {
+                let mut nd = g.new_operation("ArgMax", "argmax_x").unwrap();
+                nd.add_input(x.clone());
+                nd.add_input(zero);
+                nd.finish().unwrap()
+            };
+            let y_outs = vec![argmax_x.into()];
+            let x_outs = vec![x.into()];
+            assert!(g.add_gradients(*prefix, &y_outs, &x_outs, None).is_err());
         }
     }
 }
