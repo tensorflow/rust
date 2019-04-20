@@ -238,6 +238,7 @@ impl<'a> ToTokens for SetAttr<'a> {
             "DataType" => quote! { nd.set_attr_type(#c_name, #value)?; },
             "bool" => quote! { nd.set_attr_bool(#c_name, #value)?; },
             "i64" => quote! { nd.set_attr_int(#c_name, #value)?; },
+            "Shape" => quote! { nd.set_attr_shape(#c_name, &#value)?; },
             ty => panic!(
                 "Unrecognized attribute type for {}: {}",
                 self.attr.rust_name, ty
