@@ -15,6 +15,7 @@
     unused_qualifications
 )]
 
+use half::f16;
 use libc::{c_int, c_uint};
 use num_complex::Complex;
 use std::cell::Cell;
@@ -638,6 +639,7 @@ macro_rules! tensor_type {
     };
 }
 
+tensor_type!(f16, Half, half::consts::ZERO, half::consts::ONE);
 tensor_type!(f32, Float, 0.0, 1.0);
 tensor_type!(f64, Double, 0.0, 1.0);
 tensor_type!(i32, Int32, 0, 1);
@@ -1528,6 +1530,21 @@ mod tests {
         }
         assert_eq!(<BFloat16 as Into<f32>>::into(BFloat16::default()), 0.0f32);
         assert_eq!(BFloat16::from(1.5f32).to_string(), "1.5");
+    }
+
+    #[test]
+    fn test_f16() {
+        let data: Vec<f16> = vec![-1.0f32, 0.0, 1.0, 2.5]
+            .into_iter()
+            .map(|x| f16::from_f32(x))
+            .collect();
+        let tensor = <Tensor<f16>>::new(&[2, 2]).with_values(&data);
+        assert!(tensor.is_ok());
+        let tensor = tensor.unwrap();
+        assert_eq!(tensor.len(), 4);
+        for i in 0..data.len() {
+            assert_eq!(tensor[i], data[i]);
+        }
     }
 
     #[test]
