@@ -36,6 +36,9 @@ install:
   - if [[ "$TF_RUST_BUILD_FROM_SRC" == "true" ]]; then source travis-ci/install.sh; fi
   - if [[ "$TF_RUST_BUILD_FROM_SRC" == "true" ]]; then pip install --user numpy; fi
 
+before_script:
+  - rustup component add rustfmt
+
 script:
   - ./test-all
 
