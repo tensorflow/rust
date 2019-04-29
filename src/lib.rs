@@ -4,14 +4,16 @@
 //! If you aren't sure how to use something, please see the
 //! [examples](https://github.com/tensorflow/rust/tree/master/examples) folder.
 
-#![warn(missing_copy_implementations,
-        missing_debug_implementations,
-        missing_docs,
-        trivial_casts,
-        trivial_numeric_casts,
-        unused_extern_crates,
-        unused_import_braces,
-        unused_qualifications)]
+#![warn(
+    missing_copy_implementations,
+    missing_debug_implementations,
+    missing_docs,
+    trivial_casts,
+    trivial_numeric_casts,
+    unused_extern_crates,
+    unused_import_braces,
+    unused_qualifications
+)]
 
 use libc::{c_int, c_uint};
 use num_complex::Complex;
@@ -23,10 +25,10 @@ use std::ffi::CStr;
 use std::ffi::CString;
 use std::ffi::IntoStringError;
 use std::ffi::NulError;
+use std::fmt;
 use std::fmt::Debug;
 use std::fmt::Display;
 use std::fmt::Formatter;
-use std::fmt;
 use std::marker::PhantomData;
 use std::mem;
 use std::ops::Deref;
@@ -74,15 +76,15 @@ macro_rules! impl_new {
 ////////////////////////
 
 macro_rules! impl_drop {
-  ($name: ident, $call:ident) => {
-    impl Drop for $name {
-      fn drop(&mut self) {
-        unsafe {
-          tf::$call(self.inner);
+    ($name: ident, $call:ident) => {
+        impl Drop for $name {
+            fn drop(&mut self) {
+                unsafe {
+                    tf::$call(self.inner);
+                }
+            }
         }
-      }
-    }
-  }
+    };
 }
 
 ////////////////////////
@@ -374,7 +376,11 @@ pub struct Status {
     inner: *mut tf::TF_Status,
 }
 
-impl_new!(Status, TF_NewStatus, "Creates a status with `Code::Ok` and no message.");
+impl_new!(
+    Status,
+    TF_NewStatus,
+    "Creates a status with `Code::Ok` and no message."
+);
 impl_drop!(Status, TF_DeleteStatus);
 
 impl Status {
@@ -397,7 +403,11 @@ impl Status {
 
     /// Turns the current `Status` into a `Result`.
     fn into_result(self) -> Result<()> {
-        if self.is_ok() { Ok(()) } else { Err(self) }
+        if self.is_ok() {
+            Ok(())
+        } else {
+            Err(self)
+        }
     }
 
     /// Sets the code and message.
@@ -512,16 +522,26 @@ impl SessionOptions {
     pub fn set_config(&mut self, config: &[u8]) -> Result<()> {
         let mut status = Status::new();
         unsafe {
-            tf::TF_SetConfig(self.inner,
-                             config.as_ptr() as *const _,
-                             config.len(),
-                             status.inner());
+            tf::TF_SetConfig(
+                self.inner,
+                config.as_ptr() as *const _,
+                config.len(),
+                status.inner(),
+            );
         }
-        if status.is_ok() { Ok(()) } else { Err(status) }
+        if status.is_ok() {
+            Ok(())
+        } else {
+            Err(status)
+        }
     }
 }
 
-impl_new!(SessionOptions, TF_NewSessionOptions, "Creates a blank set of options.");
+impl_new!(
+    SessionOptions,
+    TF_NewSessionOptions,
+    "Creates a blank set of options."
+);
 impl_drop!(SessionOptions, TF_DeleteSessionOptions);
 
 ////////////////////////
@@ -546,7 +566,7 @@ pub trait TensorType: Default + Clone + Display + Debug + 'static {
     /// types where the Rust and C representations differ.
     #[doc(hidden)]
     type InnerType: TensorInner<Self>;
-    
+
     /// Returns the DataType that corresponds to this type.
     fn data_type() -> DataType;
 
@@ -575,43 +595,47 @@ pub trait TensorType: Default + Clone + Display + Debug + 'static {
 }
 
 macro_rules! tensor_type {
-  ($rust_type:ty, $tensor_type:ident, $zero:expr, $one:expr) => {
-    impl TensorType for $rust_type {
-      type InnerType = TensorDataCRepr<$rust_type>;
-            
-      fn data_type() -> DataType {
-        DataType::$tensor_type
-      }
+    ($rust_type:ty, $tensor_type:ident, $zero:expr, $one:expr) => {
+        impl TensorType for $rust_type {
+            type InnerType = TensorDataCRepr<$rust_type>;
 
-      fn zero() -> Self {
-        $zero
-      }
+            fn data_type() -> DataType {
+                DataType::$tensor_type
+            }
 
-      fn one() -> Self {
-        $one
-      }
+            fn zero() -> Self {
+                $zero
+            }
 
-      fn is_repr_c() -> bool {
-        true
-      }
+            fn one() -> Self {
+                $one
+            }
 
-      fn unpack(_data: &[u8], _count: usize) -> Result<Vec<Self>> {
-        Err(Status::new_set(
-            Code::Unimplemented,
-            concat!("Unpacking is not necessary for ", stringify!($rust_type))).unwrap())
-      }
+            fn is_repr_c() -> bool {
+                true
+            }
 
-      fn packed_size(_data: &[Self]) -> usize {
-        0
-      }
+            fn unpack(_data: &[u8], _count: usize) -> Result<Vec<Self>> {
+                Err(Status::new_set(
+                    Code::Unimplemented,
+                    concat!("Unpacking is not necessary for ", stringify!($rust_type)),
+                )
+                .unwrap())
+            }
 
-      fn pack(_data: &[Self], _buffer: &mut [u8]) -> Result<()> {
-        Err(Status::new_set(
-            Code::Unimplemented,
-            concat!("Packing is not necessary for ", stringify!($rust_type))).unwrap())
-      }
-    }
-  }
+            fn packed_size(_data: &[Self]) -> usize {
+                0
+            }
+
+            fn pack(_data: &[Self], _buffer: &mut [u8]) -> Result<()> {
+                Err(Status::new_set(
+                    Code::Unimplemented,
+                    concat!("Packing is not necessary for ", stringify!($rust_type)),
+                )
+                .unwrap())
+            }
+        }
+    };
 }
 
 tensor_type!(f32, Float, 0.0, 1.0);
@@ -623,8 +647,18 @@ tensor_type!(u32, UInt32, 0, 1);
 tensor_type!(u64, UInt64, 0, 1);
 tensor_type!(i16, Int16, 0, 1);
 tensor_type!(i8, Int8, 0, 1);
-tensor_type!(Complex<f32>, Complex64, Complex::new(0.0, 0.0), Complex::new(1.0, 0.0));
-tensor_type!(Complex<f64>, Complex128, Complex::new(0.0, 0.0), Complex::new(1.0, 0.0));
+tensor_type!(
+    Complex<f32>,
+    Complex64,
+    Complex::new(0.0, 0.0),
+    Complex::new(1.0, 0.0)
+);
+tensor_type!(
+    Complex<f64>,
+    Complex128,
+    Complex::new(0.0, 0.0),
+    Complex::new(1.0, 0.0)
+);
 tensor_type!(i64, Int64, 0, 1);
 tensor_type!(bool, Bool, false, true);
 
@@ -669,7 +703,7 @@ q_type!(i32,
 ////////////////////////
 
 /// BFloat16 provides a Rust type for BFloat16.
-#[derive(Debug,Clone,Copy,Default)]
+#[derive(Debug, Clone, Copy, Default)]
 pub struct BFloat16(u16);
 
 impl Display for BFloat16 {
@@ -715,7 +749,12 @@ impl PartialOrd for BFloat16 {
     }
 }
 
-tensor_type!(BFloat16, BFloat16, BFloat16::from(0.0f32), BFloat16::from(1.0f32));
+tensor_type!(
+    BFloat16,
+    BFloat16,
+    BFloat16::from(0.0f32),
+    BFloat16::from(1.0f32)
+);
 
 ////////////////////////
 
@@ -763,7 +802,8 @@ impl TensorType for String {
     }
 
     fn packed_size(data: &[Self]) -> usize {
-        let string_data: usize = data.iter()
+        let string_data: usize = data
+            .iter()
             .map(|s| unsafe { tf::TF_StringEncodedSize(s.len()) })
             .sum();
         mem::size_of::<u64>() * data.len() + string_data
@@ -1137,7 +1177,9 @@ impl<T: TensorType> Tensor<T> {
         if self.len() != value.len() {
             return Err(invalid_arg!(
                 "length of values array ({}) is not equal to tensor total elements ({})",
-                value.len(), self.len()));
+                value.len(),
+                self.len()
+            ));
         }
         for (e, v) in self.iter_mut().zip(value) {
             e.clone_from(v);
@@ -1231,7 +1273,11 @@ fn write_tensor_recursive<T: Display>(
                     write!(f, ", ")?;
                 }
 
-                write_tensor_recursive(f, &shape[1..], &values[i*chunk_size..(i+1)*chunk_size])?;
+                write_tensor_recursive(
+                    f,
+                    &shape[1..],
+                    &values[i * chunk_size..(i + 1) * chunk_size],
+                )?;
             }
         }
 
@@ -1277,7 +1323,11 @@ impl Library {
 /// Returns a string describing version information of the
 /// `TensorFlow` library. `TensorFlow` is using semantic versioning.
 pub fn version() -> std::result::Result<String, Utf8Error> {
-    unsafe { CStr::from_ptr(tf::TF_Version()).to_str().map(|s| s.to_string()) }
+    unsafe {
+        CStr::from_ptr(tf::TF_Version())
+            .to_str()
+            .map(|s| s.to_string())
+    }
 }
 
 /// Returns a serialized KernelList protocol buffer containing KernelDefs for
@@ -1313,7 +1363,7 @@ pub fn get_registered_kernels_for_op(name: &str) -> Result<Vec<u8>> {
 
 /// A Shape is the shape of a tensor.  A Shape may be an unknown rank, or it may
 /// have a known rank with each dimension being known or unknown.
-#[derive(Debug,Eq,Ord,PartialEq,PartialOrd,Hash,Clone)]
+#[derive(Debug, Eq, Ord, PartialEq, PartialOrd, Hash, Clone)]
 pub struct Shape(Option<Vec<Option<i64>>>);
 
 impl Shape {
@@ -1430,17 +1480,16 @@ mod tests {
     fn test_run() {
         // Graph is just y = 2 * x
         let graph_proto = vec![
-      0x0a, 0x2a, 0x0a, 0x01, 0x78, 0x12, 0x0b, 0x50, 0x6c, 0x61, 0x63, 0x65, 0x68,
-      0x6f, 0x6c, 0x64, 0x65, 0x72, 0x2a, 0x0b, 0x0a, 0x05, 0x64, 0x74, 0x79, 0x70,
-      0x65, 0x12, 0x02, 0x30, 0x01, 0x2a, 0x0b, 0x0a, 0x05, 0x73, 0x68, 0x61, 0x70,
-      0x65, 0x12, 0x02, 0x3a, 0x00, 0x0a, 0x30, 0x0a, 0x03, 0x79, 0x2f, 0x79, 0x12,
-      0x05, 0x43, 0x6f, 0x6e, 0x73, 0x74, 0x2a, 0x0b, 0x0a, 0x05, 0x64, 0x74, 0x79,
-      0x70, 0x65, 0x12, 0x02, 0x30, 0x01, 0x2a, 0x15, 0x0a, 0x05, 0x76, 0x61, 0x6c,
-      0x75, 0x65, 0x12, 0x0c, 0x42, 0x0a, 0x08, 0x01, 0x12, 0x00, 0x2a, 0x04, 0x00,
-      0x00, 0x00, 0x40, 0x0a, 0x19, 0x0a, 0x01, 0x79, 0x12, 0x03, 0x4d, 0x75, 0x6c,
-      0x1a, 0x01, 0x78, 0x1a, 0x03, 0x79, 0x2f, 0x79, 0x2a, 0x07, 0x0a, 0x01, 0x54,
-      0x12, 0x02, 0x30, 0x01
-    ];
+            0x0a, 0x2a, 0x0a, 0x01, 0x78, 0x12, 0x0b, 0x50, 0x6c, 0x61, 0x63, 0x65, 0x68, 0x6f,
+            0x6c, 0x64, 0x65, 0x72, 0x2a, 0x0b, 0x0a, 0x05, 0x64, 0x74, 0x79, 0x70, 0x65, 0x12,
+            0x02, 0x30, 0x01, 0x2a, 0x0b, 0x0a, 0x05, 0x73, 0x68, 0x61, 0x70, 0x65, 0x12, 0x02,
+            0x3a, 0x00, 0x0a, 0x30, 0x0a, 0x03, 0x79, 0x2f, 0x79, 0x12, 0x05, 0x43, 0x6f, 0x6e,
+            0x73, 0x74, 0x2a, 0x0b, 0x0a, 0x05, 0x64, 0x74, 0x79, 0x70, 0x65, 0x12, 0x02, 0x30,
+            0x01, 0x2a, 0x15, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x12, 0x0c, 0x42, 0x0a,
+            0x08, 0x01, 0x12, 0x00, 0x2a, 0x04, 0x00, 0x00, 0x00, 0x40, 0x0a, 0x19, 0x0a, 0x01,
+            0x79, 0x12, 0x03, 0x4d, 0x75, 0x6c, 0x1a, 0x01, 0x78, 0x1a, 0x03, 0x79, 0x2f, 0x79,
+            0x2a, 0x07, 0x0a, 0x01, 0x54, 0x12, 0x02, 0x30, 0x01,
+        ];
         let (session, mut graph) = create_session();
         let opts = ImportGraphDefOptions::new();
         let status = graph.import_graph_def(&graph_proto, &opts);
@@ -1531,18 +1580,18 @@ mod tests {
     #[test]
     fn tensor_display() {
         let tests = [
-                ("1", &[][..], &[1][..]),
-                ("[1]", &[1], &[1]),
-                ("[1, 2]", &[2], &[1, 2]),
-                ("[[1, 2], [3, 4]]", &[2, 2], &[1, 2, 3, 4]),
-                ("[[[1], [2]], [[3], [4]]]", &[2, 2, 1], &[1, 2, 3, 4]),
-                ("[[[1, 2]], [[3, 4]]]", &[2, 1, 2], &[1, 2, 3, 4]),
-                ("[[[[], []]], [[[], []]]]", &[2, 1, 2, 0], &[]),
-                ("[[], []]", &[2, 0], &[]),
-                ("[[], []]", &[2, 0, 2], &[]),
-                ("[]", &[0], &[]),
-                ("[]", &[0, 0], &[]),
-            ];
+            ("1", &[][..], &[1][..]),
+            ("[1]", &[1], &[1]),
+            ("[1, 2]", &[2], &[1, 2]),
+            ("[[1, 2], [3, 4]]", &[2, 2], &[1, 2, 3, 4]),
+            ("[[[1], [2]], [[3], [4]]]", &[2, 2, 1], &[1, 2, 3, 4]),
+            ("[[[1, 2]], [[3, 4]]]", &[2, 1, 2], &[1, 2, 3, 4]),
+            ("[[[[], []]], [[[], []]]]", &[2, 1, 2, 0], &[]),
+            ("[[], []]", &[2, 0], &[]),
+            ("[[], []]", &[2, 0, 2], &[]),
+            ("[]", &[0], &[]),
+            ("[]", &[0, 0], &[]),
+        ];
 
         for &(expected, shape, values) in tests.iter() {
             let tensor = Tensor::<i32>::new(shape).with_values(values).unwrap();
