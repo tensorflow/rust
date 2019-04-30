@@ -1,9 +1,9 @@
 use random;
 use random::Source;
 use std::error::Error;
-use std::result::Result;
 use std::path::Path;
 use std::process::exit;
+use std::result::Result;
 use tensorflow::Code;
 use tensorflow::Graph;
 use tensorflow::Session;
@@ -12,8 +12,8 @@ use tensorflow::SessionRunArgs;
 use tensorflow::Status;
 use tensorflow::Tensor;
 
-#[cfg_attr(feature="examples_system_alloc", global_allocator)]
-#[cfg(feature="examples_system_alloc")]
+#[cfg_attr(feature = "examples_system_alloc", global_allocator)]
+#[cfg(feature = "examples_system_alloc")]
 static ALLOCATOR: std::alloc::System = std::alloc::System;
 
 fn main() {
@@ -32,11 +32,17 @@ fn main() {
 fn run() -> Result<(), Box<dyn Error>> {
     let export_dir = "examples/regression_savedmodel"; // y = w * x + b
     if !Path::new(export_dir).exists() {
-        return Err(Box::new(Status::new_set(Code::NotFound,
-                                            &format!("Run 'python regression_savedmodel.py' to generate \
-                                                      {} and try again.",
-                                                     export_dir))
-            .unwrap()));
+        return Err(Box::new(
+            Status::new_set(
+                Code::NotFound,
+                &format!(
+                    "Run 'python regression_savedmodel.py' to generate \
+                     {} and try again.",
+                    export_dir
+                ),
+            )
+            .unwrap(),
+        ));
     }
 
     // Generate some test data.
@@ -54,10 +60,12 @@ fn run() -> Result<(), Box<dyn Error>> {
 
     // Load the saved model exported by regression_savedmodel.py.
     let mut graph = Graph::new();
-    let session = Session::from_saved_model(&SessionOptions::new(),
-                                            &["train", "serve"],
-                                            &mut graph,
-                                            export_dir)?;
+    let session = Session::from_saved_model(
+        &SessionOptions::new(),
+        &["train", "serve"],
+        &mut graph,
+        export_dir,
+    )?;
     let op_x = graph.operation_by_name_required("x")?;
     let op_y = graph.operation_by_name_required("y")?;
     let op_train = graph.operation_by_name_required("train")?;
@@ -82,21 +90,25 @@ fn run() -> Result<(), Box<dyn Error>> {
     // Check our results.
     let w_hat: f32 = output_step.fetch(w_ix)?[0];
     let b_hat: f32 = output_step.fetch(b_ix)?[0];
-    println!("Checking w: expected {}, got {}. {}",
-             w,
-             w_hat,
-             if (w - w_hat).abs() < 1e-3 {
-                 "Success!"
-             } else {
-                 "FAIL"
-             });
-    println!("Checking b: expected {}, got {}. {}",
-             b,
-             b_hat,
-             if (b - b_hat).abs() < 1e-3 {
-                 "Success!"
-             } else {
-                 "FAIL"
-             });
+    println!(
+        "Checking w: expected {}, got {}. {}",
+        w,
+        w_hat,
+        if (w - w_hat).abs() < 1e-3 {
+            "Success!"
+        } else {
+            "FAIL"
+        }
+    );
+    println!(
+        "Checking b: expected {}, got {}. {}",
+        b,
+        b_hat,
+        if (b - b_hat).abs() < 1e-3 {
+            "Success!"
+        } else {
+            "FAIL"
+        }
+    );
     Ok(())
 }

@@ -1,9 +1,9 @@
 use std::error::Error;
 use std::fs::File;
 use std::io::Read;
-use std::result::Result;
 use std::path::Path;
 use std::process::exit;
+use std::result::Result;
 use tensorflow::Code;
 use tensorflow::Graph;
 use tensorflow::ImportGraphDefOptions;
@@ -13,8 +13,8 @@ use tensorflow::SessionRunArgs;
 use tensorflow::Status;
 use tensorflow::Tensor;
 
-#[cfg_attr(feature="examples_system_alloc", global_allocator)]
-#[cfg(feature="examples_system_alloc")]
+#[cfg_attr(feature = "examples_system_alloc", global_allocator)]
+#[cfg(feature = "examples_system_alloc")]
 static ALLOCATOR: std::alloc::System = std::alloc::System;
 
 fn main() {
@@ -33,11 +33,17 @@ fn main() {
 fn run() -> Result<(), Box<dyn Error>> {
     let filename = "examples/addition/model.pb"; // z = x + y
     if !Path::new(filename).exists() {
-        return Err(Box::new(Status::new_set(Code::NotFound,
-                                            &format!("Run 'python addition.py' to generate {} \
-                                                      and try again.",
-                                                     filename))
-            .unwrap()));
+        return Err(Box::new(
+            Status::new_set(
+                Code::NotFound,
+                &format!(
+                    "Run 'python addition.py' to generate {} \
+                     and try again.",
+                    filename
+                ),
+            )
+            .unwrap(),
+        ));
     }
 
     // Create input variables for our addition

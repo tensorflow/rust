@@ -73,7 +73,7 @@ impl<'a> WhileBuilder<'a> {
                     c_inputs.as_ptr() as *mut _,
                     c_inputs.len() as c_int,
                     status.inner(),
-                    )
+                )
             },
             finished: false,
         };
@@ -216,12 +216,8 @@ mod tests {
     fn simple_while() {
         let mut main_graph = Graph::new();
         let one = constant(&mut main_graph, "one", 1);
-        let output = WhileBuilder::new(
-            &mut main_graph,
-            while_cond,
-            while_body,
-            &[one.into()],
-        ).unwrap()
+        let output = WhileBuilder::new(&mut main_graph, while_cond, while_body, &[one.into()])
+            .unwrap()
             .name("foo")
             .unwrap()
             .finish()
@@ -246,15 +242,12 @@ mod tests {
             while_cond,
             while_body,
             &[one.clone().into()],
-        ).unwrap()
-            .finish()
-            .unwrap();
-        WhileBuilder::new(
-            &mut main_graph,
-            while_cond,
-            while_body,
-            &[one.into()],
-        ).unwrap()
+        )
+        .unwrap()
+        .finish()
+        .unwrap();
+        WhileBuilder::new(&mut main_graph, while_cond, while_body, &[one.into()])
+            .unwrap()
             .finish()
             .unwrap();
     }

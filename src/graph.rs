@@ -57,9 +57,11 @@ pub struct ImportGraphDefOptions {
     inner: *mut tf::TF_ImportGraphDefOptions,
 }
 
-impl_new!(ImportGraphDefOptions,
-          TF_NewImportGraphDefOptions,
-          "Creates a default ImportGraphDefOptions.");
+impl_new!(
+    ImportGraphDefOptions,
+    TF_NewImportGraphDefOptions,
+    "Creates a default ImportGraphDefOptions."
+);
 impl_drop!(ImportGraphDefOptions, TF_DeleteImportGraphDefOptions);
 
 impl ImportGraphDefOptions {
@@ -76,17 +78,20 @@ impl ImportGraphDefOptions {
     /// Set any imported nodes with input `src_name:src_index` to have that input
     /// replaced with `dst`. `src_name` refers to a node in the graph to be imported,
     /// `dst` references a node already existing in the graph being imported into.
-    pub fn add_input_mapping(&mut self,
-                             src_name: &str,
-                             src_index: usize,
-                             dst: &Output)
-                             -> std::result::Result<(), NulError> {
+    pub fn add_input_mapping(
+        &mut self,
+        src_name: &str,
+        src_index: usize,
+        dst: &Output,
+    ) -> std::result::Result<(), NulError> {
         let s = CString::new(src_name)?;
         unsafe {
-            tf::TF_ImportGraphDefOptionsAddInputMapping(self.inner,
-                                                        s.as_ptr(),
-                                                        src_index as c_int,
-                                                        dst.to_c());
+            tf::TF_ImportGraphDefOptionsAddInputMapping(
+                self.inner,
+                s.as_ptr(),
+                src_index as c_int,
+                dst.to_c(),
+            );
         }
         Ok(())
     }
@@ -95,15 +100,14 @@ impl ImportGraphDefOptions {
     /// replaced with `dst`. `src_name` refers to a node in the graph to be imported,
     /// `dst` references an operation already existing in the graph being imported
     /// into.
-    pub fn remap_control_dependency(&mut self,
-                                    src_name: &str,
-                                    dst: &Operation)
-                                    -> std::result::Result<(), NulError> {
+    pub fn remap_control_dependency(
+        &mut self,
+        src_name: &str,
+        dst: &Operation,
+    ) -> std::result::Result<(), NulError> {
         let s = CString::new(src_name)?;
         unsafe {
-            tf::TF_ImportGraphDefOptionsRemapControlDependency(self.inner,
-                                                               s.as_ptr(),
-                                                               dst.inner);
+            tf::TF_ImportGraphDefOptionsRemapControlDependency(self.inner, s.as_ptr(), dst.inner);
         }
         Ok(())
     }
@@ -119,10 +123,11 @@ impl ImportGraphDefOptions {
     /// Add an output in `graph_def` to be returned via the `return_outputs` output
     /// parameter of `import_graph_def()`. If the output is remapped via an input
     /// mapping, the corresponding existing tensor in `graph` will be returned.
-    pub fn add_return_output(&mut self,
-                             oper_name: &str,
-                             index: usize)
-                             -> std::result::Result<(), NulError> {
+    pub fn add_return_output(
+        &mut self,
+        oper_name: &str,
+        index: usize,
+    ) -> std::result::Result<(), NulError> {
         let s = CString::new(oper_name)?;
         unsafe {
             tf::TF_ImportGraphDefOptionsAddReturnOutput(self.inner, s.as_ptr(), index as c_int);
@@ -303,9 +308,11 @@ impl Graph {
         let c_operation_name = CString::new(operation_name)?;
         unsafe {
             Ok(OperationDescription {
-                inner: tf::TF_NewOperation(self.gimpl.inner,
-                                           c_op_type.as_ptr(),
-                                           c_operation_name.as_ptr()),
+                inner: tf::TF_NewOperation(
+                    self.gimpl.inner,
+                    c_op_type.as_ptr(),
+                    c_operation_name.as_ptr(),
+                ),
                 graph: self,
                 finished: false,
             })
@@ -314,13 +321,14 @@ impl Graph {
 
     /// Returns the operation in the graph with the given name, if it exists.
     /// If the operation does not exist, returns `Ok(None)`.
-    pub fn operation_by_name(&self,
-                             operation_name: &str)
-                             -> std::result::Result<Option<Operation>, NulError> {
+    pub fn operation_by_name(
+        &self,
+        operation_name: &str,
+    ) -> std::result::Result<Option<Operation>, NulError> {
         let c_operation_name = CString::new(operation_name)?;
         unsafe {
-            let operation = tf::TF_GraphOperationByName(self.gimpl.inner,
-                                                        c_operation_name.as_ptr());
+            let operation =
+                tf::TF_GraphOperationByName(self.gimpl.inner, c_operation_name.as_ptr());
             if operation.is_null() {
                 Ok(None)
             } else {
@@ -333,16 +341,17 @@ impl Graph {
     }
 
     /// Like `operation_by_name`, except that failure to find the operation is considered an error.
-    pub fn operation_by_name_required(&self,
-                                      operation_name: &str)
-                                      -> std::result::Result<Operation, Status> {
+    pub fn operation_by_name_required(
+        &self,
+        operation_name: &str,
+    ) -> std::result::Result<Operation, Status> {
         match self.operation_by_name(operation_name)? {
             Some(operation) => Ok(operation),
-            None => {
-                Err(Status::new_set(Code::Unavailable,
-                                    &format!("Operation {:?} not found", operation_name))
-                    .unwrap())
-            }
+            None => Err(Status::new_set(
+                Code::Unavailable,
+                &format!("Operation {:?} not found", operation_name),
+            )
+            .unwrap()),
         }
     }
 
@@ -405,8 +414,16 @@ impl Graph {
     pub fn num_dims<I: Into<Output>>(&self, output: I) -> Result<c_int> {
         let mut status = Status::new();
         unsafe {
-            let val = tf::TF_GraphGetTensorNumDims(self.gimpl.inner, output.into().to_c(), status.inner());
-            if status.is_ok() { Ok(val) } else { Err(status) }
+            let val = tf::TF_GraphGetTensorNumDims(
+                self.gimpl.inner,
+                output.into().to_c(),
+                status.inner(),
+            );
+            if status.is_ok() {
+                Ok(val)
+            } else {
+                Err(status)
+            }
         }
     }
 
@@ -424,14 +441,20 @@ impl Graph {
         }
         let mut dims = Vec::with_capacity(n as usize);
         unsafe {
-            tf::TF_GraphGetTensorShape(self.gimpl.inner,
-                                       output.to_c(),
-                                       dims.as_mut_ptr(),
-                                       n,
-                                       status.inner());
+            tf::TF_GraphGetTensorShape(
+                self.gimpl.inner,
+                output.to_c(),
+                dims.as_mut_ptr(),
+                n,
+                status.inner(),
+            );
             if status.is_ok() {
                 dims.set_len(n as usize);
-                Ok(Shape(Some(dims.iter().map(|x| if *x < 0 { None } else { Some(*x) }).collect())))
+                Ok(Shape(Some(
+                    dims.iter()
+                        .map(|x| if *x < 0 { None } else { Some(*x) })
+                        .collect(),
+                )))
             } else {
                 Err(status)
             }
@@ -439,17 +462,20 @@ impl Graph {
     }
 
     /// Import the graph serialized in `graph_def`.
-    pub fn import_graph_def(&mut self,
-                            graph_def: &[u8],
-                            options: &ImportGraphDefOptions)
-                            -> Result<()> {
+    pub fn import_graph_def(
+        &mut self,
+        graph_def: &[u8],
+        options: &ImportGraphDefOptions,
+    ) -> Result<()> {
         let buf = Buffer::from(graph_def);
         let mut status = Status::new();
         unsafe {
-            tf::TF_GraphImportGraphDef(self.gimpl.inner,
-                                       buf.inner(),
-                                       options.inner,
-                                       status.inner());
+            tf::TF_GraphImportGraphDef(
+                self.gimpl.inner,
+                buf.inner(),
+                options.inner,
+                status.inner(),
+            );
             status.into_result()
         }
     }
@@ -488,18 +514,20 @@ impl Graph {
         let mut c_return_outputs = Vec::with_capacity(n);
         unsafe {
             c_return_outputs.set_len(n);
-            tf::TF_GraphImportGraphDefWithReturnOutputs(self.gimpl.inner,
-                                                        buf.inner(),
-                                                        options.inner,
-                                                        c_return_outputs.as_mut_ptr(),
-                                                        n as c_int,
-                                                        status.inner());
+            tf::TF_GraphImportGraphDefWithReturnOutputs(
+                self.gimpl.inner,
+                buf.inner(),
+                options.inner,
+                c_return_outputs.as_mut_ptr(),
+                n as c_int,
+                status.inner(),
+            );
         }
         status.into_result()?;
         Ok(c_return_outputs
-               .iter()
-               .map(|x| Output::from_c(self, x))
-               .collect())
+            .iter()
+            .map(|x| Output::from_c(self, x))
+            .collect())
     }
 
     /// Adds a copy of function `func` and optionally its gradient function
@@ -629,9 +657,8 @@ impl Graph {
         let c_inputs: Vec<_> = inputs.iter().map(|x| x.to_c()).collect();
         let c_outputs: Vec<_> = outputs.iter().map(|x| x.to_c()).collect();
         let output_names_cstrs: Option<::std::result::Result<Vec<CString>, NulError>> =
-            output_names.map(|slice: &[S]| {
-                slice.iter().map(|s: &S| CString::new(s.as_ref())).collect()
-            });
+            output_names
+                .map(|slice: &[S]| slice.iter().map(|s: &S| CString::new(s.as_ref())).collect());
         let output_names_cstrs: Option<Vec<CString>> = match output_names_cstrs {
             None => None,
             Some(r) => Some(r?),
@@ -679,9 +706,7 @@ impl Graph {
 
     /// Returns the number of functions registered in the graph.
     pub fn num_functions(&self) -> c_int {
-        unsafe {
-            tf::TF_GraphNumFunctions(self.inner())
-        }
+        unsafe { tf::TF_GraphNumFunctions(self.inner()) }
     }
 
     /// Returns functions registered in the graph.
@@ -693,7 +718,7 @@ impl Graph {
             let num = tf::TF_GraphGetFunctions(self.inner(), funcs.as_mut_ptr(), num, status.inner);
             status.into_result()?;
             funcs.set_len(num as usize);
-            Ok(funcs.iter().map(|f| Function {inner: *f}).collect())
+            Ok(funcs.iter().map(|f| Function { inner: *f }).collect())
         }
     }
 
@@ -704,7 +729,12 @@ impl Graph {
         let c_op_name = CString::new(op_name)?;
         unsafe {
             let mut buffer = Buffer::new_unallocated();
-            tf::TF_GraphGetOpDef(self.inner(), c_op_name.as_ptr(), buffer.inner_mut(), status.inner);
+            tf::TF_GraphGetOpDef(
+                self.inner(),
+                c_op_name.as_ptr(),
+                buffer.inner_mut(),
+                status.inner,
+            );
             status.into_result().map(|()| buffer.into())
         }
     }
@@ -938,7 +968,7 @@ impl AttrMetadata {
 
 /// An `Operation` is a node in a `Graph`.
 /// It is a computation which accepts inputs and produces outputs.
-#[derive(Debug,Clone)]
+#[derive(Debug, Clone)]
 pub struct Operation {
     inner: *mut tf::TF_Operation,
     gimpl: Arc<GraphImpl>,
@@ -954,14 +984,20 @@ impl Operation {
     /// not an operation type, so it may look like `'add_x_and_y'` instead of `'Add'`,
     /// although it may be a generated ID like `'Add_123'`.
     pub fn name(&self) -> std::result::Result<String, Utf8Error> {
-        unsafe { CStr::from_ptr(tf::TF_OperationName(self.inner)).to_str().map(|x| x.to_string()) }
+        unsafe {
+            CStr::from_ptr(tf::TF_OperationName(self.inner))
+                .to_str()
+                .map(|x| x.to_string())
+        }
     }
 
     /// Returns the type of operation.
     /// This will be something like `'Add'`, `'Mul'`, etc.
     pub fn op_type(&self) -> std::result::Result<String, Utf8Error> {
         unsafe {
-            CStr::from_ptr(tf::TF_OperationOpType(self.inner)).to_str().map(|x| x.to_string())
+            CStr::from_ptr(tf::TF_OperationOpType(self.inner))
+                .to_str()
+                .map(|x| x.to_string())
         }
     }
 
@@ -1044,11 +1080,13 @@ impl Operation {
                 oper: self.inner,
                 index: index as c_int,
             });
-            (Operation {
-                 inner: port.oper,
-                 gimpl: self.gimpl.clone(),
-             },
-             port.index as usize)
+            (
+                Operation {
+                    inner: port.oper,
+                    gimpl: self.gimpl.clone(),
+                },
+                port.index as usize,
+            )
         }
     }
 
@@ -1073,20 +1111,24 @@ impl Operation {
                 index: index as c_int,
             });
             let mut vec = <Vec<tf::TF_Input>>::with_capacity(num_consumers as usize);
-            let len = tf::TF_OperationOutputConsumers(tf::TF_Output {
-                                                          oper: self.inner,
-                                                          index: index as c_int,
-                                                      },
-                                                      vec.as_mut_ptr(),
-                                                      vec.len() as c_int);
+            let len = tf::TF_OperationOutputConsumers(
+                tf::TF_Output {
+                    oper: self.inner,
+                    index: index as c_int,
+                },
+                vec.as_mut_ptr(),
+                vec.len() as c_int,
+            );
             vec.set_len(len as usize);
             vec.into_iter()
                 .map(|port| {
-                    (Operation {
-                         inner: port.oper,
-                         gimpl: self.gimpl.clone(),
-                     },
-                     port.index as usize)
+                    (
+                        Operation {
+                            inner: port.oper,
+                            gimpl: self.gimpl.clone(),
+                        },
+                        port.index as usize,
+                    )
                 })
                 .collect()
         }
@@ -1101,17 +1143,14 @@ impl Operation {
     pub fn control_inputs(&self) -> Vec<Operation> {
         unsafe {
             let num_consumers = tf::TF_OperationNumControlInputs(self.inner);
-            let mut vec =
-                <Vec<*mut tf::TF_Operation>>::with_capacity(num_consumers as usize);
+            let mut vec = <Vec<*mut tf::TF_Operation>>::with_capacity(num_consumers as usize);
             let len =
                 tf::TF_OperationGetControlInputs(self.inner, vec.as_mut_ptr(), vec.len() as c_int);
             vec.set_len(len as usize);
             vec.into_iter()
-                .map(|operation| {
-                    Operation {
-                        inner: operation,
-                        gimpl: self.gimpl.clone(),
-                    }
+                .map(|operation| Operation {
+                    inner: operation,
+                    gimpl: self.gimpl.clone(),
                 })
                 .collect()
         }
@@ -1126,17 +1165,14 @@ impl Operation {
     pub fn control_outputs(&self) -> Vec<Operation> {
         unsafe {
             let num_consumers = tf::TF_OperationNumControlOutputs(self.inner);
-            let mut vec =
-                <Vec<*mut tf::TF_Operation>>::with_capacity(num_consumers as usize);
+            let mut vec = <Vec<*mut tf::TF_Operation>>::with_capacity(num_consumers as usize);
             let len =
                 tf::TF_OperationGetControlOutputs(self.inner, vec.as_mut_ptr(), vec.len() as c_int);
             vec.set_len(len as usize);
             vec.into_iter()
-                .map(|operation| {
-                    Operation {
-                        inner: operation,
-                        gimpl: self.gimpl.clone(),
-                    }
+                .map(|operation| Operation {
+                    inner: operation,
+                    gimpl: self.gimpl.clone(),
                 })
                 .collect()
         }
@@ -1635,7 +1671,7 @@ impl Into<Output> for Operation {
 
 /// A `Input` is one end of a graph edge.
 /// It holds an operation and an index into the inputs of that operation.
-#[derive(Debug,Copy,Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct Input<'a> {
     /// Operation the edge connects to.
     pub operation: &'a Operation,
@@ -1648,7 +1684,7 @@ pub struct Input<'a> {
 
 /// A `Output` is one end of a graph edge.
 /// It holds an operation and an index into the outputs of that operation.
-#[derive(Debug,Clone)]
+#[derive(Debug, Clone)]
 pub struct Output {
     /// Operation the edge connects to.
     pub operation: Operation,
@@ -1776,63 +1812,73 @@ impl<'a> OperationDescription<'a> {
 
     /// Sets the value of a string attribute.
     #[allow(trivial_numeric_casts)]
-    pub fn set_attr_string(&mut self,
-                           attr_name: &str,
-                           value: &str)
-                           -> std::result::Result<(), NulError> {
+    pub fn set_attr_string(
+        &mut self,
+        attr_name: &str,
+        value: &str,
+    ) -> std::result::Result<(), NulError> {
         let c_attr_name = CString::new(attr_name)?;
         let c_value = value.as_bytes();
         unsafe {
-            tf::TF_SetAttrString(self.inner,
-                                 c_attr_name.as_ptr(),
-                                 c_value.as_ptr() as *const std_c_void,
-                                 c_value.len() as size_t);
+            tf::TF_SetAttrString(
+                self.inner,
+                c_attr_name.as_ptr(),
+                c_value.as_ptr() as *const std_c_void,
+                c_value.len() as size_t,
+            );
         }
         Ok(())
     }
 
     /// Sets the value of an attribute which holds a list of strings.
     #[allow(trivial_numeric_casts)]
-    pub fn set_attr_string_list<S: AsRef<str>>(&mut self,
-                                               attr_name: &str,
-                                               value: &[S])
-                                               -> std::result::Result<(), NulError> {
+    pub fn set_attr_string_list<S: AsRef<str>>(
+        &mut self,
+        attr_name: &str,
+        value: &[S],
+    ) -> std::result::Result<(), NulError> {
         let c_attr_name = CString::new(attr_name)?;
         let bytes: Vec<&[u8]> = value.iter().map(|x| x.as_ref().as_bytes()).collect();
         let ptrs: Vec<*const c_void> = bytes.iter().map(|x| x.as_ptr() as *const c_void).collect();
         let lens: Vec<size_t> = bytes.iter().map(|x| x.len() as size_t).collect();
         unsafe {
-            tf::TF_SetAttrStringList(self.inner,
-                                     c_attr_name.as_ptr(),
-                                     ptrs.as_ptr() as *const *const std_c_void,
-                                     lens.as_ptr(),
-                                     ptrs.len() as c_int);
+            tf::TF_SetAttrStringList(
+                self.inner,
+                c_attr_name.as_ptr(),
+                ptrs.as_ptr() as *const *const std_c_void,
+                lens.as_ptr(),
+                ptrs.len() as c_int,
+            );
         }
         Ok(())
     }
 
     /// Sets the value of a function attribute.
     #[allow(trivial_numeric_casts)]
-    pub fn set_attr_func_name(&mut self,
-                              attr_name: &str,
-                              value: &str)
-                              -> std::result::Result<(), NulError> {
+    pub fn set_attr_func_name(
+        &mut self,
+        attr_name: &str,
+        value: &str,
+    ) -> std::result::Result<(), NulError> {
         let c_attr_name = CString::new(attr_name)?;
         let c_value = value.as_bytes();
         unsafe {
-            tf::TF_SetAttrFuncName(self.inner,
-                                   c_attr_name.as_ptr(),
-                                   c_value.as_ptr() as *const c_char,
-                                   c_value.len() as size_t);
+            tf::TF_SetAttrFuncName(
+                self.inner,
+                c_attr_name.as_ptr(),
+                c_value.as_ptr() as *const c_char,
+                c_value.len() as size_t,
+            );
         }
         Ok(())
     }
 
     /// Sets an int-valued attribute.
-    pub fn set_attr_int(&mut self,
-                        attr_name: &str,
-                        value: i64)
-                        -> std::result::Result<(), NulError> {
+    pub fn set_attr_int(
+        &mut self,
+        attr_name: &str,
+        value: i64,
+    ) -> std::result::Result<(), NulError> {
         let c_attr_name = CString::new(attr_name)?;
         unsafe {
             tf::TF_SetAttrInt(self.inner, c_attr_name.as_ptr(), value);
@@ -1841,25 +1887,29 @@ impl<'a> OperationDescription<'a> {
     }
 
     /// Sets an attribute which holds an array of ints.
-    pub fn set_attr_int_list(&mut self,
-                             attr_name: &str,
-                             value: &[i64])
-                             -> std::result::Result<(), NulError> {
+    pub fn set_attr_int_list(
+        &mut self,
+        attr_name: &str,
+        value: &[i64],
+    ) -> std::result::Result<(), NulError> {
         let c_attr_name = CString::new(attr_name)?;
         unsafe {
-            tf::TF_SetAttrIntList(self.inner,
-                                  c_attr_name.as_ptr(),
-                                  value.as_ptr(),
-                                  value.len() as i32);
+            tf::TF_SetAttrIntList(
+                self.inner,
+                c_attr_name.as_ptr(),
+                value.as_ptr(),
+                value.len() as i32,
+            );
         }
         Ok(())
     }
 
     /// Sets a float-valued attribute.
-    pub fn set_attr_float(&mut self,
-                          attr_name: &str,
-                          value: f32)
-                          -> std::result::Result<(), NulError> {
+    pub fn set_attr_float(
+        &mut self,
+        attr_name: &str,
+        value: f32,
+    ) -> std::result::Result<(), NulError> {
         let c_attr_name = CString::new(attr_name)?;
         unsafe {
             tf::TF_SetAttrFloat(self.inner, c_attr_name.as_ptr(), value);
@@ -1869,27 +1919,31 @@ impl<'a> OperationDescription<'a> {
 
     /// Sets an attribute which holds an array of floats.
     #[allow(trivial_numeric_casts)]
-    pub fn set_attr_float_list(&mut self,
-                               attr_name: &str,
-                               value: &[f32])
-                               -> std::result::Result<(), NulError> {
+    pub fn set_attr_float_list(
+        &mut self,
+        attr_name: &str,
+        value: &[f32],
+    ) -> std::result::Result<(), NulError> {
         let c_attr_name = CString::new(attr_name)?;
         // Allow trivial_numeric_casts here because f32 is not necessarily equal to c_float.
         let c_value: Vec<c_float> = value.iter().map(|x| *x as c_float).collect();
         unsafe {
-            tf::TF_SetAttrFloatList(self.inner,
-                                    c_attr_name.as_ptr(),
-                                    c_value.as_ptr(),
-                                    c_value.len() as i32);
+            tf::TF_SetAttrFloatList(
+                self.inner,
+                c_attr_name.as_ptr(),
+                c_value.as_ptr(),
+                c_value.len() as i32,
+            );
         }
         Ok(())
     }
 
     /// Sets a boolean-valued attribute.
-    pub fn set_attr_bool(&mut self,
-                         attr_name: &str,
-                         value: bool)
-                         -> std::result::Result<(), NulError> {
+    pub fn set_attr_bool(
+        &mut self,
+        attr_name: &str,
+        value: bool,
+    ) -> std::result::Result<(), NulError> {
         let c_attr_name = CString::new(attr_name)?;
         unsafe {
             tf::TF_SetAttrBool(self.inner, c_attr_name.as_ptr(), if value { 1 } else { 0 });
@@ -1898,26 +1952,30 @@ impl<'a> OperationDescription<'a> {
     }
 
     /// Sets an attribute which holds an array of booleans.
-    pub fn set_attr_bool_list(&mut self,
-                              attr_name: &str,
-                              value: &[bool])
-                              -> std::result::Result<(), NulError> {
+    pub fn set_attr_bool_list(
+        &mut self,
+        attr_name: &str,
+        value: &[bool],
+    ) -> std::result::Result<(), NulError> {
         let c_attr_name = CString::new(attr_name)?;
         let c_value: Vec<c_uchar> = value.iter().map(|x| if *x { 1 } else { 0 }).collect();
         unsafe {
-            tf::TF_SetAttrBoolList(self.inner,
-                                   c_attr_name.as_ptr(),
-                                   c_value.as_ptr(),
-                                   c_value.len() as c_int);
+            tf::TF_SetAttrBoolList(
+                self.inner,
+                c_attr_name.as_ptr(),
+                c_value.as_ptr(),
+                c_value.len() as c_int,
+            );
         }
         Ok(())
     }
 
     /// Sets a type-valued attribute.
-    pub fn set_attr_type(&mut self,
-                         attr_name: &str,
-                         value: DataType)
-                         -> std::result::Result<(), NulError> {
+    pub fn set_attr_type(
+        &mut self,
+        attr_name: &str,
+        value: DataType,
+    ) -> std::result::Result<(), NulError> {
         let c_attr_name = CString::new(attr_name)?;
         unsafe {
             tf::TF_SetAttrType(self.inner, c_attr_name.as_ptr(), value.to_c());
@@ -1926,41 +1984,48 @@ impl<'a> OperationDescription<'a> {
     }
 
     /// Sets an attribute which holds an array of types.
-    pub fn set_attr_type_list(&mut self,
-                              attr_name: &str,
-                              value: &[DataType])
-                              -> std::result::Result<(), NulError> {
+    pub fn set_attr_type_list(
+        &mut self,
+        attr_name: &str,
+        value: &[DataType],
+    ) -> std::result::Result<(), NulError> {
         let c_attr_name = CString::new(attr_name)?;
         let c_value: Vec<tf::TF_DataType> = value.iter().map(|x| x.to_c()).collect();
         unsafe {
-            tf::TF_SetAttrTypeList(self.inner,
-                                   c_attr_name.as_ptr(),
-                                   c_value.as_ptr(),
-                                   c_value.len() as i32);
+            tf::TF_SetAttrTypeList(
+                self.inner,
+                c_attr_name.as_ptr(),
+                c_value.as_ptr(),
+                c_value.len() as i32,
+            );
         }
         Ok(())
     }
 
     /// Sets a shape-valued attribute.
-    pub fn set_attr_shape(&mut self,
-                          attr_name: &str,
-                          value: &Shape)
-                          -> std::result::Result<(), NulError> {
+    pub fn set_attr_shape(
+        &mut self,
+        attr_name: &str,
+        value: &Shape,
+    ) -> std::result::Result<(), NulError> {
         let c_attr_name = CString::new(attr_name)?;
         unsafe {
             match value.0 {
                 None => tf::TF_SetAttrShape(self.inner, c_attr_name.as_ptr(), ptr::null(), -1),
                 Some(ref dims) => {
-                    let c_dims: Vec<i64> = dims.iter()
+                    let c_dims: Vec<i64> = dims
+                        .iter()
                         .map(|x| match *x {
                             Some(d) => d,
                             None => -1,
                         })
                         .collect();
-                    tf::TF_SetAttrShape(self.inner,
-                                        c_attr_name.as_ptr(),
-                                        c_dims.as_ptr(),
-                                        c_dims.len() as i32);
+                    tf::TF_SetAttrShape(
+                        self.inner,
+                        c_attr_name.as_ptr(),
+                        c_dims.as_ptr(),
+                        c_dims.len() as i32,
+                    );
                 }
             }
         }
@@ -1968,43 +2033,49 @@ impl<'a> OperationDescription<'a> {
     }
 
     /// Sets an attribute which holds an array of shapes.
-    pub fn set_attr_shape_list(&mut self,
-                               attr_name: &str,
-                               value: &[Shape])
-                               -> std::result::Result<(), NulError> {
+    pub fn set_attr_shape_list(
+        &mut self,
+        attr_name: &str,
+        value: &[Shape],
+    ) -> std::result::Result<(), NulError> {
         let c_attr_name = CString::new(attr_name)?;
         // Convert Option<i64> in each shape to i64 with None becoming -1.
-        let c_dims: Vec<Option<Vec<i64>>> = value.iter()
+        let c_dims: Vec<Option<Vec<i64>>> = value
+            .iter()
             .map(|x| match x.0 {
                 None => None,
-                Some(ref dims) => {
-                    Some(dims.iter()
+                Some(ref dims) => Some(
+                    dims.iter()
                         .map(|x| match *x {
                             None => -1,
                             Some(d) => d,
                         })
-                        .collect())
-                }
+                        .collect(),
+                ),
             })
             .collect();
-        let ptrs: Vec<*const i64> = c_dims.iter()
+        let ptrs: Vec<*const i64> = c_dims
+            .iter()
             .map(|x| match *x {
                 None => ptr::null(),
                 Some(ref dims) => dims.as_ptr(),
             })
             .collect();
-        let lens: Vec<c_int> = value.iter()
+        let lens: Vec<c_int> = value
+            .iter()
             .map(|x| match x.0 {
                 None => -1,
                 Some(ref dims) => dims.len() as c_int,
             })
             .collect();
         unsafe {
-            tf::TF_SetAttrShapeList(self.inner,
-                                    c_attr_name.as_ptr(),
-                                    ptrs.as_ptr(),
-                                    lens.as_ptr(),
-                                    ptrs.len() as c_int);
+            tf::TF_SetAttrShapeList(
+                self.inner,
+                c_attr_name.as_ptr(),
+                ptrs.as_ptr(),
+                lens.as_ptr(),
+                ptrs.len() as c_int,
+            );
         }
         Ok(())
     }
@@ -2015,62 +2086,68 @@ impl<'a> OperationDescription<'a> {
         let c_attr_name = CString::new(attr_name)?;
         let mut status = Status::new();
         unsafe {
-            tf::TF_SetAttrTensorShapeProto(self.inner,
-                                           c_attr_name.as_ptr(),
-                                           value.as_ptr() as *const std_c_void,
-                                           value.len() as size_t,
-                                           status.inner());
+            tf::TF_SetAttrTensorShapeProto(
+                self.inner,
+                c_attr_name.as_ptr(),
+                value.as_ptr() as *const std_c_void,
+                value.len() as size_t,
+                status.inner(),
+            );
         }
         status.into_result()
     }
 
     /// Sets an attribute with an array of `TensorShapeProto` protobufs.
     #[allow(trivial_numeric_casts)]
-    pub fn set_attr_tensor_shape_proto_list<T: AsRef<[u8]>>(&mut self,
-                                                            attr_name: &str,
-                                                            value: &[T])
-                                                            -> Result<()> {
+    pub fn set_attr_tensor_shape_proto_list<T: AsRef<[u8]>>(
+        &mut self,
+        attr_name: &str,
+        value: &[T],
+    ) -> Result<()> {
         let c_attr_name = CString::new(attr_name)?;
-        let ptrs: Vec<*const c_void> = value.iter()
+        let ptrs: Vec<*const c_void> = value
+            .iter()
             .map(|x| x.as_ref().as_ptr() as *const c_void)
             .collect();
         let lens: Vec<size_t> = value.iter().map(|x| x.as_ref().len() as size_t).collect();
         let mut status = Status::new();
         unsafe {
-            tf::TF_SetAttrTensorShapeProtoList(self.inner,
-                                               c_attr_name.as_ptr(),
-                                               ptrs.as_ptr() as *const *const std_c_void,
-                                               lens.as_ptr(),
-                                               ptrs.len() as c_int,
-                                               status.inner());
+            tf::TF_SetAttrTensorShapeProtoList(
+                self.inner,
+                c_attr_name.as_ptr(),
+                ptrs.as_ptr() as *const *const std_c_void,
+                lens.as_ptr(),
+                ptrs.len() as c_int,
+                status.inner(),
+            );
         }
         status.into_result()
     }
 
     /// Sets a tensor-valued attribute.
-    pub fn set_attr_tensor<T: TensorType>(&mut self,
-                                          attr_name: &str,
-                                          value: Tensor<T>)
-                                          -> Result<()> {
+    pub fn set_attr_tensor<T: TensorType>(
+        &mut self,
+        attr_name: &str,
+        value: Tensor<T>,
+    ) -> Result<()> {
         let c_attr_name = CString::new(attr_name)?;
         let mut status = Status::new();
         unsafe {
-            tf::TF_SetAttrTensor(self.inner,
-                                 c_attr_name.as_ptr(),
-                                 value.inner()?,
-                                 status.inner());
+            tf::TF_SetAttrTensor(
+                self.inner,
+                c_attr_name.as_ptr(),
+                value.inner()?,
+                status.inner(),
+            );
         }
         status.into_result()
     }
 
     /// Sets an attribute which holds an array of tensors.
-    pub fn set_attr_tensor_list<I, T>(
-        &mut self,
-        attr_name: &str,
-        value: I
-        ) -> Result<()> 
-        where I: IntoIterator<Item = Tensor<T>>, 
-            T: TensorType 
+    pub fn set_attr_tensor_list<I, T>(&mut self, attr_name: &str, value: I) -> Result<()>
+    where
+        I: IntoIterator<Item = Tensor<T>>,
+        T: TensorType,
     {
         let c_attr_name = CString::new(attr_name)?;
         let mut status = Status::new();
@@ -2079,11 +2156,13 @@ impl<'a> OperationDescription<'a> {
             let tensors: Vec<_> = value.into_iter().collect();
             let maybe_ptrs: Result<_> = tensors.iter().map(|x| x.inner()).collect();
             let ptrs: Vec<*mut tf::TF_Tensor> = maybe_ptrs?;
-            tf::TF_SetAttrTensorList(self.inner,
-                                     c_attr_name.as_ptr(),
-                                     ptrs.as_ptr() as *const *const tf::TF_Tensor,
-                                     ptrs.len() as c_int,
-                                     status.inner());
+            tf::TF_SetAttrTensorList(
+                self.inner,
+                c_attr_name.as_ptr(),
+                ptrs.as_ptr() as *const *const tf::TF_Tensor,
+                ptrs.len() as c_int,
+                status.inner(),
+            );
         }
         status.into_result()
     }
@@ -2100,13 +2179,15 @@ impl<'a> OperationDescription<'a> {
         let c_attr_name = CString::new(attr_name)?;
         let mut status = Status::new();
         unsafe {
-            tf::TF_SetAttrValueProto(self.inner,
-                                     c_attr_name.as_ptr(),
-                                     value.as_ptr() as *const std_c_void,
-                                     // Allow trivial_numeric_casts because usize is not
-                                     // necessarily size_t.
-                                     value.len() as size_t,
-                                     status.inner());
+            tf::TF_SetAttrValueProto(
+                self.inner,
+                c_attr_name.as_ptr(),
+                value.as_ptr() as *const std_c_void,
+                // Allow trivial_numeric_casts because usize is not
+                // necessarily size_t.
+                value.len() as size_t,
+                status.inner(),
+            );
         }
         status.into_result()
     }
@@ -2224,9 +2305,9 @@ impl Function {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use super::super::DataType;
     use super::super::Shape;
+    use super::*;
 
     fn add_operation(g: &mut Graph) {
         g.new_operation("Variable", "foo").unwrap();
@@ -2287,13 +2368,9 @@ mod tests {
         let x = constant(&mut graph, "x/assign_0", x_init);
         assert_eq!(1, x.num_outputs());
         assert_eq!(x.output_type(0), DataType::Int32);
-        let dims = graph
-            .num_dims(x.clone())
-            .unwrap();
+        let dims = graph.num_dims(x.clone()).unwrap();
         assert_eq!(dims, 2);
-        let shape = graph
-            .tensor_shape(x.clone())
-            .unwrap();
+        let shape = graph.tensor_shape(x.clone()).unwrap();
         assert_eq!(shape, Shape(Some(vec![Some(3_i64), Some(3_i64)])));
     }
 
@@ -2316,26 +2393,23 @@ mod tests {
         };
         let y = multiply(&mut g, two.clone(), x.clone(), "y").unwrap();
         let opers = vec![&y];
-        let inputs = vec![
-            x.clone().into(),
-            two.clone().into(),
-        ];
-        let outputs = vec![
-            y.clone().into(),
-        ];
+        let inputs = vec![x.clone().into(), two.clone().into()];
+        let outputs = vec![y.clone().into()];
         let output_names = vec!["result"];
         let description = "Multiplies by 2";
         let opts = FunctionOptions::new();
-        let f = g.to_function(
-            "times_two",
-            false,
-            Some(&opers),
-            &inputs,
-            &outputs,
-            Some(&output_names),
-            &opts,
-            Some(description),
-        ).unwrap();
+        let f = g
+            .to_function(
+                "times_two",
+                false,
+                Some(&opers),
+                &inputs,
+                &outputs,
+                Some(&output_names),
+                &opts,
+                Some(description),
+            )
+            .unwrap();
         assert_eq!("times_two", f.get_name().unwrap());
         let mut g2 = Graph::new();
         assert_eq!(0, g2.num_functions());
@@ -2369,7 +2443,8 @@ mod tests {
         assert_eq!(shape, variable_op.get_attr_shape("shape").unwrap());
 
         let op = {
-            let mut nd = g.new_operation("Variable", "Variable_unknown_rank")
+            let mut nd = g
+                .new_operation("Variable", "Variable_unknown_rank")
                 .unwrap();
             nd.set_attr_type("dtype", DataType::Int32).unwrap();
             nd.set_attr_shape("shape", &Shape(None)).unwrap();
@@ -2404,7 +2479,8 @@ mod tests {
                 nd.set_attr_shape(
                     "shape",
                     &Shape(Some(vec![Some(5), Some(5), Some(5), Some(5)])),
-                ).unwrap();
+                )
+                .unwrap();
                 nd.finish().unwrap()
             };
             let mut nd = g.new_operation("MaxPool", "MaxPool").unwrap();
@@ -2431,7 +2507,8 @@ mod tests {
         );
 
         let op = {
-            let mut nd = g.new_operation("ApproximateEqual", "ApproximateEqual")
+            let mut nd = g
+                .new_operation("ApproximateEqual", "ApproximateEqual")
                 .unwrap();
             nd.add_input(variable_op.clone());
             nd.add_input(variable_op.clone());
@@ -2458,7 +2535,8 @@ mod tests {
             Shape(Some(vec![Some(1)])),
         ];
         let op = {
-            let mut nd = g.new_operation("RandomShuffleQueue", "RandomShuffleQueue")
+            let mut nd = g
+                .new_operation("RandomShuffleQueue", "RandomShuffleQueue")
                 .unwrap();
             nd.set_attr_shape_list("shapes", shape_list).unwrap();
             nd.set_attr_type_list("component_types", &[DataType::Float, DataType::Int32])
@@ -2548,7 +2626,8 @@ mod tests {
         assert_eq!(opts.num_return_outputs(), 0);
         opts.add_return_output("a_times_b", 0).unwrap();
         assert_eq!(opts.num_return_outputs(), 1);
-        let result = g.import_graph_def_with_results(&graph_def(), &opts)
+        let result = g
+            .import_graph_def_with_results(&graph_def(), &opts)
             .unwrap();
         let ops = result.return_outputs();
         assert_eq!(ops.len(), 1);
@@ -2563,7 +2642,8 @@ mod tests {
         assert_eq!(opts.num_return_operations(), 0);
         opts.add_return_operation("a_times_b").unwrap();
         assert_eq!(opts.num_return_operations(), 1);
-        let result = g.import_graph_def_with_results(&graph_def(), &opts)
+        let result = g
+            .import_graph_def_with_results(&graph_def(), &opts)
             .unwrap();
         let ops = result.return_operations();
         assert_eq!(ops.len(), 1);
@@ -2624,7 +2704,8 @@ mod tests {
         let mut g = Graph::new();
         for i in 0..5 {
             assert_eq!(i, g.generate_operation_name("foo_{}").unwrap());
-            let mut nd = g.new_operation("Placeholder", &format!("foo_{}", i))
+            let mut nd = g
+                .new_operation("Placeholder", &format!("foo_{}", i))
                 .unwrap();
             nd.set_attr_type("dtype", DataType::Float).unwrap();
             nd.set_attr_shape("shape", &Shape(Some(vec![]))).unwrap();
@@ -2656,15 +2737,8 @@ mod tests {
             let x_times_y = multiply(&mut g, x.clone(), y.clone(), "x_times_y").unwrap();
             let x_plus_y = add(&mut g, x.clone(), y.clone(), "x_plus_y").unwrap();
             // y_outs and x_outs are intentionally different lengths, so we can test that the lengths line up properly.
-            let y_outs = vec![
-                x_squared.into(),
-                x_times_y.into(),
-                x_plus_y.into(),
-            ];
-            let x_outs = vec![
-                x.into(),
-                y.into(),
-            ];
+            let y_outs = vec![x_squared.into(), x_times_y.into(), x_plus_y.into()];
+            let x_outs = vec![x.into(), y.into()];
             let dy = g.add_gradients(*prefix, &y_outs, &x_outs, None).unwrap();
             assert_eq!(dy.len(), 2);
             for d in dy {
