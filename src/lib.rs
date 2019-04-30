@@ -167,6 +167,11 @@ use crate::buffer::Buffer;
 mod graph;
 pub use crate::graph::*;
 
+#[cfg(feature = "experimental_training")]
+mod scope;
+#[cfg(feature = "experimental_training")]
+pub use crate::scope::*;
+
 mod session;
 pub use crate::session::*;
 

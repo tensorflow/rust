@@ -25,6 +25,8 @@ random = "0.12.2"
 [features]
 tensorflow_gpu = ["tensorflow-sys/tensorflow_gpu"]
 tensorflow_unstable = []
+# Enables the new ops module which supports building graphs with less boilerplate.
+experimental_training = []
 # This is for testing purposes; users should not use this.
 examples_system_alloc = ["tensorflow-sys/examples_system_alloc"]
 
