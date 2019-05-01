@@ -2,10 +2,10 @@ extern crate random;
 extern crate tensorflow;
 
 use std::error::Error;
-use std::result::Result;
 use std::process::exit;
-use tensorflow::Code;
+use std::result::Result;
 use tensorflow::expr::{Compiler, Placeholder};
+use tensorflow::Code;
 use tensorflow::Graph;
 use tensorflow::Session;
 use tensorflow::SessionOptions;
@@ -13,8 +13,8 @@ use tensorflow::SessionRunArgs;
 use tensorflow::Status;
 use tensorflow::Tensor;
 
-#[cfg_attr(feature="examples_system_alloc", global_allocator)]
-#[cfg(feature="examples_system_alloc")]
+#[cfg_attr(feature = "examples_system_alloc", global_allocator)]
+#[cfg(feature = "examples_system_alloc")]
 static ALLOCATOR: std::alloc::System = std::alloc::System;
 
 fn main() {
@@ -45,11 +45,13 @@ impl Checker {
 
     fn check(&mut self, name: &str, expected: f32, actual: f32) {
         let success = (expected - actual).abs() < self.epsilon;
-        println!("Checking {}: expected {}, got {}. {}",
-                 name,
-                 expected,
-                 actual,
-                 if success { "Success!" } else { "FAIL" });
+        println!(
+            "Checking {}: expected {}, got {}. {}",
+            name,
+            expected,
+            actual,
+            if success { "Success!" } else { "FAIL" }
+        );
         self.success &= success;
     }
 
@@ -57,7 +59,10 @@ impl Checker {
         if self.success {
             Ok(())
         } else {
-            Err(Box::new(Status::new_set(Code::Internal, "At least one check failed")?))
+            Err(Box::new(Status::new_set(
+                Code::Internal,
+                "At least one check failed",
+            )?))
         }
     }
 }

@@ -2,19 +2,22 @@
 //!
 //! See the [tensorflow docs](https://www.tensorflow.org/api_guides/python/python_io#tfrecords-format-details) for details of this format.
 
+use self::byteorder::WriteBytesExt;
 use byteorder;
 use crc::crc32;
 use std::io;
 use std::io::Write;
-use self::byteorder::WriteBytesExt;
 
 /// A type for writing bytes in the TFRecords format.
 #[derive(Debug)]
 pub struct RecordWriter<W: Write> {
-    writer: W
+    writer: W,
 }
 
-impl<W> RecordWriter<W> where W: Write {
+impl<W> RecordWriter<W>
+where
+    W: Write,
+{
     /// Construct a new RecordWriter which writes to `writer`.
     pub fn new(writer: W) -> Self {
         RecordWriter { writer }
@@ -22,7 +25,7 @@ impl<W> RecordWriter<W> where W: Write {
 
     /// Write a complete TFRecord.
     pub fn write_record(&mut self, bytes: &[u8]) -> io::Result<()> {
-        /* A TFRecords file contains a sequence of strings 
+        /* A TFRecords file contains a sequence of strings
         with CRC32C (32-bit CRC using the Castagnoli polynomial) hashes. Each record has the format
 
         uint64 length
@@ -42,7 +45,7 @@ impl<W> RecordWriter<W> where W: Write {
 
         let masked_bytes_crc32c = Self::mask(crc32::checksum_castagnoli(&bytes));
         let mut bytes_crc32_bytes = [0u8; 4];
-        (& mut bytes_crc32_bytes[..]).write_u32::<byteorder::LittleEndian>(masked_bytes_crc32c)?;
+        (&mut bytes_crc32_bytes[..]).write_u32::<byteorder::LittleEndian>(masked_bytes_crc32c)?;
 
         self.writer.write(&len_bytes)?;
         self.writer.write(&len_crc32_bytes)?;
@@ -72,12 +75,14 @@ mod tests {
         {
             let f = ::std::fs::OpenOptions::new()
                 .write(true)
-                .create(true)   
+                .create(true)
                 .open(actual_filename)
                 .unwrap();
 
             let mut record_writer = RecordWriter::new(::std::io::BufWriter::new(f));
-            record_writer.write_record("The Quick Brown Fox".as_bytes()).unwrap();
+            record_writer
+                .write_record("The Quick Brown Fox".as_bytes())
+                .unwrap();
         }
 
         let mut af = File::open(actual_filename).unwrap();

@@ -1,8 +1,8 @@
 use libc::{c_int, int64_t, size_t};
 use std::ffi::{CStr, CString};
 use std::mem;
-use std::path::Path;
 use std::os::raw::c_void;
+use std::path::Path;
 use tensorflow_sys as ffi;
 
 macro_rules! nonnull(
@@ -21,8 +21,8 @@ macro_rules! ok(
     });
 );
 
-#[cfg_attr(feature="examples_system_alloc", global_allocator)]
-#[cfg(feature="examples_system_alloc")]
+#[cfg_attr(feature = "examples_system_alloc", global_allocator)]
+#[cfg(feature = "examples_system_alloc")]
 static ALLOCATOR: std::alloc::System = std::alloc::System;
 
 fn main() {
@@ -37,15 +37,12 @@ fn main() {
 
         let graph_def = read("examples/assets/multiplication.pb"); // c = a * b
         let opts = nonnull!(ffi::TF_NewImportGraphDefOptions());
-        let graph_def_buf = ffi::TF_Buffer{
+        let graph_def_buf = ffi::TF_Buffer {
             data: graph_def.as_ptr() as *const c_void,
             length: graph_def.len(),
             data_deallocator: None,
         };
-        ffi::TF_GraphImportGraphDef(graph,
-                                    &graph_def_buf,
-                                    opts,
-                                    status);
+        ffi::TF_GraphImportGraphDef(graph, &graph_def_buf, opts, status);
         ffi::TF_DeleteImportGraphDefOptions(opts);
         ok!(status);
 
@@ -56,16 +53,18 @@ fn main() {
         let name = CString::new("a").unwrap();
         let mut data = vec![1f32, 2.0, 3.0];
         let dims = vec![data.len() as int64_t];
-        let input_tensor1 = nonnull!(ffi::TF_NewTensor(ffi::TF_FLOAT,
-                                                dims.as_ptr(),
-                                                dims.len() as c_int,
-                                                data.as_mut_ptr() as *mut _,
-                                                data.len() as size_t * mem::size_of::<f32>(),
-                                                Some(noop),
-                                                null_mut()));
+        let input_tensor1 = nonnull!(ffi::TF_NewTensor(
+            ffi::TF_FLOAT,
+            dims.as_ptr(),
+            dims.len() as c_int,
+            data.as_mut_ptr() as *mut _,
+            data.len() as size_t * mem::size_of::<f32>(),
+            Some(noop),
+            null_mut()
+        ));
 
         let input_op = nonnull!(ffi::TF_GraphOperationByName(graph, name.as_ptr()));
-        inputs.push(ffi::TF_Output{
+        inputs.push(ffi::TF_Output {
             oper: input_op,
             index: 0,
         });
@@ -74,16 +73,18 @@ fn main() {
         let name = CString::new("b").unwrap();
         let mut data = vec![4f32, 5.0, 6.0];
         let dims = vec![data.len() as int64_t];
-        let input_tensor2 = nonnull!(ffi::TF_NewTensor(ffi::TF_FLOAT,
-                                                dims.as_ptr(),
-                                                dims.len() as c_int,
-                                                data.as_mut_ptr() as *mut _,
-                                                data.len() as size_t as size_t * mem::size_of::<f32>(),
-                                                Some(noop),
-                                                null_mut()));
+        let input_tensor2 = nonnull!(ffi::TF_NewTensor(
+            ffi::TF_FLOAT,
+            dims.as_ptr(),
+            dims.len() as c_int,
+            data.as_mut_ptr() as *mut _,
+            data.len() as size_t as size_t * mem::size_of::<f32>(),
+            Some(noop),
+            null_mut()
+        ));
 
         let input_op = nonnull!(ffi::TF_GraphOperationByName(graph, name.as_ptr()));
-        inputs.push(ffi::TF_Output{
+        inputs.push(ffi::TF_Output {
             oper: input_op,
             index: 0,
         });
@@ -95,7 +96,7 @@ fn main() {
         let name = CString::new("c").unwrap();
 
         let output_op = nonnull!(ffi::TF_GraphOperationByName(graph, name.as_ptr()));
-        outputs.push(ffi::TF_Output{
+        outputs.push(ffi::TF_Output {
             oper: output_op,
             index: 0,
         });
@@ -103,23 +104,28 @@ fn main() {
 
         let mut target_names = vec![];
 
-        ffi::TF_SessionRun(session,
-                    null(),
-                    inputs.as_mut_ptr(),
-                    input_tensors.as_ptr(),
-                    inputs.len() as c_int,
-                    outputs.as_mut_ptr(),
-                    output_tensors.as_mut_ptr(),
-                    outputs.len() as c_int,
-                    target_names.as_mut_ptr(),
-                    target_names.len() as c_int,
-                    null_mut(),
-                    status);
+        ffi::TF_SessionRun(
+            session,
+            null(),
+            inputs.as_mut_ptr(),
+            input_tensors.as_ptr(),
+            inputs.len() as c_int,
+            outputs.as_mut_ptr(),
+            output_tensors.as_mut_ptr(),
+            outputs.len() as c_int,
+            target_names.as_mut_ptr(),
+            target_names.len() as c_int,
+            null_mut(),
+            status,
+        );
         ok!(status);
 
         let output_tensor = nonnull!(output_tensors[0]);
         let data = nonnull!(ffi::TF_TensorData(output_tensor)) as *const f32;
-        let data = from_raw_parts(data, ffi::TF_TensorByteSize(output_tensor) / size_of::<f32>());
+        let data = from_raw_parts(
+            data,
+            ffi::TF_TensorByteSize(output_tensor) / size_of::<f32>(),
+        );
 
         assert_eq!(data, &[1.0 * 4.0, 2.0 * 5.0, 3.0 * 6.0]);
 
@@ -134,7 +140,12 @@ fn main() {
         ffi::TF_DeleteSessionOptions(options);
     }
 
-    unsafe extern "C" fn noop(_: *mut std::os::raw::c_void, _: size_t, _: *mut std::os::raw::c_void) {}
+    unsafe extern "C" fn noop(
+        _: *mut std::os::raw::c_void,
+        _: size_t,
+        _: *mut std::os::raw::c_void,
+    ) {
+    }
 }
 
 fn read<T: AsRef<Path>>(path: T) -> Vec<u8> {

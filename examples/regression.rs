@@ -3,9 +3,9 @@ use random::Source;
 use std::error::Error;
 use std::fs::File;
 use std::io::Read;
-use std::result::Result;
 use std::path::Path;
 use std::process::exit;
+use std::result::Result;
 use tensorflow::Code;
 use tensorflow::Graph;
 use tensorflow::ImportGraphDefOptions;
@@ -15,8 +15,8 @@ use tensorflow::SessionRunArgs;
 use tensorflow::Status;
 use tensorflow::Tensor;
 
-#[cfg_attr(feature="examples_system_alloc", global_allocator)]
-#[cfg(feature="examples_system_alloc")]
+#[cfg_attr(feature = "examples_system_alloc", global_allocator)]
+#[cfg(feature = "examples_system_alloc")]
 static ALLOCATOR: std::alloc::System = std::alloc::System;
 
 fn main() {
@@ -35,11 +35,17 @@ fn main() {
 fn run() -> Result<(), Box<dyn Error>> {
     let filename = "examples/regression/model.pb"; // y = w * x + b
     if !Path::new(filename).exists() {
-        return Err(Box::new(Status::new_set(Code::NotFound,
-                                            &format!("Run 'python regression.py' to generate \
-                                                      {} and try again.",
-                                                     filename))
-            .unwrap()));
+        return Err(Box::new(
+            Status::new_set(
+                Code::NotFound,
+                &format!(
+                    "Run 'python regression.py' to generate \
+                     {} and try again.",
+                    filename
+                ),
+            )
+            .unwrap(),
+        ));
     }
 
     // Generate some test data.
@@ -91,21 +97,25 @@ fn run() -> Result<(), Box<dyn Error>> {
     // Check our results.
     let w_hat: f32 = output_step.fetch(w_ix)?[0];
     let b_hat: f32 = output_step.fetch(b_ix)?[0];
-    println!("Checking w: expected {}, got {}. {}",
-             w,
-             w_hat,
-             if (w - w_hat).abs() < 1e-3 {
-                 "Success!"
-             } else {
-                 "FAIL"
-             });
-    println!("Checking b: expected {}, got {}. {}",
-             b,
-             b_hat,
-             if (b - b_hat).abs() < 1e-3 {
-                 "Success!"
-             } else {
-                 "FAIL"
-             });
+    println!(
+        "Checking w: expected {}, got {}. {}",
+        w,
+        w_hat,
+        if (w - w_hat).abs() < 1e-3 {
+            "Success!"
+        } else {
+            "FAIL"
+        }
+    );
+    println!(
+        "Checking b: expected {}, got {}. {}",
+        b,
+        b_hat,
+        if (b - b_hat).abs() < 1e-3 {
+            "Success!"
+        } else {
+            "FAIL"
+        }
+    );
     Ok(())
 }
