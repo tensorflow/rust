@@ -58,20 +58,18 @@ macro_rules! invalid_arg {
 ////////////////////////
 
 macro_rules! impl_new {
-  ($name: ident, $call:ident, $doc:expr) => {
-    impl $name {
-      #[doc = $doc]
-      pub fn new() -> Self {
-        unsafe {
-          let inner = tf::$call();
-          assert!(!inner.is_null());
-          $name {
-            inner: inner,
-          }
+    ($name: ident, $call:ident, $doc:expr) => {
+        impl $name {
+            #[doc = $doc]
+            pub fn new() -> Self {
+                unsafe {
+                    let inner = tf::$call();
+                    assert!(!inner.is_null());
+                    $name { inner: inner }
+                }
+            }
         }
-      }
-    }
-  }
+    };
 }
 
 ////////////////////////
