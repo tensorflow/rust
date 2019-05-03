@@ -1536,13 +1536,8 @@ mod tests {
             .into_iter()
             .map(|x| f16::from_f32(x))
             .collect();
-        let tensor = <Tensor<f16>>::new(&[2, 2]).with_values(&data);
-        assert!(tensor.is_ok());
-        let tensor = tensor.unwrap();
-        assert_eq!(tensor.len(), 4);
-        for i in 0..data.len() {
-            assert_eq!(tensor[i], data[i]);
-        }
+        let tensor = <Tensor<f16>>::new(&[2, 2]).with_values(&data).unwrap();
+        assert_eq!(&tensor[..], &data[..]);
     }
 
     #[test]
