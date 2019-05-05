@@ -1,5 +1,4 @@
 language: rust
-sudo: false
 dist: trusty # still in beta, but required for the prebuilt TF binaries
 
 cache:
