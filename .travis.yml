@@ -1,5 +1,4 @@
 language: rust
-sudo: false
 dist: trusty # still in beta, but required for the prebuilt TF binaries
 
 cache:
@@ -35,6 +34,9 @@ install:
   # Install dependencies only if we build tensorflow from source.
   - if [[ "$TF_RUST_BUILD_FROM_SRC" == "true" ]]; then source travis-ci/install.sh; fi
   - if [[ "$TF_RUST_BUILD_FROM_SRC" == "true" ]]; then pip install --user numpy; fi
+
+before_script:
+  - rustup component add rustfmt
 
 script:
   - ./test-all

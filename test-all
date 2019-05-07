@@ -37,6 +37,7 @@ if [[ "${version_tensorflow_sys_crate}" != "${version_tensorflow_sys_readme}" ]]
     exit 1
 fi
 
+cargo fmt --all -- --check
 cargo test -vv -j 2 --features tensorflow_unstable
 cargo run --example regression
 cargo run --features tensorflow_unstable --example expressions
