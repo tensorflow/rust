@@ -1367,6 +1367,11 @@ pub fn get_registered_kernels_for_op(name: &str) -> Result<Vec<u8>> {
 pub struct Shape(Option<Vec<Option<i64>>>);
 
 impl Shape {
+    /// Creates a new Shape.
+    pub fn new(s: Option<Vec<Option<i64>>>) -> Shape {
+        Shape(s)
+    }
+
     /// Returns the number of dimensions if known, or None if unknown.
     pub fn dims(&self) -> Option<usize> {
         match *self {
