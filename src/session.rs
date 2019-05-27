@@ -154,14 +154,30 @@ impl Session {
     pub fn run(&self, step: &mut SessionRunArgs<'_>) -> Result<()> {
         // In case we're running it a second time and not all outputs were taken out.
         step.drop_output_tensors();
+        // make sure run_metadata is either None or an empty TF_Buffer
+        step.maybe_reset_run_metadata();
 
         let mut status = Status::new();
         let maybe_tensors: Result<_> = step.input_tensors.iter().map(|t| t.inner()).collect();
         let input_tensors: Vec<_> = maybe_tensors?;
+        let run_options_ptr = match step.run_options.as_ref() {
+            Some(buf) => buf.inner(),
+            None => ptr::null(),
+        };
+
+        let mut run_metadata_buf = if step.request_metadata {
+            Some(unsafe { Buffer::new_unallocated() })
+        } else {
+            None
+        };
+        let run_metadata_ptr = match run_metadata_buf.as_mut() {
+            Some(meta) => meta.inner_mut(),
+            None => ptr::null_mut(),
+        };
         unsafe {
             tf::TF_SessionRun(
                 self.inner,
-                ptr::null(),
+                run_options_ptr,
                 step.input_ports.as_ptr(),
                 input_tensors.as_ptr() as *const *const tf::TF_Tensor,
                 input_tensors.len() as c_int,
@@ -170,10 +186,12 @@ impl Session {
                 step.output_tensors.len() as c_int,
                 step.target_operations.as_mut_ptr(),
                 step.target_operations.len() as c_int,
-                ptr::null_mut(),
+                run_metadata_ptr,
                 status.inner(),
             );
-        };
+            step.run_metadata = run_metadata_buf.map(Into::into);
+        }
+
         status.into_result()
     }
 
@@ -274,6 +292,10 @@ pub struct SessionRunArgs<'l> {
 
     target_operations: Vec<*const tf::TF_Operation>,
 
+    run_options: Option<Buffer<u8>>,
+    run_metadata: Option<Vec<u8>>,
+    request_metadata: bool,
+
     phantom: marker::PhantomData<&'l ()>,
 }
 
@@ -286,6 +308,10 @@ impl<'l> SessionRunArgs<'l> {
 
             output_ports: vec![],
             output_tensors: vec![],
+
+            run_options: None,
+            run_metadata: None,
+            request_metadata: false,
 
             target_operations: vec![],
 
@@ -411,6 +437,34 @@ impl<'l> SessionRunArgs<'l> {
         }
     }
 
+    /// Sets the `RunOptions`. `run_options` is a serialized [`RunOptions` proto](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/protobuf/config.proto).
+    pub fn set_run_options(&mut self, run_options: &[u8]) {
+        self.run_options = Some(Buffer::from(run_options))
+    }
+
+    /// Returns the serialized [`RunOptions` proto](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/protobuf/config.proto)
+    /// Returns none if `RunOption` are not set.
+    pub fn get_run_options(&self) -> Option<&[u8]> {
+        self.run_options.as_ref().map(std::convert::AsRef::as_ref)
+    }
+
+    /// Returns the serialized [`RunMetadata` proto](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/protobuf/config.proto)
+    /// Returns none if `self::set_request_metadata` is not set to true.
+    pub fn get_metadata(&mut self) -> Option<&[u8]> {
+        self.run_metadata.as_ref().map(std::convert::AsRef::as_ref)
+    }
+
+    /// Requests `run_metadata`. The serialized [`RunMetadata` proto](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/protobuf/config.proto)
+    /// can be retrieved via `self::get_metadata` after calling `Session::run`.
+    pub fn set_request_metadata(&mut self, request: bool) {
+        self.request_metadata = request;
+    }
+
+    /// Returns whether `RunMetadata` should be stored.
+    pub fn is_request_metadata(&self) -> bool {
+        self.request_metadata
+    }
+
     fn drop_output_tensors(&mut self) {
         for tensor in &mut self.output_tensors {
             // TODO: Is TF_DeleteTensor NULL safe?
@@ -421,6 +475,10 @@ impl<'l> SessionRunArgs<'l> {
             }
             *tensor = ptr::null_mut();
         }
+    }
+
+    fn maybe_reset_run_metadata(&mut self) {
+        self.run_metadata = None;
     }
 }
 
@@ -463,6 +521,7 @@ mod tests {
     use super::super::Shape;
     use super::super::Tensor;
     use super::*;
+    use std::fs;
 
     fn create_session() -> (Session, Operation, Operation) {
         let mut g = Graph::new();
@@ -515,6 +574,66 @@ mod tests {
         step.add_feed(&x_operation, 0, &x);
         let output_token = step.request_fetch(&y_operation, 0);
         session.run(&mut step).unwrap();
+        let output_tensor = step.fetch::<f32>(output_token).unwrap();
+        assert_eq!(output_tensor.len(), 2);
+        assert_eq!(output_tensor[0], 4.0);
+        assert_eq!(output_tensor[1], 6.0);
+    }
+
+    #[test]
+    fn test_run_metadata() {
+        let (session, x_operation, y_operation) = create_session();
+        let x = Tensor::<f32>::from(&[2.0, 3.0][..]);
+        let mut step = SessionRunArgs::new();
+        step.add_feed(&x_operation, 0, &x);
+        // hard coded RunOptions proto with full tracelevel
+        step.set_run_options(&[8u8, 3u8]);
+        step.set_request_metadata(true);
+        step.set_request_metadata(true);
+        let output_token = step.request_fetch(&y_operation, 0);
+        session.run(&mut step).unwrap();
+        step.get_metadata().unwrap();
+        let output_tensor = step.fetch::<f32>(output_token).unwrap();
+
+        assert_eq!(output_tensor.len(), 2);
+        assert_eq!(output_tensor[0], 4.0);
+        assert_eq!(output_tensor[1], 6.0);
+
+        // ensure multiple calls with the same SessionRunArgs work
+        session.run(&mut step).unwrap();
+        step.get_metadata().unwrap();
+        let output_tensor = step.fetch::<f32>(output_token).unwrap();
+        assert_eq!(output_tensor.len(), 2);
+        assert_eq!(output_tensor[0], 4.0);
+        assert_eq!(output_tensor[1], 6.0);
+    }
+
+    #[test]
+    fn test_run_options() {
+        let (session, x_operation, y_operation) = create_session();
+        let x = Tensor::<f32>::from(&[2.0, 3.0][..]);
+        let mut step = SessionRunArgs::new();
+        step.add_feed(&x_operation, 0, &x);
+        // hard coded RunOptions proto with full tracelevel
+        step.set_run_options(&[8u8, 3u8]);
+        let output_token = step.request_fetch(&y_operation, 0);
+        session.run(&mut step).unwrap();
+        let output_tensor = step.fetch::<f32>(output_token).unwrap();
+        assert_eq!(output_tensor.len(), 2);
+        assert_eq!(output_tensor[0], 4.0);
+        assert_eq!(output_tensor[1], 6.0);
+    }
+
+    #[test]
+    fn test_run_metadata_no_run_options() {
+        let (session, x_operation, y_operation) = create_session();
+        let x = Tensor::<f32>::from(&[2.0, 3.0][..]);
+        let mut step = SessionRunArgs::new();
+        step.add_feed(&x_operation, 0, &x);
+        step.set_request_metadata(true);
+        let output_token = step.request_fetch(&y_operation, 0);
+        session.run(&mut step).unwrap();
+        step.get_metadata().unwrap();
         let output_tensor = step.fetch::<f32>(output_token).unwrap();
         assert_eq!(output_tensor.len(), 2);
         assert_eq!(output_tensor[0], 4.0);
