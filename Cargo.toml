@@ -48,3 +48,7 @@ name = "regression_savedmodel"
 
 [[example]]
 name = "regression_checkpoint"
+
+[[example]]
+name = "xor"
+required-features = ["experimental_training"]

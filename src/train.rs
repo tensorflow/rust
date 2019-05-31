@@ -131,8 +131,10 @@ pub struct GradientDescentOptimizer {
 
 impl GradientDescentOptimizer {
     /// Creates a new optimizer with the given learning rate.
-    pub fn new(learning_rate: Output) -> Self {
-        Self { learning_rate }
+    pub fn new<T: Into<Output>>(learning_rate: T) -> Self {
+        Self {
+            learning_rate: learning_rate.into(),
+        }
     }
 }
 
@@ -216,15 +218,9 @@ fn create_zeros_slot(
     dtype: Option<DataType>,
 ) -> Result<Variable> {
     let dtype = dtype.unwrap_or_else(|| primary.dtype);
-    // TODO: use standard op
-    let zeros = {
-        let name = scope.get_unique_name_for_op("ZerosLike");
-        let mut graph = scope.graph_mut();
-        let mut nd = graph.new_operation("ZerosLike", &name)?;
-        nd.add_input(primary.output.clone());
-        nd.add_control_input(&primary.initializer);
-        nd.finish()?
-    };
+    let zeros = ops::ZerosLike::new()
+        .add_control_input(primary.initializer.clone())
+        .build(primary.output.clone(), scope)?;
     Variable::builder()
         .initial_value(zeros)
         .shape(primary.shape.clone())
@@ -276,9 +272,13 @@ impl Optimizer for AdadeltaOptimizer {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::ops;
+    use crate::Scope;
     use crate::Session;
     use crate::SessionOptions;
     use crate::SessionRunArgs;
+    use crate::Shape;
+    use crate::Tensor;
 
     #[test]
     fn simple_gradient_descent() {
@@ -402,5 +402,106 @@ mod tests {
             "x_output[0] = {}",
             x_output[0]
         );
+    }
+
+    #[test]
+    fn xor_nn() {
+        let mut scope = Scope::new_root_scope();
+        let scope = &mut scope;
+        let hidden_size: u64 = 4;
+        let input = ops::Placeholder::new()
+            .data_type(DataType::Float)
+            .shape(Shape::from(&[1u64, 2][..]))
+            .build(&mut scope.with_op_name("input"))
+            .unwrap();
+        let label = ops::Placeholder::new()
+            .data_type(DataType::Float)
+            .shape(Shape::from(&[1u64][..]))
+            .build(&mut scope.with_op_name("label"))
+            .unwrap();
+        let w_shape = ops::constant(&[2, hidden_size as i64][..], scope).unwrap();
+        let w_init = ops::random_normal(w_shape, scope).unwrap();
+        let w = Variable::builder()
+            .initial_value(w_init)
+            .data_type(DataType::Float)
+            .shape(Shape::from(&[2, hidden_size][..]))
+            .build(&mut scope.with_op_name("w"))
+            .unwrap();
+        let b = Variable::builder()
+            .const_initial_value(Tensor::<f32>::new(&[hidden_size]))
+            .build(&mut scope.with_op_name("b"))
+            .unwrap();
+        let layer1a = ops::MatMul::new()
+            .build(input.clone(), w.output.clone(), scope)
+            .unwrap();
+        let layer1b = ops::Add::new()
+            .build(layer1a, b.output.clone(), scope)
+            .unwrap();
+        let layer1 = ops::Tanh::new().build(layer1b, scope).unwrap();
+        let w2_shape = ops::constant(&[hidden_size as i64, 1][..], scope).unwrap();
+        let w2_init = ops::random_normal(w2_shape, scope).unwrap();
+        let w2 = Variable::builder()
+            .initial_value(w2_init)
+            .data_type(DataType::Float)
+            .shape(Shape::from(&[hidden_size, 1][..]))
+            .build(&mut scope.with_op_name("w2"))
+            .unwrap();
+        let b2 = Variable::builder()
+            .const_initial_value(Tensor::<f32>::new(&[1]))
+            .build(&mut scope.with_op_name("b2"))
+            .unwrap();
+        let layer2a = ops::mat_mul(layer1, w2.output.clone(), scope).unwrap();
+        let layer2b = ops::add(layer2a, b2.output.clone(), scope).unwrap();
+        let layer2 = layer2b;
+        let error = ops::subtract(layer2.clone(), label.clone(), scope).unwrap();
+        let error_squared = ops::multiply(error.clone(), error, scope).unwrap();
+        let sgd = GradientDescentOptimizer {
+            learning_rate: Output {
+                operation: ops::constant(0.1f32, scope).unwrap(),
+                index: 0,
+            },
+        };
+        let variables = vec![w.clone(), b.clone(), w2.clone(), b2.clone()];
+        let (minimizer_vars, minimize) = sgd
+            .minimize(
+                scope,
+                error_squared.clone().into(),
+                MinimizeOptions::default().with_variables(&variables),
+            )
+            .unwrap();
+        let options = SessionOptions::new();
+        let g = scope.graph_mut();
+        let session = Session::new(&options, &g).unwrap();
+
+        let mut run_args = SessionRunArgs::new();
+        for var in &variables {
+            run_args.add_target(&var.initializer);
+        }
+        for var in &minimizer_vars {
+            run_args.add_target(&var.initializer);
+        }
+        session.run(&mut run_args).unwrap();
+
+        let mut input_tensor = Tensor::<f32>::new(&[1, 2]);
+        let mut label_tensor = Tensor::<f32>::new(&[1]);
+        let mut train = |i| {
+            input_tensor[0] = (i & 1) as f32;
+            input_tensor[1] = ((i >> 1) & 1) as f32;
+            label_tensor[0] = ((i & 1) ^ ((i >> 1) & 1)) as f32;
+            let mut run_args = SessionRunArgs::new();
+            run_args.add_target(&minimize);
+            let error_squared_fetch = run_args.request_fetch(&error_squared, 0);
+            run_args.add_feed(&input, 0, &input_tensor);
+            run_args.add_feed(&label, 0, &label_tensor);
+            session.run(&mut run_args).unwrap();
+            run_args.fetch::<f32>(error_squared_fetch).unwrap()[0]
+        };
+        for i in 0..1000 {
+            train(i);
+        }
+        for i in 0..4 {
+            let error = train(i);
+            assert!(error < 0.01, "error = {}", error);
+        }
     }
 }
