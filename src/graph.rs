@@ -1117,7 +1117,7 @@ impl Operation {
                     index: index as c_int,
                 },
                 vec.as_mut_ptr(),
-                vec.len() as c_int,
+                num_consumers as c_int,
             );
             vec.set_len(len as usize);
             vec.into_iter()
@@ -2820,5 +2820,26 @@ mod tests {
             let x_outs = vec![x.into()];
             assert!(g.add_gradients(*prefix, &y_outs, &x_outs, None).is_err());
         }
+    }
+
+    #[test]
+    fn output_consumers() {
+        let mut graph = Graph::new();
+        let x_op = {
+            let mut nd = graph.new_operation("Placeholder", "x").unwrap();
+            nd.set_attr_type("dtype", DataType::String).unwrap();
+            nd.set_attr_shape("shape", &Shape(Some(vec![]))).unwrap();
+            nd.finish().unwrap()
+        };
+        let y_op = {
+            let mut nd = graph.new_operation("EncodeBase64", "y").unwrap();
+            nd.add_input(x_op.clone());
+            nd.finish().unwrap()
+        };
+        assert_eq!(x_op.num_outputs(), 1);
+        let consumers = x_op.output_consumers(0);
+        assert_eq!(consumers.len(), 1);
+        assert_eq!(consumers[0].0.name().unwrap(), "y");
+        assert_eq!(consumers[0].1, 0);
     }
 }
