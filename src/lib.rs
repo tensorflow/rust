@@ -179,6 +179,9 @@ pub mod expr;
 
 pub mod io;
 
+#[cfg(feature = "experimental_training")]
+pub mod ops;
+
 ////////////////////////
 
 c_enum!("Error values that can be returned.", TF_Code, Code {
@@ -370,6 +373,12 @@ c_enum!("Type of a single tensor element.", TF_DataType, DataType {
   /// 64-bit unsigned integer.
   value UInt64 = 23,
 });
+
+impl Default for DataType {
+    fn default() -> DataType {
+        DataType::Float
+    }
+}
 
 ////////////////////////
 
@@ -1368,7 +1377,7 @@ pub fn get_registered_kernels_for_op(name: &str) -> Result<Vec<u8>> {
 
 /// A Shape is the shape of a tensor.  A Shape may be an unknown rank, or it may
 /// have a known rank with each dimension being known or unknown.
-#[derive(Debug, Eq, Ord, PartialEq, PartialOrd, Hash, Clone)]
+#[derive(Debug, Eq, Ord, PartialEq, PartialOrd, Hash, Clone, Default)]
 pub struct Shape(Option<Vec<Option<i64>>>);
 
 impl Shape {
@@ -1589,7 +1598,7 @@ mod tests {
     #[test]
     fn tensor_eq() {
         let a = Tensor::<i32>::new(&[3]).with_values(&[1, 2, 3]).unwrap();
-        let b = Tensor::<i32>::new(&[3]).with_values(&[1, 2, 3]).unwrap();
+        let b = Tensor::<i32>::from(&[1, 2, 3][..]);
         let c = Tensor::<i32>::new(&[3]).with_values(&[1, 2, 4]).unwrap();
         let d = Tensor::<i32>::new(&[3, 1]).with_values(&[1, 2, 3]).unwrap();
         assert_eq!(a, b);
