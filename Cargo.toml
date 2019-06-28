@@ -14,6 +14,7 @@ edition = "2018"
 libc = "0.2.43"
 aligned_alloc = "0.1.3"
 num-complex = { version = "0.2.1", default-features = false }
+tensorflow-macros = { version = "0.0.1", path = "tensorflow-macros" }
 tensorflow-sys = { version = "0.16.0", path = "tensorflow-sys" }
 byteorder = "1.2.7"
 crc = "1.8.1"
@@ -25,6 +26,8 @@ random = "0.12.2"
 [features]
 tensorflow_gpu = ["tensorflow-sys/tensorflow_gpu"]
 tensorflow_unstable = []
+# Enables the new ops module which supports building graphs with less boilerplate.
+experimental_training = []
 # This is for testing purposes; users should not use this.
 examples_system_alloc = ["tensorflow-sys/examples_system_alloc"]
 

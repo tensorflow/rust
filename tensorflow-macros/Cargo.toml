@@ -1,0 +1,20 @@
+[package]
+name = "tensorflow-macros"
+version = "0.0.1"
+license = "Apache-2.0"
+authors = [
+  "Adam Crume <acrume@google.com>",
+]
+description = "The package provides macros for internal usage in TensorFlow."
+documentation = "https://tensorflow.github.io/rust"
+homepage = "https://github.com/tensorflow/rust"
+repository = "https://github.com/tensorflow/rust"
+edition = "2018"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+quote = "0.6"
+syn = { version = "0.15.36", features = ["extra-traits"] }
+proc-macro2 = "0.4"
