@@ -1,3 +1,4 @@
+use crate::AnyTensor;
 use crate::Operation;
 use crate::Result;
 use crate::Scope;
@@ -37,6 +38,15 @@ pub fn constant<T: TensorType, TT: Into<Tensor<T>>>(
     let mut c = graph.new_operation("Const", &name)?;
     c.set_attr_tensor("value", value.into())?;
     c.set_attr_type("dtype", T::data_type())?;
+    c.finish()
+}
+
+pub(crate) fn any_constant(scope: &mut Scope, value: &AnyTensor) -> Result<Operation> {
+    let name = scope.get_unique_name_for_op("Const");
+    let mut graph = scope.graph_mut();
+    let mut c = graph.new_operation("Const", &name)?;
+    c.set_attr_any_tensor("value", value)?;
+    c.set_attr_type("dtype", value.data_type())?;
     c.finish()
 }
 

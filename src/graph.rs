@@ -2130,6 +2130,11 @@ impl<'a> OperationDescription<'a> {
         attr_name: &str,
         value: Tensor<T>,
     ) -> Result<()> {
+        self.set_attr_any_tensor(attr_name, &value)
+    }
+
+    /// Sets a tensor-valued attribute.
+    pub(crate) fn set_attr_any_tensor(&mut self, attr_name: &str, value: &AnyTensor) -> Result<()> {
         let c_attr_name = CString::new(attr_name)?;
         let mut status = Status::new();
         unsafe {

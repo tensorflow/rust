@@ -26,4 +26,7 @@ pub use math_ops::*;
 mod random_ops;
 pub use random_ops::*;
 
+mod state_ops;
+pub use state_ops::*;
+
 define_op!(no_op, NoOp, "NoOp");

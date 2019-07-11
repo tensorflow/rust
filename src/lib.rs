@@ -182,6 +182,11 @@ pub mod io;
 #[cfg(feature = "experimental_training")]
 pub mod ops;
 
+#[cfg(feature = "experimental_training")]
+mod variable;
+#[cfg(feature = "experimental_training")]
+pub use crate::variable::*;
+
 ////////////////////////
 
 c_enum!("Error values that can be returned.", TF_Code, Code {
@@ -848,8 +853,10 @@ impl TensorType for String {
 
 ////////////////////////
 
-trait AnyTensor: Debug {
+pub(crate) trait AnyTensor: Debug {
     fn inner(&self) -> Result<*mut tf::TF_Tensor>;
+
+    fn data_type(&self) -> DataType;
 }
 
 ////////////////////////
@@ -1206,6 +1213,11 @@ impl<T: TensorType> Tensor<T> {
         &self.dims
     }
 
+    /// Returns the tensor's dimensions as a Shape.
+    pub fn shape(&self) -> Shape {
+        Shape(Some(self.dims.iter().map(|d| Some(*d as i64)).collect()))
+    }
+
     // Wraps a TF_Tensor. Returns None if types don't match.
     unsafe fn from_tf_tensor(tensor: *mut tf::TF_Tensor) -> Option<Self> {
         let mut dims = Vec::with_capacity(tf::TF_NumDims(tensor) as usize);
@@ -1223,6 +1235,10 @@ impl<T: TensorType> Tensor<T> {
 impl<T: TensorType> AnyTensor for Tensor<T> {
     fn inner(&self) -> Result<*mut tf::TF_Tensor> {
         self.inner.as_mut_ptr(&self.dims)
+    }
+
+    fn data_type(&self) -> DataType {
+        T::data_type()
     }
 }
 
