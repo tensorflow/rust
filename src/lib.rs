@@ -187,6 +187,9 @@ mod variable;
 #[cfg(feature = "experimental_training")]
 pub use crate::variable::*;
 
+#[cfg(feature = "experimental_training")]
+pub mod train;
+
 ////////////////////////
 
 c_enum!("Error values that can be returned.", TF_Code, Code {

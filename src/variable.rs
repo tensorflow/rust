@@ -93,7 +93,6 @@ impl<'a> VariableBuilder<'a> {
         let shape = value.shape();
         Self {
             initial_value: VariableInitialValue::TensorRef(value),
-
             dtype: Some(T::data_type()),
             shape,
             ..self
