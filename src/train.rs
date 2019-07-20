@@ -206,7 +206,7 @@ fn or_constant<T: TensorType, TT: Into<Tensor<T>>>(
 ) -> Result<Output> {
     match value {
         Some(x) => Ok(x.clone()),
-        None => Ok(ops::constant(scope, default)?.into()),
+        None => Ok(ops::constant(default, scope)?.into()),
     }
 }
 
@@ -288,10 +288,10 @@ mod tests {
             .build(&mut scope.with_op_name("x"))
             .unwrap();
         let x_squared =
-            ops::multiply(&mut scope, x_var.output.clone(), x_var.output.clone()).unwrap();
+            ops::multiply(x_var.output.clone(), x_var.output.clone(), &mut scope).unwrap();
         let sgd = GradientDescentOptimizer {
             learning_rate: Output {
-                operation: ops::constant(&mut scope, 0.1f32).unwrap(),
+                operation: ops::constant(0.1f32, &mut scope).unwrap(),
                 index: 0,
             },
         };
@@ -352,9 +352,9 @@ mod tests {
             .build(&mut scope.with_op_name("x"))
             .unwrap();
         let x_squared =
-            ops::multiply(&mut scope, x_var.output.clone(), x_var.output.clone()).unwrap();
+            ops::multiply(x_var.output.clone(), x_var.output.clone(), &mut scope).unwrap();
         let mut optimizer = AdadeltaOptimizer::new();
-        optimizer.set_learning_rate(ops::constant(&mut scope, 0.1f32).unwrap());
+        optimizer.set_learning_rate(ops::constant(0.1f32, &mut scope).unwrap());
         let (minimizer_vars, minimize) = optimizer
             .minimize(
                 &mut scope,

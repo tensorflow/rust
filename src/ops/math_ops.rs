@@ -18,9 +18,9 @@ define_op!(add, Add, "Add", args { a, b });
 /// # use tensorflow::Tensor;
 /// # use tensorflow::ops::constant;
 /// # let mut scope = Scope::new_root_scope();
-/// let a = constant(&mut scope, 1.0f32)?;
-/// let b = constant(&mut scope, &[1.0f32, 2.0][..])?;
-/// let c = constant(&mut scope, Tensor::new(&[2, 2]).with_values(&[0f32, 1.0, 2.0, 3.0])?)?;
+/// let a = constant(1.0f32, &mut scope)?;
+/// let b = constant(&[1.0f32, 2.0][..], &mut scope)?;
+/// let c = constant(Tensor::new(&[2, 2]).with_values(&[0f32, 1.0, 2.0, 3.0])?, &mut scope)?;
 /// # Ok::<(), Box<Error>>(())
 /// ```
 ///
@@ -30,8 +30,8 @@ define_op!(add, Add, "Add", args { a, b });
 /// for slices but not arrays, and the compiler doesn't automatically fall back
 /// to treating the array reference as a slice.
 pub fn constant<T: TensorType, TT: Into<Tensor<T>>>(
-    scope: &mut Scope,
     value: TT,
+    scope: &mut Scope,
 ) -> Result<Operation> {
     let name = scope.get_unique_name_for_op("Const");
     let mut graph = scope.graph_mut();
@@ -41,7 +41,7 @@ pub fn constant<T: TensorType, TT: Into<Tensor<T>>>(
     c.finish()
 }
 
-pub(crate) fn any_constant(scope: &mut Scope, value: &AnyTensor) -> Result<Operation> {
+pub(crate) fn any_constant(value: &AnyTensor, scope: &mut Scope) -> Result<Operation> {
     let name = scope.get_unique_name_for_op("Const");
     let mut graph = scope.graph_mut();
     let mut c = graph.new_operation("Const", &name)?;
