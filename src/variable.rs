@@ -139,11 +139,11 @@ impl<'a> VariableBuilder<'a> {
             VariableInitialValue::Unspecified => {
                 return Err(invalid_arg!("an initial value is required"))
             }
-            VariableInitialValue::TensorBox(t) => ops::any_constant(scope, t.borrow())?.into(),
-            VariableInitialValue::TensorRef(t) => ops::any_constant(scope, t)?.into(),
+            VariableInitialValue::TensorBox(t) => ops::any_constant(t.borrow(), scope)?.into(),
+            VariableInitialValue::TensorRef(t) => ops::any_constant(t, scope)?.into(),
             VariableInitialValue::Output(o) => o,
         };
-        let initializer = ops::assign(scope, variable_op.clone(), initial_value)?;
+        let initializer = ops::assign(variable_op.clone(), initial_value, scope)?;
         Ok(Variable {
             name,
             output: variable_op.into(),
@@ -237,7 +237,7 @@ mod tests {
     fn custom_initializer_missing_dtype() {
         let mut scope = Scope::new_root_scope();
         let value = Tensor::new(&[]).with_values(&[3.0f32]).unwrap();
-        let const_op = ops::constant(&mut scope, value).unwrap();
+        let const_op = ops::constant(value, &mut scope).unwrap();
 
         assert_eq!(
             Variable::builder()
@@ -253,7 +253,7 @@ mod tests {
     fn custom_initializer() {
         let mut scope = Scope::new_root_scope();
         let value = Tensor::new(&[]).with_values(&[3.0f32]).unwrap();
-        let const_op = ops::constant(&mut scope, value).unwrap();
+        let const_op = ops::constant(value, &mut scope).unwrap();
 
         let variable = Variable::builder()
             .initial_value(const_op)

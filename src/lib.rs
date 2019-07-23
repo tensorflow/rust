@@ -1420,6 +1420,18 @@ impl From<Option<Vec<Option<i64>>>> for Shape {
     }
 }
 
+impl From<&[i64]> for Shape {
+    fn from(data: &[i64]) -> Shape {
+        Shape(Some(data.iter().map(|i| Some(*i)).collect()))
+    }
+}
+
+impl From<&[u64]> for Shape {
+    fn from(data: &[u64]) -> Shape {
+        Shape(Some(data.iter().map(|i| Some(*i as i64)).collect()))
+    }
+}
+
 impl Into<Option<Vec<Option<i64>>>> for Shape {
     fn into(self) -> Option<Vec<Option<i64>>> {
         self.0

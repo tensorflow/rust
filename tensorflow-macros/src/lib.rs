@@ -213,7 +213,7 @@ impl<'a> ToTokens for BuildFnArgs<'a> {
         for (i, arg) in self.args.iter().enumerate() {
             let arg_name = &arg.name;
             let arg_type = Ident::new(&format!("O{}", i + 1), Span::call_site());
-            tokens.extend(quote! {, #arg_name: #arg_type});
+            tokens.extend(quote! {#arg_name: #arg_type, });
         }
     }
 }
@@ -276,7 +276,7 @@ impl<'a> ToTokens for BuildFn<'a> {
             #[doc = "Builds the `"]
             #[doc = #op_name]
             #[doc = "` operation."]
-            pub fn build#build_fn_generics(&self, scope: &mut crate::Scope #build_fn_args) -> crate::Result<crate::Operation> {
+            pub fn build#build_fn_generics(&self, #build_fn_args scope: &mut crate::Scope) -> crate::Result<crate::Operation> {
                 let name = scope.get_unique_name_for_op(#op_name);
                 let mut graph = scope.graph_mut();
                 let mut nd = graph.new_operation(#op_name, &name)?;
@@ -308,7 +308,7 @@ impl<'a> ToTokens for ShortFn<'a> {
         };
         let build_fn_args = BuildFnArgs { args: &self.args };
         let arg_names = self.args.iter().map(|arg| &arg.name);
-        let mut docs = format!("Shorthand for `{}::new().build(scope", name);
+        let mut docs = format!("Shorthand for `{}::new().build(scope)", name);
         for arg in self.args {
             docs.push_str(", ");
             docs.push_str(&arg.name.to_string());
@@ -316,8 +316,8 @@ impl<'a> ToTokens for ShortFn<'a> {
         docs.push_str(")`.");
         tokens.extend(quote! {
             #[doc = #docs]
-            pub fn #fn_name#build_fn_generics(scope: &mut crate::Scope #build_fn_args) -> crate::Result<crate::Operation> {
-                #name::new().build(scope #(, #arg_names)*)
+            pub fn #fn_name#build_fn_generics(#build_fn_args scope: &mut crate::Scope) -> crate::Result<crate::Operation> {
+                #name::new().build(#(#arg_names, )* scope)
             }
         });
     }

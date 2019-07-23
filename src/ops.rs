@@ -6,13 +6,13 @@
 //! setting optional attributes:
 //!
 //! ```ignore
-//! MatMul::new().transpose_a(true).build(&mut scope, a, b)?;
+//! MatMul::new().transpose_a(true).build(a, b, &mut scope)?;
 //! ```
 //!
 //! and a function which is shorter when no attributes need to be set:
 //!
 //! ```ignore
-//! mat_mul(&mut scope, a, b)
+//! mat_mul(a, b, &mut scope)
 //! ```
 
 use tensorflow_macros::define_op;

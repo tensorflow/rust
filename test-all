@@ -43,6 +43,7 @@ cargo test -vv -j 2 --features tensorflow_unstable
 cargo test -vv -j 2 --features experimental_training
 cargo test -vv -j 2 --features tensorflow_unstable,experimental_training
 cargo run --example regression
+cargo run --features=experimental_training --example xor
 cargo run --features tensorflow_unstable --example expressions
 cargo doc -vv --features tensorflow_unstable,experimental_training
 # TODO(#66): Re-enable: (cd tensorflow-sys && cargo test -vv -j 1)
