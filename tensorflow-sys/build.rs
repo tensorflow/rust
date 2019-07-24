@@ -43,7 +43,13 @@ fn main() {
         return;
     }
 
-    if pkg_config::find_library(LIBRARY).is_ok() {
+    if let Ok(library) = pkg_config::find_library(LIBRARY) {
+        for lib in &library.libs {
+            println!("cargo:rustc-link-lib=dylib={}", lib);
+        }
+        for path in &library.link_paths {
+            println!("cargo:rustc-link-search=native={}", path.display());
+        }
         log!("Returning early because {} was already found", LIBRARY);
         return;
     }
