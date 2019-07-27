@@ -1,0 +1,74 @@
+extern crate protoc_rust;
+
+use std::env;
+use std::error::Error;
+use std::result::Result;
+
+fn main() -> Result<(), Box<Error>> {
+    let args: Vec<String> = env::args().collect();
+    let tensorflow_folder = &args[1];
+    let output_folder = &args[2];
+    protoc_rust::run(protoc_rust::Args {
+        out_dir: output_folder,
+        input: &[
+            &format!(
+                "{}/tensorflow/core/framework/attr_value.proto",
+                tensorflow_folder
+            ),
+            &format!(
+                "{}/tensorflow/core/framework/function.proto",
+                tensorflow_folder
+            ),
+            &format!(
+                "{}/tensorflow/core/framework/graph.proto",
+                tensorflow_folder
+            ),
+            &format!(
+                "{}/tensorflow/core/framework/node_def.proto",
+                tensorflow_folder
+            ),
+            &format!(
+                "{}/tensorflow/core/framework/op_def.proto",
+                tensorflow_folder
+            ),
+            &format!(
+                "{}/tensorflow/core/framework/resource_handle.proto",
+                tensorflow_folder
+            ),
+            &format!(
+                "{}/tensorflow/core/protobuf/saved_model.proto",
+                tensorflow_folder
+            ),
+            &format!(
+                "{}/tensorflow/core/framework/tensor.proto",
+                tensorflow_folder
+            ),
+            &format!(
+                "{}/tensorflow/core/framework/tensor_shape.proto",
+                tensorflow_folder
+            ),
+            &format!(
+                "{}/tensorflow/core/framework/types.proto",
+                tensorflow_folder
+            ),
+            &format!(
+                "{}/tensorflow/core/framework/variable.proto",
+                tensorflow_folder
+            ),
+            &format!(
+                "{}/tensorflow/core/framework/versions.proto",
+                tensorflow_folder
+            ),
+            &format!(
+                "{}/tensorflow/core/protobuf/meta_graph.proto",
+                tensorflow_folder
+            ),
+            &format!("{}/tensorflow/core/protobuf/saver.proto", tensorflow_folder),
+        ],
+        includes: &[tensorflow_folder],
+        customize: protoc_rust::Customize {
+            ..Default::default()
+        },
+    })?;
+    Ok(())
+}

@@ -161,6 +161,8 @@ macro_rules! c_enum {
 
 ////////////////////////
 
+mod protos;
+
 mod buffer;
 use crate::buffer::Buffer;
 
