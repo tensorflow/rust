@@ -43,7 +43,9 @@ fn main() {
         return;
     }
 
-    if pkg_config::find_library(LIBRARY).is_ok() {
+    // Note that pkg_config will print cargo:rustc-link-lib and cargo:rustc-link-search as
+    // appropriate if the library is found.
+    if pkg_config::probe_library(LIBRARY).is_ok() {
         log!("Returning early because {} was already found", LIBRARY);
         return;
     }
