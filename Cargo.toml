@@ -14,7 +14,7 @@ edition = "2018"
 libc = "0.2.43"
 aligned_alloc = "0.1.3"
 num-complex = { version = "0.2.1", default-features = false }
-tensorflow-macros = { version = "0.0.1", path = "tensorflow-macros" }
+tensorflow-internal-macros = { version = "=0.0.1", path = "tensorflow-internal-macros" }
 tensorflow-sys = { version = "0.17.0", path = "tensorflow-sys" }
 byteorder = "1.2.7"
 crc = "1.8.1"

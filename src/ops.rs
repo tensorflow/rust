@@ -15,7 +15,7 @@
 //! mat_mul(a, b, &mut scope)
 //! ```
 
-use tensorflow_macros::define_op;
+use tensorflow_internal_macros::define_op;
 
 mod array_ops;
 pub use array_ops::*;

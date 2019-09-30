@@ -6,7 +6,7 @@ use crate::Scope;
 use crate::Shape;
 use crate::Tensor;
 use crate::TensorType;
-use tensorflow_macros::define_op;
+use tensorflow_internal_macros::define_op;
 
 define_op!(assign, Assign, "Assign", args { a, b });
 
