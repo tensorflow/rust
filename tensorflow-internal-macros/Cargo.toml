@@ -1,11 +1,11 @@
 [package]
-name = "tensorflow-macros"
+name = "tensorflow-internal-macros"
 version = "0.0.1"
 license = "Apache-2.0"
 authors = [
   "Adam Crume <acrume@google.com>",
 ]
-description = "The package provides macros for internal usage in TensorFlow."
+description = "The package provides macros for internal usage in TensorFlow. No backwards compatibility guarantees are made."
 documentation = "https://tensorflow.github.io/rust"
 homepage = "https://github.com/tensorflow/rust"
 repository = "https://github.com/tensorflow/rust"

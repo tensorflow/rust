@@ -1,4 +1,6 @@
 #![recursion_limit = "128"]
+//! The package provides macros for internal usage in TensorFlow. No backwards
+//! compatibility guarantees are made.
 
 extern crate proc_macro;
 

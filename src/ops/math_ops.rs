@@ -4,7 +4,7 @@ use crate::Result;
 use crate::Scope;
 use crate::Tensor;
 use crate::TensorType;
-use tensorflow_macros::define_op;
+use tensorflow_internal_macros::define_op;
 
 define_op!(add, Add, "Add", args { a, b });
 

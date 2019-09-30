@@ -1,5 +1,5 @@
 use crate::DataType;
-use tensorflow_macros::define_op;
+use tensorflow_internal_macros::define_op;
 
 define_op!(random_normal, RandomNormal, "RandomStandardNormal", args{x}, attrs {
     dtype: DataType => "dtype",
