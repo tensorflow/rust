@@ -1,4 +1,4 @@
-use libc::{c_int, int64_t, size_t};
+use libc::{c_int, size_t};
 use std::ffi::{CStr, CString};
 use std::mem;
 use std::os::raw::c_void;
@@ -52,7 +52,7 @@ fn main() {
 
         let name = CString::new("a").unwrap();
         let mut data = vec![1f32, 2.0, 3.0];
-        let dims = vec![data.len() as int64_t];
+        let dims = vec![data.len() as i64];
         let input_tensor1 = nonnull!(ffi::TF_NewTensor(
             ffi::TF_FLOAT,
             dims.as_ptr(),
@@ -72,7 +72,7 @@ fn main() {
 
         let name = CString::new("b").unwrap();
         let mut data = vec![4f32, 5.0, 6.0];
-        let dims = vec![data.len() as int64_t];
+        let dims = vec![data.len() as i64];
         let input_tensor2 = nonnull!(ffi::TF_NewTensor(
             ffi::TF_FLOAT,
             dims.as_ptr(),
