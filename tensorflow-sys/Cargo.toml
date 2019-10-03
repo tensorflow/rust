@@ -18,11 +18,11 @@ edition = "2018"
 libc = "0.2.43"
 
 [build-dependencies]
-curl = "0.4.19"
-flate2 = "1.0.4"
-pkg-config = "0.3.14"
+curl = "0.4.24"
+flate2 = "1.0.12"
+pkg-config = "0.3.16"
 semver = "0.9.0"
-tar = "0.4.19"
+tar = "0.4.26"
 
 [features]
 tensorflow_gpu = []
