@@ -404,6 +404,9 @@ impl_new!(
 );
 impl_drop!(Status, TF_DeleteStatus);
 
+unsafe impl Send for Status {}
+unsafe impl Sync for Status {}
+
 impl Status {
     /// Creates a status and sets its code and message.
     pub fn new_set(code: Code, msg: &str) -> std::result::Result<Status, NulError> {
