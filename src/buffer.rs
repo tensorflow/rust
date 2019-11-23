@@ -1,9 +1,8 @@
 use super::TensorType;
-use libc::c_void;
 use libc::size_t;
+use std::alloc;
 use std::borrow::Borrow;
 use std::borrow::BorrowMut;
-use std::cmp;
 use std::marker::PhantomData;
 use std::mem;
 use std::ops::Deref;
@@ -15,6 +14,7 @@ use std::ops::RangeFrom;
 use std::ops::RangeFull;
 use std::ops::RangeTo;
 use std::os::raw::c_void as std_c_void;
+use std::process;
 use std::slice;
 use tensorflow_sys as tf;
 
@@ -48,25 +48,16 @@ impl<T: TensorType> Buffer<T> {
     /// The caller is responsible for initializing the data.
     pub unsafe fn new_uninitialized(len: usize) -> Self {
         let inner = tf::TF_NewBuffer();
-        let elem_size = mem::size_of::<T>();
-        let alloc_size = len * elem_size;
-        let align = cmp::max(mem::align_of::<T>(), mem::size_of::<*const c_void>());
-        // posix_memalign requires the alignment to be at least sizeof(void*).
-        // TODO: Use alloc::heap::allocate once it's stable, or at least
-        // libc::aligned_alloc once it exists
-        let ptr = aligned_alloc::aligned_alloc(alloc_size, align);
+        let align = mem::align_of::<T>();
+        let size = mem::size_of::<T>();
+        let ptr = alloc::alloc(alloc::Layout::from_size_align(size * len, align).unwrap());
+        assert!(!ptr.is_null(), "allocation failure");
 
-        // We cannot be sure that we can deallocate always.
-        // For Linux it would be OK, but for Windows it's not.
-        if !ptr.is_null() {
-            (*inner).data_deallocator = Some(deallocator);
-        } else if len > 0 {
-            panic!("Failed to allocate {} aligned by {}", alloc_size, align);
-        }
+        (*inner).data_deallocator = Some(deallocator::<T>);
         (*inner).data = ptr as *mut std_c_void;
         (*inner).length = len;
         Buffer {
-            inner: inner,
+            inner,
             owned: true,
             phantom: PhantomData,
         }
@@ -133,8 +124,15 @@ impl<T: TensorType> Buffer<T> {
     }
 }
 
-unsafe extern "C" fn deallocator(data: *mut std_c_void, _length: size_t) {
-    aligned_alloc::aligned_free(data as *mut ());
+unsafe extern "C" fn deallocator<T>(data: *mut std_c_void, length: size_t) {
+    let align = mem::align_of::<T>();
+    let size = mem::size_of::<T>();
+    let layout = alloc::Layout::from_size_align(size * length, align).unwrap_or_else(|_| {
+        eprintln!("internal error: failed to construct layout");
+        // make sure not to unwind
+        process::abort();
+    });
+    alloc::dealloc(data as *mut _, layout);
 }
 
 impl<T: TensorType> Drop for Buffer<T> {
