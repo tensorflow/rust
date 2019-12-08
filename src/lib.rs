@@ -32,6 +32,7 @@ use std::fmt::Display;
 use std::fmt::Formatter;
 use std::marker::PhantomData;
 use std::mem;
+use std::num::ParseIntError;
 use std::ops::Deref;
 use std::ops::DerefMut;
 use std::ops::Drop;
@@ -525,6 +526,12 @@ impl From<IntoStringError> for Status {
             "Error converting C string to Rust string: {}",
             e.description()
         )
+    }
+}
+
+impl From<ParseIntError> for Status {
+    fn from(e: ParseIntError) -> Self {
+        invalid_arg!("Error parsing an integer: {}", e.description())
     }
 }
 

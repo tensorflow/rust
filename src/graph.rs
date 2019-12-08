@@ -18,9 +18,13 @@ use std;
 use std::ffi::CStr;
 use std::ffi::CString;
 use std::ffi::NulError;
+use std::fmt;
+use std::fmt::Display;
+use std::fmt::Formatter;
 use std::os::raw::c_void as std_c_void;
 use std::ptr;
 use std::slice;
+use std::str::FromStr;
 use std::str::Utf8Error;
 use std::sync::Arc;
 use tensorflow_sys as tf;
@@ -1724,6 +1728,50 @@ impl Output {
             })
         }
     }
+
+    /// Returns the name of this output.
+    pub fn name(&self) -> Result<OutputName> {
+        Ok(OutputName {
+            name: self.operation.name()?,
+            index: self.index,
+        })
+    }
+}
+
+////////////////////////
+
+/// Names a specific Output in the graph.
+#[derive(Clone, PartialEq, Eq, Hash, Debug, Default)]
+pub struct OutputName {
+    /// Name of the operation the edge connects to.
+    pub name: String,
+
+    /// Index into either the outputs of the operation.
+    pub index: c_int,
+}
+
+impl FromStr for OutputName {
+    type Err = Status;
+    fn from_str(s: &str) -> Result<Self> {
+        let splits: Vec<_> = s.split(':').collect();
+        if splits.len() != 2 {
+            return Err(Status::new_set_lossy(
+                Code::InvalidArgument,
+                "Name must contain exactly one colon (':')",
+            ));
+        }
+        let index = splits[1].parse::<c_int>()?;
+        Ok(Self {
+            name: splits[0].to_string(),
+            index,
+        })
+    }
+}
+
+impl Display for OutputName {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{}:{}", self.name, self.index)
+    }
 }
 
 ////////////////////////
@@ -2846,5 +2894,27 @@ mod tests {
         assert_eq!(consumers.len(), 1);
         assert_eq!(consumers[0].0.name().unwrap(), "y");
         assert_eq!(consumers[0].1, 0);
+    }
+
+    #[test]
+    fn output_name() {
+        assert_eq!(
+            "foo:1".parse::<OutputName>().unwrap(),
+            OutputName {
+                name: "foo".to_string(),
+                index: 1
+            }
+        );
+        assert_eq!(
+            OutputName {
+                name: "foo".to_string(),
+                index: 1
+            }
+            .to_string(),
+            "foo:1"
+        );
+        assert!("foo".parse::<OutputName>().is_err());
+        assert!("foo:bar".parse::<OutputName>().is_err());
+        assert!("foo:0:1".parse::<OutputName>().is_err());
     }
 }
