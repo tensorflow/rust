@@ -417,6 +417,13 @@ impl Status {
         Ok(status)
     }
 
+    /// Creates a status and sets its code and message.
+    pub fn new_set_lossy(code: Code, msg: &str) -> Status {
+        let mut status = Status::new();
+        status.set_lossy(code, msg);
+        status
+    }
+
     /// Returns the status's code.
     pub fn code(&self) -> Code {
         unsafe { Code::from_int(tf::TF_GetCode(self.inner) as u32) }
@@ -443,6 +450,26 @@ impl Status {
             tf::TF_SetStatus(self.inner, code.to_c(), message.as_ptr());
         }
         Ok(())
+    }
+
+    /// Sets the code and message.
+    pub fn set_lossy(&mut self, code: Code, msg: &str) {
+        let message = match CString::new(msg) {
+            Ok(x) => x,
+            Err(e) => {
+                let pos = e.nul_position();
+                let mut truncated_bytes = e.into_vec();
+                truncated_bytes.truncate(pos);
+                let mut new_msg: Vec<u8> = "(original error truncated due to internal nul byte) "
+                    .as_bytes()
+                    .into();
+                new_msg.extend(&truncated_bytes);
+                unsafe { CString::from_vec_unchecked(new_msg) }
+            }
+        };
+        unsafe {
+            tf::TF_SetStatus(self.inner, code.to_c(), message.as_ptr());
+        }
     }
 
     /// Returns a mutable pointer to the inner tensorflow Status `TF_Status`.
