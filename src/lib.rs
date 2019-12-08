@@ -18,6 +18,8 @@
 use half::f16;
 use libc::{c_int, c_uint};
 use num_complex::Complex;
+#[cfg(feature = "experimental_training")]
+use protobuf::ProtobufEnum;
 use std::cell::Cell;
 use std::cell::RefCell;
 use std::cmp::Ordering;
@@ -192,6 +194,11 @@ pub use crate::variable::*;
 
 #[cfg(feature = "experimental_training")]
 pub mod train;
+
+#[cfg(feature = "experimental_training")]
+mod saved_model;
+#[cfg(feature = "experimental_training")]
+pub use saved_model::*;
 
 ////////////////////////
 
@@ -388,6 +395,25 @@ c_enum!("Type of a single tensor element.", TF_DataType, DataType {
 impl Default for DataType {
     fn default() -> DataType {
         DataType::Float
+    }
+}
+
+impl DataType {
+    #[cfg(feature = "experimental_training")]
+    // We don't use Into, because we don't want this to be public API.
+    fn into_proto(self) -> protos::types::DataType {
+        if let Some(d) = protos::types::DataType::from_i32(self.to_int() as i32) {
+            d
+        } else {
+            // This is unfortunate, but the protobuf crate doesn't support unrecognized enum values.
+            panic!("Unable to convert {} to a protobuf DataType", self);
+        }
+    }
+
+    #[cfg(feature = "experimental_training")]
+    // We don't use From, because we don't want this to be public API.
+    fn from_proto(proto: protos::types::DataType) -> Self {
+        Self::from_int(proto.value() as c_uint)
     }
 }
 
@@ -1504,6 +1530,54 @@ impl Shape {
             Shape(None) => None,
             Shape(Some(ref v)) => Some(v.len()),
         }
+    }
+
+    #[cfg(feature = "experimental_training")]
+    // We don't use Into, because we don't want this to be public API.
+    fn into_proto(self) -> protos::tensor_shape::TensorShapeProto {
+        match self.0 {
+            None => {
+                let mut shape = protos::tensor_shape::TensorShapeProto::new();
+                shape.set_unknown_rank(true);
+                shape
+            }
+            Some(v) => {
+                let mut shape = protos::tensor_shape::TensorShapeProto::new();
+                for in_dim in v {
+                    shape.mut_dim().push({
+                        let mut out_dim = protos::tensor_shape::TensorShapeProto_Dim::new();
+                        out_dim.set_size(match in_dim {
+                            None => -1,
+                            Some(d) => d,
+                        });
+                        out_dim
+                    });
+                }
+                shape
+            }
+        }
+    }
+
+    #[cfg(feature = "experimental_training")]
+    // We don't use Into, because we don't want this to be public API.
+    fn from_proto(proto: &protos::tensor_shape::TensorShapeProto) -> Self {
+        Shape(if proto.get_unknown_rank() {
+            None
+        } else {
+            Some(
+                proto
+                    .get_dim()
+                    .iter()
+                    .map(|dim| {
+                        if dim.get_size() == -1 {
+                            None
+                        } else {
+                            Some(dim.get_size())
+                        }
+                    })
+                    .collect::<Vec<_>>(),
+            )
+        })
     }
 }
 

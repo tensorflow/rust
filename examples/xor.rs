@@ -1,4 +1,8 @@
+use std::env;
 use std::error::Error;
+use std::fs;
+use std::io::ErrorKind;
+use std::path::Path;
 use std::result::Result;
 use tensorflow::ops;
 use tensorflow::train::AdadeltaOptimizer;
@@ -6,15 +10,23 @@ use tensorflow::train::MinimizeOptions;
 use tensorflow::train::Optimizer;
 use tensorflow::Code;
 use tensorflow::DataType;
+use tensorflow::Graph;
 use tensorflow::Output;
+use tensorflow::OutputName;
+use tensorflow::SavedModelBundle;
 use tensorflow::Scope;
 use tensorflow::Session;
 use tensorflow::SessionOptions;
 use tensorflow::SessionRunArgs;
 use tensorflow::Shape;
+use tensorflow::SignatureDef;
 use tensorflow::Status;
 use tensorflow::Tensor;
+use tensorflow::TensorInfo;
 use tensorflow::Variable;
+use tensorflow::REGRESS_INPUTS;
+use tensorflow::REGRESS_METHOD_NAME;
+use tensorflow::REGRESS_OUTPUTS;
 
 // Helper for building a layer.
 //
@@ -54,7 +66,7 @@ fn layer<O1: Into<Output>>(
     ))
 }
 
-fn main() -> Result<(), Box<Error>> {
+fn train<P: AsRef<Path>>(save_dir: P) -> Result<(), Box<dyn Error>> {
     // ================
     // Build the model.
     // ================
@@ -94,6 +106,34 @@ fn main() -> Result<(), Box<Error>> {
         MinimizeOptions::default().with_variables(&variables),
     )?;
 
+    let mut all_vars = variables.clone();
+    all_vars.extend_from_slice(&minimizer_vars);
+    let mut builder = tensorflow::SavedModelBuilder::new();
+    builder
+        .add_collection("train", &all_vars)
+        .add_tag("serve")
+        .add_tag("train")
+        .add_signature(REGRESS_METHOD_NAME, {
+            let mut def = SignatureDef::new(REGRESS_METHOD_NAME.to_string());
+            def.add_input_info(
+                REGRESS_INPUTS.to_string(),
+                TensorInfo::new(
+                    DataType::Float,
+                    Shape::from(None),
+                    OutputName {
+                        name: input.name()?,
+                        index: 0,
+                    },
+                ),
+            );
+            def.add_output_info(
+                REGRESS_OUTPUTS.to_string(),
+                TensorInfo::new(DataType::Float, Shape::from(None), layer2.name()?),
+            );
+            def
+        });
+    let saved_model_saver = builder.inject(scope)?;
+
     // =========================
     // Initialize the variables.
     // =========================
@@ -118,7 +158,7 @@ fn main() -> Result<(), Box<Error>> {
     let mut label_tensor = Tensor::<f32>::new(&[1]);
     // Helper that generates a training example from an integer, trains on that
     // example, and returns the error.
-    let mut train = |i| -> Result<f32, Box<Error>> {
+    let mut train = |i| -> Result<f32, Box<dyn Error>> {
         input_tensor[0] = (i & 1) as f32;
         input_tensor[1] = ((i >> 1) & 1) as f32;
         label_tensor[0] = ((i & 1) ^ ((i >> 1) & 1)) as f32;
@@ -134,6 +174,11 @@ fn main() -> Result<(), Box<Error>> {
         train(i)?;
     }
 
+    // ================
+    // Save the model.
+    // ================
+    saved_model_saver.save(&session, &g, &save_dir)?;
+
     // ===================
     // Evaluate the model.
     // ===================
@@ -147,5 +192,72 @@ fn main() -> Result<(), Box<Error>> {
             )?));
         }
     }
+    Ok(())
+}
+
+fn eval<P: AsRef<Path>>(save_dir: P) -> Result<(), Box<dyn Error>> {
+    let mut graph = Graph::new();
+    let bundle = SavedModelBundle::load(
+        &SessionOptions::new(),
+        &["serve", "train"],
+        &mut graph,
+        save_dir,
+    )?;
+    let session = &bundle.session;
+    let signature = bundle.meta_graph_def().get_signature(REGRESS_METHOD_NAME)?;
+    let input_info = signature.get_input(REGRESS_INPUTS)?;
+    let output_info = signature.get_output(REGRESS_OUTPUTS)?;
+    let input_op = graph.operation_by_name_required(&input_info.name().name)?;
+    let output_op = graph.operation_by_name_required(&output_info.name().name)?;
+
+    let mut input_tensor = Tensor::<f32>::new(&[1, 2]);
+    for i in 0..4 {
+        input_tensor[0] = (i & 1) as f32;
+        input_tensor[1] = ((i >> 1) & 1) as f32;
+        let expected = ((i & 1) ^ ((i >> 1) & 1)) as f32;
+        let mut run_args = SessionRunArgs::new();
+        run_args.add_feed(&input_op, input_info.name().index, &input_tensor);
+        let output_fetch = run_args.request_fetch(&output_op, output_info.name().index);
+        session.run(&mut run_args)?;
+        let output = run_args.fetch::<f32>(output_fetch)?[0];
+        let error = (output - expected) * (output - expected);
+        println!("Error: {}", error);
+        if error > 0.1 {
+            return Err(Box::new(Status::new_set(
+                Code::Internal,
+                &format!("Error too high: {}", error),
+            )?));
+        }
+    }
+
+    Ok(())
+}
+
+fn main() -> Result<(), Box<dyn Error>> {
+    let mut dir = env::temp_dir();
+    dir.push("tf-rust-example-xor-saved-model");
+    let mut dir2 = env::temp_dir();
+    dir2.push("tf-rust-example-xor-saved-model2");
+    match fs::remove_dir_all(&dir) {
+        Err(e) => {
+            if e.kind() != ErrorKind::NotFound {
+                return Err(Box::new(e));
+            }
+        }
+        Ok(_) => (),
+    }
+    match fs::remove_dir_all(&dir2) {
+        Err(e) => {
+            if e.kind() != ErrorKind::NotFound {
+                return Err(Box::new(e));
+            }
+        }
+        Ok(_) => (),
+    }
+    train(&dir)?;
+    // Ensure that the saved model works even when moved.
+    // Users do not need to do this; this is purely for testing purposes.
+    fs::rename(&dir, &dir2)?;
+    eval(&dir2)?;
     Ok(())
 }

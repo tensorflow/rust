@@ -3,6 +3,8 @@ use super::Buffer;
 use super::Code;
 use super::DataType;
 use super::Graph;
+#[cfg(feature = "experimental_training")]
+use super::MetaGraphDef;
 use super::Operation;
 use super::Result;
 use super::SessionOptions;
@@ -24,6 +26,8 @@ pub struct SavedModelBundle {
     pub session: Session,
     /// A meta graph definition as raw protocol buffer.
     pub meta_graph_def: Vec<u8>,
+    #[cfg(feature = "experimental_training")]
+    meta_graph: MetaGraphDef,
 }
 
 impl SavedModelBundle {
@@ -71,8 +75,15 @@ impl SavedModelBundle {
             Ok(SavedModelBundle {
                 session: session,
                 meta_graph_def: Vec::from(meta.as_ref()),
+                #[cfg(feature = "experimental_training")]
+                meta_graph: MetaGraphDef::from_serialized_proto(meta.as_ref())?,
             })
         }
+    }
+
+    #[cfg(feature = "experimental_training")]
+    pub fn meta_graph_def(&self) -> &MetaGraphDef {
+        &self.meta_graph
     }
 }
 
@@ -659,6 +670,8 @@ mod tests {
         let SavedModelBundle {
             session,
             meta_graph_def,
+            #[cfg(feature = "experimental_training")]
+                meta_graph: _,
         } = bundle;
 
         assert!(!meta_graph_def.is_empty());
