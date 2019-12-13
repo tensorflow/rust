@@ -352,6 +352,10 @@ c_enum!("Type of a single tensor element.", TF_DataType, DataType {
   value QInt32 = 13,
 
   /// Float32 truncated to 16 bits.  Only for cast ops.
+  /// Note that this is not the same as Half.  BFloat16 is not an IEEE-754
+  /// 16-bit float.  See
+  /// https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/framework/bfloat16.h
+  /// for details.
   value BFloat16 = 14,
 
   /// Quantized 16-bit signed integer.
@@ -728,6 +732,10 @@ q_type!(i32,
 ////////////////////////
 
 /// BFloat16 provides a Rust type for BFloat16.
+/// Note that this is not the same as half::f16.  BFloat16 is not an IEEE-754
+/// 16-bit float.  See
+/// https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/framework/bfloat16.h
+/// for details.
 #[derive(Debug, Clone, Copy, Default)]
 pub struct BFloat16(u16);
 
