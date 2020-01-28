@@ -1,3 +1,10 @@
+## Pre-release
+
+1. Generate protos
+   1. Run `cd tensorflow-proto-codegen; cargo run -- $PATH_TO_TENSORFLOW $PWD/../src/protos`
+   1. Update Cargo.toml to ensure version of protobuf exactly equals version of protoc_rust used
+1. Commit and push changes
+
 ## Releasing
 
 1. Check out a clean copy.  Note that `cargo publish` packages up untracked files.  Use `--allow-dirty` at your peril.

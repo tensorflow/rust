@@ -1,0 +1,10 @@
+[package]
+name = "tensorflow-proto-codegen"
+version = "0.1.0"
+authors = ["Adam Crume <acrume@google.com>"]
+edition = "2018"
+
+[dependencies]
+protoc-rust = "2.7.0"
+
+[workspace]

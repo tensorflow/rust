@@ -26,6 +26,11 @@ impl Variable {
         VariableBuilder::default()
     }
 
+    /// Returns the name.
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
     /// Returns the output which evaluates to the value of the variable.
     pub fn output(&self) -> &Output {
         &self.output

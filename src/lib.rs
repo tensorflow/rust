@@ -18,6 +18,8 @@
 use half::f16;
 use libc::{c_int, c_uint};
 use num_complex::Complex;
+#[cfg(feature = "experimental_training")]
+use protobuf::ProtobufEnum;
 use std::cell::Cell;
 use std::cell::RefCell;
 use std::cmp::Ordering;
@@ -32,6 +34,7 @@ use std::fmt::Display;
 use std::fmt::Formatter;
 use std::marker::PhantomData;
 use std::mem;
+use std::num::ParseIntError;
 use std::ops::Deref;
 use std::ops::DerefMut;
 use std::ops::Drop;
@@ -161,6 +164,8 @@ macro_rules! c_enum {
 
 ////////////////////////
 
+mod protos;
+
 mod buffer;
 use crate::buffer::Buffer;
 
@@ -189,6 +194,11 @@ pub use crate::variable::*;
 
 #[cfg(feature = "experimental_training")]
 pub mod train;
+
+#[cfg(feature = "experimental_training")]
+mod saved_model;
+#[cfg(feature = "experimental_training")]
+pub use saved_model::*;
 
 ////////////////////////
 
@@ -392,6 +402,25 @@ impl Default for DataType {
     }
 }
 
+impl DataType {
+    #[cfg(feature = "experimental_training")]
+    // We don't use Into, because we don't want this to be public API.
+    fn into_proto(self) -> protos::types::DataType {
+        if let Some(d) = protos::types::DataType::from_i32(self.to_int() as i32) {
+            d
+        } else {
+            // This is unfortunate, but the protobuf crate doesn't support unrecognized enum values.
+            panic!("Unable to convert {} to a protobuf DataType", self);
+        }
+    }
+
+    #[cfg(feature = "experimental_training")]
+    // We don't use From, because we don't want this to be public API.
+    fn from_proto(proto: protos::types::DataType) -> Self {
+        Self::from_int(proto.value() as c_uint)
+    }
+}
+
 ////////////////////////
 
 /// Holds error information when communicating with back and forth with `tensorflow`.
@@ -417,6 +446,13 @@ impl Status {
         let mut status = Status::new();
         status.set(code, msg)?;
         Ok(status)
+    }
+
+    /// Creates a status and sets its code and message.
+    pub fn new_set_lossy(code: Code, msg: &str) -> Status {
+        let mut status = Status::new();
+        status.set_lossy(code, msg);
+        status
     }
 
     /// Returns the status's code.
@@ -445,6 +481,26 @@ impl Status {
             tf::TF_SetStatus(self.inner, code.to_c(), message.as_ptr());
         }
         Ok(())
+    }
+
+    /// Sets the code and message.
+    pub fn set_lossy(&mut self, code: Code, msg: &str) {
+        let message = match CString::new(msg) {
+            Ok(x) => x,
+            Err(e) => {
+                let pos = e.nul_position();
+                let mut truncated_bytes = e.into_vec();
+                truncated_bytes.truncate(pos);
+                let mut new_msg: Vec<u8> = "(original error truncated due to internal nul byte) "
+                    .as_bytes()
+                    .into();
+                new_msg.extend(&truncated_bytes);
+                unsafe { CString::from_vec_unchecked(new_msg) }
+            }
+        };
+        unsafe {
+            tf::TF_SetStatus(self.inner, code.to_c(), message.as_ptr());
+        }
     }
 
     /// Returns a mutable pointer to the inner tensorflow Status `TF_Status`.
@@ -500,6 +556,12 @@ impl From<IntoStringError> for Status {
             "Error converting C string to Rust string: {}",
             e.description()
         )
+    }
+}
+
+impl From<ParseIntError> for Status {
+    fn from(e: ParseIntError) -> Self {
+        invalid_arg!("Error parsing an integer: {}", e.description())
     }
 }
 
@@ -1476,6 +1538,54 @@ impl Shape {
             Shape(None) => None,
             Shape(Some(ref v)) => Some(v.len()),
         }
+    }
+
+    #[cfg(feature = "experimental_training")]
+    // We don't use Into, because we don't want this to be public API.
+    fn into_proto(self) -> protos::tensor_shape::TensorShapeProto {
+        match self.0 {
+            None => {
+                let mut shape = protos::tensor_shape::TensorShapeProto::new();
+                shape.set_unknown_rank(true);
+                shape
+            }
+            Some(v) => {
+                let mut shape = protos::tensor_shape::TensorShapeProto::new();
+                for in_dim in v {
+                    shape.mut_dim().push({
+                        let mut out_dim = protos::tensor_shape::TensorShapeProto_Dim::new();
+                        out_dim.set_size(match in_dim {
+                            None => -1,
+                            Some(d) => d,
+                        });
+                        out_dim
+                    });
+                }
+                shape
+            }
+        }
+    }
+
+    #[cfg(feature = "experimental_training")]
+    // We don't use Into, because we don't want this to be public API.
+    fn from_proto(proto: &protos::tensor_shape::TensorShapeProto) -> Self {
+        Shape(if proto.get_unknown_rank() {
+            None
+        } else {
+            Some(
+                proto
+                    .get_dim()
+                    .iter()
+                    .map(|dim| {
+                        if dim.get_size() == -1 {
+                            None
+                        } else {
+                            Some(dim.get_size())
+                        }
+                    })
+                    .collect::<Vec<_>>(),
+            )
+        })
     }
 }
 
