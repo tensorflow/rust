@@ -37,7 +37,7 @@ so if you are unsure please [check out the docs](https://www.tensorflow.org/inst
  for further details.
 
 Some of the examples use TensorFlow code written in Python and require a full TensorFlow
-intallation.
+installation.
 
 ### Usage
 Add this to your `Cargo.toml`:
