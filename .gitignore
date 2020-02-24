@@ -6,3 +6,4 @@ travis-ci/travis_rsa
 **/*.iml
 .idea
 test_resources/io/actual.tfrecord
+test_resources/io/roundtrip.tfrecord
