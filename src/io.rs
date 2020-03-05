@@ -154,11 +154,8 @@ where
     /// Use this to find out how large the byte slice needs to be to read the next record.
     pub fn peek_next_len(&mut self) -> Result<Option<u64>, RecordReadError> {
         let len = self.read_next_len_unchecked()?;
-        match len {
-            Some(_len) => {
-                self.reader.seek(SeekFrom::Current(-8))?;
-            }
-            _ => {}
+        if let Some(_) = len {
+            self.reader.seek(SeekFrom::Current(-8))?;
         }
 
         Ok(len)
@@ -237,21 +234,19 @@ where
             self.reader.seek(SeekFrom::Current(8 + len as i64))?;
             return Err(RecordReadError::BufferTooShort { needed: len });
         }
+
         let mut len_bytes = [0u8; 8];
         LittleEndian::write_u64(&mut len_bytes, len);
-        let len_ok = self.checksum(&mut len_bytes)?;
+        if !self.checksum(&mut len_bytes)? {
+            return Err(RecordReadError::CorruptFile);
+        }
 
         let slice = &mut buf[0..len as usize];
         self.read_bytes_exact_unchecked(slice)?;
-        let bytes_ok = self.checksum(slice)?;
 
-        if bytes_ok && len_ok {
-            return Ok(Some(len as usize));
-        } else {
-            if !len_ok {
-                return Err(RecordReadError::CorruptFile);
-            }
-            return Err(RecordReadError::CorruptRecord);
+        match self.checksum(slice)? {
+            true => Ok(Some(len as usize)),
+            false => Err(RecordReadError::CorruptRecord),
         }
     }
     /// Allocate a Vec<u8> on the heap and read the next record into it.
@@ -293,19 +288,16 @@ where
             Some(len) => len,
             None => return Ok(None),
         };
-        let mut vec = vec![0u8; len as usize];
         let mut len_bytes = [0u8; 8];
         LittleEndian::write_u64(&mut len_bytes, len);
-        let len_ok = self.checksum(&mut len_bytes)?;
+        if !self.checksum(&mut len_bytes)? {
+            return Err(RecordReadError::CorruptFile);
+        }
+        let mut vec = vec![0u8; len as usize];
         self.read_bytes_exact_unchecked(&mut vec)?;
-        let bytes_ok = self.checksum(&vec)?;
-        if bytes_ok && len_ok {
-            return Ok(Some(vec));
-        } else {
-            if !len_ok {
-                return Err(RecordReadError::CorruptFile);
-            }
-            return Err(RecordReadError::CorruptRecord);
+        match self.checksum(&vec)? {
+            true => Ok(Some(vec)),
+            false => Err(RecordReadError::CorruptRecord),
         }
     }
     /// Convert the Reader into an Iterator<Item = Result<Vec<u8>, RecordReadError>, which iterates
@@ -430,10 +422,9 @@ mod tests {
                     Some(len) => assert_eq!(&ary[0..len], records[i].as_bytes()),
                     None => break,
                 },
-                Err(RecordReadError::CorruptFile) | Err(RecordReadError::IoError { .. }) => {
-                    break;
+                Err(e @ _) => {
+                    panic!("Received an unexpected error: {:?}", e);
                 }
-                _ => {}
             }
             i += 1;
         }
@@ -454,25 +445,23 @@ mod tests {
         let read = std::io::BufReader::new(Cursor::new(buf));
         let mut reader = RecordReader::new(read);
         let mut ary = [0u8; 3];
-        let mut i = 0;
-        loop {
-            let next = reader.read_next(&mut ary);
-            if i == 0 {
-                assert_eq!(next.unwrap().unwrap(), 3);
-                assert_eq!(&ary, records[i].as_bytes());
-            } else if i == 1 {
-                let buffer_too_short = match next {
-                    Err(RecordReadError::BufferTooShort { needed: v }) => v == 4,
-                    _ => false,
-                };
-                assert!(buffer_too_short);
-            } else if i == 2 {
-                assert_eq!(next.unwrap().unwrap(), 3);
-                assert_eq!(&ary, records[i].as_bytes());
-            } else {
-                break;
-            }
-            i += 1;
-        }
+
+        let next = reader.read_next(&mut ary);
+        assert_eq!(next.unwrap().unwrap(), 3);
+        assert_eq!(&ary, records[0].as_bytes());
+
+        let next = reader.read_next(&mut ary);
+        let buffer_too_short = match next {
+            Err(RecordReadError::BufferTooShort { needed: v }) => v == 4,
+            _ => false,
+        };
+        assert!(buffer_too_short);
+
+        let next = reader.read_next(&mut ary);
+        assert_eq!(next.unwrap().unwrap(), 3);
+        assert_eq!(&ary, records[2].as_bytes());
+
+        let next = reader.read_next(&mut ary);
+        assert!(next.unwrap().is_none());
     }
 }
