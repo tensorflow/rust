@@ -2,14 +2,18 @@ extern crate protoc_rust;
 
 use std::env;
 use std::error::Error;
+use std::path::Path;
 use std::result::Result;
 
-fn main() -> Result<(), Box<Error>> {
+fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<String> = env::args().collect();
     let tensorflow_folder = &args[1];
-    let output_folder = &args[2];
+    let output_folder = Path::new(&args[2]);
     protoc_rust::run(protoc_rust::Args {
-        out_dir: output_folder,
+        out_dir: output_folder
+            .join("src/protos")
+            .to_str()
+            .ok_or("Unable to format output path for main crate")?,
         input: &[
             &format!(
                 "{}/tensorflow/core/framework/attr_value.proto",
@@ -64,6 +68,42 @@ fn main() -> Result<(), Box<Error>> {
                 tensorflow_folder
             ),
             &format!("{}/tensorflow/core/protobuf/saver.proto", tensorflow_folder),
+        ],
+        includes: &[tensorflow_folder],
+        customize: protoc_rust::Customize {
+            ..Default::default()
+        },
+    })?;
+    protoc_rust::run(protoc_rust::Args {
+        out_dir: output_folder
+            .join("tensorflow-op-codegen/src/protos")
+            .to_str()
+            .ok_or("Unable to format output path for ops crate")?,
+        input: &[
+            &format!(
+                "{}/tensorflow/core/framework/attr_value.proto",
+                tensorflow_folder
+            ),
+            &format!(
+                "{}/tensorflow/core/framework/op_def.proto",
+                tensorflow_folder
+            ),
+            &format!(
+                "{}/tensorflow/core/framework/resource_handle.proto",
+                tensorflow_folder
+            ),
+            &format!(
+                "{}/tensorflow/core/framework/tensor.proto",
+                tensorflow_folder
+            ),
+            &format!(
+                "{}/tensorflow/core/framework/tensor_shape.proto",
+                tensorflow_folder
+            ),
+            &format!(
+                "{}/tensorflow/core/framework/types.proto",
+                tensorflow_folder
+            ),
         ],
         includes: &[tensorflow_folder],
         customize: protoc_rust::Customize {
