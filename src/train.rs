@@ -287,8 +287,7 @@ mod tests {
             .const_initial_value::<_, f32>(3.0)
             .build(&mut scope.with_op_name("x"))
             .unwrap();
-        let x_squared =
-            ops::multiply(x_var.output.clone(), x_var.output.clone(), &mut scope).unwrap();
+        let x_squared = ops::mul(x_var.output.clone(), x_var.output.clone(), &mut scope).unwrap();
         let sgd = GradientDescentOptimizer {
             learning_rate: Output {
                 operation: ops::constant(0.1f32, &mut scope).unwrap(),
@@ -351,8 +350,7 @@ mod tests {
             .const_initial_value(3.0f32)
             .build(&mut scope.with_op_name("x"))
             .unwrap();
-        let x_squared =
-            ops::multiply(x_var.output.clone(), x_var.output.clone(), &mut scope).unwrap();
+        let x_squared = ops::mul(x_var.output.clone(), x_var.output.clone(), &mut scope).unwrap();
         let mut optimizer = AdadeltaOptimizer::new();
         optimizer.set_learning_rate(ops::constant(0.1f32, &mut scope).unwrap());
         let (minimizer_vars, minimize) = optimizer
@@ -410,17 +408,20 @@ mod tests {
         let scope = &mut scope;
         let hidden_size: u64 = 4;
         let input = ops::Placeholder::new()
-            .data_type(DataType::Float)
+            .dtype(DataType::Float)
             .shape(Shape::from(&[1u64, 2][..]))
             .build(&mut scope.with_op_name("input"))
             .unwrap();
         let label = ops::Placeholder::new()
-            .data_type(DataType::Float)
+            .dtype(DataType::Float)
             .shape(Shape::from(&[1u64][..]))
             .build(&mut scope.with_op_name("label"))
             .unwrap();
         let w_shape = ops::constant(&[2, hidden_size as i64][..], scope).unwrap();
-        let w_init = ops::random_normal(w_shape, scope).unwrap();
+        let w_init = ops::RandomStandardNormal::new()
+            .dtype(DataType::Float)
+            .build(w_shape.into(), scope)
+            .unwrap();
         let w = Variable::builder()
             .initial_value(w_init)
             .data_type(DataType::Float)
@@ -432,14 +433,17 @@ mod tests {
             .build(&mut scope.with_op_name("b"))
             .unwrap();
         let layer1a = ops::MatMul::new()
-            .build(input.clone(), w.output.clone(), scope)
+            .build(input.clone().into(), w.output.clone(), scope)
             .unwrap();
         let layer1b = ops::Add::new()
-            .build(layer1a, b.output.clone(), scope)
+            .build(layer1a.into(), b.output.clone(), scope)
             .unwrap();
-        let layer1 = ops::Tanh::new().build(layer1b, scope).unwrap();
+        let layer1 = ops::Tanh::new().build(layer1b.into(), scope).unwrap();
         let w2_shape = ops::constant(&[hidden_size as i64, 1][..], scope).unwrap();
-        let w2_init = ops::random_normal(w2_shape, scope).unwrap();
+        let w2_init = ops::RandomStandardNormal::new()
+            .dtype(DataType::Float)
+            .build(w2_shape.into(), scope)
+            .unwrap();
         let w2 = Variable::builder()
             .initial_value(w2_init)
             .data_type(DataType::Float)
@@ -450,11 +454,11 @@ mod tests {
             .const_initial_value(Tensor::<f32>::new(&[1]))
             .build(&mut scope.with_op_name("b2"))
             .unwrap();
-        let layer2a = ops::mat_mul(layer1, w2.output.clone(), scope).unwrap();
-        let layer2b = ops::add(layer2a, b2.output.clone(), scope).unwrap();
+        let layer2a = ops::mat_mul(layer1.into(), w2.output.clone(), scope).unwrap();
+        let layer2b = ops::add(layer2a.into(), b2.output.clone(), scope).unwrap();
         let layer2 = layer2b;
-        let error = ops::subtract(layer2.clone(), label.clone(), scope).unwrap();
-        let error_squared = ops::multiply(error.clone(), error, scope).unwrap();
+        let error = ops::sub(layer2.clone().into(), label.clone().into(), scope).unwrap();
+        let error_squared = ops::mul(error.clone().into(), error.into(), scope).unwrap();
         let sgd = GradientDescentOptimizer {
             learning_rate: Output {
                 operation: ops::constant(0.1f32, scope).unwrap(),

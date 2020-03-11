@@ -45,7 +45,11 @@ fn layer<O1: Into<Output>>(
     let scope = &mut scope;
     let w_shape = ops::constant(&[input_size as i64, output_size as i64][..], scope)?;
     let w = Variable::builder()
-        .initial_value(ops::random_normal(w_shape, scope)?)
+        .initial_value(
+            ops::RandomStandardNormal::new()
+                .dtype(DataType::Float)
+                .build(w_shape.into(), scope)?,
+        )
         .data_type(DataType::Float)
         .shape(Shape::from(&[input_size, output_size][..]))
         .build(&mut scope.with_op_name("w"))?;
@@ -56,7 +60,7 @@ fn layer<O1: Into<Output>>(
         vec![w.clone(), b.clone()],
         activation(
             ops::add(
-                ops::mat_mul(input, w.output().clone(), scope)?,
+                ops::mat_mul(input.into(), w.output().clone(), scope)?.into(),
                 b.output().clone(),
                 scope,
             )?
@@ -76,11 +80,11 @@ fn train<P: AsRef<Path>>(save_dir: P) -> Result<(), Box<dyn Error>> {
     // This is far more than is necessary, but makes it train more reliably.
     let hidden_size: u64 = 8;
     let input = ops::Placeholder::new()
-        .data_type(DataType::Float)
+        .dtype(DataType::Float)
         .shape(Shape::from(&[1u64, 2][..]))
         .build(&mut scope.with_op_name("input"))?;
     let label = ops::Placeholder::new()
-        .data_type(DataType::Float)
+        .dtype(DataType::Float)
         .shape(Shape::from(&[1u64][..]))
         .build(&mut scope.with_op_name("label"))?;
     // Hidden layer.
@@ -93,8 +97,8 @@ fn train<P: AsRef<Path>>(save_dir: P) -> Result<(), Box<dyn Error>> {
     )?;
     // Output layer.
     let (vars2, layer2) = layer(layer1.clone(), hidden_size, 1, &|x, _| Ok(x), scope)?;
-    let error = ops::subtract(layer2.clone(), label.clone(), scope)?;
-    let error_squared = ops::multiply(error.clone(), error, scope)?;
+    let error = ops::sub(layer2.clone(), label.clone().into(), scope)?;
+    let error_squared = ops::mul(error.clone().into(), error.into(), scope)?;
     let mut optimizer = AdadeltaOptimizer::new();
     optimizer.set_learning_rate(ops::constant(1.0f32, scope)?);
     let mut variables = Vec::new();

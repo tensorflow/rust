@@ -20,6 +20,7 @@ use libc::{c_int, c_uint};
 use num_complex::Complex;
 #[cfg(feature = "experimental_training")]
 use protobuf::ProtobufEnum;
+use std::borrow::Borrow;
 use std::cell::Cell;
 use std::cell::RefCell;
 use std::cmp::Ordering;
@@ -933,6 +934,18 @@ pub(crate) trait AnyTensor: Debug {
     fn inner(&self) -> Result<*mut tf::TF_Tensor>;
 
     fn data_type(&self) -> DataType;
+}
+
+impl AnyTensor for Box<dyn AnyTensor> {
+    fn inner(&self) -> Result<*mut tf::TF_Tensor> {
+        let borrowed: &AnyTensor = self.borrow();
+        borrowed.inner()
+    }
+
+    fn data_type(&self) -> DataType {
+        let borrowed: &AnyTensor = self.borrow();
+        borrowed.data_type()
+    }
 }
 
 ////////////////////////

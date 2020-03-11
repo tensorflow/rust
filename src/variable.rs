@@ -148,7 +148,7 @@ impl<'a> VariableBuilder<'a> {
             VariableInitialValue::TensorRef(t) => ops::any_constant(t, scope)?.into(),
             VariableInitialValue::Output(o) => o,
         };
-        let initializer = ops::assign(variable_op.clone(), initial_value, scope)?;
+        let initializer = ops::assign(variable_op.clone().into(), initial_value, scope)?;
         Ok(Variable {
             name,
             output: variable_op.into(),

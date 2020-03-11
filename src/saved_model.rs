@@ -316,7 +316,7 @@ impl SavedModelBuilder {
     pub fn inject(self, scope: &mut Scope) -> Result<SavedModelSaver> {
         let all_vars = self.collections.values().flatten().collect::<Vec<_>>();
         let prefix = ops::Placeholder::new()
-            .data_type(DataType::String)
+            .dtype(DataType::String)
             .build(scope)?;
         let save_op = {
             let tensor_names = ops::constant(
@@ -348,7 +348,7 @@ impl SavedModelBuilder {
         };
 
         let filename_tensor = ops::Placeholder::new()
-            .data_type(DataType::String)
+            .dtype(DataType::String)
             .build(scope)?;
         let restore_op = {
             let all_var_names = all_vars
