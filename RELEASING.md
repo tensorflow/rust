@@ -1,11 +1,16 @@
 ## Pre-release
 
 1. Generate protos
-   1. Run `cd tensorflow-proto-codegen; cargo run -- $PATH_TO_TENSORFLOW $PWD/../src/protos`
+   1. Run `cd tensorflow-proto-codegen; cargo run -- $PATH_TO_TENSORFLOW $PWD/..`
    1. Update Cargo.toml to ensure version of protobuf exactly equals version of protoc_rust used
+1. Generate ops
+   1. Run `cd tensorflow-op-codegen; cargo run -- $PATH_TO_TENSORFLOW $PWD/..`
+   1. Run `cargo fmt` to format generated code
 1. Commit and push changes
 
 ## Releasing
+
+Note that any crate not mentioned here (e.g. tensorflow-proto-codegen, tensorflow-op-codegen) is internal-only and should *not* be published to crates.io.
 
 1. Check out a clean copy.  Note that `cargo publish` packages up untracked files.  Use `--allow-dirty` at your peril.
 1. Fetch from the main repo

@@ -14,11 +14,9 @@
 //! ```ignore
 //! mat_mul(a, b, &mut scope)
 //! ```
-
-use tensorflow_internal_macros::define_op;
-
-mod array_ops;
-pub use array_ops::*;
+//!
+//! Note that for some ops, the builder may always be required, because
+//! the op has required attributes with no default specified.
 
 mod math_ops;
 pub use math_ops::*;
@@ -26,7 +24,5 @@ pub use math_ops::*;
 mod random_ops;
 pub use random_ops::*;
 
-mod state_ops;
-pub use state_ops::*;
-
-define_op!(no_op, NoOp, "NoOp");
+mod ops_impl;
+pub use ops_impl::*;

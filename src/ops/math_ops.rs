@@ -6,8 +6,6 @@ use crate::Tensor;
 use crate::TensorType;
 use tensorflow_internal_macros::define_op;
 
-define_op!(add, Add, "Add", args { a, b });
-
 /// Creates a constant.
 ///
 /// The value can be anything convertible to a tensor, so possibilities include:
@@ -50,13 +48,8 @@ pub(crate) fn any_constant(value: &AnyTensor, scope: &mut Scope) -> Result<Opera
     c.finish()
 }
 
-define_op!(mat_mul, MatMul, "MatMul", args {a, b}, attrs {
-    transpose_a: bool => "transpose_a",
-    transpose_b: bool => "transpose_b",
-});
-
+#[deprecated(note = "Use mul instead.", since = "0.15.0")]
 define_op!(multiply, Multiply, "Mul", args { a, b });
 
+#[deprecated(note = "Use sub instead.", since = "0.15.0")]
 define_op!(subtract, Subtract, "Sub", args { a, b });
-
-define_op!(tanh, Tanh, "Tanh", args { x });

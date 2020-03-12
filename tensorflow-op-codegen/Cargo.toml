@@ -1,0 +1,11 @@
+[package]
+name = "tensorflow-op-codegen"
+version = "0.1.0"
+authors = ["Adam Crume <acrume@google.com>"]
+edition = "2018"
+
+[dependencies]
+nom = "5.0.1"
+protobuf = "2.8.0"
+
+[workspace]
