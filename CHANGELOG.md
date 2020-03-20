@@ -1,5 +1,21 @@
 # Changelog
 
+## Release 0.15.0
+
+### Additions
+
+- Add generated code for all standard ops
+  - Currently guarded by experimental_training feature
+- Add RecordReader for TFRecords
+- Add support for creating saved models
+- Document that BFloat16 is not an IEEE-754 16-bit float
+- Implement Send and Sync for Status
+- Add Tensor::get and Tensor::set
+
+### Changes
+
+- Use std::alloc instead of aligned_alloc
+
 ## Release 0.14.0
 
 ### Additions

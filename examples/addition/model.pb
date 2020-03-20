@@ -1,8 +1,8 @@
 
 ,
-xPlaceholder*
-shape:*
-dtype0
+xPlaceholder*
+dtype0*
+shape:
 ,
 yPlaceholder*
 shape:*
