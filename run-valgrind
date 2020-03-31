@@ -12,7 +12,7 @@ set -e
 
 cd $(dirname $(readlink -f "$0"))
 
-tensorflow_version=1.13.1
+tensorflow_version=1.15.0
 
 valgrind_log=valgrind.log
 truncate --size=0 "$valgrind_log"
@@ -53,8 +53,8 @@ done
 # Build tests and grab the path to the test binary, because we can't properly run valgrind through cargo.
 # The filename parsing is a hack because we're not really parsing JSON.
 test_binary=$(cargo test --features='examples_system_alloc tensorflow_unstable' --message-format=json --no-run \
-                    2>/dev/null | \
-                  sed -En 's|^.*"([^"]*/target/debug/tensorflow-[^"]*)".*$|\1|p')
+    2>/dev/null | \
+sed -En 's|^.*"([^"]*/target/debug/tensorflow-[^"]*)".*$|\1|p')
 
 # Run valgrind against the tests.
 echo "Testing tests"

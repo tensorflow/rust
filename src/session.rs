@@ -532,6 +532,7 @@ mod tests {
     use super::super::Shape;
     use super::super::Tensor;
     use super::*;
+    use serial_test::serial;
     use std::fs;
 
     fn create_session() -> (Session, Operation, Operation) {
@@ -592,6 +593,7 @@ mod tests {
     }
 
     #[test]
+    #[serial] // Full trace enable profile session
     fn test_run_metadata() {
         let (session, x_operation, y_operation) = create_session();
         let x = Tensor::<f32>::from(&[2.0, 3.0][..]);
@@ -620,6 +622,7 @@ mod tests {
     }
 
     #[test]
+    #[serial] // Full_trace enable profile session
     fn test_run_options() {
         let (session, x_operation, y_operation) = create_session();
         let x = Tensor::<f32>::from(&[2.0, 3.0][..]);

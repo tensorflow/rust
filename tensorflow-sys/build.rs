@@ -4,8 +4,9 @@ extern crate pkg_config;
 extern crate semver;
 extern crate tar;
 
+use std::env::consts::DLL_EXTENSION;
 use std::error::Error;
-use std::fs::File;
+use std::fs::{DirEntry, File};
 use std::io::BufWriter;
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -21,11 +22,11 @@ use tar::Archive;
 const FRAMEWORK_LIBRARY: &'static str = "tensorflow_framework";
 const LIBRARY: &'static str = "tensorflow";
 const REPOSITORY: &'static str = "https://github.com/tensorflow/tensorflow.git";
-const FRAMEWORK_TARGET: &'static str = "tensorflow:libtensorflow_framework.so";
-const TARGET: &'static str = "tensorflow:libtensorflow.so";
+const FRAMEWORK_TARGET: &'static str = "tensorflow:libtensorflow_framework";
+const TARGET: &'static str = "tensorflow:libtensorflow";
 // `VERSION` and `TAG` are separate because the tag is not always `'v' + VERSION`.
-const VERSION: &'static str = "1.13.1";
-const TAG: &'static str = "v1.13.1";
+const VERSION: &'static str = "1.15.0";
+const TAG: &'static str = "v1.15.0";
 const MIN_BAZEL: &'static str = "0.5.4";
 
 macro_rules! get(($name:expr) => (ok!(env::var($name))));
@@ -153,8 +154,9 @@ fn install_prebuilt() {
     // Extract the tarball.
     let unpacked_dir = download_dir.join(base_name);
     let lib_dir = unpacked_dir.join("lib");
-    let framework_library_file = format!("lib{}.so", FRAMEWORK_LIBRARY);
-    let library_file = format!("lib{}.so", LIBRARY);
+    let framework_library_file = format!("lib{}.{}", FRAMEWORK_LIBRARY, DLL_EXTENSION);
+    let library_file = format!("lib{}.{}", LIBRARY, DLL_EXTENSION);
+
     let framework_library_full_path = lib_dir.join(&framework_library_file);
     let library_full_path = lib_dir.join(&library_file);
     if !framework_library_full_path.exists() || !library_full_path.exists() {
@@ -164,43 +166,32 @@ fn install_prebuilt() {
     println!("cargo:rustc-link-lib=dylib={}", FRAMEWORK_LIBRARY);
     println!("cargo:rustc-link-lib=dylib={}", LIBRARY);
     let output = PathBuf::from(&get!("OUT_DIR"));
-    let new_framework_library_full_path = output.join(&framework_library_file);
-    if new_framework_library_full_path.exists() {
+
+    let framework_files = std::fs::read_dir(lib_dir).unwrap();
+    for library_entry in framework_files.filter_map(Result::ok) {
+        let library_full_path = library_entry.path();
+        let new_library_full_path = output.join(&library_full_path.file_name().unwrap());
+        if new_library_full_path.exists() {
+            log!(
+                "{} already exists. Removing",
+                new_library_full_path.display()
+            );
+            std::fs::remove_file(&new_library_full_path).unwrap();
+        }
         log!(
-            "File {} already exists, deleting.",
-            new_framework_library_full_path.display()
-        );
-        std::fs::remove_file(&new_framework_library_full_path).unwrap();
-    }
-    let new_library_full_path = output.join(&library_file);
-    if new_library_full_path.exists() {
-        log!(
-            "File {} already exists, deleting.",
+            "Copying {} to {}...",
+            library_full_path.display(),
             new_library_full_path.display()
         );
-        std::fs::remove_file(&new_library_full_path).unwrap();
+        std::fs::copy(&library_full_path, &new_library_full_path).unwrap();
     }
-
-    log!(
-        "Copying {} to {}...",
-        library_full_path.display(),
-        new_library_full_path.display()
-    );
-    std::fs::copy(&library_full_path, &new_library_full_path).unwrap();
-    log!(
-        "Copying {} to {}...",
-        framework_library_full_path.display(),
-        new_framework_library_full_path.display()
-    );
-    std::fs::copy(
-        &framework_library_full_path,
-        &new_framework_library_full_path,
-    )
-    .unwrap();
     println!("cargo:rustc-link-search={}", output.display());
 }
 
 fn build_from_src() {
+    let framework_target = FRAMEWORK_TARGET.to_string() + std::env::consts::DLL_SUFFIX;
+    let target = TARGET.to_string() + std::env::consts::DLL_SUFFIX;
+
     let output = PathBuf::from(&get!("OUT_DIR"));
     log_var!(output);
     let source = PathBuf::from(&get!("CARGO_MANIFEST_DIR")).join(format!("target/source-{}", TAG));
@@ -231,7 +222,7 @@ fn build_from_src() {
             );
             process::exit(1);
         }
-        let framework_target_path = &FRAMEWORK_TARGET.replace(":", "/");
+        let framework_target_path = &framework_target.replace(":", "/");
         log_var!(framework_target_path);
         let target_path = &TARGET.replace(":", "/");
         log_var!(target_path);
@@ -282,7 +273,7 @@ fn build_from_src() {
                 .arg("--compilation_mode=opt")
                 .arg("--copt=-march=native")
                 .args(bazel_args_string.split_whitespace())
-                .arg(TARGET)
+                .arg(&target)
         });
         let framework_target_bazel_bin = source.join("bazel-bin").join(framework_target_path);
         log!(
