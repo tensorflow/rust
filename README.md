@@ -6,8 +6,7 @@ TensorFlow Rust provides idiomatic [Rust](https://www.rust-lang.org) language
 bindings for [TensorFlow](https://www.tensorflow.org).
 
 **Notice:** This project is still under active development and not guaranteed to have a
-stable API. This is especially true because the underlying TensorFlow C API has not yet
-been stabilized as well.
+stable API.
 
 * [Documentation](https://tensorflow.github.io/rust/tensorflow/)
 * [TensorFlow Rust Google Group](https://groups.google.com/a/tensorflow.org/forum/#!forum/rust)
