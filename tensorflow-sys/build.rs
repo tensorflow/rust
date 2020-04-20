@@ -4,20 +4,24 @@ extern crate pkg_config;
 extern crate semver;
 extern crate tar;
 
-use std::env::consts::DLL_EXTENSION;
+use std::env::{
+    self,
+    consts::{DLL_EXTENSION, DLL_PREFIX},
+};
 use std::error::Error;
-use std::fs::File;
-use std::io::BufWriter;
-use std::io::Write;
+use std::fs::{self, File};
+use std::io::{self, BufWriter, Write};
 use std::path::{Path, PathBuf};
-use std::process;
-use std::process::Command;
-use std::{env, fs};
+use std::process::{self, Command};
 
 use curl::easy::Easy;
+#[cfg(not(target_env = "msvc"))]
 use flate2::read::GzDecoder;
 use semver::Version;
+#[cfg(not(target_env = "msvc"))]
 use tar::Archive;
+#[cfg(target_env = "msvc")]
+use zip::ZipArchive;
 
 const FRAMEWORK_LIBRARY: &'static str = "tensorflow_framework";
 const LIBRARY: &'static str = "tensorflow";
@@ -58,7 +62,9 @@ fn main() {
 
     if !force_src
         && env::consts::ARCH == "x86_64"
-        && (env::consts::OS == "linux" || env::consts::OS == "macos")
+        && (env::consts::OS == "linux"
+            || env::consts::OS == "macos"
+            || env::consts::OS == "windows")
     {
         install_prebuilt();
     } else {
@@ -94,11 +100,43 @@ fn remove_suffix(value: &mut String, suffix: &str) {
     }
 }
 
+#[cfg(not(target_env = "msvc"))]
 fn extract<P: AsRef<Path>, P2: AsRef<Path>>(archive_path: P, extract_to: P2) {
     let file = File::open(archive_path).unwrap();
     let unzipped = GzDecoder::new(file);
     let mut a = Archive::new(unzipped);
     a.unpack(extract_to).unwrap();
+}
+
+// NOTE: It's possible for this function to extract the dll and interface
+//       file directly to OUT_DIR instead of extracting then making a
+//       copy of the libraries in OUT_DIR.
+//       The same approach could be utilized for the other implementation
+//       of `extract`.
+#[cfg(target_env = "msvc")]
+fn extract<P: AsRef<Path>, P2: AsRef<Path>>(archive_path: P, extract_to: P2) {
+    fs::create_dir_all(&extract_to).expect("Failed to create output path for zip archive.");
+    let file = File::open(archive_path).expect("Unable to open libtensorflow zip archive.");
+    let mut archive = ZipArchive::new(file).unwrap();
+    for i in 0..archive.len() {
+        let mut zipfile = archive.by_index(i).unwrap();
+        let output_path = extract_to.as_ref().join(zipfile.sanitized_name());
+        if zipfile.name().starts_with("lib") {
+            if zipfile.is_dir() {
+                fs::create_dir_all(&output_path)
+                    .expect("Failed to create output directory when unpacking archive.");
+            } else {
+                if let Some(parent) = output_path.parent() {
+                    if !parent.exists() {
+                        fs::create_dir_all(&parent)
+                            .expect("Failed to create parent directory for extracted file.");
+                    }
+                }
+                let mut outfile = File::create(&output_path).unwrap();
+                io::copy(&mut zipfile, &mut outfile).unwrap();
+            }
+        }
+    }
 }
 
 // Downloads and unpacks a prebuilt binary. Only works for certain platforms.
@@ -113,18 +151,26 @@ fn install_prebuilt() {
     } else {
         "cpu"
     };
-    let binary_url =
-        format!(
-        "https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-{}-{}-{}-{}.tar.gz",
-        proc_type, os, env::consts::ARCH, VERSION);
+    #[cfg(target_env = "msvc")]
+    let ext = ".zip";
+    #[cfg(not(target_env = "msvc"))]
+    let ext = ".tar.gz";
+    let binary_url = format!(
+        "https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-{}-{}-{}-{}{}",
+        proc_type,
+        os,
+        env::consts::ARCH,
+        VERSION,
+        ext
+    );
     log_var!(binary_url);
     let short_file_name = binary_url.split("/").last().unwrap();
     let mut base_name = short_file_name.to_string();
-    remove_suffix(&mut base_name, ".tar.gz");
+    remove_suffix(&mut base_name, ext);
     log_var!(base_name);
     let download_dir = match env::var("TF_RUST_DOWNLOAD_DIR") {
         Ok(s) => PathBuf::from(s),
-        Err(_) => PathBuf::from(&get!("CARGO_MANIFEST_DIR")).join("target"),
+        Err(_) => PathBuf::from(&get!("OUT_DIR")),
     };
     if !download_dir.exists() {
         fs::create_dir(&download_dir).unwrap();
@@ -154,19 +200,29 @@ fn install_prebuilt() {
     // Extract the tarball.
     let unpacked_dir = download_dir.join(base_name);
     let lib_dir = unpacked_dir.join("lib");
+    #[cfg(not(target_env = "msvc"))]
     let framework_library_file = format!("lib{}.{}", FRAMEWORK_LIBRARY, DLL_EXTENSION);
-    let library_file = format!("lib{}.{}", LIBRARY, DLL_EXTENSION);
+    let library_file = format!("{}{}.{}", DLL_PREFIX, LIBRARY, DLL_EXTENSION);
 
+    #[cfg(not(target_env = "msvc"))]
     let framework_library_full_path = lib_dir.join(&framework_library_file);
     let library_full_path = lib_dir.join(&library_file);
-    if !framework_library_full_path.exists() || !library_full_path.exists() {
+
+    #[cfg(not(target_env = "msvc"))]
+    let download_required = !framework_library_full_path.exists() || !library_full_path.exists();
+    #[cfg(target_env = "msvc")]
+    let download_required = !library_full_path.exists();
+
+    if download_required {
         extract(file_name, &unpacked_dir);
     }
 
+    #[cfg(not(target_env = "msvc"))] // There is no tensorflow_framework.dll
     println!("cargo:rustc-link-lib=dylib={}", FRAMEWORK_LIBRARY);
     println!("cargo:rustc-link-lib=dylib={}", LIBRARY);
     let output = PathBuf::from(&get!("OUT_DIR"));
 
+    // NOTE: The following shouldn't strictly be necessary. See note above `extract`.
     let framework_files = std::fs::read_dir(lib_dir).unwrap();
     for library_entry in framework_files.filter_map(Result::ok) {
         let library_full_path = library_entry.path();
@@ -176,14 +232,14 @@ fn install_prebuilt() {
                 "{} already exists. Removing",
                 new_library_full_path.display()
             );
-            std::fs::remove_file(&new_library_full_path).unwrap();
+            fs::remove_file(&new_library_full_path).unwrap();
         }
         log!(
             "Copying {} to {}...",
             library_full_path.display(),
             new_library_full_path.display()
         );
-        std::fs::copy(&library_full_path, &new_library_full_path).unwrap();
+        fs::copy(&library_full_path, &new_library_full_path).unwrap();
     }
     println!("cargo:rustc-link-search={}", output.display());
 }
