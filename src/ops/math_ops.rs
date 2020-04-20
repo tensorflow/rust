@@ -19,7 +19,7 @@ use tensorflow_internal_macros::define_op;
 /// let a = constant(1.0f32, &mut scope)?;
 /// let b = constant(&[1.0f32, 2.0][..], &mut scope)?;
 /// let c = constant(Tensor::new(&[2, 2]).with_values(&[0f32, 1.0, 2.0, 3.0])?, &mut scope)?;
-/// # Ok::<(), Box<Error>>(())
+/// # Ok::<(), Box<dyn Error>>(())
 /// ```
 ///
 /// Note that e.g. `&[1, 2][..]` is used instead of `&[1, 2]`.  This forces the
@@ -39,7 +39,7 @@ pub fn constant<T: TensorType, TT: Into<Tensor<T>>>(
     c.finish()
 }
 
-pub(crate) fn any_constant(value: &AnyTensor, scope: &mut Scope) -> Result<Operation> {
+pub(crate) fn any_constant(value: &dyn AnyTensor, scope: &mut Scope) -> Result<Operation> {
     let name = scope.get_unique_name_for_op("Const");
     let mut graph = scope.graph_mut();
     let mut c = graph.new_operation("Const", &name)?;

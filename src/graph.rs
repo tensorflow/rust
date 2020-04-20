@@ -286,6 +286,12 @@ pub struct Graph {
     lifetime: GraphLifetime,
 }
 
+impl Default for Graph {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Graph {
     /// Creates a new graph.
     pub fn new() -> Graph {
@@ -645,7 +651,7 @@ impl Graph {
         description: Option<&str>,
     ) -> Result<Function> {
         let fn_name_cstr = CString::new(fn_name)?;
-        let num_opers: c_int = if let &Some(ops) = &opers {
+        let num_opers: c_int = if let Some(ops) = &opers {
             ops.len() as c_int
         } else {
             -1
@@ -653,7 +659,7 @@ impl Graph {
         #[allow(trivial_casts)]
         let c_opers: Option<Vec<_>> =
             opers.map(|s| s.iter().map(|op| op.inner as *const _).collect());
-        let c_opers_ptr: *const *const tf::TF_Operation = if let &Some(ref ops) = &c_opers {
+        let c_opers_ptr: *const *const tf::TF_Operation = if let Some(ref ops) = &c_opers {
             ops.as_ptr()
         } else {
             ptr::null()
@@ -670,18 +676,18 @@ impl Graph {
         // Don't use Option::map because the CStrings need to outlive the
         // pointers and Option::map consumes the Option.
         let output_names_ptrs: Option<Vec<*const c_char>> = match &output_names_cstrs {
-            &None => None,
-            &Some(ref slice) => Some(slice.iter().map(|s| s.as_ptr()).collect()),
+            None => None,
+            Some(ref slice) => Some(slice.iter().map(|s| s.as_ptr()).collect()),
         };
         let output_names_ptrs_ptr = match &output_names_ptrs {
-            &None => ptr::null(),
-            &Some(ref v) => v.as_ptr(),
+            None => ptr::null(),
+            Some(ref v) => v.as_ptr(),
         };
         let description_cstr = match description {
             None => None,
             Some(d) => Some(CString::new(d)?),
         };
-        let description_ptr: *const c_char = if let &Some(ref cstr) = &description_cstr {
+        let description_ptr: *const c_char = if let Some(ref cstr) = &description_cstr {
             cstr.as_ptr()
         } else {
             ptr::null()
@@ -832,7 +838,7 @@ impl Graph {
             Some(s) => Some(CString::new(s)?),
             None => None,
         };
-        let prefix_ptr: *const c_char = if let &Some(ref cstr) = &prefix_cstr {
+        let prefix_ptr: *const c_char = if let Some(ref cstr) = &prefix_cstr {
             cstr.as_ptr()
         } else {
             ptr::null()
@@ -2182,7 +2188,11 @@ impl<'a> OperationDescription<'a> {
     }
 
     /// Sets a tensor-valued attribute.
-    pub(crate) fn set_attr_any_tensor(&mut self, attr_name: &str, value: &AnyTensor) -> Result<()> {
+    pub(crate) fn set_attr_any_tensor(
+        &mut self,
+        attr_name: &str,
+        value: &dyn AnyTensor,
+    ) -> Result<()> {
         let c_attr_name = CString::new(attr_name)?;
         let mut status = Status::new();
         unsafe {
@@ -2253,6 +2263,12 @@ impl<'a> OperationDescription<'a> {
 #[allow(missing_copy_implementations)]
 pub struct FunctionOptions {
     inner: *mut tf::TF_FunctionOptions,
+}
+
+impl Default for FunctionOptions {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl FunctionOptions {
@@ -2884,7 +2900,7 @@ mod tests {
             nd.set_attr_shape("shape", &Shape(Some(vec![]))).unwrap();
             nd.finish().unwrap()
         };
-        let y_op = {
+        let _y_op = {
             let mut nd = graph.new_operation("EncodeBase64", "y").unwrap();
             nd.add_input(x_op.clone());
             nd.finish().unwrap()

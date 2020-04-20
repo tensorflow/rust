@@ -4,15 +4,15 @@
 //! If you aren't sure how to use something, please see the
 //! [examples](https://github.com/tensorflow/rust/tree/master/examples) folder.
 
+// Note that we allow trivial_casts, trivial_numeric_casts, and
+// unused_qualifications, because they can show up when casting to a C type that
+// may differ between platforms.
 #![warn(
     missing_copy_implementations,
     missing_debug_implementations,
     missing_docs,
-    trivial_casts,
-    trivial_numeric_casts,
     unused_extern_crates,
-    unused_import_braces,
-    unused_qualifications
+    unused_import_braces
 )]
 
 use half::f16;
@@ -63,6 +63,12 @@ macro_rules! invalid_arg {
 
 macro_rules! impl_new {
     ($name: ident, $call:ident, $doc:expr) => {
+        impl Default for $name {
+            fn default() -> Self {
+                Self::new()
+            }
+        }
+
         impl $name {
             #[doc = $doc]
             pub fn new() -> Self {
@@ -118,8 +124,8 @@ macro_rules! c_enum {
       #[allow(dead_code)]
       fn to_int(&self) -> c_uint {
         match self {
-          &$enum_name::UnrecognizedEnumValue(c) => c,
-          $(&$enum_name::$name => $num),*
+          $enum_name::UnrecognizedEnumValue(c) => *c,
+          $($enum_name::$name => $num),*
         }
       }
 
@@ -139,8 +145,8 @@ macro_rules! c_enum {
     impl ::std::fmt::Display for $enum_name {
       fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         match self {
-          $(&$enum_name::$name => f.write_str(stringify!($name)),)*
-          &$enum_name::UnrecognizedEnumValue(c) => write!(f, "UnrecognizedEnumValue({})", c),
+          $($enum_name::$name => f.write_str(stringify!($name)),)*
+          $enum_name::UnrecognizedEnumValue(c) => write!(f, "UnrecognizedEnumValue({})", c),
         }
       }
     }
@@ -553,16 +559,13 @@ impl From<Utf8Error> for Status {
 
 impl From<IntoStringError> for Status {
     fn from(e: IntoStringError) -> Self {
-        invalid_arg!(
-            "Error converting C string to Rust string: {}",
-            e.description()
-        )
+        invalid_arg!("Error converting C string to Rust string: {}", e)
     }
 }
 
 impl From<ParseIntError> for Status {
     fn from(e: ParseIntError) -> Self {
-        invalid_arg!("Error parsing an integer: {}", e.description())
+        invalid_arg!("Error parsing an integer: {}", e)
     }
 }
 
@@ -652,6 +655,8 @@ pub type Result<T> = std::result::Result<T, Status>;
 /// types (such as `bool` and `String`) don't implement them and we need to
 /// supply custom implementations.
 pub trait TensorType: Default + Clone + Display + Debug + 'static {
+    /// Internal only; do not use outside of the tensorflow crate.
+    ///
     /// Tensor representation for this type. Normally `TensorDataCRepr` for types
     /// that have the same representation in Rust; or `TensorDataNoCRepr` for
     /// types where the Rust and C representations differ.
@@ -811,21 +816,17 @@ impl Display for BFloat16 {
 
 impl Into<f32> for BFloat16 {
     fn into(self) -> f32 {
-        unsafe {
-            // Assumes that the architecture uses IEEE-754 natively for floats
-            // and twos-complement for integers.
-            mem::transmute::<u32, f32>((self.0 as u32) << 16)
-        }
+        // Assumes that the architecture uses IEEE-754 natively for floats
+        // and twos-complement for integers.
+        f32::from_bits((self.0 as u32) << 16)
     }
 }
 
 impl From<f32> for BFloat16 {
     fn from(value: f32) -> Self {
-        unsafe {
-            // Assumes that the architecture uses IEEE-754 natively for floats
-            // and twos-complement for integers.
-            BFloat16((mem::transmute::<f32, u32>(value) >> 16) as u16)
-        }
+        // Assumes that the architecture uses IEEE-754 natively for floats
+        // and twos-complement for integers.
+        BFloat16((value.to_bits() >> 16) as u16)
     }
 }
 
@@ -938,12 +939,12 @@ pub(crate) trait AnyTensor: Debug {
 
 impl AnyTensor for Box<dyn AnyTensor> {
     fn inner(&self) -> Result<*mut tf::TF_Tensor> {
-        let borrowed: &AnyTensor = self.borrow();
+        let borrowed: &dyn AnyTensor = self.borrow();
         borrowed.inner()
     }
 
     fn data_type(&self) -> DataType {
-        let borrowed: &AnyTensor = self.borrow();
+        let borrowed: &dyn AnyTensor = self.borrow();
         borrowed.data_type()
     }
 }
@@ -958,6 +959,8 @@ unsafe fn tensor_dims(tensor: *mut tf::TF_Tensor) -> Vec<u64> {
     dims
 }
 
+/// Internal only; do not use outside of the tensorflow crate.
+///
 /// Inner representation of `Tensor`s.
 #[doc(hidden)]
 pub trait TensorInner<T>: Debug + Clone
@@ -969,10 +972,14 @@ where
     fn new_inner(dims: &[u64]) -> Self;
 
     /// Wraps a TF_Tensor. Returns None if types don't match.
+    ///
+    /// # Safety
+    ///
+    /// Must be a valid, non-null pointer. Takes ownership of the TF_Tensor.
     unsafe fn from_tf_tensor(tensor: *mut tf::TF_Tensor) -> Option<Self>;
 
     /// Return a mutable pointer to the C tensor.
-    fn as_mut_ptr(&self, dims: &Vec<u64>) -> Result<*mut tf::TF_Tensor>;
+    fn as_mut_ptr(&self, dims: &[u64]) -> Result<*mut tf::TF_Tensor>;
 }
 
 ////////////////////////
@@ -1044,7 +1051,7 @@ where
         })
     }
 
-    fn as_mut_ptr(&self, _dims: &Vec<u64>) -> Result<*mut tf::TF_Tensor> {
+    fn as_mut_ptr(&self, _dims: &[u64]) -> Result<*mut tf::TF_Tensor> {
         assert!(!self.inner.is_null());
         Ok(self.inner)
     }
@@ -1147,7 +1154,7 @@ where
         })
     }
 
-    fn as_mut_ptr(&self, dims: &Vec<u64>) -> Result<*mut tf::TF_Tensor> {
+    fn as_mut_ptr(&self, dims: &[u64]) -> Result<*mut tf::TF_Tensor> {
         let mut inner = self.inner.get();
 
         if inner.is_null() {
@@ -1370,7 +1377,7 @@ impl<T: TensorType> Tensor<T> {
 
         Some(Tensor {
             inner: T::InnerType::from_tf_tensor(tensor)?,
-            dims: dims,
+            dims,
         })
     }
 }
@@ -1430,7 +1437,7 @@ fn write_tensor_recursive<T: Display>(
     shape: &[u64],
     values: &[T],
 ) -> ::std::fmt::Result {
-    if shape.len() == 0 {
+    if shape.is_empty() {
         // Handle special case of a scalar tensor.
         write!(f, "{}", values[0])
     } else {
@@ -1484,7 +1491,7 @@ impl Library {
         if inner.is_null() {
             Err(status)
         } else {
-            Ok(Library { inner: inner })
+            Ok(Library { inner })
         }
     }
 
@@ -1605,6 +1612,18 @@ impl Shape {
 impl From<Option<Vec<Option<i64>>>> for Shape {
     fn from(data: Option<Vec<Option<i64>>>) -> Shape {
         Shape(data)
+    }
+}
+
+impl From<&[i32]> for Shape {
+    fn from(data: &[i32]) -> Shape {
+        Shape(Some(data.iter().map(|i| Some(*i as i64)).collect()))
+    }
+}
+
+impl From<&[u32]> for Shape {
+    fn from(data: &[u32]) -> Shape {
+        Shape(Some(data.iter().map(|i| Some(*i as i64)).collect()))
     }
 }
 

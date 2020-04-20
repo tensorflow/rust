@@ -4,7 +4,6 @@ use std::error::Error;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
-use std::process::exit;
 use std::result::Result;
 use tensorflow::Code;
 use tensorflow::Graph;
@@ -19,20 +18,7 @@ use tensorflow::Tensor;
 #[cfg(feature = "examples_system_alloc")]
 static ALLOCATOR: std::alloc::System = std::alloc::System;
 
-fn main() {
-    // Putting the main code in another function serves two purposes:
-    // 1. We can use the `?` operator.
-    // 2. We can call exit safely, which does not run any destructors.
-    exit(match run() {
-        Ok(_) => 0,
-        Err(e) => {
-            println!("{}", e);
-            1
-        }
-    })
-}
-
-fn run() -> Result<(), Box<dyn Error>> {
+fn main() -> Result<(), Box<dyn Error>> {
     let filename = "examples/regression/model.pb"; // y = w * x + b
     if !Path::new(filename).exists() {
         return Err(Box::new(

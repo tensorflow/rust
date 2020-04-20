@@ -55,8 +55,8 @@ impl Variable {
 #[derive(Debug)]
 enum VariableInitialValue<'a> {
     Unspecified,
-    TensorBox(Box<AnyTensor>),
-    TensorRef(&'a AnyTensor),
+    TensorBox(Box<dyn AnyTensor>),
+    TensorRef(&'a dyn AnyTensor),
     Output(Output),
 }
 
@@ -88,7 +88,6 @@ impl<'a> VariableBuilder<'a> {
             initial_value: VariableInitialValue::TensorBox(Box::<Tensor<T>>::new(t)),
             dtype: Some(T::data_type()),
             shape,
-            ..self
         }
     }
 
@@ -100,7 +99,6 @@ impl<'a> VariableBuilder<'a> {
             initial_value: VariableInitialValue::TensorRef(value),
             dtype: Some(T::data_type()),
             shape,
-            ..self
         }
     }
 

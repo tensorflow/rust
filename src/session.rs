@@ -71,9 +71,9 @@ impl SavedModelBundle {
         if inner.is_null() {
             Err(status)
         } else {
-            let session = Session { inner: inner };
+            let session = Session { inner };
             Ok(SavedModelBundle {
-                session: session,
+                session,
                 meta_graph_def: Vec::from(meta.as_ref()),
                 #[cfg(feature = "experimental_training")]
                 meta_graph: MetaGraphDef::from_serialized_proto(meta.as_ref())?,
@@ -81,6 +81,7 @@ impl SavedModelBundle {
         }
     }
 
+    /// Returns the metagraph definition for the saved model.
     #[cfg(feature = "experimental_training")]
     pub fn meta_graph_def(&self) -> &MetaGraphDef {
         &self.meta_graph
@@ -103,7 +104,7 @@ impl Session {
         if inner.is_null() {
             Err(status)
         } else {
-            Ok(Session { inner: inner })
+            Ok(Session { inner })
         }
     }
 
@@ -145,7 +146,7 @@ impl Session {
         if inner.is_null() {
             Err(status)
         } else {
-            Ok(Session { inner: inner })
+            Ok(Session { inner })
         }
     }
 
@@ -310,6 +311,12 @@ pub struct SessionRunArgs<'l> {
     phantom: marker::PhantomData<&'l ()>,
 }
 
+impl<'l> Default for SessionRunArgs<'l> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl<'l> SessionRunArgs<'l> {
     /// Creates a SessionRunArgs.
     pub fn new() -> Self {
@@ -341,7 +348,7 @@ impl<'l> SessionRunArgs<'l> {
     ) {
         self.input_ports.push(tf::TF_Output {
             oper: operation.inner(),
-            index: index,
+            index,
         });
         self.input_tensors.push(tensor);
     }
@@ -365,7 +372,7 @@ impl<'l> SessionRunArgs<'l> {
     pub fn request_fetch(&mut self, operation: &Operation, index: c_int) -> FetchToken {
         self.output_ports.push(tf::TF_Output {
             oper: operation.inner(),
-            index: index,
+            index,
         });
         self.output_tensors.push(ptr::null_mut());
         FetchToken {
@@ -533,7 +540,6 @@ mod tests {
     use super::super::Tensor;
     use super::*;
     use serial_test::serial;
-    use std::fs;
 
     fn create_session() -> (Session, Operation, Operation) {
         let mut g = Graph::new();

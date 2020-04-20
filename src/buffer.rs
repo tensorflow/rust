@@ -81,7 +81,7 @@ impl<T: TensorType> Buffer<T> {
         (*inner).data = ptr as *const std_c_void;
         (*inner).length = len;
         Buffer {
-            inner: inner,
+            inner,
             owned: true,
             phantom: PhantomData,
         }
@@ -110,7 +110,7 @@ impl<T: TensorType> Buffer<T> {
     pub unsafe fn from_c(buf: *mut tf::TF_Buffer, owned: bool) -> Self {
         Buffer {
             inner: buf,
-            owned: owned,
+            owned,
             phantom: PhantomData,
         }
     }
@@ -229,7 +229,7 @@ impl<T: TensorType> Index<usize> for Buffer<T> {
             index,
             self.length()
         );
-        unsafe { &*self.data().offset(index as isize) }
+        unsafe { &*self.data().add(index) }
     }
 }
 
@@ -242,7 +242,7 @@ impl<T: TensorType> IndexMut<usize> for Buffer<T> {
             index,
             self.length()
         );
-        unsafe { &mut *self.data_mut().offset(index as isize) }
+        unsafe { &mut *self.data_mut().add(index) }
     }
 }
 
@@ -263,7 +263,7 @@ impl<T: TensorType> Index<Range<usize>> for Buffer<T> {
             index.end,
             self.length()
         );
-        unsafe { slice::from_raw_parts(&*self.data().offset(index.start as isize), index.len()) }
+        unsafe { slice::from_raw_parts(&*self.data().add(index.start), index.len()) }
     }
 }
 
@@ -282,12 +282,7 @@ impl<T: TensorType> IndexMut<Range<usize>> for Buffer<T> {
             index.end,
             self.length()
         );
-        unsafe {
-            slice::from_raw_parts_mut(
-                &mut *self.data_mut().offset(index.start as isize),
-                index.len(),
-            )
-        }
+        unsafe { slice::from_raw_parts_mut(&mut *self.data_mut().add(index.start), index.len()) }
     }
 }
 
@@ -331,10 +326,7 @@ impl<T: TensorType> Index<RangeFrom<usize>> for Buffer<T> {
             self.length()
         );
         unsafe {
-            slice::from_raw_parts(
-                &*self.data().offset(index.start as isize),
-                self.length() - index.start,
-            )
+            slice::from_raw_parts(&*self.data().add(index.start), self.length() - index.start)
         }
     }
 }
@@ -350,7 +342,7 @@ impl<T: TensorType> IndexMut<RangeFrom<usize>> for Buffer<T> {
         );
         unsafe {
             slice::from_raw_parts_mut(
-                &mut *self.data_mut().offset(index.start as isize),
+                &mut *self.data_mut().add(index.start),
                 self.length() - index.start,
             )
         }

@@ -151,11 +151,11 @@ impl<'a> WhileBuilder<'a> {
 
         unsafe {
             c_outputs.set_len(self.inner.inner.ninputs as usize);
-            for i in 0..c_outputs.len() {
+            for c_output in &mut c_outputs {
                 // For some reason, these have to be initialized to {null, -1},
                 // even though they're output parameters.
-                c_outputs[i].oper = ptr::null_mut();
-                c_outputs[i].index = -1;
+                c_output.oper = ptr::null_mut();
+                c_output.index = -1;
             }
             self.inner.finished = true; // used by Drop impl
             tf::TF_FinishWhile(&self.inner.inner, status.inner, c_outputs.as_mut_ptr());
