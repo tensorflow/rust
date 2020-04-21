@@ -6,7 +6,7 @@ extern crate tar;
 
 use std::env::consts::DLL_EXTENSION;
 use std::error::Error;
-use std::fs::{DirEntry, File};
+use std::fs::File;
 use std::io::BufWriter;
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -311,7 +311,7 @@ where
 //       ERROR: com.google.devtools.build.lib.packages.BuildFileContainsErrorsException: error
 // loading package '': Extension file 'tensorflow/tensorflow.bzl' has errors.
 // And the simple solution is to require Bazel 0.3.1 or higher.
-fn check_bazel() -> Result<(), Box<Error>> {
+fn check_bazel() -> Result<(), Box<dyn Error>> {
     let mut command = Command::new("bazel");
     command.arg("version");
     log!("Executing {:?}", command);

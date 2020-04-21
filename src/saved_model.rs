@@ -282,6 +282,12 @@ pub struct SavedModelBuilder {
     signatures: HashMap<String, SignatureDef>,
 }
 
+impl Default for SavedModelBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl SavedModelBuilder {
     /// Creates a new SavedModelBuilder.
     pub fn new() -> SavedModelBuilder {
@@ -294,8 +300,7 @@ impl SavedModelBuilder {
 
     /// Adds a collection to be saved.
     pub fn add_collection(&mut self, key: &str, variables: &[Variable]) -> &mut Self {
-        self.collections
-            .insert(key.to_string(), variables.iter().cloned().collect());
+        self.collections.insert(key.to_string(), variables.to_vec());
         self
     }
 

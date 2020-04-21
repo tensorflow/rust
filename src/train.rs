@@ -109,7 +109,7 @@ pub trait Optimizer {
     ) -> Result<(Vec<Variable>, Operation)> {
         let grads_and_vars = self.compute_gradients(
             scope,
-            loss.clone(),
+            loss,
             ComputeGradientsOptions {
                 variables: opts.variables,
             },
@@ -147,14 +147,12 @@ impl Optimizer for GradientDescentOptimizer {
         let mut apply_ops = Vec::new();
         for (grad, var) in opts.grads_and_vars {
             if let Some(grad) = grad {
-                // TODO: use standard op
-                let name = scope.get_unique_name_for_op("ApplyGradientDescent");
-                let mut graph = scope.graph_mut();
-                let mut nd = graph.new_operation("ApplyGradientDescent", &name)?;
-                nd.add_input(var.output.clone());
-                nd.add_input(self.learning_rate.clone());
-                nd.add_input(grad.clone());
-                apply_ops.push(nd.finish()?);
+                apply_ops.push(ops::apply_gradient_descent(
+                    var.output.clone(),
+                    self.learning_rate.clone(),
+                    grad.clone(),
+                    scope,
+                )?);
             }
         }
         let mut nop = ops::NoOp::new();
@@ -173,6 +171,12 @@ pub struct AdadeltaOptimizer {
     learning_rate: Option<Output>,
     rho: Option<Output>,
     epsilon: Option<Output>,
+}
+
+impl Default for AdadeltaOptimizer {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl AdadeltaOptimizer {
@@ -245,18 +249,16 @@ impl Optimizer for AdadeltaOptimizer {
                 let accum = create_zeros_slot(&mut scope.new_sub_scope("accum"), var, None)?;
                 let accum_update =
                     create_zeros_slot(&mut scope.new_sub_scope("accum_update"), var, None)?;
-                // TODO: use standard op
-                let name = scope.get_unique_name_for_op("ApplyAdadelta");
-                let mut graph = scope.graph_mut();
-                let mut nd = graph.new_operation("ApplyAdadelta", &name)?;
-                nd.add_input(var.output.clone());
-                nd.add_input(accum.output.clone());
-                nd.add_input(accum_update.output.clone());
-                nd.add_input(learning_rate.clone());
-                nd.add_input(rho.clone());
-                nd.add_input(epsilon.clone());
-                nd.add_input(grad.clone());
-                apply_ops.push(nd.finish()?);
+                apply_ops.push(ops::apply_adadelta(
+                    var.output.clone(),
+                    accum.output.clone(),
+                    accum_update.output.clone(),
+                    learning_rate.clone(),
+                    rho.clone(),
+                    epsilon.clone(),
+                    grad.clone(),
+                    &mut scope,
+                )?);
                 variables.push(accum.clone());
                 variables.push(accum_update.clone());
             }

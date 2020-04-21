@@ -12,7 +12,7 @@ use std::{
 };
 
 fn mask_crc(crc: u32) -> u32 {
-    ((crc >> 15) | (crc << 17)).wrapping_add(0xa282ead8u32)
+    ((crc >> 15) | (crc << 17)).wrapping_add(0xa282_ead8u32)
 }
 
 /// A type for writing bytes in the TFRecords format.
@@ -56,10 +56,10 @@ where
         let mut bytes_crc32_bytes = [0u8; 4];
         (&mut bytes_crc32_bytes[..]).write_u32::<LittleEndian>(masked_bytes_crc32c)?;
 
-        self.writer.write(&len_bytes)?;
-        self.writer.write(&len_crc32_bytes)?;
-        self.writer.write(bytes)?;
-        self.writer.write(&bytes_crc32_bytes)?;
+        self.writer.write_all(&len_bytes)?;
+        self.writer.write_all(&len_crc32_bytes)?;
+        self.writer.write_all(bytes)?;
+        self.writer.write_all(&bytes_crc32_bytes)?;
         Ok(())
     }
 }
@@ -154,7 +154,7 @@ where
     /// Use this to find out how large the byte slice needs to be to read the next record.
     pub fn peek_next_len(&mut self) -> Result<Option<u64>, RecordReadError> {
         let len = self.read_next_len_unchecked()?;
-        if let Some(_) = len {
+        if len.is_some() {
             self.reader.seek(SeekFrom::Current(-8))?;
         }
 
@@ -237,16 +237,17 @@ where
 
         let mut len_bytes = [0u8; 8];
         LittleEndian::write_u64(&mut len_bytes, len);
-        if !self.checksum(&mut len_bytes)? {
+        if !self.checksum(&len_bytes)? {
             return Err(RecordReadError::CorruptFile);
         }
 
         let slice = &mut buf[0..len as usize];
         self.read_bytes_exact_unchecked(slice)?;
 
-        match self.checksum(slice)? {
-            true => Ok(Some(len as usize)),
-            false => Err(RecordReadError::CorruptRecord),
+        if self.checksum(slice)? {
+            Ok(Some(len as usize))
+        } else {
+            Err(RecordReadError::CorruptRecord)
         }
     }
     /// Allocate a Vec<u8> on the heap and read the next record into it.
@@ -290,14 +291,15 @@ where
         };
         let mut len_bytes = [0u8; 8];
         LittleEndian::write_u64(&mut len_bytes, len);
-        if !self.checksum(&mut len_bytes)? {
+        if !self.checksum(&len_bytes)? {
             return Err(RecordReadError::CorruptFile);
         }
         let mut vec = vec![0u8; len as usize];
         self.read_bytes_exact_unchecked(&mut vec)?;
-        match self.checksum(&vec)? {
-            true => Ok(Some(vec)),
-            false => Err(RecordReadError::CorruptRecord),
+        if self.checksum(&vec)? {
+            Ok(Some(vec))
+        } else {
+            Err(RecordReadError::CorruptRecord)
         }
     }
     /// Convert the Reader into an Iterator<Item = Result<Vec<u8>, RecordReadError>, which iterates
@@ -346,7 +348,7 @@ impl<R: Read + Seek> Iterator for RecordOwnedIterator<R> {
     fn next(&mut self) -> Option<Self::Item> {
         match self.records.read_next_owned().transpose() {
             Some(Err(RecordReadError::CorruptFile)) => None,
-            rest @ _ => rest,
+            rest => rest,
         }
     }
 }

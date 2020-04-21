@@ -24,5 +24,10 @@ pub use math_ops::*;
 mod random_ops;
 pub use random_ops::*;
 
+#[allow(
+    clippy::double_parens,
+    clippy::too_many_arguments,
+    clippy::wrong_self_convention
+)]
 mod ops_impl;
 pub use ops_impl::*;

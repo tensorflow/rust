@@ -2,7 +2,6 @@ extern crate random;
 extern crate tensorflow;
 
 use std::error::Error;
-use std::process::exit;
 use std::result::Result;
 use tensorflow::expr::{Compiler, Placeholder};
 use tensorflow::Code;
@@ -16,19 +15,6 @@ use tensorflow::Tensor;
 #[cfg_attr(feature = "examples_system_alloc", global_allocator)]
 #[cfg(feature = "examples_system_alloc")]
 static ALLOCATOR: std::alloc::System = std::alloc::System;
-
-fn main() {
-    // Putting the main code in another function serves two purposes:
-    // 1. We can use the `?` operator.
-    // 2. We can call exit safely, which does not run any destructors.
-    exit(match run() {
-        Ok(_) => 0,
-        Err(e) => {
-            println!("{}", e);
-            1
-        }
-    })
-}
 
 struct Checker {
     success: bool,
@@ -55,7 +41,7 @@ impl Checker {
         self.success &= success;
     }
 
-    fn result(&self) -> Result<(), Box<Error>> {
+    fn result(&self) -> Result<(), Box<dyn Error>> {
         if self.success {
             Ok(())
         } else {
@@ -67,7 +53,7 @@ impl Checker {
     }
 }
 
-fn run() -> Result<(), Box<Error>> {
+fn main() -> Result<(), Box<dyn Error>> {
     // Build the graph
     let mut g = Graph::new();
     let y_node = {

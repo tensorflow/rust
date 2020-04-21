@@ -50,7 +50,7 @@ pub enum OpLevel {
 /// and we can't directly implement std::ops::Add, etc., for Rc&lt;E: ExprImpl&lt;Tgt;&gt;.
 #[derive(Debug, Clone)]
 pub struct Expr<T: TensorType> {
-    expr: Rc<ExprImpl<T>>,
+    expr: Rc<dyn ExprImpl<T>>,
 }
 
 impl<T: TensorType> Expr<T> {
@@ -66,7 +66,7 @@ impl<T: TensorType> Expr<T> {
 }
 
 impl<T: TensorType> ops::Deref for Expr<T> {
-    type Target = ExprImpl<T>;
+    type Target = dyn ExprImpl<T>;
 
     fn deref(&self) -> &Self::Target {
         self.expr.deref()
@@ -108,7 +108,7 @@ pub trait ExprImpl<T: TensorType>: Display + Debug {
     /// Returns the child expressions.
     ///
     /// For example, the child expressions of `x + y` would be `x` and `y`.
-    fn children(&self) -> Vec<Box<AnyExpr>>; // TODO: return an iterator
+    fn children(&self) -> Vec<Box<dyn AnyExpr>>; // TODO: return an iterator
 
     /// Creates an operation for the expression.
     ///
@@ -118,7 +118,7 @@ pub trait ExprImpl<T: TensorType>: Display + Debug {
         &self,
         graph: &mut Graph,
         children: &[Operation],
-        id_gen: &mut FnMut() -> String,
+        id_gen: &mut dyn FnMut() -> String,
     ) -> Result<Operation, Status>;
 
     /// Returns the derivative of the expression with respect to the given variable.
@@ -135,7 +135,7 @@ impl<T: TensorType> ExprImpl<T> for T {
         OpLevel::Atom
     }
 
-    fn children(&self) -> Vec<Box<AnyExpr>> {
+    fn children(&self) -> Vec<Box<dyn AnyExpr>> {
         vec![]
     }
 
@@ -143,7 +143,7 @@ impl<T: TensorType> ExprImpl<T> for T {
         &self,
         graph: &mut Graph,
         _children: &[Operation],
-        id_gen: &mut FnMut() -> String,
+        id_gen: &mut dyn FnMut() -> String,
     ) -> Result<Operation, Status> {
         let mut nd = graph.new_operation("Const", &id_gen())?;
         nd.set_attr_type("dtype", T::data_type())?;
@@ -218,12 +218,12 @@ macro_rules! impl_bin_op {
         OpLevel::$op_level
       }
 
-      fn children(&self) -> Vec<Box<AnyExpr>> {
+      fn children(&self) -> Vec<Box<dyn AnyExpr>> {
         vec![Box::new(self.left.clone()), Box::new(self.right.clone())]
       }
 
       fn create_operation(&self, graph: &mut Graph, children: &[Operation],
-          id_gen: &mut FnMut() -> String) -> Result<Operation, Status> {
+          id_gen: &mut dyn FnMut() -> String) -> Result<Operation, Status> {
         let mut nd = graph.new_operation($tf_op, &id_gen())?;
         nd.add_input(children[0].clone());
         nd.add_input(children[1].clone());
@@ -283,10 +283,7 @@ pub struct TruncateDiv<T: TensorType> {
 
 impl<T: TensorType> TruncateDiv<T> {
     fn new(left: Expr<T>, right: Expr<T>) -> Self {
-        TruncateDiv {
-            left: left,
-            right: right,
-        }
+        TruncateDiv { left, right }
     }
 
     /// Creates an expression that divides `left` by `right` and rounds toward zero.
@@ -306,7 +303,7 @@ impl<T: TensorType> ExprImpl<T> for TruncateDiv<T> {
         OpLevel::Mul
     }
 
-    fn children(&self) -> Vec<Box<AnyExpr>> {
+    fn children(&self) -> Vec<Box<dyn AnyExpr>> {
         vec![Box::new(self.left.clone()), Box::new(self.right.clone())]
     }
 
@@ -314,7 +311,7 @@ impl<T: TensorType> ExprImpl<T> for TruncateDiv<T> {
         &self,
         graph: &mut Graph,
         children: &[Operation],
-        id_gen: &mut FnMut() -> String,
+        id_gen: &mut dyn FnMut() -> String,
     ) -> Result<Operation, Status> {
         let mut nd = graph.new_operation("TruncateDiv", &id_gen())?;
         nd.add_input(children[0].clone());
@@ -365,7 +362,7 @@ impl<T: TensorType> ExprImpl<T> for Neg<T> {
         OpLevel::Unary
     }
 
-    fn children(&self) -> Vec<Box<AnyExpr>> {
+    fn children(&self) -> Vec<Box<dyn AnyExpr>> {
         vec![Box::new(self.expr.clone())]
     }
 
@@ -373,7 +370,7 @@ impl<T: TensorType> ExprImpl<T> for Neg<T> {
         &self,
         graph: &mut Graph,
         children: &[Operation],
-        id_gen: &mut FnMut() -> String,
+        id_gen: &mut dyn FnMut() -> String,
     ) -> Result<Operation, Status> {
         let mut nd = graph.new_operation("Neg", &id_gen())?;
         nd.add_input(children[0].clone());
@@ -421,7 +418,7 @@ impl<T: TensorType> ExprImpl<T> for Variable<T> {
         OpLevel::Atom
     }
 
-    fn children(&self) -> Vec<Box<AnyExpr>> {
+    fn children(&self) -> Vec<Box<dyn AnyExpr>> {
         vec![]
     }
 
@@ -429,7 +426,7 @@ impl<T: TensorType> ExprImpl<T> for Variable<T> {
         &self,
         graph: &mut Graph,
         _children: &[Operation],
-        _id_gen: &mut FnMut() -> String,
+        _id_gen: &mut dyn FnMut() -> String,
     ) -> Result<Operation, Status> {
         let mut nd = graph.new_operation("Variable", &self.name)?;
         let shape = self
@@ -492,7 +489,7 @@ impl<T: TensorType> ExprImpl<T> for Placeholder<T> {
         OpLevel::Atom
     }
 
-    fn children(&self) -> Vec<Box<AnyExpr>> {
+    fn children(&self) -> Vec<Box<dyn AnyExpr>> {
         vec![]
     }
 
@@ -500,7 +497,7 @@ impl<T: TensorType> ExprImpl<T> for Placeholder<T> {
         &self,
         graph: &mut Graph,
         _children: &[Operation],
-        _id_gen: &mut FnMut() -> String,
+        _id_gen: &mut dyn FnMut() -> String,
     ) -> Result<Operation, Status> {
         let mut nd = graph.new_operation("Placeholder", &self.name)?;
         let shape = self
@@ -554,7 +551,7 @@ impl<T: TensorType> ExprImpl<T> for Constant<T> {
         OpLevel::Atom
     }
 
-    fn children(&self) -> Vec<Box<AnyExpr>> {
+    fn children(&self) -> Vec<Box<dyn AnyExpr>> {
         vec![]
     }
 
@@ -562,7 +559,7 @@ impl<T: TensorType> ExprImpl<T> for Constant<T> {
         &self,
         graph: &mut Graph,
         _children: &[Operation],
-        id_gen: &mut FnMut() -> String,
+        id_gen: &mut dyn FnMut() -> String,
     ) -> Result<Operation, Status> {
         let mut nd = graph.new_operation("Const", &id_gen())?;
 
@@ -587,10 +584,7 @@ pub struct Assign<T: TensorType> {
 
 impl<T: TensorType> Assign<T> {
     fn new(variable: Expr<T>, value: Expr<T>) -> Self {
-        Assign {
-            variable: variable,
-            value: value,
-        }
+        Assign { variable, value }
     }
 
     /// Creates an expression that assigns `value` to `variable`.
@@ -628,7 +622,7 @@ impl<T: TensorType> ExprImpl<T> for Assign<T> {
         OpLevel::Assign
     }
 
-    fn children(&self) -> Vec<Box<AnyExpr>> {
+    fn children(&self) -> Vec<Box<dyn AnyExpr>> {
         vec![
             Box::new(self.variable.clone()),
             Box::new(self.value.clone()),
@@ -639,7 +633,7 @@ impl<T: TensorType> ExprImpl<T> for Assign<T> {
         &self,
         graph: &mut Graph,
         children: &[Operation],
-        id_gen: &mut FnMut() -> String,
+        id_gen: &mut dyn FnMut() -> String,
     ) -> Result<Operation, Status> {
         let mut nd = graph.new_operation("Assign", &id_gen())?;
         nd.add_input(children[0].clone());
@@ -664,7 +658,7 @@ pub trait AnyExpr: Debug {
     /// Returns the child expressions.
     ///
     /// For example, the child expressions of `x + y` would be `x` and `y`.
-    fn children(&self) -> Vec<Box<AnyExpr>>; // TODO: return an iterator
+    fn children(&self) -> Vec<Box<dyn AnyExpr>>; // TODO: return an iterator
 
     /// Creates an operation for the expression.
     ///
@@ -674,23 +668,23 @@ pub trait AnyExpr: Debug {
         &self,
         graph: &mut Graph,
         children: &[Operation],
-        id_gen: &mut FnMut() -> String,
+        id_gen: &mut dyn FnMut() -> String,
     ) -> Result<Operation, Status>;
 
     /// Returns a boxed clone.
     ///
     /// This is used rather than the `Clone` trait because that would prevent
     /// `AnyExpr` values from being used as trait objects.
-    fn clone_box(&self) -> Box<AnyExpr>;
+    fn clone_box(&self) -> Box<dyn AnyExpr>;
 }
 
 impl<T: TensorType> AnyExpr for Expr<T> {
     #[allow(trivial_casts)]
     fn key(&self) -> *const () {
-        self.expr.as_ref() as *const ExprImpl<T> as *const ()
+        self.expr.as_ref() as *const dyn ExprImpl<T> as *const ()
     }
 
-    fn children(&self) -> Vec<Box<AnyExpr>> {
+    fn children(&self) -> Vec<Box<dyn AnyExpr>> {
         self.expr.children()
     }
 
@@ -698,18 +692,18 @@ impl<T: TensorType> AnyExpr for Expr<T> {
         &self,
         graph: &mut Graph,
         children: &[Operation],
-        id_gen: &mut FnMut() -> String,
+        id_gen: &mut dyn FnMut() -> String,
     ) -> Result<Operation, Status> {
         self.expr.create_operation(graph, children, id_gen)
     }
 
-    fn clone_box(&self) -> Box<AnyExpr> {
+    fn clone_box(&self) -> Box<dyn AnyExpr> {
         Box::new(self.clone())
     }
 }
 
 #[derive(Debug)]
-struct Key(Box<AnyExpr>);
+struct Key(Box<dyn AnyExpr>);
 
 impl PartialEq for Key {
     fn eq(&self, other: &Key) -> bool {
@@ -740,7 +734,7 @@ impl<'l> Compiler<'l> {
     /// Creates a compiler for the given graph.
     pub fn new(graph: &'l mut Graph) -> Self {
         Compiler {
-            graph: graph,
+            graph,
             operations: HashMap::new(),
             next_id: 0,
         }
@@ -752,13 +746,13 @@ impl<'l> Compiler<'l> {
     }
 
     /// Compiles the expression.
-    pub fn compile_any(&mut self, expr: Box<AnyExpr>) -> Result<Operation, Status> {
+    pub fn compile_any(&mut self, expr: Box<dyn AnyExpr>) -> Result<Operation, Status> {
         let mut child_operations = vec![];
         for child in expr.children() {
             let key = Key(child.clone_box());
             // The result is mapped separately from the match statement below to avoid
             // reference lifetime isues.
-            let value = self.operations.get(&key).map(|v| v.clone());
+            let value = self.operations.get(&key).cloned();
             child_operations.push(match value {
                 Some(v) => v,
                 None => self.compile_any(child)?,

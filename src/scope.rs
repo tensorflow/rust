@@ -1,5 +1,4 @@
 use crate::Graph;
-use crate::Operation;
 use std::borrow::Borrow;
 use std::cell::RefCell;
 use std::collections::hash_map::Entry;
@@ -29,15 +28,19 @@ fn join(sep: &str, left: &str, right: &str) -> String {
 /// get a Scope object as a mandatory first argument and the constructed op
 /// acquires the properties in the object.
 ///
-// TODO: Fix this example
-// A simple example:
-//
-// ```ignore
-// let root = Scope::new_root_scope();
-// let c1 = Const(&root, { {1, 1} });
-// let m = MatMul(&root, c1, { {41}, {1} });
-// ```
-//
+/// A simple example:
+///
+/// ```
+/// # use tensorflow::Scope;
+/// # use tensorflow::Tensor;
+/// # use tensorflow::ops;
+/// let mut root = Scope::new_root_scope();
+/// let c1 = ops::constant(Tensor::new(&[1, 2]).with_values(&[1, 1])?, &mut root)?;
+/// let c2 = ops::constant(Tensor::new(&[2, 1]).with_values(&[41, 1])?, &mut root)?;
+/// let m = ops::mat_mul(c1.into(), c2.into(), &mut root)?;
+/// # Ok::<(), Box<dyn std::error::Error>>(())
+/// ```
+///
 /// # Scope hierarchy
 ///
 /// The Scope class provides various `with_*` functions that create a new scope.
@@ -47,24 +50,41 @@ fn join(sep: &str, left: &str, right: &str) -> String {
 /// created within the scope, and `with_op_name()` changes the suffix which
 /// otherwise defaults to the type of the op.
 ///
-// TODO: Fix this example
-// Name examples:
-//
-// ```ignore
-// let root = Scope::new_root_scope();
-// let linear = root.new_sub_scope("linear");
-// // W will be named "linear/W"
-// let W = Variable(&linear.with_op_name("W"),
-//                   {2, 2}, DataType::Float);
-// // b will be named "linear/b_3"
-// let idx = 3;
-// let b = Variable(&linear.with_op_name("b_", idx),
-//                   {2}, DataType::Float);
-// let x = Const(&linear, {...});  // name: "linear/Const"
-// let m = MatMul(&linear, x, W);  // name: "linear/MatMul"
-// let r = BiasAdd(&linear, m, b); // name: "linear/BiasAdd"
-// ```
-//
+/// Name examples:
+///
+/// ```
+/// # use tensorflow::DataType;
+/// # use tensorflow::Scope;
+/// # use tensorflow::Shape;
+/// # use tensorflow::Tensor;
+/// # use tensorflow::Variable;
+/// # use tensorflow::ops;
+/// let mut root = Scope::new_root_scope();
+/// let mut linear = root.new_sub_scope("linear");
+/// let w = Variable::builder()
+///   .const_initial_value(
+///     Tensor::new(&[2, 2])
+///       .with_values(&[0.0f32, 0.0, 0.0, 0.0])?)
+///   .build(&mut linear.with_op_name("W"))?;
+/// assert_eq!(w.name(), "linear/W");
+/// let b = Variable::builder()
+///   .const_initial_value(
+///     Tensor::new(&[2])
+///       .with_values(&[0.0f32, 0.0])?)
+///   .build(&mut linear.with_op_name("b"))?;
+/// assert_eq!(b.name(), "linear/b");
+/// let x = ops::constant(
+///   Tensor::new(&[2, 2])
+///     .with_values(&[1.0f32, 2.0, 3.0, 4.0])?,
+///    &mut linear)?;
+/// assert_eq!(x.name()?, "linear/Const");
+/// let m = ops::mat_mul(x.into(), w.output().clone(), &mut linear)?;
+/// assert_eq!(m.name()?, "linear/MatMul");
+/// let r = ops::bias_add(m.into(), b.output().clone(), &mut linear)?;
+/// assert_eq!(r.name()?, "linear/BiasAdd");
+/// # Ok::<(), Box<dyn std::error::Error>>(())
+/// ```
+///
 /// # Scope lifetime
 ///
 /// A new scope is created by calling `Scope::new_root_scope`. This creates some
