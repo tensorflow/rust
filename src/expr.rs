@@ -236,41 +236,71 @@ macro_rules! impl_bin_op {
 }
 
 impl_bin_op!(
-  Add, add, "+", Add, true, "Add", "Expression resulting from adding two subexpressions.",
-  fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
-    Ok(self.left.derivative_by_variable(var)? + self.right.derivative_by_variable(var)?)
-  }
-  );
+    Add,
+    add,
+    "+",
+    Add,
+    true,
+    "Add",
+    "Expression resulting from adding two subexpressions.",
+    fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
+        Ok(self.left.derivative_by_variable(var)? + self.right.derivative_by_variable(var)?)
+    }
+);
 impl_bin_op!(
-  Sub, sub, "-", Add, false, "Sub", "Expression resulting from subtracting two subexpressions.",
-  fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
-    Ok(self.left.derivative_by_variable(var)? - self.right.derivative_by_variable(var)?)
-  }
-  );
+    Sub,
+    sub,
+    "-",
+    Add,
+    false,
+    "Sub",
+    "Expression resulting from subtracting two subexpressions.",
+    fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
+        Ok(self.left.derivative_by_variable(var)? - self.right.derivative_by_variable(var)?)
+    }
+);
 impl_bin_op!(
-  Mul, mul, "*", Mul, true, "Mul", "Expression resulting from multiplying two subexpressions.",
-  fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
-    Ok(self.left.derivative_by_variable(var)? * self.right.clone()
-    + self.left.clone() * self.right.derivative_by_variable(var)?)
-  }
-  );
+    Mul,
+    mul,
+    "*",
+    Mul,
+    true,
+    "Mul",
+    "Expression resulting from multiplying two subexpressions.",
+    fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
+        Ok(self.left.derivative_by_variable(var)? * self.right.clone()
+            + self.left.clone() * self.right.derivative_by_variable(var)?)
+    }
+);
 impl_bin_op!(
-  Div, div, "/", Mul, false, "Div", "Expression resulting from dividing two subexpressions.",
-  fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
-    let num = self.left.derivative_by_variable(var)? * self.right.clone()
-    - self.left.clone() * self.right.derivative_by_variable(var)?;
-    let denom = self.right.clone() * self.right.clone();
-    Ok(num / denom)
-  }
-  );
+    Div,
+    div,
+    "/",
+    Mul,
+    false,
+    "Div",
+    "Expression resulting from dividing two subexpressions.",
+    fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
+        let num = self.left.derivative_by_variable(var)? * self.right.clone()
+            - self.left.clone() * self.right.derivative_by_variable(var)?;
+        let denom = self.right.clone() * self.right.clone();
+        Ok(num / denom)
+    }
+);
 impl_bin_op!(
-  Rem, rem, "%", Mul, false, "Mod", "Expression resulting from taking a modulus.",
-  fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
-    Ok(self.left.derivative_by_variable(var)?
-    - TruncateDiv::new_expr(self.left.clone(), self.right.clone())
-    * self.right.derivative_by_variable(var)?)
-  }
-  );
+    Rem,
+    rem,
+    "%",
+    Mul,
+    false,
+    "Mod",
+    "Expression resulting from taking a modulus.",
+    fn derivative_by_variable(&self, var: &str) -> Result<Expr<T>, Status> {
+        Ok(self.left.derivative_by_variable(var)?
+            - TruncateDiv::new_expr(self.left.clone(), self.right.clone())
+                * self.right.derivative_by_variable(var)?)
+    }
+);
 
 ////////////////////////
 
