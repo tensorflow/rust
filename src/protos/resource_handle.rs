@@ -26,7 +26,7 @@ use protobuf::ProtobufEnum as ProtobufEnum_imported_for_functions;
 /// of protobuf runtime.
 const _PROTOBUF_VERSION_CHECK: () = ::protobuf::VERSION_2_8_0;
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct ResourceHandleProto {
     // message fields
     pub device: ::std::string::String,
@@ -51,7 +51,6 @@ impl ResourceHandleProto {
     }
 
     // string device = 1;
-
 
     pub fn get_device(&self) -> &str {
         &self.device
@@ -78,7 +77,6 @@ impl ResourceHandleProto {
 
     // string container = 2;
 
-
     pub fn get_container(&self) -> &str {
         &self.container
     }
@@ -103,7 +101,6 @@ impl ResourceHandleProto {
     }
 
     // string name = 3;
-
 
     pub fn get_name(&self) -> &str {
         &self.name
@@ -130,7 +127,6 @@ impl ResourceHandleProto {
 
     // uint64 hash_code = 4;
 
-
     pub fn get_hash_code(&self) -> u64 {
         self.hash_code
     }
@@ -144,7 +140,6 @@ impl ResourceHandleProto {
     }
 
     // string maybe_type_name = 5;
-
 
     pub fn get_maybe_type_name(&self) -> &str {
         &self.maybe_type_name
@@ -175,32 +170,58 @@ impl ::protobuf::Message for ResourceHandleProto {
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.device)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.device,
+                    )?;
+                }
                 2 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.container)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.container,
+                    )?;
+                }
                 3 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.name)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.name,
+                    )?;
+                }
                 4 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_uint64()?;
                     self.hash_code = tmp;
-                },
+                }
                 5 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.maybe_type_name)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.maybe_type_name,
+                    )?;
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -220,7 +241,11 @@ impl ::protobuf::Message for ResourceHandleProto {
             my_size += ::protobuf::rt::string_size(3, &self.name);
         }
         if self.hash_code != 0 {
-            my_size += ::protobuf::rt::value_size(4, self.hash_code, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                4,
+                self.hash_code,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if !self.maybe_type_name.is_empty() {
             my_size += ::protobuf::rt::string_size(5, &self.maybe_type_name);
@@ -230,7 +255,10 @@ impl ::protobuf::Message for ResourceHandleProto {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if !self.device.is_empty() {
             os.write_string(1, &self.device)?;
         }
@@ -281,42 +309,58 @@ impl ::protobuf::Message for ResourceHandleProto {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "device",
-                    |m: &ResourceHandleProto| { &m.device },
-                    |m: &mut ResourceHandleProto| { &mut m.device },
+                    |m: &ResourceHandleProto| &m.device,
+                    |m: &mut ResourceHandleProto| &mut m.device,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "container",
-                    |m: &ResourceHandleProto| { &m.container },
-                    |m: &mut ResourceHandleProto| { &mut m.container },
+                    |m: &ResourceHandleProto| &m.container,
+                    |m: &mut ResourceHandleProto| &mut m.container,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "name",
-                    |m: &ResourceHandleProto| { &m.name },
-                    |m: &mut ResourceHandleProto| { &mut m.name },
+                    |m: &ResourceHandleProto| &m.name,
+                    |m: &mut ResourceHandleProto| &mut m.name,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeUint64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeUint64,
+                >(
                     "hash_code",
-                    |m: &ResourceHandleProto| { &m.hash_code },
-                    |m: &mut ResourceHandleProto| { &mut m.hash_code },
+                    |m: &ResourceHandleProto| &m.hash_code,
+                    |m: &mut ResourceHandleProto| &mut m.hash_code,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "maybe_type_name",
-                    |m: &ResourceHandleProto| { &m.maybe_type_name },
-                    |m: &mut ResourceHandleProto| { &mut m.maybe_type_name },
+                    |m: &ResourceHandleProto| &m.maybe_type_name,
+                    |m: &mut ResourceHandleProto| &mut m.maybe_type_name,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<ResourceHandleProto>(
                     "ResourceHandleProto",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -327,9 +371,7 @@ impl ::protobuf::Message for ResourceHandleProto {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const ResourceHandleProto,
         };
-        unsafe {
-            instance.get(ResourceHandleProto::new)
-        }
+        unsafe { instance.get(ResourceHandleProto::new) }
     }
 }
 
@@ -367,7 +409,9 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     \x06proto3\
 ";
 
-static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::lazy::Lazy {
+static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<
+    ::protobuf::descriptor::FileDescriptorProto,
+> = ::protobuf::lazy::Lazy {
     lock: ::protobuf::lazy::ONCE_INIT,
     ptr: 0 as *const ::protobuf::descriptor::FileDescriptorProto,
 };
@@ -377,9 +421,5 @@ fn parse_descriptor_proto() -> ::protobuf::descriptor::FileDescriptorProto {
 }
 
 pub fn file_descriptor_proto() -> &'static ::protobuf::descriptor::FileDescriptorProto {
-    unsafe {
-        file_descriptor_proto_lazy.get(|| {
-            parse_descriptor_proto()
-        })
-    }
+    unsafe { file_descriptor_proto_lazy.get(|| parse_descriptor_proto()) }
 }

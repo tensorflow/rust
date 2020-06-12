@@ -916,21 +916,21 @@ impl<'a> Iterator for OperationIter<'a> {
 ////////////////////////
 
 c_enum!(
-    TF_AttrType,
-    // TODO: Provide docs on variants once they are added to c_api.h.
-    /// Describes the type of the value of an attribute on an operation.
-    #[allow(missing_docs)]
-    AttrType {
-        String = 0,
-        Int = 1,
-        Float = 2,
-        Bool = 3,
-        Type = 4,
-        Shape = 5,
-        Tensor = 6,
-        Placeholder = 7,
-        Func = 8,
-    });
+TF_AttrType,
+// TODO: Provide docs on variants once they are added to c_api.h.
+/// Describes the type of the value of an attribute on an operation.
+#[allow(missing_docs)]
+AttrType {
+    String = 0,
+    Int = 1,
+    Float = 2,
+    Bool = 3,
+    Type = 4,
+    Shape = 5,
+    Tensor = 6,
+    Placeholder = 7,
+    Func = 8,
+});
 
 /// AttrMetadata describes the value of an attribute on an operation.
 #[derive(Clone, Debug, Copy)]

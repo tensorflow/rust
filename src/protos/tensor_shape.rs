@@ -26,7 +26,7 @@ use protobuf::ProtobufEnum as ProtobufEnum_imported_for_functions;
 /// of protobuf runtime.
 const _PROTOBUF_VERSION_CHECK: () = ::protobuf::VERSION_2_8_0;
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct TensorShapeProto {
     // message fields
     pub dim: ::protobuf::RepeatedField<TensorShapeProto_Dim>,
@@ -48,7 +48,6 @@ impl TensorShapeProto {
     }
 
     // repeated .tensorflow.TensorShapeProto.Dim dim = 2;
-
 
     pub fn get_dim(&self) -> &[TensorShapeProto_Dim] {
         &self.dim
@@ -74,7 +73,6 @@ impl TensorShapeProto {
 
     // bool unknown_rank = 3;
 
-
     pub fn get_unknown_rank(&self) -> bool {
         self.unknown_rank
     }
@@ -94,27 +92,37 @@ impl ::protobuf::Message for TensorShapeProto {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 2 => {
                     ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.dim)?;
-                },
+                }
                 3 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.unknown_rank = tmp;
-                },
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -127,7 +135,7 @@ impl ::protobuf::Message for TensorShapeProto {
         for value in &self.dim {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-        };
+        }
         if self.unknown_rank != false {
             my_size += 2;
         }
@@ -136,12 +144,15 @@ impl ::protobuf::Message for TensorShapeProto {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         for v in &self.dim {
             os.write_tag(2, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
-        };
+        }
         if self.unknown_rank != false {
             os.write_bool(3, self.unknown_rank)?;
         }
@@ -180,27 +191,36 @@ impl ::protobuf::Message for TensorShapeProto {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<TensorShapeProto_Dim>>(
-                    "dim",
-                    |m: &TensorShapeProto| { &m.dim },
-                    |m: &mut TensorShapeProto| { &mut m.dim },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<TensorShapeProto_Dim>,
+                    >(
+                        "dim",
+                        |m: &TensorShapeProto| &m.dim,
+                        |m: &mut TensorShapeProto| &mut m.dim,
+                    ),
+                );
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "unknown_rank",
-                    |m: &TensorShapeProto| { &m.unknown_rank },
-                    |m: &mut TensorShapeProto| { &mut m.unknown_rank },
+                    |m: &TensorShapeProto| &m.unknown_rank,
+                    |m: &mut TensorShapeProto| &mut m.unknown_rank,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<TensorShapeProto>(
                     "TensorShapeProto",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -211,9 +231,7 @@ impl ::protobuf::Message for TensorShapeProto {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const TensorShapeProto,
         };
-        unsafe {
-            instance.get(TensorShapeProto::new)
-        }
+        unsafe { instance.get(TensorShapeProto::new) }
     }
 }
 
@@ -237,7 +255,7 @@ impl ::protobuf::reflect::ProtobufValue for TensorShapeProto {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct TensorShapeProto_Dim {
     // message fields
     pub size: i64,
@@ -260,7 +278,6 @@ impl TensorShapeProto_Dim {
 
     // int64 size = 1;
 
-
     pub fn get_size(&self) -> i64 {
         self.size
     }
@@ -274,7 +291,6 @@ impl TensorShapeProto_Dim {
     }
 
     // string name = 2;
-
 
     pub fn get_name(&self) -> &str {
         &self.name
@@ -305,23 +321,37 @@ impl ::protobuf::Message for TensorShapeProto_Dim {
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.size = tmp;
-                },
+                }
                 2 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.name)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.name,
+                    )?;
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -332,7 +362,8 @@ impl ::protobuf::Message for TensorShapeProto_Dim {
     fn compute_size(&self) -> u32 {
         let mut my_size = 0;
         if self.size != 0 {
-            my_size += ::protobuf::rt::value_size(1, self.size, ::protobuf::wire_format::WireTypeVarint);
+            my_size +=
+                ::protobuf::rt::value_size(1, self.size, ::protobuf::wire_format::WireTypeVarint);
         }
         if !self.name.is_empty() {
             my_size += ::protobuf::rt::string_size(2, &self.name);
@@ -342,7 +373,10 @@ impl ::protobuf::Message for TensorShapeProto_Dim {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if self.size != 0 {
             os.write_int64(1, self.size)?;
         }
@@ -384,40 +418,46 @@ impl ::protobuf::Message for TensorShapeProto_Dim {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "size",
-                    |m: &TensorShapeProto_Dim| { &m.size },
-                    |m: &mut TensorShapeProto_Dim| { &mut m.size },
+                    |m: &TensorShapeProto_Dim| &m.size,
+                    |m: &mut TensorShapeProto_Dim| &mut m.size,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "name",
-                    |m: &TensorShapeProto_Dim| { &m.name },
-                    |m: &mut TensorShapeProto_Dim| { &mut m.name },
+                    |m: &TensorShapeProto_Dim| &m.name,
+                    |m: &mut TensorShapeProto_Dim| &mut m.name,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<TensorShapeProto_Dim>(
                     "TensorShapeProto_Dim",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
     }
 
     fn default_instance() -> &'static TensorShapeProto_Dim {
-        static mut instance: ::protobuf::lazy::Lazy<TensorShapeProto_Dim> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const TensorShapeProto_Dim,
-        };
-        unsafe {
-            instance.get(TensorShapeProto_Dim::new)
-        }
+        static mut instance: ::protobuf::lazy::Lazy<TensorShapeProto_Dim> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const TensorShapeProto_Dim,
+            };
+        unsafe { instance.get(TensorShapeProto_Dim::new) }
     }
 }
 
@@ -451,7 +491,9 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     ow/tensorflow/tensorflow/go/core/framework\xf8\x01\x01b\x06proto3\
 ";
 
-static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::lazy::Lazy {
+static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<
+    ::protobuf::descriptor::FileDescriptorProto,
+> = ::protobuf::lazy::Lazy {
     lock: ::protobuf::lazy::ONCE_INIT,
     ptr: 0 as *const ::protobuf::descriptor::FileDescriptorProto,
 };
@@ -461,9 +503,5 @@ fn parse_descriptor_proto() -> ::protobuf::descriptor::FileDescriptorProto {
 }
 
 pub fn file_descriptor_proto() -> &'static ::protobuf::descriptor::FileDescriptorProto {
-    unsafe {
-        file_descriptor_proto_lazy.get(|| {
-            parse_descriptor_proto()
-        })
-    }
+    unsafe { file_descriptor_proto_lazy.get(|| parse_descriptor_proto()) }
 }
