@@ -1760,13 +1760,14 @@ impl FromStr for OutputName {
     type Err = Status;
     fn from_str(s: &str) -> Result<Self> {
         let splits: Vec<_> = s.split(':').collect();
-        if splits.len() != 2 {
-            return Err(Status::new_set_lossy(
+        let index = match splits.len() {
+            2 => splits[1].parse::<c_int>()?,
+            1 => 0,
+            _ => Err(Status::new_set_lossy(
                 Code::InvalidArgument,
-                "Name must contain exactly one colon (':')",
-            ));
-        }
-        let index = splits[1].parse::<c_int>()?;
+                "Name contains more than one colon (':')",
+            ))?,
+        };
         Ok(Self {
             name: splits[0].to_string(),
             index,
@@ -2929,7 +2930,13 @@ mod tests {
             .to_string(),
             "foo:1"
         );
-        assert!("foo".parse::<OutputName>().is_err());
+        assert_eq!(
+            "foo".parse::<OutputName>().unwrap(),
+            OutputName {
+                name: "foo".to_string(),
+                index: 0
+            }
+        );
         assert!("foo:bar".parse::<OutputName>().is_err());
         assert!("foo:0:1".parse::<OutputName>().is_err());
     }
