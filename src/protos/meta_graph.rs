@@ -26,7 +26,7 @@ use protobuf::ProtobufEnum as ProtobufEnum_imported_for_functions;
 /// of protobuf runtime.
 const _PROTOBUF_VERSION_CHECK: () = ::protobuf::VERSION_2_8_0;
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct MetaGraphDef {
     // message fields
     pub meta_info_def: ::protobuf::SingularPtrField<MetaGraphDef_MetaInfoDef>,
@@ -53,9 +53,10 @@ impl MetaGraphDef {
 
     // .tensorflow.MetaGraphDef.MetaInfoDef meta_info_def = 1;
 
-
     pub fn get_meta_info_def(&self) -> &MetaGraphDef_MetaInfoDef {
-        self.meta_info_def.as_ref().unwrap_or_else(|| MetaGraphDef_MetaInfoDef::default_instance())
+        self.meta_info_def
+            .as_ref()
+            .unwrap_or_else(|| MetaGraphDef_MetaInfoDef::default_instance())
     }
     pub fn clear_meta_info_def(&mut self) {
         self.meta_info_def.clear();
@@ -81,14 +82,17 @@ impl MetaGraphDef {
 
     // Take field
     pub fn take_meta_info_def(&mut self) -> MetaGraphDef_MetaInfoDef {
-        self.meta_info_def.take().unwrap_or_else(|| MetaGraphDef_MetaInfoDef::new())
+        self.meta_info_def
+            .take()
+            .unwrap_or_else(|| MetaGraphDef_MetaInfoDef::new())
     }
 
     // .tensorflow.GraphDef graph_def = 2;
 
-
     pub fn get_graph_def(&self) -> &super::graph::GraphDef {
-        self.graph_def.as_ref().unwrap_or_else(|| super::graph::GraphDef::default_instance())
+        self.graph_def
+            .as_ref()
+            .unwrap_or_else(|| super::graph::GraphDef::default_instance())
     }
     pub fn clear_graph_def(&mut self) {
         self.graph_def.clear();
@@ -114,14 +118,17 @@ impl MetaGraphDef {
 
     // Take field
     pub fn take_graph_def(&mut self) -> super::graph::GraphDef {
-        self.graph_def.take().unwrap_or_else(|| super::graph::GraphDef::new())
+        self.graph_def
+            .take()
+            .unwrap_or_else(|| super::graph::GraphDef::new())
     }
 
     // .tensorflow.SaverDef saver_def = 3;
 
-
     pub fn get_saver_def(&self) -> &super::saver::SaverDef {
-        self.saver_def.as_ref().unwrap_or_else(|| super::saver::SaverDef::default_instance())
+        self.saver_def
+            .as_ref()
+            .unwrap_or_else(|| super::saver::SaverDef::default_instance())
     }
     pub fn clear_saver_def(&mut self) {
         self.saver_def.clear();
@@ -147,13 +154,16 @@ impl MetaGraphDef {
 
     // Take field
     pub fn take_saver_def(&mut self) -> super::saver::SaverDef {
-        self.saver_def.take().unwrap_or_else(|| super::saver::SaverDef::new())
+        self.saver_def
+            .take()
+            .unwrap_or_else(|| super::saver::SaverDef::new())
     }
 
     // repeated .tensorflow.MetaGraphDef.CollectionDefEntry collection_def = 4;
 
-
-    pub fn get_collection_def(&self) -> &::std::collections::HashMap<::std::string::String, CollectionDef> {
+    pub fn get_collection_def(
+        &self,
+    ) -> &::std::collections::HashMap<::std::string::String, CollectionDef> {
         &self.collection_def
     }
     pub fn clear_collection_def(&mut self) {
@@ -161,24 +171,32 @@ impl MetaGraphDef {
     }
 
     // Param is passed by value, moved
-    pub fn set_collection_def(&mut self, v: ::std::collections::HashMap<::std::string::String, CollectionDef>) {
+    pub fn set_collection_def(
+        &mut self,
+        v: ::std::collections::HashMap<::std::string::String, CollectionDef>,
+    ) {
         self.collection_def = v;
     }
 
     // Mutable pointer to the field.
-    pub fn mut_collection_def(&mut self) -> &mut ::std::collections::HashMap<::std::string::String, CollectionDef> {
+    pub fn mut_collection_def(
+        &mut self,
+    ) -> &mut ::std::collections::HashMap<::std::string::String, CollectionDef> {
         &mut self.collection_def
     }
 
     // Take field
-    pub fn take_collection_def(&mut self) -> ::std::collections::HashMap<::std::string::String, CollectionDef> {
+    pub fn take_collection_def(
+        &mut self,
+    ) -> ::std::collections::HashMap<::std::string::String, CollectionDef> {
         ::std::mem::replace(&mut self.collection_def, ::std::collections::HashMap::new())
     }
 
     // repeated .tensorflow.MetaGraphDef.SignatureDefEntry signature_def = 5;
 
-
-    pub fn get_signature_def(&self) -> &::std::collections::HashMap<::std::string::String, SignatureDef> {
+    pub fn get_signature_def(
+        &self,
+    ) -> &::std::collections::HashMap<::std::string::String, SignatureDef> {
         &self.signature_def
     }
     pub fn clear_signature_def(&mut self) {
@@ -186,22 +204,28 @@ impl MetaGraphDef {
     }
 
     // Param is passed by value, moved
-    pub fn set_signature_def(&mut self, v: ::std::collections::HashMap<::std::string::String, SignatureDef>) {
+    pub fn set_signature_def(
+        &mut self,
+        v: ::std::collections::HashMap<::std::string::String, SignatureDef>,
+    ) {
         self.signature_def = v;
     }
 
     // Mutable pointer to the field.
-    pub fn mut_signature_def(&mut self) -> &mut ::std::collections::HashMap<::std::string::String, SignatureDef> {
+    pub fn mut_signature_def(
+        &mut self,
+    ) -> &mut ::std::collections::HashMap<::std::string::String, SignatureDef> {
         &mut self.signature_def
     }
 
     // Take field
-    pub fn take_signature_def(&mut self) -> ::std::collections::HashMap<::std::string::String, SignatureDef> {
+    pub fn take_signature_def(
+        &mut self,
+    ) -> ::std::collections::HashMap<::std::string::String, SignatureDef> {
         ::std::mem::replace(&mut self.signature_def, ::std::collections::HashMap::new())
     }
 
     // repeated .tensorflow.AssetFileDef asset_file_def = 6;
-
 
     pub fn get_asset_file_def(&self) -> &[AssetFileDef] {
         &self.asset_file_def
@@ -232,50 +256,72 @@ impl ::protobuf::Message for MetaGraphDef {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         for v in &self.graph_def {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         for v in &self.saver_def {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         for v in &self.asset_file_def {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.meta_info_def)?;
-                },
+                    ::protobuf::rt::read_singular_message_into(
+                        wire_type,
+                        is,
+                        &mut self.meta_info_def,
+                    )?;
+                }
                 2 => {
                     ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.graph_def)?;
-                },
+                }
                 3 => {
                     ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.saver_def)?;
-                },
+                }
                 4 => {
-                    ::protobuf::rt::read_map_into::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<CollectionDef>>(wire_type, is, &mut self.collection_def)?;
-                },
+                    ::protobuf::rt::read_map_into::<
+                        ::protobuf::types::ProtobufTypeString,
+                        ::protobuf::types::ProtobufTypeMessage<CollectionDef>,
+                    >(wire_type, is, &mut self.collection_def)?;
+                }
                 5 => {
-                    ::protobuf::rt::read_map_into::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<SignatureDef>>(wire_type, is, &mut self.signature_def)?;
-                },
+                    ::protobuf::rt::read_map_into::<
+                        ::protobuf::types::ProtobufTypeString,
+                        ::protobuf::types::ProtobufTypeMessage<SignatureDef>,
+                    >(wire_type, is, &mut self.signature_def)?;
+                }
                 6 => {
-                    ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.asset_file_def)?;
-                },
+                    ::protobuf::rt::read_repeated_message_into(
+                        wire_type,
+                        is,
+                        &mut self.asset_file_def,
+                    )?;
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -297,18 +343,27 @@ impl ::protobuf::Message for MetaGraphDef {
             let len = v.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         }
-        my_size += ::protobuf::rt::compute_map_size::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<CollectionDef>>(4, &self.collection_def);
-        my_size += ::protobuf::rt::compute_map_size::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<SignatureDef>>(5, &self.signature_def);
+        my_size += ::protobuf::rt::compute_map_size::<
+            ::protobuf::types::ProtobufTypeString,
+            ::protobuf::types::ProtobufTypeMessage<CollectionDef>,
+        >(4, &self.collection_def);
+        my_size += ::protobuf::rt::compute_map_size::<
+            ::protobuf::types::ProtobufTypeString,
+            ::protobuf::types::ProtobufTypeMessage<SignatureDef>,
+        >(5, &self.signature_def);
         for value in &self.asset_file_def {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-        };
+        }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if let Some(ref v) = self.meta_info_def.as_ref() {
             os.write_tag(1, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
@@ -324,13 +379,19 @@ impl ::protobuf::Message for MetaGraphDef {
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
         }
-        ::protobuf::rt::write_map_with_cached_sizes::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<CollectionDef>>(4, &self.collection_def, os)?;
-        ::protobuf::rt::write_map_with_cached_sizes::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<SignatureDef>>(5, &self.signature_def, os)?;
+        ::protobuf::rt::write_map_with_cached_sizes::<
+            ::protobuf::types::ProtobufTypeString,
+            ::protobuf::types::ProtobufTypeMessage<CollectionDef>,
+        >(4, &self.collection_def, os)?;
+        ::protobuf::rt::write_map_with_cached_sizes::<
+            ::protobuf::types::ProtobufTypeString,
+            ::protobuf::types::ProtobufTypeMessage<SignatureDef>,
+        >(5, &self.signature_def, os)?;
         for v in &self.asset_file_def {
             os.write_tag(6, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
-        };
+        }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
     }
@@ -366,47 +427,76 @@ impl ::protobuf::Message for MetaGraphDef {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<MetaGraphDef_MetaInfoDef>>(
-                    "meta_info_def",
-                    |m: &MetaGraphDef| { &m.meta_info_def },
-                    |m: &mut MetaGraphDef| { &mut m.meta_info_def },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<super::graph::GraphDef>>(
-                    "graph_def",
-                    |m: &MetaGraphDef| { &m.graph_def },
-                    |m: &mut MetaGraphDef| { &mut m.graph_def },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<super::saver::SaverDef>>(
-                    "saver_def",
-                    |m: &MetaGraphDef| { &m.saver_def },
-                    |m: &mut MetaGraphDef| { &mut m.saver_def },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_map_accessor::<_, ::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<CollectionDef>>(
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<MetaGraphDef_MetaInfoDef>,
+                    >(
+                        "meta_info_def",
+                        |m: &MetaGraphDef| &m.meta_info_def,
+                        |m: &mut MetaGraphDef| &mut m.meta_info_def,
+                    ),
+                );
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<super::graph::GraphDef>,
+                    >(
+                        "graph_def",
+                        |m: &MetaGraphDef| &m.graph_def,
+                        |m: &mut MetaGraphDef| &mut m.graph_def,
+                    ),
+                );
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<super::saver::SaverDef>,
+                    >(
+                        "saver_def",
+                        |m: &MetaGraphDef| &m.saver_def,
+                        |m: &mut MetaGraphDef| &mut m.saver_def,
+                    ),
+                );
+                fields.push(::protobuf::reflect::accessor::make_map_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                    ::protobuf::types::ProtobufTypeMessage<CollectionDef>,
+                >(
                     "collection_def",
-                    |m: &MetaGraphDef| { &m.collection_def },
-                    |m: &mut MetaGraphDef| { &mut m.collection_def },
+                    |m: &MetaGraphDef| &m.collection_def,
+                    |m: &mut MetaGraphDef| &mut m.collection_def,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_map_accessor::<_, ::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<SignatureDef>>(
+                fields.push(::protobuf::reflect::accessor::make_map_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                    ::protobuf::types::ProtobufTypeMessage<SignatureDef>,
+                >(
                     "signature_def",
-                    |m: &MetaGraphDef| { &m.signature_def },
-                    |m: &mut MetaGraphDef| { &mut m.signature_def },
+                    |m: &MetaGraphDef| &m.signature_def,
+                    |m: &mut MetaGraphDef| &mut m.signature_def,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<AssetFileDef>>(
-                    "asset_file_def",
-                    |m: &MetaGraphDef| { &m.asset_file_def },
-                    |m: &mut MetaGraphDef| { &mut m.asset_file_def },
-                ));
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<AssetFileDef>,
+                    >(
+                        "asset_file_def",
+                        |m: &MetaGraphDef| &m.asset_file_def,
+                        |m: &mut MetaGraphDef| &mut m.asset_file_def,
+                    ),
+                );
                 ::protobuf::reflect::MessageDescriptor::new::<MetaGraphDef>(
                     "MetaGraphDef",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -417,9 +507,7 @@ impl ::protobuf::Message for MetaGraphDef {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const MetaGraphDef,
         };
-        unsafe {
-            instance.get(MetaGraphDef::new)
-        }
+        unsafe { instance.get(MetaGraphDef::new) }
     }
 }
 
@@ -447,7 +535,7 @@ impl ::protobuf::reflect::ProtobufValue for MetaGraphDef {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct MetaGraphDef_MetaInfoDef {
     // message fields
     pub meta_graph_version: ::std::string::String,
@@ -475,7 +563,6 @@ impl MetaGraphDef_MetaInfoDef {
 
     // string meta_graph_version = 1;
 
-
     pub fn get_meta_graph_version(&self) -> &str {
         &self.meta_graph_version
     }
@@ -501,9 +588,10 @@ impl MetaGraphDef_MetaInfoDef {
 
     // .tensorflow.OpList stripped_op_list = 2;
 
-
     pub fn get_stripped_op_list(&self) -> &super::op_def::OpList {
-        self.stripped_op_list.as_ref().unwrap_or_else(|| super::op_def::OpList::default_instance())
+        self.stripped_op_list
+            .as_ref()
+            .unwrap_or_else(|| super::op_def::OpList::default_instance())
     }
     pub fn clear_stripped_op_list(&mut self) {
         self.stripped_op_list.clear();
@@ -529,14 +617,17 @@ impl MetaGraphDef_MetaInfoDef {
 
     // Take field
     pub fn take_stripped_op_list(&mut self) -> super::op_def::OpList {
-        self.stripped_op_list.take().unwrap_or_else(|| super::op_def::OpList::new())
+        self.stripped_op_list
+            .take()
+            .unwrap_or_else(|| super::op_def::OpList::new())
     }
 
     // .google.protobuf.Any any_info = 3;
 
-
     pub fn get_any_info(&self) -> &::protobuf::well_known_types::Any {
-        self.any_info.as_ref().unwrap_or_else(|| ::protobuf::well_known_types::Any::default_instance())
+        self.any_info
+            .as_ref()
+            .unwrap_or_else(|| ::protobuf::well_known_types::Any::default_instance())
     }
     pub fn clear_any_info(&mut self) {
         self.any_info.clear();
@@ -562,11 +653,12 @@ impl MetaGraphDef_MetaInfoDef {
 
     // Take field
     pub fn take_any_info(&mut self) -> ::protobuf::well_known_types::Any {
-        self.any_info.take().unwrap_or_else(|| ::protobuf::well_known_types::Any::new())
+        self.any_info
+            .take()
+            .unwrap_or_else(|| ::protobuf::well_known_types::Any::new())
     }
 
     // repeated string tags = 4;
-
 
     pub fn get_tags(&self) -> &[::std::string::String] {
         &self.tags
@@ -591,7 +683,6 @@ impl MetaGraphDef_MetaInfoDef {
     }
 
     // string tensorflow_version = 5;
-
 
     pub fn get_tensorflow_version(&self) -> &str {
         &self.tensorflow_version
@@ -618,7 +709,6 @@ impl MetaGraphDef_MetaInfoDef {
 
     // string tensorflow_git_version = 6;
 
-
     pub fn get_tensorflow_git_version(&self) -> &str {
         &self.tensorflow_git_version
     }
@@ -639,11 +729,13 @@ impl MetaGraphDef_MetaInfoDef {
 
     // Take field
     pub fn take_tensorflow_git_version(&mut self) -> ::std::string::String {
-        ::std::mem::replace(&mut self.tensorflow_git_version, ::std::string::String::new())
+        ::std::mem::replace(
+            &mut self.tensorflow_git_version,
+            ::std::string::String::new(),
+        )
     }
 
     // bool stripped_default_attrs = 7;
-
 
     pub fn get_stripped_default_attrs(&self) -> bool {
         self.stripped_default_attrs
@@ -664,47 +756,73 @@ impl ::protobuf::Message for MetaGraphDef_MetaInfoDef {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         for v in &self.any_info {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.meta_graph_version)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.meta_graph_version,
+                    )?;
+                }
                 2 => {
-                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.stripped_op_list)?;
-                },
+                    ::protobuf::rt::read_singular_message_into(
+                        wire_type,
+                        is,
+                        &mut self.stripped_op_list,
+                    )?;
+                }
                 3 => {
                     ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.any_info)?;
-                },
+                }
                 4 => {
                     ::protobuf::rt::read_repeated_string_into(wire_type, is, &mut self.tags)?;
-                },
+                }
                 5 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.tensorflow_version)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.tensorflow_version,
+                    )?;
+                }
                 6 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.tensorflow_git_version)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.tensorflow_git_version,
+                    )?;
+                }
                 7 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.stripped_default_attrs = tmp;
-                },
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -727,7 +845,7 @@ impl ::protobuf::Message for MetaGraphDef_MetaInfoDef {
         }
         for value in &self.tags {
             my_size += ::protobuf::rt::string_size(4, &value);
-        };
+        }
         if !self.tensorflow_version.is_empty() {
             my_size += ::protobuf::rt::string_size(5, &self.tensorflow_version);
         }
@@ -742,7 +860,10 @@ impl ::protobuf::Message for MetaGraphDef_MetaInfoDef {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if !self.meta_graph_version.is_empty() {
             os.write_string(1, &self.meta_graph_version)?;
         }
@@ -758,7 +879,7 @@ impl ::protobuf::Message for MetaGraphDef_MetaInfoDef {
         }
         for v in &self.tags {
             os.write_string(4, &v)?;
-        };
+        }
         if !self.tensorflow_version.is_empty() {
             os.write_string(5, &self.tensorflow_version)?;
         }
@@ -803,65 +924,92 @@ impl ::protobuf::Message for MetaGraphDef_MetaInfoDef {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "meta_graph_version",
-                    |m: &MetaGraphDef_MetaInfoDef| { &m.meta_graph_version },
-                    |m: &mut MetaGraphDef_MetaInfoDef| { &mut m.meta_graph_version },
+                    |m: &MetaGraphDef_MetaInfoDef| &m.meta_graph_version,
+                    |m: &mut MetaGraphDef_MetaInfoDef| &mut m.meta_graph_version,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<super::op_def::OpList>>(
-                    "stripped_op_list",
-                    |m: &MetaGraphDef_MetaInfoDef| { &m.stripped_op_list },
-                    |m: &mut MetaGraphDef_MetaInfoDef| { &mut m.stripped_op_list },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<::protobuf::well_known_types::Any>>(
-                    "any_info",
-                    |m: &MetaGraphDef_MetaInfoDef| { &m.any_info },
-                    |m: &mut MetaGraphDef_MetaInfoDef| { &mut m.any_info },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
-                    "tags",
-                    |m: &MetaGraphDef_MetaInfoDef| { &m.tags },
-                    |m: &mut MetaGraphDef_MetaInfoDef| { &mut m.tags },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<super::op_def::OpList>,
+                    >(
+                        "stripped_op_list",
+                        |m: &MetaGraphDef_MetaInfoDef| &m.stripped_op_list,
+                        |m: &mut MetaGraphDef_MetaInfoDef| &mut m.stripped_op_list,
+                    ),
+                );
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<::protobuf::well_known_types::Any>,
+                    >(
+                        "any_info",
+                        |m: &MetaGraphDef_MetaInfoDef| &m.any_info,
+                        |m: &mut MetaGraphDef_MetaInfoDef| &mut m.any_info,
+                    ),
+                );
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeString,
+                    >(
+                        "tags",
+                        |m: &MetaGraphDef_MetaInfoDef| &m.tags,
+                        |m: &mut MetaGraphDef_MetaInfoDef| &mut m.tags,
+                    ),
+                );
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "tensorflow_version",
-                    |m: &MetaGraphDef_MetaInfoDef| { &m.tensorflow_version },
-                    |m: &mut MetaGraphDef_MetaInfoDef| { &mut m.tensorflow_version },
+                    |m: &MetaGraphDef_MetaInfoDef| &m.tensorflow_version,
+                    |m: &mut MetaGraphDef_MetaInfoDef| &mut m.tensorflow_version,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "tensorflow_git_version",
-                    |m: &MetaGraphDef_MetaInfoDef| { &m.tensorflow_git_version },
-                    |m: &mut MetaGraphDef_MetaInfoDef| { &mut m.tensorflow_git_version },
+                    |m: &MetaGraphDef_MetaInfoDef| &m.tensorflow_git_version,
+                    |m: &mut MetaGraphDef_MetaInfoDef| &mut m.tensorflow_git_version,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "stripped_default_attrs",
-                    |m: &MetaGraphDef_MetaInfoDef| { &m.stripped_default_attrs },
-                    |m: &mut MetaGraphDef_MetaInfoDef| { &mut m.stripped_default_attrs },
+                    |m: &MetaGraphDef_MetaInfoDef| &m.stripped_default_attrs,
+                    |m: &mut MetaGraphDef_MetaInfoDef| &mut m.stripped_default_attrs,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<MetaGraphDef_MetaInfoDef>(
                     "MetaGraphDef_MetaInfoDef",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
     }
 
     fn default_instance() -> &'static MetaGraphDef_MetaInfoDef {
-        static mut instance: ::protobuf::lazy::Lazy<MetaGraphDef_MetaInfoDef> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const MetaGraphDef_MetaInfoDef,
-        };
-        unsafe {
-            instance.get(MetaGraphDef_MetaInfoDef::new)
-        }
+        static mut instance: ::protobuf::lazy::Lazy<MetaGraphDef_MetaInfoDef> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const MetaGraphDef_MetaInfoDef,
+            };
+        unsafe { instance.get(MetaGraphDef_MetaInfoDef::new) }
     }
 }
 
@@ -890,7 +1038,7 @@ impl ::protobuf::reflect::ProtobufValue for MetaGraphDef_MetaInfoDef {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct CollectionDef {
     // message oneof groups
     pub kind: ::std::option::Option<CollectionDef_oneof_kind>,
@@ -905,7 +1053,7 @@ impl<'a> ::std::default::Default for &'a CollectionDef {
     }
 }
 
-#[derive(Clone,PartialEq,Debug)]
+#[derive(Clone, PartialEq, Debug)]
 pub enum CollectionDef_oneof_kind {
     node_list(CollectionDef_NodeList),
     bytes_list(CollectionDef_BytesList),
@@ -920,7 +1068,6 @@ impl CollectionDef {
     }
 
     // .tensorflow.CollectionDef.NodeList node_list = 1;
-
 
     pub fn get_node_list(&self) -> &CollectionDef_NodeList {
         match self.kind {
@@ -948,7 +1095,9 @@ impl CollectionDef {
     pub fn mut_node_list(&mut self) -> &mut CollectionDef_NodeList {
         if let ::std::option::Option::Some(CollectionDef_oneof_kind::node_list(_)) = self.kind {
         } else {
-            self.kind = ::std::option::Option::Some(CollectionDef_oneof_kind::node_list(CollectionDef_NodeList::new()));
+            self.kind = ::std::option::Option::Some(CollectionDef_oneof_kind::node_list(
+                CollectionDef_NodeList::new(),
+            ));
         }
         match self.kind {
             ::std::option::Option::Some(CollectionDef_oneof_kind::node_list(ref mut v)) => v,
@@ -969,7 +1118,6 @@ impl CollectionDef {
     }
 
     // .tensorflow.CollectionDef.BytesList bytes_list = 2;
-
 
     pub fn get_bytes_list(&self) -> &CollectionDef_BytesList {
         match self.kind {
@@ -997,7 +1145,9 @@ impl CollectionDef {
     pub fn mut_bytes_list(&mut self) -> &mut CollectionDef_BytesList {
         if let ::std::option::Option::Some(CollectionDef_oneof_kind::bytes_list(_)) = self.kind {
         } else {
-            self.kind = ::std::option::Option::Some(CollectionDef_oneof_kind::bytes_list(CollectionDef_BytesList::new()));
+            self.kind = ::std::option::Option::Some(CollectionDef_oneof_kind::bytes_list(
+                CollectionDef_BytesList::new(),
+            ));
         }
         match self.kind {
             ::std::option::Option::Some(CollectionDef_oneof_kind::bytes_list(ref mut v)) => v,
@@ -1018,7 +1168,6 @@ impl CollectionDef {
     }
 
     // .tensorflow.CollectionDef.Int64List int64_list = 3;
-
 
     pub fn get_int64_list(&self) -> &CollectionDef_Int64List {
         match self.kind {
@@ -1046,7 +1195,9 @@ impl CollectionDef {
     pub fn mut_int64_list(&mut self) -> &mut CollectionDef_Int64List {
         if let ::std::option::Option::Some(CollectionDef_oneof_kind::int64_list(_)) = self.kind {
         } else {
-            self.kind = ::std::option::Option::Some(CollectionDef_oneof_kind::int64_list(CollectionDef_Int64List::new()));
+            self.kind = ::std::option::Option::Some(CollectionDef_oneof_kind::int64_list(
+                CollectionDef_Int64List::new(),
+            ));
         }
         match self.kind {
             ::std::option::Option::Some(CollectionDef_oneof_kind::int64_list(ref mut v)) => v,
@@ -1067,7 +1218,6 @@ impl CollectionDef {
     }
 
     // .tensorflow.CollectionDef.FloatList float_list = 4;
-
 
     pub fn get_float_list(&self) -> &CollectionDef_FloatList {
         match self.kind {
@@ -1095,7 +1245,9 @@ impl CollectionDef {
     pub fn mut_float_list(&mut self) -> &mut CollectionDef_FloatList {
         if let ::std::option::Option::Some(CollectionDef_oneof_kind::float_list(_)) = self.kind {
         } else {
-            self.kind = ::std::option::Option::Some(CollectionDef_oneof_kind::float_list(CollectionDef_FloatList::new()));
+            self.kind = ::std::option::Option::Some(CollectionDef_oneof_kind::float_list(
+                CollectionDef_FloatList::new(),
+            ));
         }
         match self.kind {
             ::std::option::Option::Some(CollectionDef_oneof_kind::float_list(ref mut v)) => v,
@@ -1116,7 +1268,6 @@ impl CollectionDef {
     }
 
     // .tensorflow.CollectionDef.AnyList any_list = 5;
-
 
     pub fn get_any_list(&self) -> &CollectionDef_AnyList {
         match self.kind {
@@ -1144,7 +1295,9 @@ impl CollectionDef {
     pub fn mut_any_list(&mut self) -> &mut CollectionDef_AnyList {
         if let ::std::option::Option::Some(CollectionDef_oneof_kind::any_list(_)) = self.kind {
         } else {
-            self.kind = ::std::option::Option::Some(CollectionDef_oneof_kind::any_list(CollectionDef_AnyList::new()));
+            self.kind = ::std::option::Option::Some(CollectionDef_oneof_kind::any_list(
+                CollectionDef_AnyList::new(),
+            ));
         }
         match self.kind {
             ::std::option::Option::Some(CollectionDef_oneof_kind::any_list(ref mut v)) => v,
@@ -1195,43 +1348,71 @@ impl ::protobuf::Message for CollectionDef {
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
                     if wire_type != ::protobuf::wire_format::WireTypeLengthDelimited {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
-                    self.kind = ::std::option::Option::Some(CollectionDef_oneof_kind::node_list(is.read_message()?));
-                },
+                    self.kind = ::std::option::Option::Some(CollectionDef_oneof_kind::node_list(
+                        is.read_message()?,
+                    ));
+                }
                 2 => {
                     if wire_type != ::protobuf::wire_format::WireTypeLengthDelimited {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
-                    self.kind = ::std::option::Option::Some(CollectionDef_oneof_kind::bytes_list(is.read_message()?));
-                },
+                    self.kind = ::std::option::Option::Some(CollectionDef_oneof_kind::bytes_list(
+                        is.read_message()?,
+                    ));
+                }
                 3 => {
                     if wire_type != ::protobuf::wire_format::WireTypeLengthDelimited {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
-                    self.kind = ::std::option::Option::Some(CollectionDef_oneof_kind::int64_list(is.read_message()?));
-                },
+                    self.kind = ::std::option::Option::Some(CollectionDef_oneof_kind::int64_list(
+                        is.read_message()?,
+                    ));
+                }
                 4 => {
                     if wire_type != ::protobuf::wire_format::WireTypeLengthDelimited {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
-                    self.kind = ::std::option::Option::Some(CollectionDef_oneof_kind::float_list(is.read_message()?));
-                },
+                    self.kind = ::std::option::Option::Some(CollectionDef_oneof_kind::float_list(
+                        is.read_message()?,
+                    ));
+                }
                 5 => {
                     if wire_type != ::protobuf::wire_format::WireTypeLengthDelimited {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
-                    self.kind = ::std::option::Option::Some(CollectionDef_oneof_kind::any_list(is.read_message()?));
-                },
+                    self.kind = ::std::option::Option::Some(CollectionDef_oneof_kind::any_list(
+                        is.read_message()?,
+                    ));
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -1246,23 +1427,23 @@ impl ::protobuf::Message for CollectionDef {
                 &CollectionDef_oneof_kind::node_list(ref v) => {
                     let len = v.compute_size();
                     my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-                },
+                }
                 &CollectionDef_oneof_kind::bytes_list(ref v) => {
                     let len = v.compute_size();
                     my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-                },
+                }
                 &CollectionDef_oneof_kind::int64_list(ref v) => {
                     let len = v.compute_size();
                     my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-                },
+                }
                 &CollectionDef_oneof_kind::float_list(ref v) => {
                     let len = v.compute_size();
                     my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-                },
+                }
                 &CollectionDef_oneof_kind::any_list(ref v) => {
                     let len = v.compute_size();
                     my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-                },
+                }
             };
         }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
@@ -1270,34 +1451,37 @@ impl ::protobuf::Message for CollectionDef {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if let ::std::option::Option::Some(ref v) = self.kind {
             match v {
                 &CollectionDef_oneof_kind::node_list(ref v) => {
                     os.write_tag(1, ::protobuf::wire_format::WireTypeLengthDelimited)?;
                     os.write_raw_varint32(v.get_cached_size())?;
                     v.write_to_with_cached_sizes(os)?;
-                },
+                }
                 &CollectionDef_oneof_kind::bytes_list(ref v) => {
                     os.write_tag(2, ::protobuf::wire_format::WireTypeLengthDelimited)?;
                     os.write_raw_varint32(v.get_cached_size())?;
                     v.write_to_with_cached_sizes(os)?;
-                },
+                }
                 &CollectionDef_oneof_kind::int64_list(ref v) => {
                     os.write_tag(3, ::protobuf::wire_format::WireTypeLengthDelimited)?;
                     os.write_raw_varint32(v.get_cached_size())?;
                     v.write_to_with_cached_sizes(os)?;
-                },
+                }
                 &CollectionDef_oneof_kind::float_list(ref v) => {
                     os.write_tag(4, ::protobuf::wire_format::WireTypeLengthDelimited)?;
                     os.write_raw_varint32(v.get_cached_size())?;
                     v.write_to_with_cached_sizes(os)?;
-                },
+                }
                 &CollectionDef_oneof_kind::any_list(ref v) => {
                     os.write_tag(5, ::protobuf::wire_format::WireTypeLengthDelimited)?;
                     os.write_raw_varint32(v.get_cached_size())?;
                     v.write_to_with_cached_sizes(os)?;
-                },
+                }
             };
         }
         os.write_unknown_fields(self.get_unknown_fields())?;
@@ -1335,42 +1519,68 @@ impl ::protobuf::Message for CollectionDef {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_singular_message_accessor::<_, CollectionDef_NodeList>(
-                    "node_list",
-                    CollectionDef::has_node_list,
-                    CollectionDef::get_node_list,
-                ));
-                fields.push(::protobuf::reflect::accessor::make_singular_message_accessor::<_, CollectionDef_BytesList>(
-                    "bytes_list",
-                    CollectionDef::has_bytes_list,
-                    CollectionDef::get_bytes_list,
-                ));
-                fields.push(::protobuf::reflect::accessor::make_singular_message_accessor::<_, CollectionDef_Int64List>(
-                    "int64_list",
-                    CollectionDef::has_int64_list,
-                    CollectionDef::get_int64_list,
-                ));
-                fields.push(::protobuf::reflect::accessor::make_singular_message_accessor::<_, CollectionDef_FloatList>(
-                    "float_list",
-                    CollectionDef::has_float_list,
-                    CollectionDef::get_float_list,
-                ));
-                fields.push(::protobuf::reflect::accessor::make_singular_message_accessor::<_, CollectionDef_AnyList>(
-                    "any_list",
-                    CollectionDef::has_any_list,
-                    CollectionDef::get_any_list,
-                ));
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_message_accessor::<
+                        _,
+                        CollectionDef_NodeList,
+                    >(
+                        "node_list",
+                        CollectionDef::has_node_list,
+                        CollectionDef::get_node_list,
+                    ),
+                );
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_message_accessor::<
+                        _,
+                        CollectionDef_BytesList,
+                    >(
+                        "bytes_list",
+                        CollectionDef::has_bytes_list,
+                        CollectionDef::get_bytes_list,
+                    ),
+                );
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_message_accessor::<
+                        _,
+                        CollectionDef_Int64List,
+                    >(
+                        "int64_list",
+                        CollectionDef::has_int64_list,
+                        CollectionDef::get_int64_list,
+                    ),
+                );
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_message_accessor::<
+                        _,
+                        CollectionDef_FloatList,
+                    >(
+                        "float_list",
+                        CollectionDef::has_float_list,
+                        CollectionDef::get_float_list,
+                    ),
+                );
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_message_accessor::<
+                        _,
+                        CollectionDef_AnyList,
+                    >(
+                        "any_list",
+                        CollectionDef::has_any_list,
+                        CollectionDef::get_any_list,
+                    ),
+                );
                 ::protobuf::reflect::MessageDescriptor::new::<CollectionDef>(
                     "CollectionDef",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -1381,9 +1591,7 @@ impl ::protobuf::Message for CollectionDef {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const CollectionDef,
         };
-        unsafe {
-            instance.get(CollectionDef::new)
-        }
+        unsafe { instance.get(CollectionDef::new) }
     }
 }
 
@@ -1410,7 +1618,7 @@ impl ::protobuf::reflect::ProtobufValue for CollectionDef {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct CollectionDef_NodeList {
     // message fields
     pub value: ::protobuf::RepeatedField<::std::string::String>,
@@ -1431,7 +1639,6 @@ impl CollectionDef_NodeList {
     }
 
     // repeated string value = 1;
-
 
     pub fn get_value(&self) -> &[::std::string::String] {
         &self.value
@@ -1461,16 +1668,24 @@ impl ::protobuf::Message for CollectionDef_NodeList {
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
                     ::protobuf::rt::read_repeated_string_into(wire_type, is, &mut self.value)?;
-                },
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -1482,16 +1697,19 @@ impl ::protobuf::Message for CollectionDef_NodeList {
         let mut my_size = 0;
         for value in &self.value {
             my_size += ::protobuf::rt::string_size(1, &value);
-        };
+        }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         for v in &self.value {
             os.write_string(1, &v)?;
-        };
+        }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
     }
@@ -1527,35 +1745,40 @@ impl ::protobuf::Message for CollectionDef_NodeList {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
-                    "value",
-                    |m: &CollectionDef_NodeList| { &m.value },
-                    |m: &mut CollectionDef_NodeList| { &mut m.value },
-                ));
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeString,
+                    >(
+                        "value",
+                        |m: &CollectionDef_NodeList| &m.value,
+                        |m: &mut CollectionDef_NodeList| &mut m.value,
+                    ),
+                );
                 ::protobuf::reflect::MessageDescriptor::new::<CollectionDef_NodeList>(
                     "CollectionDef_NodeList",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
     }
 
     fn default_instance() -> &'static CollectionDef_NodeList {
-        static mut instance: ::protobuf::lazy::Lazy<CollectionDef_NodeList> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const CollectionDef_NodeList,
-        };
-        unsafe {
-            instance.get(CollectionDef_NodeList::new)
-        }
+        static mut instance: ::protobuf::lazy::Lazy<CollectionDef_NodeList> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const CollectionDef_NodeList,
+            };
+        unsafe { instance.get(CollectionDef_NodeList::new) }
     }
 }
 
@@ -1578,7 +1801,7 @@ impl ::protobuf::reflect::ProtobufValue for CollectionDef_NodeList {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct CollectionDef_BytesList {
     // message fields
     pub value: ::protobuf::RepeatedField<::std::vec::Vec<u8>>,
@@ -1599,7 +1822,6 @@ impl CollectionDef_BytesList {
     }
 
     // repeated bytes value = 1;
-
 
     pub fn get_value(&self) -> &[::std::vec::Vec<u8>] {
         &self.value
@@ -1629,16 +1851,24 @@ impl ::protobuf::Message for CollectionDef_BytesList {
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
                     ::protobuf::rt::read_repeated_bytes_into(wire_type, is, &mut self.value)?;
-                },
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -1650,16 +1880,19 @@ impl ::protobuf::Message for CollectionDef_BytesList {
         let mut my_size = 0;
         for value in &self.value {
             my_size += ::protobuf::rt::bytes_size(1, &value);
-        };
+        }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         for v in &self.value {
             os.write_bytes(1, &v)?;
-        };
+        }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
     }
@@ -1695,35 +1928,40 @@ impl ::protobuf::Message for CollectionDef_BytesList {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeBytes>(
-                    "value",
-                    |m: &CollectionDef_BytesList| { &m.value },
-                    |m: &mut CollectionDef_BytesList| { &mut m.value },
-                ));
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeBytes,
+                    >(
+                        "value",
+                        |m: &CollectionDef_BytesList| &m.value,
+                        |m: &mut CollectionDef_BytesList| &mut m.value,
+                    ),
+                );
                 ::protobuf::reflect::MessageDescriptor::new::<CollectionDef_BytesList>(
                     "CollectionDef_BytesList",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
     }
 
     fn default_instance() -> &'static CollectionDef_BytesList {
-        static mut instance: ::protobuf::lazy::Lazy<CollectionDef_BytesList> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const CollectionDef_BytesList,
-        };
-        unsafe {
-            instance.get(CollectionDef_BytesList::new)
-        }
+        static mut instance: ::protobuf::lazy::Lazy<CollectionDef_BytesList> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const CollectionDef_BytesList,
+            };
+        unsafe { instance.get(CollectionDef_BytesList::new) }
     }
 }
 
@@ -1746,7 +1984,7 @@ impl ::protobuf::reflect::ProtobufValue for CollectionDef_BytesList {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct CollectionDef_Int64List {
     // message fields
     pub value: ::std::vec::Vec<i64>,
@@ -1767,7 +2005,6 @@ impl CollectionDef_Int64List {
     }
 
     // repeated int64 value = 1;
-
 
     pub fn get_value(&self) -> &[i64] {
         &self.value
@@ -1797,16 +2034,24 @@ impl ::protobuf::Message for CollectionDef_Int64List {
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
                     ::protobuf::rt::read_repeated_int64_into(wire_type, is, &mut self.value)?;
-                },
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -1824,14 +2069,17 @@ impl ::protobuf::Message for CollectionDef_Int64List {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if !self.value.is_empty() {
             os.write_tag(1, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             // TODO: Data size is computed again, it should be cached
             os.write_raw_varint32(::protobuf::rt::vec_packed_varint_data_size(&self.value))?;
             for v in &self.value {
                 os.write_int64_no_tag(*v)?;
-            };
+            }
         }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
@@ -1868,35 +2116,38 @@ impl ::protobuf::Message for CollectionDef_Int64List {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "value",
-                    |m: &CollectionDef_Int64List| { &m.value },
-                    |m: &mut CollectionDef_Int64List| { &mut m.value },
+                    |m: &CollectionDef_Int64List| &m.value,
+                    |m: &mut CollectionDef_Int64List| &mut m.value,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<CollectionDef_Int64List>(
                     "CollectionDef_Int64List",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
     }
 
     fn default_instance() -> &'static CollectionDef_Int64List {
-        static mut instance: ::protobuf::lazy::Lazy<CollectionDef_Int64List> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const CollectionDef_Int64List,
-        };
-        unsafe {
-            instance.get(CollectionDef_Int64List::new)
-        }
+        static mut instance: ::protobuf::lazy::Lazy<CollectionDef_Int64List> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const CollectionDef_Int64List,
+            };
+        unsafe { instance.get(CollectionDef_Int64List::new) }
     }
 }
 
@@ -1919,7 +2170,7 @@ impl ::protobuf::reflect::ProtobufValue for CollectionDef_Int64List {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct CollectionDef_FloatList {
     // message fields
     pub value: ::std::vec::Vec<f32>,
@@ -1940,7 +2191,6 @@ impl CollectionDef_FloatList {
     }
 
     // repeated float value = 1;
-
 
     pub fn get_value(&self) -> &[f32] {
         &self.value
@@ -1970,16 +2220,24 @@ impl ::protobuf::Message for CollectionDef_FloatList {
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
                     ::protobuf::rt::read_repeated_float_into(wire_type, is, &mut self.value)?;
-                },
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -1990,21 +2248,26 @@ impl ::protobuf::Message for CollectionDef_FloatList {
     fn compute_size(&self) -> u32 {
         let mut my_size = 0;
         if !self.value.is_empty() {
-            my_size += 1 + ::protobuf::rt::compute_raw_varint32_size((self.value.len() * 4) as u32) + (self.value.len() * 4) as u32;
+            my_size += 1
+                + ::protobuf::rt::compute_raw_varint32_size((self.value.len() * 4) as u32)
+                + (self.value.len() * 4) as u32;
         }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if !self.value.is_empty() {
             os.write_tag(1, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             // TODO: Data size is computed again, it should be cached
             os.write_raw_varint32((self.value.len() * 4) as u32)?;
             for v in &self.value {
                 os.write_float_no_tag(*v)?;
-            };
+            }
         }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
@@ -2041,35 +2304,38 @@ impl ::protobuf::Message for CollectionDef_FloatList {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<_, ::protobuf::types::ProtobufTypeFloat>(
+                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeFloat,
+                >(
                     "value",
-                    |m: &CollectionDef_FloatList| { &m.value },
-                    |m: &mut CollectionDef_FloatList| { &mut m.value },
+                    |m: &CollectionDef_FloatList| &m.value,
+                    |m: &mut CollectionDef_FloatList| &mut m.value,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<CollectionDef_FloatList>(
                     "CollectionDef_FloatList",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
     }
 
     fn default_instance() -> &'static CollectionDef_FloatList {
-        static mut instance: ::protobuf::lazy::Lazy<CollectionDef_FloatList> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const CollectionDef_FloatList,
-        };
-        unsafe {
-            instance.get(CollectionDef_FloatList::new)
-        }
+        static mut instance: ::protobuf::lazy::Lazy<CollectionDef_FloatList> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const CollectionDef_FloatList,
+            };
+        unsafe { instance.get(CollectionDef_FloatList::new) }
     }
 }
 
@@ -2092,7 +2358,7 @@ impl ::protobuf::reflect::ProtobufValue for CollectionDef_FloatList {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct CollectionDef_AnyList {
     // message fields
     pub value: ::protobuf::RepeatedField<::protobuf::well_known_types::Any>,
@@ -2114,7 +2380,6 @@ impl CollectionDef_AnyList {
 
     // repeated .google.protobuf.Any value = 1;
 
-
     pub fn get_value(&self) -> &[::protobuf::well_known_types::Any] {
         &self.value
     }
@@ -2128,7 +2393,9 @@ impl CollectionDef_AnyList {
     }
 
     // Mutable pointer to the field.
-    pub fn mut_value(&mut self) -> &mut ::protobuf::RepeatedField<::protobuf::well_known_types::Any> {
+    pub fn mut_value(
+        &mut self,
+    ) -> &mut ::protobuf::RepeatedField<::protobuf::well_known_types::Any> {
         &mut self.value
     }
 
@@ -2144,20 +2411,28 @@ impl ::protobuf::Message for CollectionDef_AnyList {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
                     ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.value)?;
-                },
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -2170,18 +2445,21 @@ impl ::protobuf::Message for CollectionDef_AnyList {
         for value in &self.value {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-        };
+        }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         for v in &self.value {
             os.write_tag(1, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
-        };
+        }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
     }
@@ -2217,35 +2495,40 @@ impl ::protobuf::Message for CollectionDef_AnyList {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<::protobuf::well_known_types::Any>>(
-                    "value",
-                    |m: &CollectionDef_AnyList| { &m.value },
-                    |m: &mut CollectionDef_AnyList| { &mut m.value },
-                ));
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<::protobuf::well_known_types::Any>,
+                    >(
+                        "value",
+                        |m: &CollectionDef_AnyList| &m.value,
+                        |m: &mut CollectionDef_AnyList| &mut m.value,
+                    ),
+                );
                 ::protobuf::reflect::MessageDescriptor::new::<CollectionDef_AnyList>(
                     "CollectionDef_AnyList",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
     }
 
     fn default_instance() -> &'static CollectionDef_AnyList {
-        static mut instance: ::protobuf::lazy::Lazy<CollectionDef_AnyList> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const CollectionDef_AnyList,
-        };
-        unsafe {
-            instance.get(CollectionDef_AnyList::new)
-        }
+        static mut instance: ::protobuf::lazy::Lazy<CollectionDef_AnyList> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const CollectionDef_AnyList,
+            };
+        unsafe { instance.get(CollectionDef_AnyList::new) }
     }
 }
 
@@ -2268,7 +2551,7 @@ impl ::protobuf::reflect::ProtobufValue for CollectionDef_AnyList {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct TensorInfo {
     // message fields
     pub dtype: super::types::DataType,
@@ -2286,7 +2569,7 @@ impl<'a> ::std::default::Default for &'a TensorInfo {
     }
 }
 
-#[derive(Clone,PartialEq,Debug)]
+#[derive(Clone, PartialEq, Debug)]
 pub enum TensorInfo_oneof_encoding {
     name(::std::string::String),
     coo_sparse(TensorInfo_CooSparse),
@@ -2298,7 +2581,6 @@ impl TensorInfo {
     }
 
     // string name = 1;
-
 
     pub fn get_name(&self) -> &str {
         match self.encoding {
@@ -2326,7 +2608,9 @@ impl TensorInfo {
     pub fn mut_name(&mut self) -> &mut ::std::string::String {
         if let ::std::option::Option::Some(TensorInfo_oneof_encoding::name(_)) = self.encoding {
         } else {
-            self.encoding = ::std::option::Option::Some(TensorInfo_oneof_encoding::name(::std::string::String::new()));
+            self.encoding = ::std::option::Option::Some(TensorInfo_oneof_encoding::name(
+                ::std::string::String::new(),
+            ));
         }
         match self.encoding {
             ::std::option::Option::Some(TensorInfo_oneof_encoding::name(ref mut v)) => v,
@@ -2347,7 +2631,6 @@ impl TensorInfo {
     }
 
     // .tensorflow.TensorInfo.CooSparse coo_sparse = 4;
-
 
     pub fn get_coo_sparse(&self) -> &TensorInfo_CooSparse {
         match self.encoding {
@@ -2373,9 +2656,12 @@ impl TensorInfo {
 
     // Mutable pointer to the field.
     pub fn mut_coo_sparse(&mut self) -> &mut TensorInfo_CooSparse {
-        if let ::std::option::Option::Some(TensorInfo_oneof_encoding::coo_sparse(_)) = self.encoding {
+        if let ::std::option::Option::Some(TensorInfo_oneof_encoding::coo_sparse(_)) = self.encoding
+        {
         } else {
-            self.encoding = ::std::option::Option::Some(TensorInfo_oneof_encoding::coo_sparse(TensorInfo_CooSparse::new()));
+            self.encoding = ::std::option::Option::Some(TensorInfo_oneof_encoding::coo_sparse(
+                TensorInfo_CooSparse::new(),
+            ));
         }
         match self.encoding {
             ::std::option::Option::Some(TensorInfo_oneof_encoding::coo_sparse(ref mut v)) => v,
@@ -2397,7 +2683,6 @@ impl TensorInfo {
 
     // .tensorflow.DataType dtype = 2;
 
-
     pub fn get_dtype(&self) -> super::types::DataType {
         self.dtype
     }
@@ -2412,9 +2697,10 @@ impl TensorInfo {
 
     // .tensorflow.TensorShapeProto tensor_shape = 3;
 
-
     pub fn get_tensor_shape(&self) -> &super::tensor_shape::TensorShapeProto {
-        self.tensor_shape.as_ref().unwrap_or_else(|| super::tensor_shape::TensorShapeProto::default_instance())
+        self.tensor_shape
+            .as_ref()
+            .unwrap_or_else(|| super::tensor_shape::TensorShapeProto::default_instance())
     }
     pub fn clear_tensor_shape(&mut self) {
         self.tensor_shape.clear();
@@ -2440,7 +2726,9 @@ impl TensorInfo {
 
     // Take field
     pub fn take_tensor_shape(&mut self) -> super::tensor_shape::TensorShapeProto {
-        self.tensor_shape.take().unwrap_or_else(|| super::tensor_shape::TensorShapeProto::new())
+        self.tensor_shape
+            .take()
+            .unwrap_or_else(|| super::tensor_shape::TensorShapeProto::new())
     }
 }
 
@@ -2455,35 +2743,59 @@ impl ::protobuf::Message for TensorInfo {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
                     if wire_type != ::protobuf::wire_format::WireTypeLengthDelimited {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
-                    self.encoding = ::std::option::Option::Some(TensorInfo_oneof_encoding::name(is.read_string()?));
-                },
+                    self.encoding = ::std::option::Option::Some(TensorInfo_oneof_encoding::name(
+                        is.read_string()?,
+                    ));
+                }
                 4 => {
                     if wire_type != ::protobuf::wire_format::WireTypeLengthDelimited {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
-                    self.encoding = ::std::option::Option::Some(TensorInfo_oneof_encoding::coo_sparse(is.read_message()?));
-                },
-                2 => {
-                    ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(wire_type, is, &mut self.dtype, 2, &mut self.unknown_fields)?
-                },
+                    self.encoding = ::std::option::Option::Some(
+                        TensorInfo_oneof_encoding::coo_sparse(is.read_message()?),
+                    );
+                }
+                2 => ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(
+                    wire_type,
+                    is,
+                    &mut self.dtype,
+                    2,
+                    &mut self.unknown_fields,
+                )?,
                 3 => {
-                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.tensor_shape)?;
-                },
+                    ::protobuf::rt::read_singular_message_into(
+                        wire_type,
+                        is,
+                        &mut self.tensor_shape,
+                    )?;
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -2504,11 +2816,11 @@ impl ::protobuf::Message for TensorInfo {
             match v {
                 &TensorInfo_oneof_encoding::name(ref v) => {
                     my_size += ::protobuf::rt::string_size(1, &v);
-                },
+                }
                 &TensorInfo_oneof_encoding::coo_sparse(ref v) => {
                     let len = v.compute_size();
                     my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-                },
+                }
             };
         }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
@@ -2516,7 +2828,10 @@ impl ::protobuf::Message for TensorInfo {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if self.dtype != super::types::DataType::DT_INVALID {
             os.write_enum(2, self.dtype.value())?;
         }
@@ -2529,12 +2844,12 @@ impl ::protobuf::Message for TensorInfo {
             match v {
                 &TensorInfo_oneof_encoding::name(ref v) => {
                     os.write_string(1, v)?;
-                },
+                }
                 &TensorInfo_oneof_encoding::coo_sparse(ref v) => {
                     os.write_tag(4, ::protobuf::wire_format::WireTypeLengthDelimited)?;
                     os.write_raw_varint32(v.get_cached_size())?;
                     v.write_to_with_cached_sizes(os)?;
-                },
+                }
             };
         }
         os.write_unknown_fields(self.get_unknown_fields())?;
@@ -2572,37 +2887,55 @@ impl ::protobuf::Message for TensorInfo {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_singular_string_accessor::<_>(
-                    "name",
-                    TensorInfo::has_name,
-                    TensorInfo::get_name,
-                ));
-                fields.push(::protobuf::reflect::accessor::make_singular_message_accessor::<_, TensorInfo_CooSparse>(
-                    "coo_sparse",
-                    TensorInfo::has_coo_sparse,
-                    TensorInfo::get_coo_sparse,
-                ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeEnum<super::types::DataType>>(
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_string_accessor::<_>(
+                        "name",
+                        TensorInfo::has_name,
+                        TensorInfo::get_name,
+                    ),
+                );
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_message_accessor::<
+                        _,
+                        TensorInfo_CooSparse,
+                    >(
+                        "coo_sparse",
+                        TensorInfo::has_coo_sparse,
+                        TensorInfo::get_coo_sparse,
+                    ),
+                );
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeEnum<super::types::DataType>,
+                >(
                     "dtype",
-                    |m: &TensorInfo| { &m.dtype },
-                    |m: &mut TensorInfo| { &mut m.dtype },
+                    |m: &TensorInfo| &m.dtype,
+                    |m: &mut TensorInfo| &mut m.dtype,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<super::tensor_shape::TensorShapeProto>>(
-                    "tensor_shape",
-                    |m: &TensorInfo| { &m.tensor_shape },
-                    |m: &mut TensorInfo| { &mut m.tensor_shape },
-                ));
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<
+                            super::tensor_shape::TensorShapeProto,
+                        >,
+                    >(
+                        "tensor_shape",
+                        |m: &TensorInfo| &m.tensor_shape,
+                        |m: &mut TensorInfo| &mut m.tensor_shape,
+                    ),
+                );
                 ::protobuf::reflect::MessageDescriptor::new::<TensorInfo>(
                     "TensorInfo",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -2613,9 +2946,7 @@ impl ::protobuf::Message for TensorInfo {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const TensorInfo,
         };
-        unsafe {
-            instance.get(TensorInfo::new)
-        }
+        unsafe { instance.get(TensorInfo::new) }
     }
 }
 
@@ -2641,7 +2972,7 @@ impl ::protobuf::reflect::ProtobufValue for TensorInfo {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct TensorInfo_CooSparse {
     // message fields
     pub values_tensor_name: ::std::string::String,
@@ -2664,7 +2995,6 @@ impl TensorInfo_CooSparse {
     }
 
     // string values_tensor_name = 1;
-
 
     pub fn get_values_tensor_name(&self) -> &str {
         &self.values_tensor_name
@@ -2691,7 +3021,6 @@ impl TensorInfo_CooSparse {
 
     // string indices_tensor_name = 2;
 
-
     pub fn get_indices_tensor_name(&self) -> &str {
         &self.indices_tensor_name
     }
@@ -2717,7 +3046,6 @@ impl TensorInfo_CooSparse {
 
     // string dense_shape_tensor_name = 3;
 
-
     pub fn get_dense_shape_tensor_name(&self) -> &str {
         &self.dense_shape_tensor_name
     }
@@ -2738,7 +3066,10 @@ impl TensorInfo_CooSparse {
 
     // Take field
     pub fn take_dense_shape_tensor_name(&mut self) -> ::std::string::String {
-        ::std::mem::replace(&mut self.dense_shape_tensor_name, ::std::string::String::new())
+        ::std::mem::replace(
+            &mut self.dense_shape_tensor_name,
+            ::std::string::String::new(),
+        )
     }
 }
 
@@ -2747,22 +3078,42 @@ impl ::protobuf::Message for TensorInfo_CooSparse {
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.values_tensor_name)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.values_tensor_name,
+                    )?;
+                }
                 2 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.indices_tensor_name)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.indices_tensor_name,
+                    )?;
+                }
                 3 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.dense_shape_tensor_name)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.dense_shape_tensor_name,
+                    )?;
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -2786,7 +3137,10 @@ impl ::protobuf::Message for TensorInfo_CooSparse {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if !self.values_tensor_name.is_empty() {
             os.write_string(1, &self.values_tensor_name)?;
         }
@@ -2831,45 +3185,54 @@ impl ::protobuf::Message for TensorInfo_CooSparse {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "values_tensor_name",
-                    |m: &TensorInfo_CooSparse| { &m.values_tensor_name },
-                    |m: &mut TensorInfo_CooSparse| { &mut m.values_tensor_name },
+                    |m: &TensorInfo_CooSparse| &m.values_tensor_name,
+                    |m: &mut TensorInfo_CooSparse| &mut m.values_tensor_name,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "indices_tensor_name",
-                    |m: &TensorInfo_CooSparse| { &m.indices_tensor_name },
-                    |m: &mut TensorInfo_CooSparse| { &mut m.indices_tensor_name },
+                    |m: &TensorInfo_CooSparse| &m.indices_tensor_name,
+                    |m: &mut TensorInfo_CooSparse| &mut m.indices_tensor_name,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "dense_shape_tensor_name",
-                    |m: &TensorInfo_CooSparse| { &m.dense_shape_tensor_name },
-                    |m: &mut TensorInfo_CooSparse| { &mut m.dense_shape_tensor_name },
+                    |m: &TensorInfo_CooSparse| &m.dense_shape_tensor_name,
+                    |m: &mut TensorInfo_CooSparse| &mut m.dense_shape_tensor_name,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<TensorInfo_CooSparse>(
                     "TensorInfo_CooSparse",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
     }
 
     fn default_instance() -> &'static TensorInfo_CooSparse {
-        static mut instance: ::protobuf::lazy::Lazy<TensorInfo_CooSparse> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const TensorInfo_CooSparse,
-        };
-        unsafe {
-            instance.get(TensorInfo_CooSparse::new)
-        }
+        static mut instance: ::protobuf::lazy::Lazy<TensorInfo_CooSparse> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const TensorInfo_CooSparse,
+            };
+        unsafe { instance.get(TensorInfo_CooSparse::new) }
     }
 }
 
@@ -2894,7 +3257,7 @@ impl ::protobuf::reflect::ProtobufValue for TensorInfo_CooSparse {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct SignatureDef {
     // message fields
     pub inputs: ::std::collections::HashMap<::std::string::String, TensorInfo>,
@@ -2918,7 +3281,6 @@ impl SignatureDef {
 
     // repeated .tensorflow.SignatureDef.InputsEntry inputs = 1;
 
-
     pub fn get_inputs(&self) -> &::std::collections::HashMap<::std::string::String, TensorInfo> {
         &self.inputs
     }
@@ -2927,22 +3289,28 @@ impl SignatureDef {
     }
 
     // Param is passed by value, moved
-    pub fn set_inputs(&mut self, v: ::std::collections::HashMap<::std::string::String, TensorInfo>) {
+    pub fn set_inputs(
+        &mut self,
+        v: ::std::collections::HashMap<::std::string::String, TensorInfo>,
+    ) {
         self.inputs = v;
     }
 
     // Mutable pointer to the field.
-    pub fn mut_inputs(&mut self) -> &mut ::std::collections::HashMap<::std::string::String, TensorInfo> {
+    pub fn mut_inputs(
+        &mut self,
+    ) -> &mut ::std::collections::HashMap<::std::string::String, TensorInfo> {
         &mut self.inputs
     }
 
     // Take field
-    pub fn take_inputs(&mut self) -> ::std::collections::HashMap<::std::string::String, TensorInfo> {
+    pub fn take_inputs(
+        &mut self,
+    ) -> ::std::collections::HashMap<::std::string::String, TensorInfo> {
         ::std::mem::replace(&mut self.inputs, ::std::collections::HashMap::new())
     }
 
     // repeated .tensorflow.SignatureDef.OutputsEntry outputs = 2;
-
 
     pub fn get_outputs(&self) -> &::std::collections::HashMap<::std::string::String, TensorInfo> {
         &self.outputs
@@ -2952,22 +3320,28 @@ impl SignatureDef {
     }
 
     // Param is passed by value, moved
-    pub fn set_outputs(&mut self, v: ::std::collections::HashMap<::std::string::String, TensorInfo>) {
+    pub fn set_outputs(
+        &mut self,
+        v: ::std::collections::HashMap<::std::string::String, TensorInfo>,
+    ) {
         self.outputs = v;
     }
 
     // Mutable pointer to the field.
-    pub fn mut_outputs(&mut self) -> &mut ::std::collections::HashMap<::std::string::String, TensorInfo> {
+    pub fn mut_outputs(
+        &mut self,
+    ) -> &mut ::std::collections::HashMap<::std::string::String, TensorInfo> {
         &mut self.outputs
     }
 
     // Take field
-    pub fn take_outputs(&mut self) -> ::std::collections::HashMap<::std::string::String, TensorInfo> {
+    pub fn take_outputs(
+        &mut self,
+    ) -> ::std::collections::HashMap<::std::string::String, TensorInfo> {
         ::std::mem::replace(&mut self.outputs, ::std::collections::HashMap::new())
     }
 
     // string method_name = 3;
-
 
     pub fn get_method_name(&self) -> &str {
         &self.method_name
@@ -2998,22 +3372,40 @@ impl ::protobuf::Message for SignatureDef {
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_map_into::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<TensorInfo>>(wire_type, is, &mut self.inputs)?;
-                },
+                    ::protobuf::rt::read_map_into::<
+                        ::protobuf::types::ProtobufTypeString,
+                        ::protobuf::types::ProtobufTypeMessage<TensorInfo>,
+                    >(wire_type, is, &mut self.inputs)?;
+                }
                 2 => {
-                    ::protobuf::rt::read_map_into::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<TensorInfo>>(wire_type, is, &mut self.outputs)?;
-                },
+                    ::protobuf::rt::read_map_into::<
+                        ::protobuf::types::ProtobufTypeString,
+                        ::protobuf::types::ProtobufTypeMessage<TensorInfo>,
+                    >(wire_type, is, &mut self.outputs)?;
+                }
                 3 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.method_name)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.method_name,
+                    )?;
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -3023,8 +3415,14 @@ impl ::protobuf::Message for SignatureDef {
     #[allow(unused_variables)]
     fn compute_size(&self) -> u32 {
         let mut my_size = 0;
-        my_size += ::protobuf::rt::compute_map_size::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<TensorInfo>>(1, &self.inputs);
-        my_size += ::protobuf::rt::compute_map_size::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<TensorInfo>>(2, &self.outputs);
+        my_size += ::protobuf::rt::compute_map_size::<
+            ::protobuf::types::ProtobufTypeString,
+            ::protobuf::types::ProtobufTypeMessage<TensorInfo>,
+        >(1, &self.inputs);
+        my_size += ::protobuf::rt::compute_map_size::<
+            ::protobuf::types::ProtobufTypeString,
+            ::protobuf::types::ProtobufTypeMessage<TensorInfo>,
+        >(2, &self.outputs);
         if !self.method_name.is_empty() {
             my_size += ::protobuf::rt::string_size(3, &self.method_name);
         }
@@ -3033,9 +3431,18 @@ impl ::protobuf::Message for SignatureDef {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
-        ::protobuf::rt::write_map_with_cached_sizes::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<TensorInfo>>(1, &self.inputs, os)?;
-        ::protobuf::rt::write_map_with_cached_sizes::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<TensorInfo>>(2, &self.outputs, os)?;
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
+        ::protobuf::rt::write_map_with_cached_sizes::<
+            ::protobuf::types::ProtobufTypeString,
+            ::protobuf::types::ProtobufTypeMessage<TensorInfo>,
+        >(1, &self.inputs, os)?;
+        ::protobuf::rt::write_map_with_cached_sizes::<
+            ::protobuf::types::ProtobufTypeString,
+            ::protobuf::types::ProtobufTypeMessage<TensorInfo>,
+        >(2, &self.outputs, os)?;
         if !self.method_name.is_empty() {
             os.write_string(3, &self.method_name)?;
         }
@@ -3074,32 +3481,44 @@ impl ::protobuf::Message for SignatureDef {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_map_accessor::<_, ::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<TensorInfo>>(
+                fields.push(::protobuf::reflect::accessor::make_map_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                    ::protobuf::types::ProtobufTypeMessage<TensorInfo>,
+                >(
                     "inputs",
-                    |m: &SignatureDef| { &m.inputs },
-                    |m: &mut SignatureDef| { &mut m.inputs },
+                    |m: &SignatureDef| &m.inputs,
+                    |m: &mut SignatureDef| &mut m.inputs,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_map_accessor::<_, ::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<TensorInfo>>(
+                fields.push(::protobuf::reflect::accessor::make_map_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                    ::protobuf::types::ProtobufTypeMessage<TensorInfo>,
+                >(
                     "outputs",
-                    |m: &SignatureDef| { &m.outputs },
-                    |m: &mut SignatureDef| { &mut m.outputs },
+                    |m: &SignatureDef| &m.outputs,
+                    |m: &mut SignatureDef| &mut m.outputs,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "method_name",
-                    |m: &SignatureDef| { &m.method_name },
-                    |m: &mut SignatureDef| { &mut m.method_name },
+                    |m: &SignatureDef| &m.method_name,
+                    |m: &mut SignatureDef| &mut m.method_name,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<SignatureDef>(
                     "SignatureDef",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -3110,9 +3529,7 @@ impl ::protobuf::Message for SignatureDef {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const SignatureDef,
         };
-        unsafe {
-            instance.get(SignatureDef::new)
-        }
+        unsafe { instance.get(SignatureDef::new) }
     }
 }
 
@@ -3137,7 +3554,7 @@ impl ::protobuf::reflect::ProtobufValue for SignatureDef {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct AssetFileDef {
     // message fields
     pub tensor_info: ::protobuf::SingularPtrField<TensorInfo>,
@@ -3160,9 +3577,10 @@ impl AssetFileDef {
 
     // .tensorflow.TensorInfo tensor_info = 1;
 
-
     pub fn get_tensor_info(&self) -> &TensorInfo {
-        self.tensor_info.as_ref().unwrap_or_else(|| TensorInfo::default_instance())
+        self.tensor_info
+            .as_ref()
+            .unwrap_or_else(|| TensorInfo::default_instance())
     }
     pub fn clear_tensor_info(&mut self) {
         self.tensor_info.clear();
@@ -3192,7 +3610,6 @@ impl AssetFileDef {
     }
 
     // string filename = 2;
-
 
     pub fn get_filename(&self) -> &str {
         &self.filename
@@ -3224,23 +3641,39 @@ impl ::protobuf::Message for AssetFileDef {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.tensor_info)?;
-                },
+                    ::protobuf::rt::read_singular_message_into(
+                        wire_type,
+                        is,
+                        &mut self.tensor_info,
+                    )?;
+                }
                 2 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.filename)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.filename,
+                    )?;
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -3262,7 +3695,10 @@ impl ::protobuf::Message for AssetFileDef {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if let Some(ref v) = self.tensor_info.as_ref() {
             os.write_tag(1, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
@@ -3306,27 +3742,36 @@ impl ::protobuf::Message for AssetFileDef {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<TensorInfo>>(
-                    "tensor_info",
-                    |m: &AssetFileDef| { &m.tensor_info },
-                    |m: &mut AssetFileDef| { &mut m.tensor_info },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<TensorInfo>,
+                    >(
+                        "tensor_info",
+                        |m: &AssetFileDef| &m.tensor_info,
+                        |m: &mut AssetFileDef| &mut m.tensor_info,
+                    ),
+                );
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "filename",
-                    |m: &AssetFileDef| { &m.filename },
-                    |m: &mut AssetFileDef| { &mut m.filename },
+                    |m: &AssetFileDef| &m.filename,
+                    |m: &mut AssetFileDef| &mut m.filename,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<AssetFileDef>(
                     "AssetFileDef",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -3337,9 +3782,7 @@ impl ::protobuf::Message for AssetFileDef {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const AssetFileDef,
         };
-        unsafe {
-            instance.get(AssetFileDef::new)
-        }
+        unsafe { instance.get(AssetFileDef::new) }
     }
 }
 
@@ -3424,7 +3867,9 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     \x06proto3\
 ";
 
-static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::lazy::Lazy {
+static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<
+    ::protobuf::descriptor::FileDescriptorProto,
+> = ::protobuf::lazy::Lazy {
     lock: ::protobuf::lazy::ONCE_INIT,
     ptr: 0 as *const ::protobuf::descriptor::FileDescriptorProto,
 };
@@ -3434,9 +3879,5 @@ fn parse_descriptor_proto() -> ::protobuf::descriptor::FileDescriptorProto {
 }
 
 pub fn file_descriptor_proto() -> &'static ::protobuf::descriptor::FileDescriptorProto {
-    unsafe {
-        file_descriptor_proto_lazy.get(|| {
-            parse_descriptor_proto()
-        })
-    }
+    unsafe { file_descriptor_proto_lazy.get(|| parse_descriptor_proto()) }
 }
