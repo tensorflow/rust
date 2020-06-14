@@ -1480,6 +1480,7 @@ impl<T: TensorType> Display for Tensor<T> {
 #[derive(Debug)]
 pub struct Library {
     inner: *mut tf::TF_Library,
+    op_list: protos::op_def::OpList,
 }
 
 impl Library {
@@ -1488,14 +1489,23 @@ impl Library {
         let c_filename = CString::new(library_filename)?;
         let mut status = Status::new();
         let inner = unsafe { tf::TF_LoadLibrary(c_filename.as_ptr(), status.inner()) };
+
+        let mut buf = unsafe { tf::TF_GetOpList(inner) };
+        let buf = unsafe { Buffer::<u8>::from_c(&mut buf, true) };
+        let op_list: protos::op_def::OpList =
+            protobuf::parse_from_bytes(&*buf).map_err(|e| {
+                Status::new_set_lossy(
+                    Code::InvalidArgument,
+                    &format!("Invalid serialized OpList: {}", e),
+                )
+            })?;
         if inner.is_null() {
             Err(status)
         } else {
-            Ok(Library { inner })
+            Ok(Library { inner, op_list })
         }
     }
 
-    // TODO: Implement TF_GetOpList once we can deserialize protos.
 }
 
 ////////////////////////
