@@ -1490,22 +1490,22 @@ impl Library {
         let mut status = Status::new();
         let inner = unsafe { tf::TF_LoadLibrary(c_filename.as_ptr(), status.inner()) };
 
-        let mut buf = unsafe { tf::TF_GetOpList(inner) };
-        let buf = unsafe { Buffer::<u8>::from_c(&mut buf, true) };
-        let op_list: protos::op_def::OpList =
-            protobuf::parse_from_bytes(&*buf).map_err(|e| {
-                Status::new_set_lossy(
-                    Code::InvalidArgument,
-                    &format!("Invalid serialized OpList: {}", e),
-                )
-            })?;
+        let buf = unsafe {
+            let mut buf = tf::TF_GetOpList(inner);
+            Buffer::<u8>::from_c(&mut buf, false)
+        };
+        let op_list: protos::op_def::OpList = protobuf::parse_from_bytes(&*buf).map_err(|e| {
+            Status::new_set_lossy(
+                Code::InvalidArgument,
+                &format!("Invalid serialized OpList: {}", e),
+            )
+        })?;
         if inner.is_null() {
             Err(status)
         } else {
             Ok(Library { inner, op_list })
         }
     }
-
 }
 
 ////////////////////////
@@ -1884,5 +1884,13 @@ mod tests {
     #[test]
     fn test_get_registered_kernels_for_op() {
         assert!(get_registered_kernels_for_op("Add").unwrap().len() > 0);
+    }
+
+    #[test]
+    fn test_library_load() {
+        let path = "/private/var/tmp/_bazel_kylekosic/91411c7179efb90c6ebda8710056b788/execroot/org_tensorflow/bazel-out/darwin-opt/bin/tensorflow/c/test_op1.so";
+        let res = Library::load(path);
+        println!("res: {:?}", res);
+        assert!(res.is_ok());
     }
 }
