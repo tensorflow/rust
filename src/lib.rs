@@ -1886,11 +1886,4 @@ mod tests {
         assert!(get_registered_kernels_for_op("Add").unwrap().len() > 0);
     }
 
-    #[test]
-    fn test_library_load() {
-        let path = "/private/var/tmp/_bazel_kylekosic/91411c7179efb90c6ebda8710056b788/execroot/org_tensorflow/bazel-out/darwin-opt/bin/tensorflow/c/test_op1.so";
-        let res = Library::load(path);
-        println!("res: {:?}", res);
-        assert!(res.is_ok());
-    }
 }
