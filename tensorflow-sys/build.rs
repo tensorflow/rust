@@ -43,6 +43,12 @@ macro_rules! log {
 macro_rules! log_var(($var:ident) => (log!(concat!(stringify!($var), " = {:?}"), $var)));
 
 fn main() {
+    // DO NOT RELY ON THIS
+    if cfg!(feature = "private-docs-rs") {
+        log!("Returning early because private-docs-rs feature was enabled");
+        return;
+    }
+
     if check_windows_lib() {
         log!("Returning early because {} was already found", LIBRARY);
         return;

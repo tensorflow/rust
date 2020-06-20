@@ -14,6 +14,10 @@ build = "build.rs"
 links = "tensorflow"
 edition = "2018"
 
+# Prevent downloading or building TensorFlow when building docs on docs.rs.
+[package.metadata.docs.rs]
+features = ["private-docs-rs"]
+
 [dependencies]
 libc = "0.2.43"
 
@@ -29,3 +33,4 @@ zip = "0.5"
 tensorflow_gpu = []
 # This is for testing purposes; users should not use this.
 examples_system_alloc = []
+private-docs-rs = [] # DO NOT RELY ON THIS
