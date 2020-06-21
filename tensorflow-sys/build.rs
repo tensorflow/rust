@@ -10,7 +10,7 @@ use std::env::{
 };
 use std::error::Error;
 use std::fs::{self, File};
-use std::io::{self, BufWriter, Write};
+use std::io::{BufWriter, Write};
 use std::path::{Path, PathBuf};
 use std::process::{self, Command};
 
@@ -43,6 +43,12 @@ macro_rules! log {
 macro_rules! log_var(($var:ident) => (log!(concat!(stringify!($var), " = {:?}"), $var)));
 
 fn main() {
+    // DO NOT RELY ON THIS
+    if cfg!(feature = "private-docs-rs") {
+        log!("Returning early because private-docs-rs feature was enabled");
+        return;
+    }
+
     if check_windows_lib() {
         log!("Returning early because {} was already found", LIBRARY);
         return;
