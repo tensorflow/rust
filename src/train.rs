@@ -411,12 +411,12 @@ mod tests {
         let hidden_size: u64 = 4;
         let input = ops::Placeholder::new()
             .dtype(DataType::Float)
-            .shape(Shape::from(&[1u64, 2][..]))
+            .shape([1u64, 2])
             .build(&mut scope.with_op_name("input"))
             .unwrap();
         let label = ops::Placeholder::new()
             .dtype(DataType::Float)
-            .shape(Shape::from(&[1u64][..]))
+            .shape([1u64])
             .build(&mut scope.with_op_name("label"))
             .unwrap();
         let w_shape = ops::constant(&[2, hidden_size as i64][..], scope).unwrap();
@@ -427,7 +427,7 @@ mod tests {
         let w = Variable::builder()
             .initial_value(w_init)
             .data_type(DataType::Float)
-            .shape(Shape::from(&[2, hidden_size][..]))
+            .shape(Shape::from([2, hidden_size]))
             .build(&mut scope.with_op_name("w"))
             .unwrap();
         let b = Variable::builder()
@@ -449,7 +449,7 @@ mod tests {
         let w2 = Variable::builder()
             .initial_value(w2_init)
             .data_type(DataType::Float)
-            .shape(Shape::from(&[hidden_size, 1][..]))
+            .shape(Shape::from([hidden_size, 1]))
             .build(&mut scope.with_op_name("w2"))
             .unwrap();
         let b2 = Variable::builder()

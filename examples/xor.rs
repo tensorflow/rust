@@ -51,7 +51,7 @@ fn layer<O1: Into<Output>>(
                 .build(w_shape, scope)?,
         )
         .data_type(DataType::Float)
-        .shape(Shape::from(&[input_size, output_size][..]))
+        .shape(Shape::from([input_size, output_size]))
         .build(&mut scope.with_op_name("w"))?;
     let b = Variable::builder()
         .const_initial_value(Tensor::<f32>::new(&[output_size]))
@@ -81,11 +81,11 @@ fn train<P: AsRef<Path>>(save_dir: P) -> Result<(), Box<dyn Error>> {
     let hidden_size: u64 = 8;
     let input = ops::Placeholder::new()
         .dtype(DataType::Float)
-        .shape(&[1u64, 2][..])
+        .shape([1u64, 2])
         .build(&mut scope.with_op_name("input"))?;
     let label = ops::Placeholder::new()
         .dtype(DataType::Float)
-        .shape(&[1u64][..])
+        .shape([1u64])
         .build(&mut scope.with_op_name("label"))?;
     // Hidden layer.
     let (vars1, layer1) = layer(
