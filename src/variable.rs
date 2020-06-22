@@ -112,8 +112,11 @@ impl<'a> VariableBuilder<'a> {
     }
 
     /// Sets the shape of the variable.
-    pub fn shape(self, shape: Shape) -> Self {
-        Self { shape, ..self }
+    pub fn shape<S: Into<Shape>>(self, shape: S) -> Self {
+        Self {
+            shape: shape.into(),
+            ..self
+        }
     }
 
     /// Sets the data type of the variable.

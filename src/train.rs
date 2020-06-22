@@ -427,7 +427,7 @@ mod tests {
         let w = Variable::builder()
             .initial_value(w_init)
             .data_type(DataType::Float)
-            .shape(Shape::from([2, hidden_size]))
+            .shape([2, hidden_size])
             .build(&mut scope.with_op_name("w"))
             .unwrap();
         let b = Variable::builder()
@@ -449,7 +449,7 @@ mod tests {
         let w2 = Variable::builder()
             .initial_value(w2_init)
             .data_type(DataType::Float)
-            .shape(Shape::from([hidden_size, 1]))
+            .shape([hidden_size, 1])
             .build(&mut scope.with_op_name("w2"))
             .unwrap();
         let b2 = Variable::builder()

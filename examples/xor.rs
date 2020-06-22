@@ -51,7 +51,7 @@ fn layer<O1: Into<Output>>(
                 .build(w_shape, scope)?,
         )
         .data_type(DataType::Float)
-        .shape(Shape::from([input_size, output_size]))
+        .shape([input_size, output_size])
         .build(&mut scope.with_op_name("w"))?;
     let b = Variable::builder()
         .const_initial_value(Tensor::<f32>::new(&[output_size]))
