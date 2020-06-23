@@ -1494,7 +1494,7 @@ impl Library {
             let mut buf = tf::TF_GetOpList(inner);
             Buffer::<u8>::from_c(&mut buf, false)
         };
-        let op_list: protos::op_def::OpList = protobuf::parse_from_bytes(&*buf).map_err(|e| {
+        let op_list: protos::op_def::OpList = protobuf::parse_from_bytes(&buf).map_err(|e| {
             Status::new_set_lossy(
                 Code::InvalidArgument,
                 &format!("Invalid serialized OpList: {}", e),
