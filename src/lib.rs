@@ -1885,5 +1885,4 @@ mod tests {
     fn test_get_registered_kernels_for_op() {
         assert!(get_registered_kernels_for_op("Add").unwrap().len() > 0);
     }
-
 }
