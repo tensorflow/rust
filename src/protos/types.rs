@@ -26,7 +26,7 @@ use protobuf::ProtobufEnum as ProtobufEnum_imported_for_functions;
 /// of protobuf runtime.
 const _PROTOBUF_VERSION_CHECK: () = ::protobuf::VERSION_2_8_0;
 
-#[derive(Clone,PartialEq,Eq,Debug,Hash)]
+#[derive(Clone, PartialEq, Eq, Debug, Hash)]
 pub enum DataType {
     DT_INVALID = 0,
     DT_FLOAT = 1,
@@ -131,7 +131,7 @@ impl ::protobuf::ProtobufEnum for DataType {
             121 => ::std::option::Option::Some(DataType::DT_VARIANT_REF),
             122 => ::std::option::Option::Some(DataType::DT_UINT32_REF),
             123 => ::std::option::Option::Some(DataType::DT_UINT64_REF),
-            _ => ::std::option::Option::None
+            _ => ::std::option::Option::None,
         }
     }
 
@@ -189,10 +189,11 @@ impl ::protobuf::ProtobufEnum for DataType {
     }
 
     fn enum_descriptor_static() -> &'static ::protobuf::reflect::EnumDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::EnumDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::EnumDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::EnumDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::EnumDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 ::protobuf::reflect::EnumDescriptor::new("DataType", file_descriptor_proto())
@@ -201,8 +202,7 @@ impl ::protobuf::ProtobufEnum for DataType {
     }
 }
 
-impl ::std::marker::Copy for DataType {
-}
+impl ::std::marker::Copy for DataType {}
 
 impl ::std::default::Default for DataType {
     fn default() -> Self {
@@ -242,7 +242,9 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     low/tensorflow/tensorflow/go/core/framework\xf8\x01\x01b\x06proto3\
 ";
 
-static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::lazy::Lazy {
+static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<
+    ::protobuf::descriptor::FileDescriptorProto,
+> = ::protobuf::lazy::Lazy {
     lock: ::protobuf::lazy::ONCE_INIT,
     ptr: 0 as *const ::protobuf::descriptor::FileDescriptorProto,
 };
@@ -252,9 +254,5 @@ fn parse_descriptor_proto() -> ::protobuf::descriptor::FileDescriptorProto {
 }
 
 pub fn file_descriptor_proto() -> &'static ::protobuf::descriptor::FileDescriptorProto {
-    unsafe {
-        file_descriptor_proto_lazy.get(|| {
-            parse_descriptor_proto()
-        })
-    }
+    unsafe { file_descriptor_proto_lazy.get(|| parse_descriptor_proto()) }
 }

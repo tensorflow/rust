@@ -26,7 +26,7 @@ use protobuf::ProtobufEnum as ProtobufEnum_imported_for_functions;
 /// of protobuf runtime.
 const _PROTOBUF_VERSION_CHECK: () = ::protobuf::VERSION_2_8_0;
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct SaverDef {
     // message fields
     pub filename_tensor_name: ::std::string::String,
@@ -54,7 +54,6 @@ impl SaverDef {
 
     // string filename_tensor_name = 1;
 
-
     pub fn get_filename_tensor_name(&self) -> &str {
         &self.filename_tensor_name
     }
@@ -79,7 +78,6 @@ impl SaverDef {
     }
 
     // string save_tensor_name = 2;
-
 
     pub fn get_save_tensor_name(&self) -> &str {
         &self.save_tensor_name
@@ -106,7 +104,6 @@ impl SaverDef {
 
     // string restore_op_name = 3;
 
-
     pub fn get_restore_op_name(&self) -> &str {
         &self.restore_op_name
     }
@@ -132,7 +129,6 @@ impl SaverDef {
 
     // int32 max_to_keep = 4;
 
-
     pub fn get_max_to_keep(&self) -> i32 {
         self.max_to_keep
     }
@@ -146,7 +142,6 @@ impl SaverDef {
     }
 
     // bool sharded = 5;
-
 
     pub fn get_sharded(&self) -> bool {
         self.sharded
@@ -162,7 +157,6 @@ impl SaverDef {
 
     // float keep_checkpoint_every_n_hours = 6;
 
-
     pub fn get_keep_checkpoint_every_n_hours(&self) -> f32 {
         self.keep_checkpoint_every_n_hours
     }
@@ -176,7 +170,6 @@ impl SaverDef {
     }
 
     // .tensorflow.SaverDef.CheckpointFormatVersion version = 7;
-
 
     pub fn get_version(&self) -> SaverDef_CheckpointFormatVersion {
         self.version
@@ -196,46 +189,76 @@ impl ::protobuf::Message for SaverDef {
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.filename_tensor_name)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.filename_tensor_name,
+                    )?;
+                }
                 2 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.save_tensor_name)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.save_tensor_name,
+                    )?;
+                }
                 3 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.restore_op_name)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.restore_op_name,
+                    )?;
+                }
                 4 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int32()?;
                     self.max_to_keep = tmp;
-                },
+                }
                 5 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.sharded = tmp;
-                },
+                }
                 6 => {
                     if wire_type != ::protobuf::wire_format::WireTypeFixed32 {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_float()?;
                     self.keep_checkpoint_every_n_hours = tmp;
-                },
-                7 => {
-                    ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(wire_type, is, &mut self.version, 7, &mut self.unknown_fields)?
-                },
+                }
+                7 => ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(
+                    wire_type,
+                    is,
+                    &mut self.version,
+                    7,
+                    &mut self.unknown_fields,
+                )?,
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -255,7 +278,11 @@ impl ::protobuf::Message for SaverDef {
             my_size += ::protobuf::rt::string_size(3, &self.restore_op_name);
         }
         if self.max_to_keep != 0 {
-            my_size += ::protobuf::rt::value_size(4, self.max_to_keep, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                4,
+                self.max_to_keep,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.sharded != false {
             my_size += 2;
@@ -271,7 +298,10 @@ impl ::protobuf::Message for SaverDef {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if !self.filename_tensor_name.is_empty() {
             os.write_string(1, &self.filename_tensor_name)?;
         }
@@ -328,52 +358,74 @@ impl ::protobuf::Message for SaverDef {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "filename_tensor_name",
-                    |m: &SaverDef| { &m.filename_tensor_name },
-                    |m: &mut SaverDef| { &mut m.filename_tensor_name },
+                    |m: &SaverDef| &m.filename_tensor_name,
+                    |m: &mut SaverDef| &mut m.filename_tensor_name,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "save_tensor_name",
-                    |m: &SaverDef| { &m.save_tensor_name },
-                    |m: &mut SaverDef| { &mut m.save_tensor_name },
+                    |m: &SaverDef| &m.save_tensor_name,
+                    |m: &mut SaverDef| &mut m.save_tensor_name,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "restore_op_name",
-                    |m: &SaverDef| { &m.restore_op_name },
-                    |m: &mut SaverDef| { &mut m.restore_op_name },
+                    |m: &SaverDef| &m.restore_op_name,
+                    |m: &mut SaverDef| &mut m.restore_op_name,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt32,
+                >(
                     "max_to_keep",
-                    |m: &SaverDef| { &m.max_to_keep },
-                    |m: &mut SaverDef| { &mut m.max_to_keep },
+                    |m: &SaverDef| &m.max_to_keep,
+                    |m: &mut SaverDef| &mut m.max_to_keep,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "sharded",
-                    |m: &SaverDef| { &m.sharded },
-                    |m: &mut SaverDef| { &mut m.sharded },
+                    |m: &SaverDef| &m.sharded,
+                    |m: &mut SaverDef| &mut m.sharded,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeFloat>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeFloat,
+                >(
                     "keep_checkpoint_every_n_hours",
-                    |m: &SaverDef| { &m.keep_checkpoint_every_n_hours },
-                    |m: &mut SaverDef| { &mut m.keep_checkpoint_every_n_hours },
+                    |m: &SaverDef| &m.keep_checkpoint_every_n_hours,
+                    |m: &mut SaverDef| &mut m.keep_checkpoint_every_n_hours,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeEnum<SaverDef_CheckpointFormatVersion>>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeEnum<SaverDef_CheckpointFormatVersion>,
+                >(
                     "version",
-                    |m: &SaverDef| { &m.version },
-                    |m: &mut SaverDef| { &mut m.version },
+                    |m: &SaverDef| &m.version,
+                    |m: &mut SaverDef| &mut m.version,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<SaverDef>(
                     "SaverDef",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -384,9 +436,7 @@ impl ::protobuf::Message for SaverDef {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const SaverDef,
         };
-        unsafe {
-            instance.get(SaverDef::new)
-        }
+        unsafe { instance.get(SaverDef::new) }
     }
 }
 
@@ -415,7 +465,7 @@ impl ::protobuf::reflect::ProtobufValue for SaverDef {
     }
 }
 
-#[derive(Clone,PartialEq,Eq,Debug,Hash)]
+#[derive(Clone, PartialEq, Eq, Debug, Hash)]
 pub enum SaverDef_CheckpointFormatVersion {
     LEGACY = 0,
     V1 = 1,
@@ -432,7 +482,7 @@ impl ::protobuf::ProtobufEnum for SaverDef_CheckpointFormatVersion {
             0 => ::std::option::Option::Some(SaverDef_CheckpointFormatVersion::LEGACY),
             1 => ::std::option::Option::Some(SaverDef_CheckpointFormatVersion::V1),
             2 => ::std::option::Option::Some(SaverDef_CheckpointFormatVersion::V2),
-            _ => ::std::option::Option::None
+            _ => ::std::option::Option::None,
         }
     }
 
@@ -446,20 +496,23 @@ impl ::protobuf::ProtobufEnum for SaverDef_CheckpointFormatVersion {
     }
 
     fn enum_descriptor_static() -> &'static ::protobuf::reflect::EnumDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::EnumDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::EnumDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::EnumDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::EnumDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
-                ::protobuf::reflect::EnumDescriptor::new("SaverDef_CheckpointFormatVersion", file_descriptor_proto())
+                ::protobuf::reflect::EnumDescriptor::new(
+                    "SaverDef_CheckpointFormatVersion",
+                    file_descriptor_proto(),
+                )
             })
         }
     }
 }
 
-impl ::std::marker::Copy for SaverDef_CheckpointFormatVersion {
-}
+impl ::std::marker::Copy for SaverDef_CheckpointFormatVersion {}
 
 impl ::std::default::Default for SaverDef_CheckpointFormatVersion {
     fn default() -> Self {
@@ -488,7 +541,9 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     otobuf\xf8\x01\x01b\x06proto3\
 ";
 
-static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::lazy::Lazy {
+static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<
+    ::protobuf::descriptor::FileDescriptorProto,
+> = ::protobuf::lazy::Lazy {
     lock: ::protobuf::lazy::ONCE_INIT,
     ptr: 0 as *const ::protobuf::descriptor::FileDescriptorProto,
 };
@@ -498,9 +553,5 @@ fn parse_descriptor_proto() -> ::protobuf::descriptor::FileDescriptorProto {
 }
 
 pub fn file_descriptor_proto() -> &'static ::protobuf::descriptor::FileDescriptorProto {
-    unsafe {
-        file_descriptor_proto_lazy.get(|| {
-            parse_descriptor_proto()
-        })
-    }
+    unsafe { file_descriptor_proto_lazy.get(|| parse_descriptor_proto()) }
 }

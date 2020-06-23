@@ -26,7 +26,7 @@ use protobuf::ProtobufEnum as ProtobufEnum_imported_for_functions;
 /// of protobuf runtime.
 const _PROTOBUF_VERSION_CHECK: () = ::protobuf::VERSION_2_8_0;
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct TensorProto {
     // message fields
     pub dtype: super::types::DataType,
@@ -64,7 +64,6 @@ impl TensorProto {
 
     // .tensorflow.DataType dtype = 1;
 
-
     pub fn get_dtype(&self) -> super::types::DataType {
         self.dtype
     }
@@ -79,9 +78,10 @@ impl TensorProto {
 
     // .tensorflow.TensorShapeProto tensor_shape = 2;
 
-
     pub fn get_tensor_shape(&self) -> &super::tensor_shape::TensorShapeProto {
-        self.tensor_shape.as_ref().unwrap_or_else(|| super::tensor_shape::TensorShapeProto::default_instance())
+        self.tensor_shape
+            .as_ref()
+            .unwrap_or_else(|| super::tensor_shape::TensorShapeProto::default_instance())
     }
     pub fn clear_tensor_shape(&mut self) {
         self.tensor_shape.clear();
@@ -107,11 +107,12 @@ impl TensorProto {
 
     // Take field
     pub fn take_tensor_shape(&mut self) -> super::tensor_shape::TensorShapeProto {
-        self.tensor_shape.take().unwrap_or_else(|| super::tensor_shape::TensorShapeProto::new())
+        self.tensor_shape
+            .take()
+            .unwrap_or_else(|| super::tensor_shape::TensorShapeProto::new())
     }
 
     // int32 version_number = 3;
-
 
     pub fn get_version_number(&self) -> i32 {
         self.version_number
@@ -126,7 +127,6 @@ impl TensorProto {
     }
 
     // bytes tensor_content = 4;
-
 
     pub fn get_tensor_content(&self) -> &[u8] {
         &self.tensor_content
@@ -153,7 +153,6 @@ impl TensorProto {
 
     // repeated int32 half_val = 13;
 
-
     pub fn get_half_val(&self) -> &[i32] {
         &self.half_val
     }
@@ -177,7 +176,6 @@ impl TensorProto {
     }
 
     // repeated float float_val = 5;
-
 
     pub fn get_float_val(&self) -> &[f32] {
         &self.float_val
@@ -203,7 +201,6 @@ impl TensorProto {
 
     // repeated double double_val = 6;
 
-
     pub fn get_double_val(&self) -> &[f64] {
         &self.double_val
     }
@@ -227,7 +224,6 @@ impl TensorProto {
     }
 
     // repeated int32 int_val = 7;
-
 
     pub fn get_int_val(&self) -> &[i32] {
         &self.int_val
@@ -253,7 +249,6 @@ impl TensorProto {
 
     // repeated bytes string_val = 8;
 
-
     pub fn get_string_val(&self) -> &[::std::vec::Vec<u8>] {
         &self.string_val
     }
@@ -277,7 +272,6 @@ impl TensorProto {
     }
 
     // repeated float scomplex_val = 9;
-
 
     pub fn get_scomplex_val(&self) -> &[f32] {
         &self.scomplex_val
@@ -303,7 +297,6 @@ impl TensorProto {
 
     // repeated int64 int64_val = 10;
 
-
     pub fn get_int64_val(&self) -> &[i64] {
         &self.int64_val
     }
@@ -327,7 +320,6 @@ impl TensorProto {
     }
 
     // repeated bool bool_val = 11;
-
 
     pub fn get_bool_val(&self) -> &[bool] {
         &self.bool_val
@@ -353,7 +345,6 @@ impl TensorProto {
 
     // repeated double dcomplex_val = 12;
 
-
     pub fn get_dcomplex_val(&self) -> &[f64] {
         &self.dcomplex_val
     }
@@ -378,7 +369,6 @@ impl TensorProto {
 
     // repeated .tensorflow.ResourceHandleProto resource_handle_val = 14;
 
-
     pub fn get_resource_handle_val(&self) -> &[super::resource_handle::ResourceHandleProto] {
         &self.resource_handle_val
     }
@@ -387,22 +377,31 @@ impl TensorProto {
     }
 
     // Param is passed by value, moved
-    pub fn set_resource_handle_val(&mut self, v: ::protobuf::RepeatedField<super::resource_handle::ResourceHandleProto>) {
+    pub fn set_resource_handle_val(
+        &mut self,
+        v: ::protobuf::RepeatedField<super::resource_handle::ResourceHandleProto>,
+    ) {
         self.resource_handle_val = v;
     }
 
     // Mutable pointer to the field.
-    pub fn mut_resource_handle_val(&mut self) -> &mut ::protobuf::RepeatedField<super::resource_handle::ResourceHandleProto> {
+    pub fn mut_resource_handle_val(
+        &mut self,
+    ) -> &mut ::protobuf::RepeatedField<super::resource_handle::ResourceHandleProto> {
         &mut self.resource_handle_val
     }
 
     // Take field
-    pub fn take_resource_handle_val(&mut self) -> ::protobuf::RepeatedField<super::resource_handle::ResourceHandleProto> {
-        ::std::mem::replace(&mut self.resource_handle_val, ::protobuf::RepeatedField::new())
+    pub fn take_resource_handle_val(
+        &mut self,
+    ) -> ::protobuf::RepeatedField<super::resource_handle::ResourceHandleProto> {
+        ::std::mem::replace(
+            &mut self.resource_handle_val,
+            ::protobuf::RepeatedField::new(),
+        )
     }
 
     // repeated .tensorflow.VariantTensorDataProto variant_val = 15;
-
 
     pub fn get_variant_val(&self) -> &[VariantTensorDataProto] {
         &self.variant_val
@@ -428,7 +427,6 @@ impl TensorProto {
 
     // repeated uint32 uint32_val = 16;
 
-
     pub fn get_uint32_val(&self) -> &[u32] {
         &self.uint32_val
     }
@@ -452,7 +450,6 @@ impl TensorProto {
     }
 
     // repeated uint64 uint64_val = 17;
-
 
     pub fn get_uint64_val(&self) -> &[u64] {
         &self.uint64_val
@@ -483,82 +480,120 @@ impl ::protobuf::Message for TensorProto {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         for v in &self.resource_handle_val {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         for v in &self.variant_val {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
-                1 => {
-                    ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(wire_type, is, &mut self.dtype, 1, &mut self.unknown_fields)?
-                },
+                1 => ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(
+                    wire_type,
+                    is,
+                    &mut self.dtype,
+                    1,
+                    &mut self.unknown_fields,
+                )?,
                 2 => {
-                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.tensor_shape)?;
-                },
+                    ::protobuf::rt::read_singular_message_into(
+                        wire_type,
+                        is,
+                        &mut self.tensor_shape,
+                    )?;
+                }
                 3 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int32()?;
                     self.version_number = tmp;
-                },
+                }
                 4 => {
-                    ::protobuf::rt::read_singular_proto3_bytes_into(wire_type, is, &mut self.tensor_content)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_bytes_into(
+                        wire_type,
+                        is,
+                        &mut self.tensor_content,
+                    )?;
+                }
                 13 => {
                     ::protobuf::rt::read_repeated_int32_into(wire_type, is, &mut self.half_val)?;
-                },
+                }
                 5 => {
                     ::protobuf::rt::read_repeated_float_into(wire_type, is, &mut self.float_val)?;
-                },
+                }
                 6 => {
                     ::protobuf::rt::read_repeated_double_into(wire_type, is, &mut self.double_val)?;
-                },
+                }
                 7 => {
                     ::protobuf::rt::read_repeated_int32_into(wire_type, is, &mut self.int_val)?;
-                },
+                }
                 8 => {
                     ::protobuf::rt::read_repeated_bytes_into(wire_type, is, &mut self.string_val)?;
-                },
+                }
                 9 => {
-                    ::protobuf::rt::read_repeated_float_into(wire_type, is, &mut self.scomplex_val)?;
-                },
+                    ::protobuf::rt::read_repeated_float_into(
+                        wire_type,
+                        is,
+                        &mut self.scomplex_val,
+                    )?;
+                }
                 10 => {
                     ::protobuf::rt::read_repeated_int64_into(wire_type, is, &mut self.int64_val)?;
-                },
+                }
                 11 => {
                     ::protobuf::rt::read_repeated_bool_into(wire_type, is, &mut self.bool_val)?;
-                },
+                }
                 12 => {
-                    ::protobuf::rt::read_repeated_double_into(wire_type, is, &mut self.dcomplex_val)?;
-                },
+                    ::protobuf::rt::read_repeated_double_into(
+                        wire_type,
+                        is,
+                        &mut self.dcomplex_val,
+                    )?;
+                }
                 14 => {
-                    ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.resource_handle_val)?;
-                },
+                    ::protobuf::rt::read_repeated_message_into(
+                        wire_type,
+                        is,
+                        &mut self.resource_handle_val,
+                    )?;
+                }
                 15 => {
-                    ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.variant_val)?;
-                },
+                    ::protobuf::rt::read_repeated_message_into(
+                        wire_type,
+                        is,
+                        &mut self.variant_val,
+                    )?;
+                }
                 16 => {
                     ::protobuf::rt::read_repeated_uint32_into(wire_type, is, &mut self.uint32_val)?;
-                },
+                }
                 17 => {
                     ::protobuf::rt::read_repeated_uint64_into(wire_type, is, &mut self.uint64_val)?;
-                },
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -576,7 +611,11 @@ impl ::protobuf::Message for TensorProto {
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         }
         if self.version_number != 0 {
-            my_size += ::protobuf::rt::value_size(3, self.version_number, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                3,
+                self.version_number,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if !self.tensor_content.is_empty() {
             my_size += ::protobuf::rt::bytes_size(4, &self.tensor_content);
@@ -585,37 +624,47 @@ impl ::protobuf::Message for TensorProto {
             my_size += ::protobuf::rt::vec_packed_varint_size(13, &self.half_val);
         }
         if !self.float_val.is_empty() {
-            my_size += 1 + ::protobuf::rt::compute_raw_varint32_size((self.float_val.len() * 4) as u32) + (self.float_val.len() * 4) as u32;
+            my_size += 1
+                + ::protobuf::rt::compute_raw_varint32_size((self.float_val.len() * 4) as u32)
+                + (self.float_val.len() * 4) as u32;
         }
         if !self.double_val.is_empty() {
-            my_size += 1 + ::protobuf::rt::compute_raw_varint32_size((self.double_val.len() * 8) as u32) + (self.double_val.len() * 8) as u32;
+            my_size += 1
+                + ::protobuf::rt::compute_raw_varint32_size((self.double_val.len() * 8) as u32)
+                + (self.double_val.len() * 8) as u32;
         }
         if !self.int_val.is_empty() {
             my_size += ::protobuf::rt::vec_packed_varint_size(7, &self.int_val);
         }
         for value in &self.string_val {
             my_size += ::protobuf::rt::bytes_size(8, &value);
-        };
+        }
         if !self.scomplex_val.is_empty() {
-            my_size += 1 + ::protobuf::rt::compute_raw_varint32_size((self.scomplex_val.len() * 4) as u32) + (self.scomplex_val.len() * 4) as u32;
+            my_size += 1
+                + ::protobuf::rt::compute_raw_varint32_size((self.scomplex_val.len() * 4) as u32)
+                + (self.scomplex_val.len() * 4) as u32;
         }
         if !self.int64_val.is_empty() {
             my_size += ::protobuf::rt::vec_packed_varint_size(10, &self.int64_val);
         }
         if !self.bool_val.is_empty() {
-            my_size += 1 + ::protobuf::rt::compute_raw_varint32_size((self.bool_val.len() * 1) as u32) + (self.bool_val.len() * 1) as u32;
+            my_size += 1
+                + ::protobuf::rt::compute_raw_varint32_size((self.bool_val.len() * 1) as u32)
+                + (self.bool_val.len() * 1) as u32;
         }
         if !self.dcomplex_val.is_empty() {
-            my_size += 1 + ::protobuf::rt::compute_raw_varint32_size((self.dcomplex_val.len() * 8) as u32) + (self.dcomplex_val.len() * 8) as u32;
+            my_size += 1
+                + ::protobuf::rt::compute_raw_varint32_size((self.dcomplex_val.len() * 8) as u32)
+                + (self.dcomplex_val.len() * 8) as u32;
         }
         for value in &self.resource_handle_val {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-        };
+        }
         for value in &self.variant_val {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-        };
+        }
         if !self.uint32_val.is_empty() {
             my_size += ::protobuf::rt::vec_packed_varint_size(16, &self.uint32_val);
         }
@@ -627,7 +676,10 @@ impl ::protobuf::Message for TensorProto {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if self.dtype != super::types::DataType::DT_INVALID {
             os.write_enum(1, self.dtype.value())?;
         }
@@ -648,7 +700,7 @@ impl ::protobuf::Message for TensorProto {
             os.write_raw_varint32(::protobuf::rt::vec_packed_varint_data_size(&self.half_val))?;
             for v in &self.half_val {
                 os.write_int32_no_tag(*v)?;
-            };
+            }
         }
         if !self.float_val.is_empty() {
             os.write_tag(5, ::protobuf::wire_format::WireTypeLengthDelimited)?;
@@ -656,7 +708,7 @@ impl ::protobuf::Message for TensorProto {
             os.write_raw_varint32((self.float_val.len() * 4) as u32)?;
             for v in &self.float_val {
                 os.write_float_no_tag(*v)?;
-            };
+            }
         }
         if !self.double_val.is_empty() {
             os.write_tag(6, ::protobuf::wire_format::WireTypeLengthDelimited)?;
@@ -664,7 +716,7 @@ impl ::protobuf::Message for TensorProto {
             os.write_raw_varint32((self.double_val.len() * 8) as u32)?;
             for v in &self.double_val {
                 os.write_double_no_tag(*v)?;
-            };
+            }
         }
         if !self.int_val.is_empty() {
             os.write_tag(7, ::protobuf::wire_format::WireTypeLengthDelimited)?;
@@ -672,18 +724,18 @@ impl ::protobuf::Message for TensorProto {
             os.write_raw_varint32(::protobuf::rt::vec_packed_varint_data_size(&self.int_val))?;
             for v in &self.int_val {
                 os.write_int32_no_tag(*v)?;
-            };
+            }
         }
         for v in &self.string_val {
             os.write_bytes(8, &v)?;
-        };
+        }
         if !self.scomplex_val.is_empty() {
             os.write_tag(9, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             // TODO: Data size is computed again, it should be cached
             os.write_raw_varint32((self.scomplex_val.len() * 4) as u32)?;
             for v in &self.scomplex_val {
                 os.write_float_no_tag(*v)?;
-            };
+            }
         }
         if !self.int64_val.is_empty() {
             os.write_tag(10, ::protobuf::wire_format::WireTypeLengthDelimited)?;
@@ -691,7 +743,7 @@ impl ::protobuf::Message for TensorProto {
             os.write_raw_varint32(::protobuf::rt::vec_packed_varint_data_size(&self.int64_val))?;
             for v in &self.int64_val {
                 os.write_int64_no_tag(*v)?;
-            };
+            }
         }
         if !self.bool_val.is_empty() {
             os.write_tag(11, ::protobuf::wire_format::WireTypeLengthDelimited)?;
@@ -699,7 +751,7 @@ impl ::protobuf::Message for TensorProto {
             os.write_raw_varint32((self.bool_val.len() * 1) as u32)?;
             for v in &self.bool_val {
                 os.write_bool_no_tag(*v)?;
-            };
+            }
         }
         if !self.dcomplex_val.is_empty() {
             os.write_tag(12, ::protobuf::wire_format::WireTypeLengthDelimited)?;
@@ -707,33 +759,37 @@ impl ::protobuf::Message for TensorProto {
             os.write_raw_varint32((self.dcomplex_val.len() * 8) as u32)?;
             for v in &self.dcomplex_val {
                 os.write_double_no_tag(*v)?;
-            };
+            }
         }
         for v in &self.resource_handle_val {
             os.write_tag(14, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
-        };
+        }
         for v in &self.variant_val {
             os.write_tag(15, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
-        };
+        }
         if !self.uint32_val.is_empty() {
             os.write_tag(16, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             // TODO: Data size is computed again, it should be cached
-            os.write_raw_varint32(::protobuf::rt::vec_packed_varint_data_size(&self.uint32_val))?;
+            os.write_raw_varint32(::protobuf::rt::vec_packed_varint_data_size(
+                &self.uint32_val,
+            ))?;
             for v in &self.uint32_val {
                 os.write_uint32_no_tag(*v)?;
-            };
+            }
         }
         if !self.uint64_val.is_empty() {
             os.write_tag(17, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             // TODO: Data size is computed again, it should be cached
-            os.write_raw_varint32(::protobuf::rt::vec_packed_varint_data_size(&self.uint64_val))?;
+            os.write_raw_varint32(::protobuf::rt::vec_packed_varint_data_size(
+                &self.uint64_val,
+            ))?;
             for v in &self.uint64_val {
                 os.write_uint64_no_tag(*v)?;
-            };
+            }
         }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
@@ -770,102 +826,166 @@ impl ::protobuf::Message for TensorProto {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeEnum<super::types::DataType>>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeEnum<super::types::DataType>,
+                >(
                     "dtype",
-                    |m: &TensorProto| { &m.dtype },
-                    |m: &mut TensorProto| { &mut m.dtype },
+                    |m: &TensorProto| &m.dtype,
+                    |m: &mut TensorProto| &mut m.dtype,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<super::tensor_shape::TensorShapeProto>>(
-                    "tensor_shape",
-                    |m: &TensorProto| { &m.tensor_shape },
-                    |m: &mut TensorProto| { &mut m.tensor_shape },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<
+                            super::tensor_shape::TensorShapeProto,
+                        >,
+                    >(
+                        "tensor_shape",
+                        |m: &TensorProto| &m.tensor_shape,
+                        |m: &mut TensorProto| &mut m.tensor_shape,
+                    ),
+                );
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt32,
+                >(
                     "version_number",
-                    |m: &TensorProto| { &m.version_number },
-                    |m: &mut TensorProto| { &mut m.version_number },
+                    |m: &TensorProto| &m.version_number,
+                    |m: &mut TensorProto| &mut m.version_number,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBytes>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBytes,
+                >(
                     "tensor_content",
-                    |m: &TensorProto| { &m.tensor_content },
-                    |m: &mut TensorProto| { &mut m.tensor_content },
+                    |m: &TensorProto| &m.tensor_content,
+                    |m: &mut TensorProto| &mut m.tensor_content,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt32,
+                >(
                     "half_val",
-                    |m: &TensorProto| { &m.half_val },
-                    |m: &mut TensorProto| { &mut m.half_val },
+                    |m: &TensorProto| &m.half_val,
+                    |m: &mut TensorProto| &mut m.half_val,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<_, ::protobuf::types::ProtobufTypeFloat>(
+                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeFloat,
+                >(
                     "float_val",
-                    |m: &TensorProto| { &m.float_val },
-                    |m: &mut TensorProto| { &mut m.float_val },
+                    |m: &TensorProto| &m.float_val,
+                    |m: &mut TensorProto| &mut m.float_val,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<_, ::protobuf::types::ProtobufTypeDouble>(
+                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeDouble,
+                >(
                     "double_val",
-                    |m: &TensorProto| { &m.double_val },
-                    |m: &mut TensorProto| { &mut m.double_val },
+                    |m: &TensorProto| &m.double_val,
+                    |m: &mut TensorProto| &mut m.double_val,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt32,
+                >(
                     "int_val",
-                    |m: &TensorProto| { &m.int_val },
-                    |m: &mut TensorProto| { &mut m.int_val },
+                    |m: &TensorProto| &m.int_val,
+                    |m: &mut TensorProto| &mut m.int_val,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeBytes>(
-                    "string_val",
-                    |m: &TensorProto| { &m.string_val },
-                    |m: &mut TensorProto| { &mut m.string_val },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<_, ::protobuf::types::ProtobufTypeFloat>(
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeBytes,
+                    >(
+                        "string_val",
+                        |m: &TensorProto| &m.string_val,
+                        |m: &mut TensorProto| &mut m.string_val,
+                    ),
+                );
+                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeFloat,
+                >(
                     "scomplex_val",
-                    |m: &TensorProto| { &m.scomplex_val },
-                    |m: &mut TensorProto| { &mut m.scomplex_val },
+                    |m: &TensorProto| &m.scomplex_val,
+                    |m: &mut TensorProto| &mut m.scomplex_val,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "int64_val",
-                    |m: &TensorProto| { &m.int64_val },
-                    |m: &mut TensorProto| { &mut m.int64_val },
+                    |m: &TensorProto| &m.int64_val,
+                    |m: &mut TensorProto| &mut m.int64_val,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "bool_val",
-                    |m: &TensorProto| { &m.bool_val },
-                    |m: &mut TensorProto| { &mut m.bool_val },
+                    |m: &TensorProto| &m.bool_val,
+                    |m: &mut TensorProto| &mut m.bool_val,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<_, ::protobuf::types::ProtobufTypeDouble>(
+                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeDouble,
+                >(
                     "dcomplex_val",
-                    |m: &TensorProto| { &m.dcomplex_val },
-                    |m: &mut TensorProto| { &mut m.dcomplex_val },
+                    |m: &TensorProto| &m.dcomplex_val,
+                    |m: &mut TensorProto| &mut m.dcomplex_val,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<super::resource_handle::ResourceHandleProto>>(
-                    "resource_handle_val",
-                    |m: &TensorProto| { &m.resource_handle_val },
-                    |m: &mut TensorProto| { &mut m.resource_handle_val },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<VariantTensorDataProto>>(
-                    "variant_val",
-                    |m: &TensorProto| { &m.variant_val },
-                    |m: &mut TensorProto| { &mut m.variant_val },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<_, ::protobuf::types::ProtobufTypeUint32>(
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<
+                            super::resource_handle::ResourceHandleProto,
+                        >,
+                    >(
+                        "resource_handle_val",
+                        |m: &TensorProto| &m.resource_handle_val,
+                        |m: &mut TensorProto| &mut m.resource_handle_val,
+                    ),
+                );
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<VariantTensorDataProto>,
+                    >(
+                        "variant_val",
+                        |m: &TensorProto| &m.variant_val,
+                        |m: &mut TensorProto| &mut m.variant_val,
+                    ),
+                );
+                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeUint32,
+                >(
                     "uint32_val",
-                    |m: &TensorProto| { &m.uint32_val },
-                    |m: &mut TensorProto| { &mut m.uint32_val },
+                    |m: &TensorProto| &m.uint32_val,
+                    |m: &mut TensorProto| &mut m.uint32_val,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<_, ::protobuf::types::ProtobufTypeUint64>(
+                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeUint64,
+                >(
                     "uint64_val",
-                    |m: &TensorProto| { &m.uint64_val },
-                    |m: &mut TensorProto| { &mut m.uint64_val },
+                    |m: &TensorProto| &m.uint64_val,
+                    |m: &mut TensorProto| &mut m.uint64_val,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<TensorProto>(
                     "TensorProto",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -876,9 +996,7 @@ impl ::protobuf::Message for TensorProto {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const TensorProto,
         };
-        unsafe {
-            instance.get(TensorProto::new)
-        }
+        unsafe { instance.get(TensorProto::new) }
     }
 }
 
@@ -917,7 +1035,7 @@ impl ::protobuf::reflect::ProtobufValue for TensorProto {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct VariantTensorDataProto {
     // message fields
     pub type_name: ::std::string::String,
@@ -940,7 +1058,6 @@ impl VariantTensorDataProto {
     }
 
     // string type_name = 1;
-
 
     pub fn get_type_name(&self) -> &str {
         &self.type_name
@@ -967,7 +1084,6 @@ impl VariantTensorDataProto {
 
     // bytes metadata = 2;
 
-
     pub fn get_metadata(&self) -> &[u8] {
         &self.metadata
     }
@@ -992,7 +1108,6 @@ impl VariantTensorDataProto {
     }
 
     // repeated .tensorflow.TensorProto tensors = 3;
-
 
     pub fn get_tensors(&self) -> &[TensorProto] {
         &self.tensors
@@ -1023,26 +1138,42 @@ impl ::protobuf::Message for VariantTensorDataProto {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.type_name)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.type_name,
+                    )?;
+                }
                 2 => {
-                    ::protobuf::rt::read_singular_proto3_bytes_into(wire_type, is, &mut self.metadata)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_bytes_into(
+                        wire_type,
+                        is,
+                        &mut self.metadata,
+                    )?;
+                }
                 3 => {
                     ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.tensors)?;
-                },
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -1061,13 +1192,16 @@ impl ::protobuf::Message for VariantTensorDataProto {
         for value in &self.tensors {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-        };
+        }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if !self.type_name.is_empty() {
             os.write_string(1, &self.type_name)?;
         }
@@ -1078,7 +1212,7 @@ impl ::protobuf::Message for VariantTensorDataProto {
             os.write_tag(3, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
-        };
+        }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
     }
@@ -1114,45 +1248,56 @@ impl ::protobuf::Message for VariantTensorDataProto {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "type_name",
-                    |m: &VariantTensorDataProto| { &m.type_name },
-                    |m: &mut VariantTensorDataProto| { &mut m.type_name },
+                    |m: &VariantTensorDataProto| &m.type_name,
+                    |m: &mut VariantTensorDataProto| &mut m.type_name,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBytes>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBytes,
+                >(
                     "metadata",
-                    |m: &VariantTensorDataProto| { &m.metadata },
-                    |m: &mut VariantTensorDataProto| { &mut m.metadata },
+                    |m: &VariantTensorDataProto| &m.metadata,
+                    |m: &mut VariantTensorDataProto| &mut m.metadata,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<TensorProto>>(
-                    "tensors",
-                    |m: &VariantTensorDataProto| { &m.tensors },
-                    |m: &mut VariantTensorDataProto| { &mut m.tensors },
-                ));
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<TensorProto>,
+                    >(
+                        "tensors",
+                        |m: &VariantTensorDataProto| &m.tensors,
+                        |m: &mut VariantTensorDataProto| &mut m.tensors,
+                    ),
+                );
                 ::protobuf::reflect::MessageDescriptor::new::<VariantTensorDataProto>(
                     "VariantTensorDataProto",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
     }
 
     fn default_instance() -> &'static VariantTensorDataProto {
-        static mut instance: ::protobuf::lazy::Lazy<VariantTensorDataProto> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const VariantTensorDataProto,
-        };
-        unsafe {
-            instance.get(VariantTensorDataProto::new)
-        }
+        static mut instance: ::protobuf::lazy::Lazy<VariantTensorDataProto> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const VariantTensorDataProto,
+            };
+        unsafe { instance.get(VariantTensorDataProto::new) }
     }
 }
 
@@ -1206,7 +1351,9 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     mework\xf8\x01\x01b\x06proto3\
 ";
 
-static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::lazy::Lazy {
+static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<
+    ::protobuf::descriptor::FileDescriptorProto,
+> = ::protobuf::lazy::Lazy {
     lock: ::protobuf::lazy::ONCE_INIT,
     ptr: 0 as *const ::protobuf::descriptor::FileDescriptorProto,
 };
@@ -1216,9 +1363,5 @@ fn parse_descriptor_proto() -> ::protobuf::descriptor::FileDescriptorProto {
 }
 
 pub fn file_descriptor_proto() -> &'static ::protobuf::descriptor::FileDescriptorProto {
-    unsafe {
-        file_descriptor_proto_lazy.get(|| {
-            parse_descriptor_proto()
-        })
-    }
+    unsafe { file_descriptor_proto_lazy.get(|| parse_descriptor_proto()) }
 }

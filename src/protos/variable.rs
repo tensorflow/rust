@@ -26,7 +26,7 @@ use protobuf::ProtobufEnum as ProtobufEnum_imported_for_functions;
 /// of protobuf runtime.
 const _PROTOBUF_VERSION_CHECK: () = ::protobuf::VERSION_2_8_0;
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct VariableDef {
     // message fields
     pub variable_name: ::std::string::String,
@@ -54,7 +54,6 @@ impl VariableDef {
 
     // string variable_name = 1;
 
-
     pub fn get_variable_name(&self) -> &str {
         &self.variable_name
     }
@@ -79,7 +78,6 @@ impl VariableDef {
     }
 
     // string initial_value_name = 6;
-
 
     pub fn get_initial_value_name(&self) -> &str {
         &self.initial_value_name
@@ -106,7 +104,6 @@ impl VariableDef {
 
     // string initializer_name = 2;
 
-
     pub fn get_initializer_name(&self) -> &str {
         &self.initializer_name
     }
@@ -131,7 +128,6 @@ impl VariableDef {
     }
 
     // string snapshot_name = 3;
-
 
     pub fn get_snapshot_name(&self) -> &str {
         &self.snapshot_name
@@ -158,9 +154,10 @@ impl VariableDef {
 
     // .tensorflow.SaveSliceInfoDef save_slice_info_def = 4;
 
-
     pub fn get_save_slice_info_def(&self) -> &SaveSliceInfoDef {
-        self.save_slice_info_def.as_ref().unwrap_or_else(|| SaveSliceInfoDef::default_instance())
+        self.save_slice_info_def
+            .as_ref()
+            .unwrap_or_else(|| SaveSliceInfoDef::default_instance())
     }
     pub fn clear_save_slice_info_def(&mut self) {
         self.save_slice_info_def.clear();
@@ -186,11 +183,12 @@ impl VariableDef {
 
     // Take field
     pub fn take_save_slice_info_def(&mut self) -> SaveSliceInfoDef {
-        self.save_slice_info_def.take().unwrap_or_else(|| SaveSliceInfoDef::new())
+        self.save_slice_info_def
+            .take()
+            .unwrap_or_else(|| SaveSliceInfoDef::new())
     }
 
     // bool is_resource = 5;
-
 
     pub fn get_is_resource(&self) -> bool {
         self.is_resource
@@ -205,7 +203,6 @@ impl VariableDef {
     }
 
     // bool trainable = 7;
-
 
     pub fn get_trainable(&self) -> bool {
         self.trainable
@@ -226,46 +223,78 @@ impl ::protobuf::Message for VariableDef {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.variable_name)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.variable_name,
+                    )?;
+                }
                 6 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.initial_value_name)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.initial_value_name,
+                    )?;
+                }
                 2 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.initializer_name)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.initializer_name,
+                    )?;
+                }
                 3 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.snapshot_name)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.snapshot_name,
+                    )?;
+                }
                 4 => {
-                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.save_slice_info_def)?;
-                },
+                    ::protobuf::rt::read_singular_message_into(
+                        wire_type,
+                        is,
+                        &mut self.save_slice_info_def,
+                    )?;
+                }
                 5 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.is_resource = tmp;
-                },
+                }
                 7 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.trainable = tmp;
-                },
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -302,7 +331,10 @@ impl ::protobuf::Message for VariableDef {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if !self.variable_name.is_empty() {
             os.write_string(1, &self.variable_name)?;
         }
@@ -361,52 +393,76 @@ impl ::protobuf::Message for VariableDef {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "variable_name",
-                    |m: &VariableDef| { &m.variable_name },
-                    |m: &mut VariableDef| { &mut m.variable_name },
+                    |m: &VariableDef| &m.variable_name,
+                    |m: &mut VariableDef| &mut m.variable_name,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "initial_value_name",
-                    |m: &VariableDef| { &m.initial_value_name },
-                    |m: &mut VariableDef| { &mut m.initial_value_name },
+                    |m: &VariableDef| &m.initial_value_name,
+                    |m: &mut VariableDef| &mut m.initial_value_name,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "initializer_name",
-                    |m: &VariableDef| { &m.initializer_name },
-                    |m: &mut VariableDef| { &mut m.initializer_name },
+                    |m: &VariableDef| &m.initializer_name,
+                    |m: &mut VariableDef| &mut m.initializer_name,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "snapshot_name",
-                    |m: &VariableDef| { &m.snapshot_name },
-                    |m: &mut VariableDef| { &mut m.snapshot_name },
+                    |m: &VariableDef| &m.snapshot_name,
+                    |m: &mut VariableDef| &mut m.snapshot_name,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<SaveSliceInfoDef>>(
-                    "save_slice_info_def",
-                    |m: &VariableDef| { &m.save_slice_info_def },
-                    |m: &mut VariableDef| { &mut m.save_slice_info_def },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<SaveSliceInfoDef>,
+                    >(
+                        "save_slice_info_def",
+                        |m: &VariableDef| &m.save_slice_info_def,
+                        |m: &mut VariableDef| &mut m.save_slice_info_def,
+                    ),
+                );
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "is_resource",
-                    |m: &VariableDef| { &m.is_resource },
-                    |m: &mut VariableDef| { &mut m.is_resource },
+                    |m: &VariableDef| &m.is_resource,
+                    |m: &mut VariableDef| &mut m.is_resource,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "trainable",
-                    |m: &VariableDef| { &m.trainable },
-                    |m: &mut VariableDef| { &mut m.trainable },
+                    |m: &VariableDef| &m.trainable,
+                    |m: &mut VariableDef| &mut m.trainable,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<VariableDef>(
                     "VariableDef",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -417,9 +473,7 @@ impl ::protobuf::Message for VariableDef {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const VariableDef,
         };
-        unsafe {
-            instance.get(VariableDef::new)
-        }
+        unsafe { instance.get(VariableDef::new) }
     }
 }
 
@@ -448,7 +502,7 @@ impl ::protobuf::reflect::ProtobufValue for VariableDef {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct SaveSliceInfoDef {
     // message fields
     pub full_name: ::std::string::String,
@@ -472,7 +526,6 @@ impl SaveSliceInfoDef {
     }
 
     // string full_name = 1;
-
 
     pub fn get_full_name(&self) -> &str {
         &self.full_name
@@ -499,7 +552,6 @@ impl SaveSliceInfoDef {
 
     // repeated int64 full_shape = 2;
 
-
     pub fn get_full_shape(&self) -> &[i64] {
         &self.full_shape
     }
@@ -524,7 +576,6 @@ impl SaveSliceInfoDef {
 
     // repeated int64 var_offset = 3;
 
-
     pub fn get_var_offset(&self) -> &[i64] {
         &self.var_offset
     }
@@ -548,7 +599,6 @@ impl SaveSliceInfoDef {
     }
 
     // repeated int64 var_shape = 4;
-
 
     pub fn get_var_shape(&self) -> &[i64] {
         &self.var_shape
@@ -578,25 +628,37 @@ impl ::protobuf::Message for SaveSliceInfoDef {
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.full_name)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.full_name,
+                    )?;
+                }
                 2 => {
                     ::protobuf::rt::read_repeated_int64_into(wire_type, is, &mut self.full_shape)?;
-                },
+                }
                 3 => {
                     ::protobuf::rt::read_repeated_int64_into(wire_type, is, &mut self.var_offset)?;
-                },
+                }
                 4 => {
                     ::protobuf::rt::read_repeated_int64_into(wire_type, is, &mut self.var_shape)?;
-                },
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -610,32 +672,38 @@ impl ::protobuf::Message for SaveSliceInfoDef {
             my_size += ::protobuf::rt::string_size(1, &self.full_name);
         }
         for value in &self.full_shape {
-            my_size += ::protobuf::rt::value_size(2, *value, ::protobuf::wire_format::WireTypeVarint);
-        };
+            my_size +=
+                ::protobuf::rt::value_size(2, *value, ::protobuf::wire_format::WireTypeVarint);
+        }
         for value in &self.var_offset {
-            my_size += ::protobuf::rt::value_size(3, *value, ::protobuf::wire_format::WireTypeVarint);
-        };
+            my_size +=
+                ::protobuf::rt::value_size(3, *value, ::protobuf::wire_format::WireTypeVarint);
+        }
         for value in &self.var_shape {
-            my_size += ::protobuf::rt::value_size(4, *value, ::protobuf::wire_format::WireTypeVarint);
-        };
+            my_size +=
+                ::protobuf::rt::value_size(4, *value, ::protobuf::wire_format::WireTypeVarint);
+        }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if !self.full_name.is_empty() {
             os.write_string(1, &self.full_name)?;
         }
         for v in &self.full_shape {
             os.write_int64(2, *v)?;
-        };
+        }
         for v in &self.var_offset {
             os.write_int64(3, *v)?;
-        };
+        }
         for v in &self.var_shape {
             os.write_int64(4, *v)?;
-        };
+        }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
     }
@@ -671,37 +739,50 @@ impl ::protobuf::Message for SaveSliceInfoDef {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "full_name",
-                    |m: &SaveSliceInfoDef| { &m.full_name },
-                    |m: &mut SaveSliceInfoDef| { &mut m.full_name },
+                    |m: &SaveSliceInfoDef| &m.full_name,
+                    |m: &mut SaveSliceInfoDef| &mut m.full_name,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "full_shape",
-                    |m: &SaveSliceInfoDef| { &m.full_shape },
-                    |m: &mut SaveSliceInfoDef| { &mut m.full_shape },
+                    |m: &SaveSliceInfoDef| &m.full_shape,
+                    |m: &mut SaveSliceInfoDef| &mut m.full_shape,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "var_offset",
-                    |m: &SaveSliceInfoDef| { &m.var_offset },
-                    |m: &mut SaveSliceInfoDef| { &mut m.var_offset },
+                    |m: &SaveSliceInfoDef| &m.var_offset,
+                    |m: &mut SaveSliceInfoDef| &mut m.var_offset,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "var_shape",
-                    |m: &SaveSliceInfoDef| { &m.var_shape },
-                    |m: &mut SaveSliceInfoDef| { &mut m.var_shape },
+                    |m: &SaveSliceInfoDef| &m.var_shape,
+                    |m: &mut SaveSliceInfoDef| &mut m.var_shape,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<SaveSliceInfoDef>(
                     "SaveSliceInfoDef",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -712,9 +793,7 @@ impl ::protobuf::Message for SaveSliceInfoDef {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const SaveSliceInfoDef,
         };
-        unsafe {
-            instance.get(SaveSliceInfoDef::new)
-        }
+        unsafe { instance.get(SaveSliceInfoDef::new) }
     }
 }
 
@@ -757,7 +836,9 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     \x01\x01b\x06proto3\
 ";
 
-static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::lazy::Lazy {
+static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<
+    ::protobuf::descriptor::FileDescriptorProto,
+> = ::protobuf::lazy::Lazy {
     lock: ::protobuf::lazy::ONCE_INIT,
     ptr: 0 as *const ::protobuf::descriptor::FileDescriptorProto,
 };
@@ -767,9 +848,5 @@ fn parse_descriptor_proto() -> ::protobuf::descriptor::FileDescriptorProto {
 }
 
 pub fn file_descriptor_proto() -> &'static ::protobuf::descriptor::FileDescriptorProto {
-    unsafe {
-        file_descriptor_proto_lazy.get(|| {
-            parse_descriptor_proto()
-        })
-    }
+    unsafe { file_descriptor_proto_lazy.get(|| parse_descriptor_proto()) }
 }
