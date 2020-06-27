@@ -1499,12 +1499,13 @@ impl Library {
                 *heap_buf = stack_buf;
                 Buffer::<u8>::from_c(heap_buf, false)
             };
-            let op_list: protos::op_def::OpList = protobuf::parse_from_bytes(&buf).map_err(|e| {
-                Status::new_set_lossy(
-                    Code::InvalidArgument,
-                    &format!("Invalid serialized OpList: {}", e),
-                )
-            })?;
+            let op_list: protos::op_def::OpList =
+                protobuf::parse_from_bytes(&buf).map_err(|e| {
+                    Status::new_set_lossy(
+                        Code::InvalidArgument,
+                        &format!("Invalid serialized OpList: {}", e),
+                    )
+                })?;
             Ok(Library { inner, op_list })
         }
     }
