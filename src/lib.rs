@@ -1490,19 +1490,21 @@ impl Library {
         let mut status = Status::new();
         let inner = unsafe { tf::TF_LoadLibrary(c_filename.as_ptr(), status.inner()) };
 
-        let buf = unsafe {
-            let mut buf = tf::TF_GetOpList(inner);
-            Buffer::<u8>::from_c(&mut buf, false)
-        };
-        let op_list: protos::op_def::OpList = protobuf::parse_from_bytes(&buf).map_err(|e| {
-            Status::new_set_lossy(
-                Code::InvalidArgument,
-                &format!("Invalid serialized OpList: {}", e),
-            )
-        })?;
         if inner.is_null() {
             Err(status)
         } else {
+            let buf = unsafe {
+                let stack_buf = tf::TF_GetOpList(inner);
+                let heap_buf = tf::TF_NewBuffer();
+                *heap_buf = stack_buf;
+                Buffer::<u8>::from_c(heap_buf, false)
+            };
+            let op_list: protos::op_def::OpList = protobuf::parse_from_bytes(&buf).map_err(|e| {
+                Status::new_set_lossy(
+                    Code::InvalidArgument,
+                    &format!("Invalid serialized OpList: {}", e),
+                )
+            })?;
             Ok(Library { inner, op_list })
         }
     }
@@ -1884,5 +1886,21 @@ mod tests {
     #[test]
     fn test_get_registered_kernels_for_op() {
         assert!(get_registered_kernels_for_op("Add").unwrap().len() > 0);
+    }
+
+    #[test]
+    fn test_library_load() {
+        // This test is not yet implemented for Windows
+        let check_path = match std::env::consts::OS {
+            "linux" => Some("test_resources/library/linux/test_op.so"),
+            "macos" => Some("test_resources/library/macos/test_op.so"),
+            _ => None,
+        };
+        if let Some(path) = check_path {
+            let res = Library::load(path);
+            assert!(res.is_ok());
+            let num_ops = res.unwrap().op_list.op.len();
+            assert!(num_ops == 1);
+        };
     }
 }
