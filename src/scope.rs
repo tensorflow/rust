@@ -37,7 +37,7 @@ fn join(sep: &str, left: &str, right: &str) -> String {
 /// let mut root = Scope::new_root_scope();
 /// let c1 = ops::constant(Tensor::new(&[1, 2]).with_values(&[1, 1])?, &mut root)?;
 /// let c2 = ops::constant(Tensor::new(&[2, 1]).with_values(&[41, 1])?, &mut root)?;
-/// let m = ops::mat_mul(c1.into(), c2.into(), &mut root)?;
+/// let m = ops::mat_mul(c1, c2, &mut root)?;
 /// # Ok::<(), Box<dyn std::error::Error>>(())
 /// ```
 ///
@@ -78,9 +78,9 @@ fn join(sep: &str, left: &str, right: &str) -> String {
 ///     .with_values(&[1.0f32, 2.0, 3.0, 4.0])?,
 ///    &mut linear)?;
 /// assert_eq!(x.name()?, "linear/Const");
-/// let m = ops::mat_mul(x.into(), w.output().clone(), &mut linear)?;
+/// let m = ops::mat_mul(x, w.output().clone(), &mut linear)?;
 /// assert_eq!(m.name()?, "linear/MatMul");
-/// let r = ops::bias_add(m.into(), b.output().clone(), &mut linear)?;
+/// let r = ops::bias_add(m, b.output().clone(), &mut linear)?;
 /// assert_eq!(r.name()?, "linear/BiasAdd");
 /// # Ok::<(), Box<dyn std::error::Error>>(())
 /// ```

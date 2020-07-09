@@ -112,8 +112,11 @@ impl<'a> VariableBuilder<'a> {
     }
 
     /// Sets the shape of the variable.
-    pub fn shape(self, shape: Shape) -> Self {
-        Self { shape, ..self }
+    pub fn shape<S: Into<Shape>>(self, shape: S) -> Self {
+        Self {
+            shape: shape.into(),
+            ..self
+        }
     }
 
     /// Sets the data type of the variable.
@@ -146,7 +149,7 @@ impl<'a> VariableBuilder<'a> {
             VariableInitialValue::TensorRef(t) => ops::any_constant(t, scope)?.into(),
             VariableInitialValue::Output(o) => o,
         };
-        let initializer = ops::assign(variable_op.clone().into(), initial_value, scope)?;
+        let initializer = ops::assign(variable_op.clone(), initial_value, scope)?;
         Ok(Variable {
             name,
             output: variable_op.into(),

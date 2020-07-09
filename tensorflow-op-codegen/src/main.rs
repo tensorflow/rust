@@ -70,10 +70,16 @@ fn write_short_fn<W: Write>(
     }
     let scope_var = escaper.escape("scope");
     write!(w, "{})`.\n", scope_var)?;
-    write!(w, "pub fn {}", fn_name)?;
-    write!(w, "(")?;
-    for arg in &escaped_args {
-        write!(w, "{}: crate::Output, ", arg)?;
+    write!(w, "pub fn {}<", fn_name)?;
+    for i in 0..args.len() {
+        if i > 0 {
+            write!(w, ", ")?;
+        }
+        write!(w, "O{}: ::std::convert::Into<crate::Output>", i)?;
+    }
+    write!(w, ">(")?;
+    for (i, arg) in escaped_args.iter().enumerate() {
+        write!(w, "{}: O{}, ", arg, i)?;
     }
     write!(
         w,
@@ -94,7 +100,7 @@ fn write_attr_setter<W: Write>(w: &mut W, attr: &Attr) -> Result<(), io::Error> 
     write!(w, "    /// Sets the `{}` attribute.\n", &attr.c_name)?;
     let rust_name = &attr.rust_name;
     let attr_type = &attr.attr_type;
-    let mut value = "value".to_string();
+    let mut value = "value.into()".to_string();
     if attr_type == "crate::Tensor" {
         value = format!(
             "(::std::boxed::Box::new({}) as ::std::boxed::Box<dyn crate::AnyTensor>)",
@@ -102,13 +108,13 @@ fn write_attr_setter<W: Write>(w: &mut W, attr: &Attr) -> Result<(), io::Error> 
         );
         write!(
             w,
-            "    pub fn {}<T: crate::TensorType>(mut self, value: crate::Tensor<T>) -> Self {{\n",
+            "    pub fn {}<T: crate::TensorType, ArgType: ::std::convert::Into<crate::Tensor<T>>>(mut self, value: ArgType) -> Self {{\n",
             rust_name
         )?;
     } else {
         write!(
             w,
-            "    pub fn {}(mut self, value: {}) -> Self {{\n",
+            "    pub fn {}<ArgType: ::std::convert::Into<{}>>(mut self, value: ArgType) -> Self {{\n",
             rust_name, attr_type
         )?;
     }
@@ -126,14 +132,49 @@ fn write_build_fn<W: Write>(
     w: &mut W,
     op_name: &str,
     args: &[String],
+    keywords: &HashSet<String>,
+) -> Result<(), io::Error> {
+    let mut escaper = Escaper::new(keywords);
+    let escaped_args: Vec<_> = args.iter().map(|arg| escaper.escape(&arg)).collect();
+
+    write!(w, "    /// Builds the `{}` operation.\n", op_name)?;
+    write!(w, "    pub fn build<")?;
+    for i in 0..args.len() {
+        if i > 0 {
+            write!(w, ", ")?;
+        }
+        write!(w, "O{}: ::std::convert::Into<crate::Output>", i)?;
+    }
+    write!(w, ">(&self, ")?;
+    for (i, arg) in escaped_args.iter().enumerate() {
+        write!(w, "{}: O{}, ", arg, i)?;
+    }
+    let scope_var = escaper.escape("scope");
+    write!(
+        w,
+        r#"{scope}: &mut crate::Scope) -> crate::Result<crate::Operation> {{
+"#,
+        scope = scope_var,
+    )?;
+    write!(w, "        self.build_impl(")?;
+    for arg in &escaped_args {
+        write!(w, "{}.into(), ", arg)?;
+    }
+    write!(w, "{})\n", scope_var)?;
+    write!(w, "    }}\n")?;
+    Ok(())
+}
+
+fn write_build_impl_fn<W: Write>(
+    w: &mut W,
+    op_name: &str,
+    args: &[String],
     attrs: &[Attr],
     keywords: &HashSet<String>,
 ) -> Result<(), io::Error> {
     let mut escaper = Escaper::new(keywords);
     let escaped_args: Vec<_> = args.iter().map(|arg| escaper.escape(&arg)).collect();
-    write!(w, "    /// Builds the `{}` operation.\n", op_name)?;
-    write!(w, "    pub fn build")?;
-    write!(w, "(&self, ")?;
+    write!(w, "    fn build_impl(&self, ")?;
     for arg in &escaped_args {
         write!(w, "{}: crate::Output, ", arg)?;
     }
@@ -215,10 +256,11 @@ fn define_op<W: Write>(
             "list(type)" => "::std::vec::Vec<crate::DataType>",
             "list(shape)" => "::std::vec::Vec<crate::Shape>",
             "list(tensor)" => "::std::vec::Vec<crate::Tensor>",
+            "list(func)" => "::std::vec::Vec<::std::string::String>",
             t => {
                 return Err(io::Error::new(
                     ErrorKind::InvalidInput,
-                    format!("unrecognized field type {:?}", t),
+                    format!("unrecognized field type {:?} for attribute {:?} of op {:?}", t, &attr.name, &op_name),
                 ))
             }
         };
@@ -261,7 +303,9 @@ impl {name} {{
 
 "#
     )?;
-    write_build_fn(w, &op_name, &args, &attrs, &keywords)?;
+    write_build_fn(w, &op_name, &args, &keywords)?;
+    write!(w, "\n")?;
+    write_build_impl_fn(w, &op_name, &args, &attrs, &keywords)?;
     write!(w, "}}\n")?;
     write!(w, "\n")?;
     write_short_fn(w, &name, &fn_name, &args, &keywords)?;

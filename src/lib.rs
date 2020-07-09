@@ -1639,6 +1639,67 @@ impl From<&[u64]> for Shape {
     }
 }
 
+macro_rules! shape_from_array {
+    ($N:expr) => {
+        impl From<[i32; $N]> for Shape {
+            fn from(data: [i32; $N]) -> Shape {
+                Shape::from(&data[..])
+            }
+        }
+
+        impl From<[u32; $N]> for Shape {
+            fn from(data: [u32; $N]) -> Shape {
+                Shape::from(&data[..])
+            }
+        }
+
+        impl From<[i64; $N]> for Shape {
+            fn from(data: [i64; $N]) -> Shape {
+                Shape::from(&data[..])
+            }
+        }
+
+        impl From<[u64; $N]> for Shape {
+            fn from(data: [u64; $N]) -> Shape {
+                Shape::from(&data[..])
+            }
+        }
+
+        impl From<&[i32; $N]> for Shape {
+            fn from(data: &[i32; $N]) -> Shape {
+                Shape::from(&data[..])
+            }
+        }
+
+        impl From<&[u32; $N]> for Shape {
+            fn from(data: &[u32; $N]) -> Shape {
+                Shape::from(&data[..])
+            }
+        }
+
+        impl From<&[i64; $N]> for Shape {
+            fn from(data: &[i64; $N]) -> Shape {
+                Shape::from(&data[..])
+            }
+        }
+
+        impl From<&[u64; $N]> for Shape {
+            fn from(data: &[u64; $N]) -> Shape {
+                Shape::from(&data[..])
+            }
+        }
+    };
+}
+
+shape_from_array!(0);
+shape_from_array!(1);
+shape_from_array!(2);
+shape_from_array!(3);
+shape_from_array!(4);
+shape_from_array!(5);
+shape_from_array!(6);
+shape_from_array!(7);
+
 impl Into<Option<Vec<Option<i64>>>> for Shape {
     fn into(self) -> Option<Vec<Option<i64>>> {
         self.0
@@ -1874,5 +1935,26 @@ mod tests {
     #[test]
     fn test_get_registered_kernels_for_op() {
         assert!(get_registered_kernels_for_op("Add").unwrap().len() > 0);
+    }
+
+    #[test]
+    fn shape_from_none() {
+        assert_eq!(Shape::from(None).dims(), None);
+    }
+
+    #[test]
+    fn shape_from_array0() {
+        let array: [i32; 0] = [];
+        assert_eq!(Shape::from(array), Shape::from(&array[..]));
+    }
+
+    #[test]
+    fn shape_from_array1() {
+        assert_eq!(Shape::from([1]), Shape::from(&[1][..]));
+    }
+
+    #[test]
+    fn shape_from_array1_ref() {
+        assert_eq!(Shape::from(&[1]), Shape::from(&[1][..]));
     }
 }
