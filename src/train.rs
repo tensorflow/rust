@@ -411,23 +411,23 @@ mod tests {
         let hidden_size: u64 = 4;
         let input = ops::Placeholder::new()
             .dtype(DataType::Float)
-            .shape(Shape::from(&[1u64, 2][..]))
+            .shape([1u64, 2])
             .build(&mut scope.with_op_name("input"))
             .unwrap();
         let label = ops::Placeholder::new()
             .dtype(DataType::Float)
-            .shape(Shape::from(&[1u64][..]))
+            .shape([1u64])
             .build(&mut scope.with_op_name("label"))
             .unwrap();
         let w_shape = ops::constant(&[2, hidden_size as i64][..], scope).unwrap();
         let w_init = ops::RandomStandardNormal::new()
             .dtype(DataType::Float)
-            .build(w_shape.into(), scope)
+            .build(w_shape, scope)
             .unwrap();
         let w = Variable::builder()
             .initial_value(w_init)
             .data_type(DataType::Float)
-            .shape(Shape::from(&[2, hidden_size][..]))
+            .shape([2, hidden_size])
             .build(&mut scope.with_op_name("w"))
             .unwrap();
         let b = Variable::builder()
@@ -435,32 +435,32 @@ mod tests {
             .build(&mut scope.with_op_name("b"))
             .unwrap();
         let layer1a = ops::MatMul::new()
-            .build(input.clone().into(), w.output.clone(), scope)
+            .build(input.clone(), w.output.clone(), scope)
             .unwrap();
         let layer1b = ops::Add::new()
-            .build(layer1a.into(), b.output.clone(), scope)
+            .build(layer1a, b.output.clone(), scope)
             .unwrap();
-        let layer1 = ops::Tanh::new().build(layer1b.into(), scope).unwrap();
+        let layer1 = ops::Tanh::new().build(layer1b, scope).unwrap();
         let w2_shape = ops::constant(&[hidden_size as i64, 1][..], scope).unwrap();
         let w2_init = ops::RandomStandardNormal::new()
             .dtype(DataType::Float)
-            .build(w2_shape.into(), scope)
+            .build(w2_shape, scope)
             .unwrap();
         let w2 = Variable::builder()
             .initial_value(w2_init)
             .data_type(DataType::Float)
-            .shape(Shape::from(&[hidden_size, 1][..]))
+            .shape([hidden_size, 1])
             .build(&mut scope.with_op_name("w2"))
             .unwrap();
         let b2 = Variable::builder()
             .const_initial_value(Tensor::<f32>::new(&[1]))
             .build(&mut scope.with_op_name("b2"))
             .unwrap();
-        let layer2a = ops::mat_mul(layer1.into(), w2.output.clone(), scope).unwrap();
-        let layer2b = ops::add(layer2a.into(), b2.output.clone(), scope).unwrap();
+        let layer2a = ops::mat_mul(layer1, w2.output.clone(), scope).unwrap();
+        let layer2b = ops::add(layer2a, b2.output.clone(), scope).unwrap();
         let layer2 = layer2b;
-        let error = ops::sub(layer2.clone().into(), label.clone().into(), scope).unwrap();
-        let error_squared = ops::mul(error.clone().into(), error.into(), scope).unwrap();
+        let error = ops::sub(layer2.clone(), label.clone(), scope).unwrap();
+        let error_squared = ops::mul(error.clone(), error, scope).unwrap();
         let sgd = GradientDescentOptimizer {
             learning_rate: Output {
                 operation: ops::constant(0.1f32, scope).unwrap(),
