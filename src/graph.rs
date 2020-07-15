@@ -15,6 +15,7 @@ use libc::c_uint;
 use libc::c_void;
 use libc::size_t;
 use std;
+use std::cmp;
 use std::ffi::CStr;
 use std::ffi::CString;
 use std::ffi::NulError;
@@ -1154,9 +1155,12 @@ impl Operation {
         unsafe {
             let num_consumers = tf::TF_OperationNumControlInputs(self.inner);
             let mut vec = <Vec<*mut tf::TF_Operation>>::with_capacity(num_consumers as usize);
-            let len =
-                tf::TF_OperationGetControlInputs(self.inner, vec.as_mut_ptr(), vec.len() as c_int);
-            vec.set_len(len as usize);
+            let len = tf::TF_OperationGetControlInputs(
+                self.inner,
+                vec.as_mut_ptr(),
+                num_consumers as c_int,
+            );
+            vec.set_len(cmp::min(num_consumers, len) as usize);
             vec.into_iter()
                 .map(|operation| Operation {
                     inner: operation,
@@ -2939,5 +2943,23 @@ mod tests {
         );
         assert!("foo:bar".parse::<OutputName>().is_err());
         assert!("foo:0:1".parse::<OutputName>().is_err());
+    }
+
+    #[test]
+    fn control_inputs() {
+        let mut graph = Graph::new();
+        let x = graph.new_operation("NoOp", "x").unwrap().finish().unwrap();
+        let y = {
+            let mut nd = graph.new_operation("NoOp", "y").unwrap();
+            nd.add_control_input(&x);
+            nd.finish().unwrap()
+        };
+        assert_eq!(
+            y.control_inputs()
+                .iter()
+                .map(|n| n.name().unwrap())
+                .collect::<Vec<_>>(),
+            &["x"]
+        );
     }
 }

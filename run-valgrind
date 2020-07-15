@@ -54,7 +54,7 @@ done
 # The filename parsing is a hack because we're not really parsing JSON.
 test_binary=$(cargo test --features='examples_system_alloc tensorflow_unstable' --message-format=json --no-run \
     2>/dev/null | \
-sed -En 's|^.*"([^"]*/target/debug/tensorflow-[^"]*)".*$|\1|p')
+sed -En 's|^.*"([^"]*/target/debug/deps/tensorflow-[^"]*)".*$|\1|p')
 
 # Run valgrind against the tests.
 echo "Testing tests"
