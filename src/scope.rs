@@ -103,6 +103,7 @@ pub struct Scope {
     op_name: String,
     op_names: Rc<RefCell<HashMap<String, i32>>>,
     device: String,
+    control_deps: Vec<Operation>,
 }
 
 impl Scope {
@@ -117,6 +118,7 @@ impl Scope {
             op_name: "".to_string(),
             op_names: Rc::new(RefCell::new(HashMap::new())),
             device: "".to_string(),
+            control_deps: Vec::new(),
         }
     }
 
@@ -159,6 +161,7 @@ impl Scope {
                 Rc::new(RefCell::new(HashMap::new()))
             },
             device: self.device.clone(),
+            control_deps: self.control_deps.clone(),
         }
     }
 
@@ -172,6 +175,7 @@ impl Scope {
             op_name: name.to_string(),
             op_names: self.op_names.clone(),
             device: self.device.clone(),
+            control_deps: self.control_deps.clone(),
         }
     }
 
@@ -210,6 +214,41 @@ impl Scope {
             op_name: self.op_name.clone(),
             op_names: self.op_names.clone(),
             device: device.to_string(),
+            control_deps: self.control_deps.clone(),
+        }
+    }
+
+    /// Return a new scope. All ops created within the returned scope will have
+    /// as control dependencies the union of operations in `control_deps`
+    /// and the control dependencies of the current scope.
+    pub fn with_control_dependencies(&self, control_deps: &[Operation]) -> Scope {
+        Scope {
+            graph: self.graph.clone(),
+            name: self.name.clone(),
+            children_names: self.children_names.clone(),
+            op_name: self.op_name.clone(),
+            op_names: self.op_names.clone(),
+            device: self.device.clone(),
+            control_deps: self
+                .control_deps
+                .iter()
+                .chain(control_deps.iter())
+                .cloned()
+                .collect(),
+        }
+    }
+
+    /// Return a new scope. All ops created within the returned scope will have
+    /// no control dependencies on other operations.
+    pub fn with_no_control_dependencies(&self) -> Scope {
+        Scope {
+            graph: self.graph.clone(),
+            name: self.name.clone(),
+            children_names: self.children_names.clone(),
+            op_name: self.op_name.clone(),
+            op_names: self.op_names.clone(),
+            device: self.device.clone(),
+            control_deps: vec![],
         }
     }
 
@@ -223,6 +262,9 @@ impl Scope {
         let mut graph = r.borrow_mut();
         let mut nd = graph.new_operation(op_type, &name)?;
         nd.set_device(&self.device)?;
+        for control_dep in &self.control_deps {
+            nd.add_control_input(control_dep);
+        }
         f(&mut nd)?;
         Ok(nd.finish()?)
     }
@@ -290,6 +332,33 @@ mod tests {
                 .device()
                 .unwrap(),
             "foo"
+        );
+    }
+
+    #[test]
+    fn control_dependencies() {
+        let mut scope = Scope::new_root_scope();
+        let dep = scope.new_operation("NoOp", |_| Ok(())).unwrap();
+        let dep_clone = dep.clone();
+        let mut scope2 = scope.with_control_dependencies(&[dep]);
+        assert_eq!(
+            scope2
+                .new_operation("NoOp", |_| Ok(()))
+                .unwrap()
+                .control_inputs()
+                .iter()
+                .map(|n| n.name().unwrap())
+                .collect::<Vec<_>>(),
+            vec![dep_clone.name().unwrap()]
+        );
+        let mut scope3 = scope2.with_no_control_dependencies();
+        assert_eq!(
+            scope3
+                .new_operation("NoOp", |_| Ok(()))
+                .unwrap()
+                .control_inputs()
+                .len(),
+            0
         );
     }
 }
