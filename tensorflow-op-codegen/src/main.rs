@@ -180,29 +180,26 @@ fn write_build_impl_fn<W: Write>(
     }
     let scope_var = escaper.escape("scope");
     let node_var = escaper.escape("nd");
-    let graph_var = escaper.escape("graph");
     write!(
         w,
         r#"{scope}: &mut crate::Scope) -> crate::Result<crate::Operation> {{
-        let name = {scope}.get_unique_name_for_op({op_name:?});
-        let mut {graph} = {scope}.graph_mut();
-        let mut {node} = {graph}.new_operation({op_name:?}, &name)?;
+        {scope}.new_operation({op_name:?}, |{node}| {{
 "#,
         scope = scope_var,
         op_name = op_name,
-        graph = graph_var,
         node = node_var,
     )?;
     for arg in escaped_args {
-        write!(w, "        {}.add_input({});\n", node_var, arg)?;
+        write!(w, "            {}.add_input({});\n", node_var, arg)?;
     }
-    write!(w, "        for op in &self.control_inputs {{\n")?;
-    write!(w, "            {}.add_control_input(op);\n", node_var)?;
-    write!(w, "        }}\n")?;
+    write!(w, "            for op in &self.control_inputs {{\n")?;
+    write!(w, "                {}.add_control_input(op);\n", node_var)?;
+    write!(w, "            }}\n")?;
     for attr in attrs {
         write_set_attr(w, attr, &node_var)?;
     }
-    write!(w, "        {}.finish()\n", node_var)?;
+    write!(w, "            ::std::result::Result::Ok(())\n")?;
+    write!(w, "        }})\n")?;
     write!(w, "    }}\n")?;
     Ok(())
 }

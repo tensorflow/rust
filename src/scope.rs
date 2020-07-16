@@ -1,4 +1,7 @@
 use crate::Graph;
+use crate::Operation;
+use crate::OperationDescription;
+use crate::Result;
 use std::borrow::Borrow;
 use std::cell::RefCell;
 use std::collections::hash_map::Entry;
@@ -191,6 +194,19 @@ impl Scope {
                 }
             }
         }
+    }
+
+    pub(crate) fn new_operation<F: FnOnce(&mut OperationDescription) -> Result<()>>(
+        &mut self,
+        op_type: &str,
+        f: F,
+    ) -> Result<Operation> {
+        let name = self.get_unique_name_for_op(op_type);
+        let r: &RefCell<Graph> = self.graph.borrow();
+        let mut graph = r.borrow_mut();
+        let mut nd = graph.new_operation(op_type, &name)?;
+        f(&mut nd)?;
+        Ok(nd.finish()?)
     }
 
     /// Returns the graph being built by the scope.
