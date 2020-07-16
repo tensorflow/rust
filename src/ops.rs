@@ -31,3 +31,14 @@ pub use random_ops::*;
 )]
 mod ops_impl;
 pub use ops_impl::*;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn device() {
+        let op = no_op(&mut crate::Scope::new_root_scope().with_device("foo")).unwrap();
+        assert_eq!(op.device().unwrap(), "foo");
+    }
+}

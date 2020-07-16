@@ -2946,6 +2946,17 @@ mod tests {
     }
 
     #[test]
+    fn device() {
+        let mut graph = Graph::new();
+        let op = {
+            let mut nd = graph.new_operation("NoOp", "x").unwrap();
+            nd.set_device("foo").unwrap();
+            nd.finish().unwrap()
+        };
+        assert_eq!(op.device().unwrap(), "foo");
+    }
+
+    #[test]
     fn control_inputs() {
         let mut graph = Graph::new();
         let x = graph.new_operation("NoOp", "x").unwrap().finish().unwrap();

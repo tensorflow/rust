@@ -102,6 +102,7 @@ pub struct Scope {
     children_names: Rc<RefCell<HashSet<String>>>,
     op_name: String,
     op_names: Rc<RefCell<HashMap<String, i32>>>,
+    device: String,
 }
 
 impl Scope {
@@ -115,6 +116,7 @@ impl Scope {
             children_names: Rc::new(RefCell::new(HashSet::new())),
             op_name: "".to_string(),
             op_names: Rc::new(RefCell::new(HashMap::new())),
+            device: "".to_string(),
         }
     }
 
@@ -156,6 +158,7 @@ impl Scope {
             } else {
                 Rc::new(RefCell::new(HashMap::new()))
             },
+            device: self.device.clone(),
         }
     }
 
@@ -168,6 +171,7 @@ impl Scope {
             children_names: self.children_names.clone(),
             op_name: name.to_string(),
             op_names: self.op_names.clone(),
+            device: self.device.clone(),
         }
     }
 
@@ -196,6 +200,19 @@ impl Scope {
         }
     }
 
+    /// Return a new scope. All ops created within the returned scope will have
+    /// their device field set to `device`.
+    pub fn with_device(&self, device: &str) -> Scope {
+        Scope {
+            graph: self.graph.clone(),
+            name: self.name.clone(),
+            children_names: self.children_names.clone(),
+            op_name: self.op_name.clone(),
+            op_names: self.op_names.clone(),
+            device: device.to_string(),
+        }
+    }
+
     pub(crate) fn new_operation<F: FnOnce(&mut OperationDescription) -> Result<()>>(
         &mut self,
         op_type: &str,
@@ -205,6 +222,7 @@ impl Scope {
         let r: &RefCell<Graph> = self.graph.borrow();
         let mut graph = r.borrow_mut();
         let mut nd = graph.new_operation(op_type, &name)?;
+        nd.set_device(&self.device)?;
         f(&mut nd)?;
         Ok(nd.finish()?)
     }
@@ -260,5 +278,18 @@ mod tests {
         let bar = foo.with_op_name("bar");
         assert_eq!(bar.get_unique_name_for_op("Add"), "foo/bar");
         assert_eq!(bar.get_unique_name_for_op("Add"), "foo/bar_1");
+    }
+
+    #[test]
+    fn device() {
+        assert_eq!(
+            Scope::new_root_scope()
+                .with_device("foo")
+                .new_operation("NoOp", |_| Ok(()))
+                .unwrap()
+                .device()
+                .unwrap(),
+            "foo"
+        );
     }
 }
