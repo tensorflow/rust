@@ -1480,7 +1480,7 @@ impl<T: TensorType> Display for Tensor<T> {
 #[derive(Debug)]
 pub struct Library {
     inner: *mut tf::TF_Library,
-    op_list: protos::op_def::OpList,
+    op_list: OpList,
 }
 
 impl Library {
@@ -1497,17 +1497,137 @@ impl Library {
                 let stack_buf = tf::TF_GetOpList(inner);
                 let heap_buf = tf::TF_NewBuffer();
                 *heap_buf = stack_buf;
-                Buffer::<u8>::from_c(heap_buf, false)
+                let x = Buffer::<u8>::from_c(heap_buf, true);
+                x
             };
-            let op_list: protos::op_def::OpList =
+            let op_proto: protos::op_def::OpList =
                 protobuf::parse_from_bytes(&buf).map_err(|e| {
                     Status::new_set_lossy(
                         Code::InvalidArgument,
                         &format!("Invalid serialized OpList: {}", e),
                     )
                 })?;
+
+            let op_list = OpList::from_proto(&op_proto)?;
             Ok(Library { inner, op_list })
         }
+    }
+
+    /// Get the inner library OpList
+    pub fn op_list(&self) -> &OpList {
+        &self.op_list
+    }
+}
+
+/// Collection of OpDefs exposed from an external plugin
+#[derive(Debug, Eq, PartialEq, Clone)]
+pub struct OpList(Vec<OpDef>);
+
+impl OpList {
+    // We don't use Into, because we don't want this to be public API.
+    #[allow(dead_code)]
+    fn into_proto(self) -> protos::op_def::OpList {
+        let mut proto = protos::op_def::OpList::new();
+        let ops = self
+            .0
+            .into_iter()
+            .map(|op| op.into_proto())
+            .collect::<Vec<_>>();
+        proto.op.clone_from_slice(&ops);
+        proto
+    }
+
+    // We don't use From, because we don't want this to be public API.
+    fn from_proto(proto: &protos::op_def::OpList) -> Result<Self> {
+        let ops = proto
+            .get_op()
+            .to_vec()
+            .iter()
+            .map(|op| OpDef::from_proto(op))
+            .collect::<Result<Vec<OpDef>>>()?;
+        Ok(Self(ops))
+    }
+}
+
+impl From<Vec<OpDef>> for OpList {
+    fn from(ops: Vec<OpDef>) -> Self {
+        Self(ops)
+    }
+}
+
+impl Into<Vec<OpDef>> for OpList {
+    fn into(self) -> Vec<OpDef> {
+        self.0
+    }
+}
+
+/// A Graph operation exposed from an external plugin
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct OpDef {
+    name: String,
+    summary: String,
+    description: String,
+    is_commutative: bool,
+    is_aggregate: bool,
+    is_stateful: bool,
+    allows_uninitialized_input: bool,
+}
+
+impl OpDef {
+    /// Returns the name of the Op
+    pub fn name(&self) -> &String {
+        &self.name
+    }
+
+    /// Returns the summary of the Op
+    pub fn summary(&self) -> &String {
+        &self.summary
+    }
+
+    /// Returns the description of the Op
+    pub fn description(&self) -> &String {
+        &self.description
+    }
+
+    /// Returns true if the Op is commutative
+    pub fn is_commutative(&self) -> bool {
+        self.is_commutative
+    }
+
+    /// Returns true if the Op aggregates values
+    pub fn is_aggregate(&self) -> bool {
+        self.is_aggregate
+    }
+
+    /// Returns true if the Op maintains state
+    pub fn is_stateful(&self) -> bool {
+        self.is_stateful
+    }
+
+    // We don't use Into, because we don't want this to be public API.
+    fn into_proto(self) -> protos::op_def::OpDef {
+        let mut proto = protos::op_def::OpDef::new();
+        proto.set_name(self.name);
+        proto.set_summary(self.summary);
+        proto.set_description(self.description);
+        proto.set_is_commutative(self.is_commutative);
+        proto.set_is_aggregate(self.is_aggregate);
+        proto.set_is_stateful(self.is_stateful);
+        proto.set_allows_uninitialized_input(self.allows_uninitialized_input);
+        proto
+    }
+
+    // We don't use From, because we don't want this to be public API.
+    fn from_proto(proto: &protos::op_def::OpDef) -> Result<Self> {
+        Ok(Self {
+            name: proto.get_name().to_string(),
+            summary: proto.get_summary().to_string(),
+            description: proto.get_description().to_string(),
+            is_commutative: proto.get_is_commutative(),
+            is_aggregate: proto.get_is_aggregate(),
+            is_stateful: proto.get_is_stateful(),
+            allows_uninitialized_input: proto.get_allows_uninitialized_input(),
+        })
     }
 }
 
@@ -1961,8 +2081,11 @@ mod tests {
         if let Some(path) = check_path {
             let res = Library::load(path);
             assert!(res.is_ok());
-            let num_ops = res.unwrap().op_list.op.len();
-            assert!(num_ops == 1);
+            let lib = res.unwrap();
+            let ops: Vec<OpDef> = lib.op_list().clone().into();
+            assert!(ops.len() == 1);
+            let op = &ops[0];
+            assert!(op.name() == "TestOpList");
         };
     }
 
