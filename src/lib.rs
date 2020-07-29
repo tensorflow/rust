@@ -1484,6 +1484,7 @@ pub struct Library {
 }
 
 impl Library {
+    #[cfg(feature = "experimental_training")]
     /// Loads a library.
     pub fn load(library_filename: &str) -> Result<Self> {
         let c_filename = CString::new(library_filename)?;
@@ -1497,8 +1498,7 @@ impl Library {
                 let stack_buf = tf::TF_GetOpList(inner);
                 let heap_buf = tf::TF_NewBuffer();
                 *heap_buf = stack_buf;
-                let x = Buffer::<u8>::from_c(heap_buf, true);
-                x
+                Buffer::<u8>::from_c(heap_buf, false)
             };
             let op_proto: protos::op_def::OpList =
                 protobuf::parse_from_bytes(&buf).map_err(|e| {
@@ -1524,6 +1524,7 @@ impl Library {
 pub struct OpList(Vec<OpDef>);
 
 impl OpList {
+    #[cfg(feature = "experimental_training")]
     // We don't use Into, because we don't want this to be public API.
     #[allow(dead_code)]
     fn into_proto(self) -> protos::op_def::OpList {
@@ -1537,11 +1538,11 @@ impl OpList {
         proto
     }
 
+    #[cfg(feature = "experimental_training")]
     // We don't use From, because we don't want this to be public API.
     fn from_proto(proto: &protos::op_def::OpList) -> Result<Self> {
         let ops = proto
             .get_op()
-            .to_vec()
             .iter()
             .map(|op| OpDef::from_proto(op))
             .collect::<Result<Vec<OpDef>>>()?;
@@ -1565,6 +1566,8 @@ impl Into<Vec<OpDef>> for OpList {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct OpDef {
     name: String,
+    input_arg: Vec<OpArgDef>,
+    output_arg: Vec<OpArgDef>,
     summary: String,
     description: String,
     is_commutative: bool,
@@ -1575,17 +1578,27 @@ pub struct OpDef {
 
 impl OpDef {
     /// Returns the name of the Op
-    pub fn name(&self) -> &String {
+    pub fn name(&self) -> &str {
         &self.name
     }
 
+    /// Returns the input arguments of the Op
+    pub fn input_arg(&self) -> &Vec<OpArgDef> {
+        &self.input_arg
+    }
+
+    /// Returns the output arguments of the Op
+    pub fn output_arg(&self) -> &Vec<OpArgDef> {
+        &self.output_arg
+    }
+
     /// Returns the summary of the Op
-    pub fn summary(&self) -> &String {
+    pub fn summary(&self) -> &str {
         &self.summary
     }
 
     /// Returns the description of the Op
-    pub fn description(&self) -> &String {
+    pub fn description(&self) -> &str {
         &self.description
     }
 
@@ -1604,10 +1617,23 @@ impl OpDef {
         self.is_stateful
     }
 
+    #[cfg(feature = "experimental_training")]
     // We don't use Into, because we don't want this to be public API.
     fn into_proto(self) -> protos::op_def::OpDef {
+        let input_arg: Vec<protos::op_def::OpDef_ArgDef> = self
+            .input_arg
+            .into_iter()
+            .map(|arg| arg.into_proto())
+            .collect();
+        let output_arg: Vec<protos::op_def::OpDef_ArgDef> = self
+            .output_arg
+            .into_iter()
+            .map(|arg| arg.into_proto())
+            .collect();
         let mut proto = protos::op_def::OpDef::new();
         proto.set_name(self.name);
+        proto.set_input_arg(input_arg.into());
+        proto.set_output_arg(output_arg.into());
         proto.set_summary(self.summary);
         proto.set_description(self.description);
         proto.set_is_commutative(self.is_commutative);
@@ -1617,10 +1643,23 @@ impl OpDef {
         proto
     }
 
+    #[cfg(feature = "experimental_training")]
     // We don't use From, because we don't want this to be public API.
     fn from_proto(proto: &protos::op_def::OpDef) -> Result<Self> {
+        let input_arg = proto
+            .get_input_arg()
+            .iter()
+            .map(|arg| OpArgDef::from_proto(arg))
+            .collect::<Result<Vec<OpArgDef>>>()?;
+        let output_arg = proto
+            .get_output_arg()
+            .iter()
+            .map(|arg| OpArgDef::from_proto(arg))
+            .collect::<Result<Vec<OpArgDef>>>()?;
         Ok(Self {
             name: proto.get_name().to_string(),
+            input_arg,
+            output_arg,
             summary: proto.get_summary().to_string(),
             description: proto.get_description().to_string(),
             is_commutative: proto.get_is_commutative(),
@@ -1628,6 +1667,115 @@ impl OpDef {
             is_stateful: proto.get_is_stateful(),
             allows_uninitialized_input: proto.get_allows_uninitialized_input(),
         })
+    }
+}
+
+/// An argument definition for a graph operation.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct OpArgDef {
+    name: String,
+    description: String,
+    field_type: DataType,
+    type_attr: String,
+    number_attr: String,
+    type_list_attr: String,
+    is_ref: bool,
+}
+
+impl OpArgDef {
+    /// Returns the name of the argument
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    /// Returns the description of the argument
+    pub fn description(&self) -> &str {
+        &self.description
+    }
+
+    /// Returns the data type of the argument
+    pub fn field_type(&self) -> DataType {
+        self.field_type
+    }
+
+    /// Returns the type attribute for this argument
+    pub fn type_attr(&self) -> &str {
+        &self.type_attr
+    }
+
+    /// Returns the number attribute for this argument
+    pub fn number_attr(&self) -> &str {
+        &self.number_attr
+    }
+
+    /// Returns the type list attribute for this argument
+    pub fn type_list_attr(&self) -> &str {
+        &self.type_list_attr
+    }
+
+    /// Returns true if this Arg is a ref
+    pub fn is_ref(&self) -> bool {
+        self.is_ref
+    }
+
+    #[cfg(feature = "experimental_training")]
+    // We don't use Into, because we don't want this to be public API.
+    fn into_proto(self) -> protos::op_def::OpDef_ArgDef {
+        let mut proto = protos::op_def::OpDef_ArgDef::new();
+        proto.set_name(self.name);
+        proto.set_description(self.description);
+        proto.set_field_type(self.field_type.into_proto());
+        proto.set_type_attr(self.type_attr);
+        proto.set_number_attr(self.number_attr);
+        proto.set_type_list_attr(self.type_list_attr);
+        proto.set_is_ref(self.is_ref);
+        proto
+    }
+
+    #[cfg(feature = "experimental_training")]
+    // We don't use From, because we don't want this to be public API.
+    fn from_proto(proto: &protos::op_def::OpDef_ArgDef) -> Result<Self> {
+        Ok(Self {
+            name: proto.get_name().to_string(),
+            description: proto.get_description().to_string(),
+            field_type: DataType::from_proto(proto.get_field_type()),
+            type_attr: proto.get_type_attr().to_string(),
+            number_attr: proto.get_number_attr().to_string(),
+            type_list_attr: proto.get_type_list_attr().to_string(),
+            is_ref: proto.get_is_ref(),
+        })
+    }
+}
+
+/// An attribute definition for a graph operation.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct OpAttrDef {
+    name: String,
+    field_type: String,
+    description: String,
+    has_minimum: bool,
+    minimum: i64,
+}
+
+impl OpAttrDef {
+    /// Returns the name of the attribute
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    /// Returns the description of the attribute
+    pub fn description(&self) -> &str {
+        &self.description
+    }
+
+    /// Returns true if this attribute has a minimum
+    pub fn has_minimum(&self) -> bool {
+        self.has_minimum
+    }
+
+    /// Returns the minimum for this attribute
+    pub fn minimum(&self) -> i64 {
+        self.minimum
     }
 }
 
