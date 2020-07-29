@@ -1568,6 +1568,7 @@ pub struct OpDef {
     name: String,
     input_arg: Vec<OpArgDef>,
     output_arg: Vec<OpArgDef>,
+    attr: Vec<OpAttrDef>,
     summary: String,
     description: String,
     is_commutative: bool,
@@ -1590,6 +1591,11 @@ impl OpDef {
     /// Returns the output arguments of the Op
     pub fn output_arg(&self) -> &Vec<OpArgDef> {
         &self.output_arg
+    }
+
+    /// Returns the attributes of the Op
+    pub fn attr(&self) -> &Vec<OpAttrDef> {
+        &self.attr
     }
 
     /// Returns the summary of the Op
@@ -1630,10 +1636,16 @@ impl OpDef {
             .into_iter()
             .map(|arg| arg.into_proto())
             .collect();
+        let attr: Vec<protos::op_def::OpDef_AttrDef> = self
+            .attr
+            .into_iter()
+            .map(|attr| attr.into_proto())
+            .collect();
         let mut proto = protos::op_def::OpDef::new();
         proto.set_name(self.name);
         proto.set_input_arg(input_arg.into());
         proto.set_output_arg(output_arg.into());
+        proto.set_attr(attr.into());
         proto.set_summary(self.summary);
         proto.set_description(self.description);
         proto.set_is_commutative(self.is_commutative);
@@ -1656,10 +1668,16 @@ impl OpDef {
             .iter()
             .map(|arg| OpArgDef::from_proto(arg))
             .collect::<Result<Vec<OpArgDef>>>()?;
+        let attr = proto
+            .get_attr()
+            .iter()
+            .map(|attr| OpAttrDef::from_proto(attr))
+            .collect::<Result<Vec<OpAttrDef>>>()?;
         Ok(Self {
             name: proto.get_name().to_string(),
             input_arg,
             output_arg,
+            attr,
             summary: proto.get_summary().to_string(),
             description: proto.get_description().to_string(),
             is_commutative: proto.get_is_commutative(),
@@ -1776,6 +1794,30 @@ impl OpAttrDef {
     /// Returns the minimum for this attribute
     pub fn minimum(&self) -> i64 {
         self.minimum
+    }
+
+    #[cfg(feature = "experimental_training")]
+    // We don't use Into, because we don't want this to be public API.
+    fn into_proto(self) -> protos::op_def::OpDef_AttrDef {
+        let mut proto = protos::op_def::OpDef_AttrDef::new();
+        proto.set_name(self.name);
+        proto.set_field_type(self.field_type);
+        proto.set_description(self.description);
+        proto.set_has_minimum(self.has_minimum);
+        proto.set_minimum(self.minimum);
+        proto
+    }
+
+    #[cfg(feature = "experimental_training")]
+    // We don't use From, because we don't want this to be public API.
+    fn from_proto(proto: &protos::op_def::OpDef_AttrDef) -> Result<Self> {
+        Ok(Self {
+            name: proto.get_name().to_string(),
+            field_type: proto.get_field_type().to_string(),
+            description: proto.get_description().to_string(),
+            has_minimum: proto.get_has_minimum(),
+            minimum: proto.get_minimum(),
+        })
     }
 }
 
