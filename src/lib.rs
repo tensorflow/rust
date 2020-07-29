@@ -2218,6 +2218,7 @@ mod tests {
         assert!(get_registered_kernels_for_op("Add").unwrap().len() > 0);
     }
 
+    #[cfg(feature = "experimental_training")]
     #[test]
     fn test_library_load() {
         // This test is not yet implemented for Windows
