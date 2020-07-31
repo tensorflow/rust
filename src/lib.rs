@@ -18,7 +18,6 @@
 use half::f16;
 use libc::{c_int, c_uint};
 use num_complex::Complex;
-#[cfg(feature = "experimental_training")]
 use protobuf::ProtobufEnum;
 use std::borrow::Borrow;
 use std::cell::Cell;
@@ -410,7 +409,6 @@ impl Default for DataType {
 }
 
 impl DataType {
-    #[cfg(feature = "experimental_training")]
     // We don't use Into, because we don't want this to be public API.
     fn into_proto(self) -> protos::types::DataType {
         if let Some(d) = protos::types::DataType::from_i32(self.to_int() as i32) {
@@ -421,7 +419,6 @@ impl DataType {
         }
     }
 
-    #[cfg(feature = "experimental_training")]
     // We don't use From, because we don't want this to be public API.
     fn from_proto(proto: protos::types::DataType) -> Self {
         Self::from_int(proto.value() as c_uint)
@@ -1484,7 +1481,6 @@ pub struct Library {
 }
 
 impl Library {
-    #[cfg(feature = "experimental_training")]
     /// Loads a library.
     pub fn load(library_filename: &str) -> Result<Self> {
         let c_filename = CString::new(library_filename)?;
@@ -1497,8 +1493,9 @@ impl Library {
             let buf = unsafe {
                 let stack_buf = tf::TF_GetOpList(inner);
                 let heap_buf = tf::TF_NewBuffer();
-                *heap_buf = stack_buf;
-                Buffer::<u8>::from_c(heap_buf, false)
+                (*heap_buf).data = stack_buf.data;
+                (*heap_buf).length = stack_buf.length;
+                Buffer::<u8>::from_c(heap_buf, true)
             };
             let op_proto: protos::op_def::OpList =
                 protobuf::parse_from_bytes(&buf).map_err(|e| {
@@ -1524,7 +1521,6 @@ impl Library {
 pub struct OpList(Vec<OpDef>);
 
 impl OpList {
-    #[cfg(feature = "experimental_training")]
     // We don't use Into, because we don't want this to be public API.
     #[allow(dead_code)]
     fn into_proto(self) -> protos::op_def::OpList {
@@ -1538,7 +1534,6 @@ impl OpList {
         proto
     }
 
-    #[cfg(feature = "experimental_training")]
     // We don't use From, because we don't want this to be public API.
     fn from_proto(proto: &protos::op_def::OpList) -> Result<Self> {
         let ops = proto
@@ -1623,7 +1618,6 @@ impl OpDef {
         self.is_stateful
     }
 
-    #[cfg(feature = "experimental_training")]
     // We don't use Into, because we don't want this to be public API.
     fn into_proto(self) -> protos::op_def::OpDef {
         let input_arg: Vec<protos::op_def::OpDef_ArgDef> = self
@@ -1655,7 +1649,6 @@ impl OpDef {
         proto
     }
 
-    #[cfg(feature = "experimental_training")]
     // We don't use From, because we don't want this to be public API.
     fn from_proto(proto: &protos::op_def::OpDef) -> Result<Self> {
         let input_arg = proto
@@ -1698,6 +1691,7 @@ pub struct OpArgDef {
     number_attr: String,
     type_list_attr: String,
     is_ref: bool,
+    // TODO: Add "default_value" and "allowed_values" from OpDef_AttrDef proto
 }
 
 impl OpArgDef {
@@ -1736,7 +1730,6 @@ impl OpArgDef {
         self.is_ref
     }
 
-    #[cfg(feature = "experimental_training")]
     // We don't use Into, because we don't want this to be public API.
     fn into_proto(self) -> protos::op_def::OpDef_ArgDef {
         let mut proto = protos::op_def::OpDef_ArgDef::new();
@@ -1750,7 +1743,6 @@ impl OpArgDef {
         proto
     }
 
-    #[cfg(feature = "experimental_training")]
     // We don't use From, because we don't want this to be public API.
     fn from_proto(proto: &protos::op_def::OpDef_ArgDef) -> Result<Self> {
         Ok(Self {
@@ -1796,7 +1788,6 @@ impl OpAttrDef {
         self.minimum
     }
 
-    #[cfg(feature = "experimental_training")]
     // We don't use Into, because we don't want this to be public API.
     fn into_proto(self) -> protos::op_def::OpDef_AttrDef {
         let mut proto = protos::op_def::OpDef_AttrDef::new();
@@ -1808,7 +1799,6 @@ impl OpAttrDef {
         proto
     }
 
-    #[cfg(feature = "experimental_training")]
     // We don't use From, because we don't want this to be public API.
     fn from_proto(proto: &protos::op_def::OpDef_AttrDef) -> Result<Self> {
         Ok(Self {
@@ -2270,9 +2260,7 @@ mod tests {
             _ => None,
         };
         if let Some(path) = check_path {
-            let res = Library::load(path);
-            assert!(res.is_ok());
-            let lib = res.unwrap();
+            let lib = Library::load(path).unwrap();
             let ops: Vec<OpDef> = lib.op_list().clone().into();
             assert!(ops.len() == 1);
             let op = &ops[0];
