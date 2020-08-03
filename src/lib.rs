@@ -17,6 +17,8 @@
 
 use half::f16;
 use libc::{c_int, c_uint};
+#[cfg(feature = "ndarray")]
+use ndarray::{Array, ArrayBase, Data, Dim, Dimension, IxDynImpl};
 use num_complex::Complex;
 #[cfg(feature = "experimental_training")]
 use protobuf::ProtobufEnum;
@@ -1426,6 +1428,40 @@ impl<'a, T: TensorType> From<&'a [T]> for Tensor<T> {
     }
 }
 
+#[cfg(feature = "ndarray")]
+/// Convert any ndarray::ArrayBase type into a tensorflow::Tensor
+impl<T, S, D> From<ArrayBase<S, D>> for Tensor<T>
+where
+    T: TensorType,
+    S: Data<Elem = T>,
+    D: Dimension,
+{
+    fn from(value: ArrayBase<S, D>) -> Self {
+        let dims: Vec<u64> = value.shape().iter().map(|x| *x as u64).collect();
+        let mut tensor: Tensor<T> = Self::new(&dims);
+        for (e, v) in tensor.iter_mut().zip(value.iter()) {
+            e.clone_from(v);
+        }
+        tensor
+    }
+}
+
+#[cfg(feature = "ndarray")]
+/// Convert a tensorflow::Tensor into a dynamic dimensional ndarray::ArrayBase that owns its data
+impl<T> From<Tensor<T>> for Array<T, Dim<IxDynImpl>>
+where
+    T: TensorType,
+{
+    fn from(value: Tensor<T>) -> Self {
+        let dims: Vec<usize> = value.dims.iter().map(|x| *x as usize).collect();
+        let dim = Dim(dims);
+        let data: Vec<T> = value.iter().map(|x| x.clone()).collect();
+        // We can safely unwrap this because we know that `data` will have the
+        // correct number of elements to conform to `dim`.
+        Array::from_shape_vec(dim, data).unwrap()
+    }
+}
+
 impl<T: TensorType + PartialEq> PartialEq for Tensor<T> {
     fn eq(&self, other: &Tensor<T>) -> bool {
         self.dims == other.dims && self.deref() == other.deref()
@@ -1925,6 +1961,62 @@ mod tests {
             let tensor = Tensor::<i32>::new(shape).with_values(values).unwrap();
             assert_eq!(expected, format!("{}", tensor));
         }
+    }
+
+    #[cfg(feature = "ndarray")]
+    #[test]
+    fn test_tensor_from_ndarray() {
+        let arr = Array::<f64, _>::zeros((1, 1, 1));
+        let tensor = Tensor::from(arr);
+        let expected = Tensor::new(&[1, 1, 1]).with_values(&[0.0]).unwrap();
+        assert_eq!(expected, tensor);
+
+        let arr = Array::<f32, _>::zeros((1, 2));
+        let tensor = Tensor::from(arr);
+        let expected = Tensor::new(&[1, 2]).with_values(&[0.0, 0.0]).unwrap();
+        assert_eq!(expected, tensor);
+
+        let arr = Array::<i32, _>::zeros((2, 2));
+        let tensor = Tensor::from(arr);
+        let expected = Tensor::new(&[2, 2]).with_values(&[0, 0, 0, 0]).unwrap();
+        assert_eq!(expected, tensor);
+
+        let arr = Array::<u8, _>::zeros((3, 2));
+        let tensor = Tensor::from(arr);
+        let expected = Tensor::new(&[3, 2])
+            .with_values(&[0, 0, 0, 0, 0, 0])
+            .unwrap();
+        assert_eq!(expected, tensor);
+    }
+
+    #[cfg(feature = "ndarray")]
+    #[test]
+    fn test_ndarray_from_tensor() {
+        let tensor = Tensor::<f64>::new(&[1, 1, 1]).with_values(&[0.0]).unwrap();
+        let arr = Array::from(tensor);
+        let expected = Array::<f64, _>::zeros((1, 1, 1)).into_dyn();
+        assert_eq!(expected, arr);
+
+        let tensor = Tensor::<f32>::new(&[1, 2])
+            .with_values(&[0.0, 0.0])
+            .unwrap();
+        let arr = Array::from(tensor);
+        let expected = Array::<f32, _>::zeros((1, 2)).into_dyn();
+        assert_eq!(expected, arr);
+
+        let tensor = Tensor::<i32>::new(&[2, 2])
+            .with_values(&[0, 0, 0, 0])
+            .unwrap();
+        let arr = Array::from(tensor);
+        let expected = Array::<i32, _>::zeros((2, 2)).into_dyn();
+        assert_eq!(expected, arr);
+
+        let tensor = Tensor::<u8>::new(&[3, 2])
+            .with_values(&[0, 0, 0, 0, 0, 0])
+            .unwrap();
+        let arr = Array::from(tensor);
+        let expected = Array::<u8, _>::zeros((3, 2)).into_dyn();
+        assert_eq!(expected, arr);
     }
 
     #[test]
