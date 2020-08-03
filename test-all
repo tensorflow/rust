@@ -2,6 +2,13 @@
 
 set -e
 
+function run {
+    echo "----------------------------------------------------------------------"
+    echo "Running $@"
+    "$@"
+    echo
+}
+
 # Make sure the Tensorflow version in the -sys build script matches the one in
 # the run-valgrind script.
 version_build_script=`grep "const VERSION" tensorflow-sys/build.rs | sed 's|.*"\([^"]*\)";|\1|g'`
@@ -37,19 +44,19 @@ if [[ "${version_tensorflow_sys_crate}" != "${version_tensorflow_sys_readme}" ]]
     exit 1
 fi
 
-cargo fmt --all -- --check
-cargo test -vv -j 2
-cargo test -vv -j 2 --features tensorflow_unstable
-cargo test -vv -j 2 --features experimental_training
-cargo test -vv -j 2 --features tensorflow_unstable,experimental_training
-cargo run --example regression
-cargo run --features=experimental_training --example xor
-cargo run --features tensorflow_unstable --example expressions
-cargo doc -vv --features tensorflow_unstable,experimental_training
-cargo doc -vv --features tensorflow_unstable,experimental_training,private-docs-rs
+run cargo fmt --all -- --check
+run cargo test -vv -j 2
+run cargo test -vv -j 2 --features tensorflow_unstable
+run cargo test -vv -j 2 --features experimental_training
+run cargo test -vv -j 2 --features tensorflow_unstable,experimental_training
+run cargo run --example regression
+run cargo run --features=experimental_training --example xor
+run cargo run --features tensorflow_unstable --example expressions
+run cargo doc -vv --features tensorflow_unstable,experimental_training
+run cargo doc -vv --features tensorflow_unstable,experimental_training,private-docs-rs
 # TODO(#66): Re-enable: (cd tensorflow-sys && cargo test -vv -j 1)
-(cd tensorflow-sys && cargo run --example multiplication)
-(cd tensorflow-sys && cargo doc -vv)
+(cd tensorflow-sys && run cargo run --example multiplication)
+(cd tensorflow-sys && run cargo doc -vv)
 
 bad_deprecations="$(grep -n '#\[deprecated' src -r --include=*.rs | grep -E -v '([^"\\]|\\.|"([^"\\]|\\.)*")*since' || true)"
 if [[ "${bad_deprecations}" != "" ]]; then
