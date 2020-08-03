@@ -20,7 +20,6 @@ use libc::{c_int, c_uint};
 #[cfg(feature = "ndarray")]
 use ndarray::{Array, ArrayBase, Data, Dim, Dimension, IxDynImpl};
 use num_complex::Complex;
-#[cfg(feature = "experimental_training")]
 use protobuf::ProtobufEnum;
 use std::borrow::Borrow;
 use std::cell::Cell;
@@ -412,7 +411,6 @@ impl Default for DataType {
 }
 
 impl DataType {
-    #[cfg(feature = "experimental_training")]
     // We don't use Into, because we don't want this to be public API.
     fn into_proto(self) -> protos::types::DataType {
         if let Some(d) = protos::types::DataType::from_i32(self.to_int() as i32) {
@@ -423,7 +421,6 @@ impl DataType {
         }
     }
 
-    #[cfg(feature = "experimental_training")]
     // We don't use From, because we don't want this to be public API.
     fn from_proto(proto: protos::types::DataType) -> Self {
         Self::from_int(proto.value() as c_uint)
@@ -1516,6 +1513,7 @@ impl<T: TensorType> Display for Tensor<T> {
 #[derive(Debug)]
 pub struct Library {
     inner: *mut tf::TF_Library,
+    op_list: OpList,
 }
 
 impl Library {
@@ -1524,14 +1522,329 @@ impl Library {
         let c_filename = CString::new(library_filename)?;
         let mut status = Status::new();
         let inner = unsafe { tf::TF_LoadLibrary(c_filename.as_ptr(), status.inner()) };
+
         if inner.is_null() {
             Err(status)
         } else {
-            Ok(Library { inner })
+            let buf = unsafe {
+                let stack_buf = tf::TF_GetOpList(inner);
+                let heap_buf = tf::TF_NewBuffer();
+                (*heap_buf).data = stack_buf.data;
+                (*heap_buf).length = stack_buf.length;
+                Buffer::<u8>::from_c(heap_buf, true)
+            };
+            let op_proto: protos::op_def::OpList =
+                protobuf::parse_from_bytes(&buf).map_err(|e| {
+                    Status::new_set_lossy(
+                        Code::InvalidArgument,
+                        &format!("Invalid serialized OpList: {}", e),
+                    )
+                })?;
+
+            let op_list = OpList::from_proto(&op_proto)?;
+            Ok(Library { inner, op_list })
         }
     }
 
-    // TODO: Implement TF_GetOpList once we can deserialize protos.
+    /// Get the inner library OpList
+    pub fn op_list(&self) -> &OpList {
+        &self.op_list
+    }
+}
+
+/// Collection of OpDefs exposed from an external plugin
+#[derive(Debug, Eq, PartialEq, Clone)]
+pub struct OpList(Vec<OpDef>);
+
+impl OpList {
+    // We don't use Into, because we don't want this to be public API.
+    #[allow(dead_code)]
+    fn into_proto(self) -> protos::op_def::OpList {
+        let mut proto = protos::op_def::OpList::new();
+        let ops = self
+            .0
+            .into_iter()
+            .map(|op| op.into_proto())
+            .collect::<Vec<_>>();
+        proto.op.clone_from_slice(&ops);
+        proto
+    }
+
+    // We don't use From, because we don't want this to be public API.
+    fn from_proto(proto: &protos::op_def::OpList) -> Result<Self> {
+        let ops = proto
+            .get_op()
+            .iter()
+            .map(|op| OpDef::from_proto(op))
+            .collect::<Result<Vec<OpDef>>>()?;
+        Ok(Self(ops))
+    }
+}
+
+impl From<Vec<OpDef>> for OpList {
+    fn from(ops: Vec<OpDef>) -> Self {
+        Self(ops)
+    }
+}
+
+impl Into<Vec<OpDef>> for OpList {
+    fn into(self) -> Vec<OpDef> {
+        self.0
+    }
+}
+
+/// A Graph operation exposed from an external plugin
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct OpDef {
+    name: String,
+    input_arg: Vec<OpArgDef>,
+    output_arg: Vec<OpArgDef>,
+    attr: Vec<OpAttrDef>,
+    summary: String,
+    description: String,
+    is_commutative: bool,
+    is_aggregate: bool,
+    is_stateful: bool,
+    allows_uninitialized_input: bool,
+}
+
+impl OpDef {
+    /// Returns the name of the Op
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    /// Returns the input arguments of the Op
+    pub fn input_arg(&self) -> &Vec<OpArgDef> {
+        &self.input_arg
+    }
+
+    /// Returns the output arguments of the Op
+    pub fn output_arg(&self) -> &Vec<OpArgDef> {
+        &self.output_arg
+    }
+
+    /// Returns the attributes of the Op
+    pub fn attr(&self) -> &Vec<OpAttrDef> {
+        &self.attr
+    }
+
+    /// Returns the summary of the Op
+    pub fn summary(&self) -> &str {
+        &self.summary
+    }
+
+    /// Returns the description of the Op
+    pub fn description(&self) -> &str {
+        &self.description
+    }
+
+    /// Returns true if the Op is commutative
+    pub fn is_commutative(&self) -> bool {
+        self.is_commutative
+    }
+
+    /// Returns true if the Op aggregates values
+    pub fn is_aggregate(&self) -> bool {
+        self.is_aggregate
+    }
+
+    /// Returns true if the Op maintains state
+    pub fn is_stateful(&self) -> bool {
+        self.is_stateful
+    }
+
+    // We don't use Into, because we don't want this to be public API.
+    fn into_proto(self) -> protos::op_def::OpDef {
+        let input_arg: Vec<protos::op_def::OpDef_ArgDef> = self
+            .input_arg
+            .into_iter()
+            .map(|arg| arg.into_proto())
+            .collect();
+        let output_arg: Vec<protos::op_def::OpDef_ArgDef> = self
+            .output_arg
+            .into_iter()
+            .map(|arg| arg.into_proto())
+            .collect();
+        let attr: Vec<protos::op_def::OpDef_AttrDef> = self
+            .attr
+            .into_iter()
+            .map(|attr| attr.into_proto())
+            .collect();
+        let mut proto = protos::op_def::OpDef::new();
+        proto.set_name(self.name);
+        proto.set_input_arg(input_arg.into());
+        proto.set_output_arg(output_arg.into());
+        proto.set_attr(attr.into());
+        proto.set_summary(self.summary);
+        proto.set_description(self.description);
+        proto.set_is_commutative(self.is_commutative);
+        proto.set_is_aggregate(self.is_aggregate);
+        proto.set_is_stateful(self.is_stateful);
+        proto.set_allows_uninitialized_input(self.allows_uninitialized_input);
+        proto
+    }
+
+    // We don't use From, because we don't want this to be public API.
+    fn from_proto(proto: &protos::op_def::OpDef) -> Result<Self> {
+        let input_arg = proto
+            .get_input_arg()
+            .iter()
+            .map(|arg| OpArgDef::from_proto(arg))
+            .collect::<Result<Vec<OpArgDef>>>()?;
+        let output_arg = proto
+            .get_output_arg()
+            .iter()
+            .map(|arg| OpArgDef::from_proto(arg))
+            .collect::<Result<Vec<OpArgDef>>>()?;
+        let attr = proto
+            .get_attr()
+            .iter()
+            .map(|attr| OpAttrDef::from_proto(attr))
+            .collect::<Result<Vec<OpAttrDef>>>()?;
+        Ok(Self {
+            name: proto.get_name().to_string(),
+            input_arg,
+            output_arg,
+            attr,
+            summary: proto.get_summary().to_string(),
+            description: proto.get_description().to_string(),
+            is_commutative: proto.get_is_commutative(),
+            is_aggregate: proto.get_is_aggregate(),
+            is_stateful: proto.get_is_stateful(),
+            allows_uninitialized_input: proto.get_allows_uninitialized_input(),
+        })
+    }
+}
+
+/// An argument definition for a graph operation.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct OpArgDef {
+    name: String,
+    description: String,
+    field_type: DataType,
+    type_attr: String,
+    number_attr: String,
+    type_list_attr: String,
+    is_ref: bool,
+    // TODO: Add "default_value" and "allowed_values" from OpDef_AttrDef proto
+}
+
+impl OpArgDef {
+    /// Returns the name of the argument
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    /// Returns the description of the argument
+    pub fn description(&self) -> &str {
+        &self.description
+    }
+
+    /// Returns the data type of the argument
+    pub fn field_type(&self) -> DataType {
+        self.field_type
+    }
+
+    /// Returns the type attribute for this argument
+    pub fn type_attr(&self) -> &str {
+        &self.type_attr
+    }
+
+    /// Returns the number attribute for this argument
+    pub fn number_attr(&self) -> &str {
+        &self.number_attr
+    }
+
+    /// Returns the type list attribute for this argument
+    pub fn type_list_attr(&self) -> &str {
+        &self.type_list_attr
+    }
+
+    /// Returns true if this Arg is a ref
+    pub fn is_ref(&self) -> bool {
+        self.is_ref
+    }
+
+    // We don't use Into, because we don't want this to be public API.
+    fn into_proto(self) -> protos::op_def::OpDef_ArgDef {
+        let mut proto = protos::op_def::OpDef_ArgDef::new();
+        proto.set_name(self.name);
+        proto.set_description(self.description);
+        proto.set_field_type(self.field_type.into_proto());
+        proto.set_type_attr(self.type_attr);
+        proto.set_number_attr(self.number_attr);
+        proto.set_type_list_attr(self.type_list_attr);
+        proto.set_is_ref(self.is_ref);
+        proto
+    }
+
+    // We don't use From, because we don't want this to be public API.
+    fn from_proto(proto: &protos::op_def::OpDef_ArgDef) -> Result<Self> {
+        Ok(Self {
+            name: proto.get_name().to_string(),
+            description: proto.get_description().to_string(),
+            field_type: DataType::from_proto(proto.get_field_type()),
+            type_attr: proto.get_type_attr().to_string(),
+            number_attr: proto.get_number_attr().to_string(),
+            type_list_attr: proto.get_type_list_attr().to_string(),
+            is_ref: proto.get_is_ref(),
+        })
+    }
+}
+
+/// An attribute definition for a graph operation.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct OpAttrDef {
+    name: String,
+    field_type: String,
+    description: String,
+    has_minimum: bool,
+    minimum: i64,
+}
+
+impl OpAttrDef {
+    /// Returns the name of the attribute
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    /// Returns the description of the attribute
+    pub fn description(&self) -> &str {
+        &self.description
+    }
+
+    /// Returns true if this attribute has a minimum
+    pub fn has_minimum(&self) -> bool {
+        self.has_minimum
+    }
+
+    /// Returns the minimum for this attribute
+    pub fn minimum(&self) -> i64 {
+        self.minimum
+    }
+
+    // We don't use Into, because we don't want this to be public API.
+    fn into_proto(self) -> protos::op_def::OpDef_AttrDef {
+        let mut proto = protos::op_def::OpDef_AttrDef::new();
+        proto.set_name(self.name);
+        proto.set_field_type(self.field_type);
+        proto.set_description(self.description);
+        proto.set_has_minimum(self.has_minimum);
+        proto.set_minimum(self.minimum);
+        proto
+    }
+
+    // We don't use From, because we don't want this to be public API.
+    fn from_proto(proto: &protos::op_def::OpDef_AttrDef) -> Result<Self> {
+        Ok(Self {
+            name: proto.get_name().to_string(),
+            field_type: proto.get_field_type().to_string(),
+            description: proto.get_description().to_string(),
+            has_minimum: proto.get_has_minimum(),
+            minimum: proto.get_minimum(),
+        })
+    }
 }
 
 ////////////////////////
@@ -2027,6 +2340,23 @@ mod tests {
     #[test]
     fn test_get_registered_kernels_for_op() {
         assert!(get_registered_kernels_for_op("Add").unwrap().len() > 0);
+    }
+
+    #[test]
+    fn test_library_load() {
+        // This test is not yet implemented for Windows
+        let check_path = match std::env::consts::OS {
+            "linux" => Some("test_resources/library/linux/test_op.so"),
+            "macos" => Some("test_resources/library/macos/test_op.so"),
+            _ => None,
+        };
+        if let Some(path) = check_path {
+            let lib = Library::load(path).unwrap();
+            let ops: Vec<OpDef> = lib.op_list().clone().into();
+            assert!(ops.len() == 1);
+            let op = &ops[0];
+            assert!(op.name() == "TestOpList");
+        };
     }
 
     #[test]
