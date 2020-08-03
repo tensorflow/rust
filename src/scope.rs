@@ -25,8 +25,6 @@ fn join(sep: &str, left: &str, right: &str) -> String {
 /// A `Scope` object represents a set of related TensorFlow ops that have the
 /// same properties such as a common name prefix.
 ///
-/// This type currently requires the `experimental_training` feature.
-///
 /// A Scope object is a container for TensorFlow Op properties. Op constructors
 /// get a Scope object as a mandatory first argument and the constructed op
 /// acquires the properties in the object.
