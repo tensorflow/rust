@@ -2300,10 +2300,10 @@ mod tests {
     ndarray_tests! {
         test_ndarray_0: f64, vec![1], vec![0.0],
         test_ndarray_1: f32, vec![1, 2], vec![3.1, 4.4],
-        test_ndarray_3: i64, vec![2, 2], vec![3, 20, -1, 4],
-        test_ndarray_4: i32, vec![1, 3], vec![-4, 100, -200],
-        test_ndarray_5: u8, vec![2, 2, 2], vec![1, 1, 2, 2, 3, 3, 4, 4],
-        test_ndarray_6: u16, vec![3, 3], vec![0, 1, 2, 0, 1, 2, 0, 1, 2],
+        test_ndarray_2: i64, vec![2, 2], vec![3, 20, -1, 4],
+        test_ndarray_3: i32, vec![1, 3], vec![-4, 100, -200],
+        test_ndarray_4: u8, vec![2, 2, 2], vec![1, 1, 2, 2, 3, 3, 4, 4],
+        test_ndarray_5: u16, vec![3, 3], vec![0, 1, 2, 0, 1, 2, 0, 1, 2],
     }
 
     #[test]
