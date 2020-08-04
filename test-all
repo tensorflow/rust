@@ -49,6 +49,7 @@ run cargo test -vv -j 2
 run cargo test -vv -j 2 --features tensorflow_unstable
 run cargo test -vv -j 2 --features experimental_training
 run cargo test -vv -j 2 --features tensorflow_unstable,experimental_training
+run cargo test -vv -j 2 --features ndarray
 run cargo run --example regression
 run cargo run --features=experimental_training --example xor
 run cargo run --features tensorflow_unstable --example expressions

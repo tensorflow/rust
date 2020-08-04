@@ -2277,59 +2277,33 @@ mod tests {
     }
 
     #[cfg(feature = "ndarray")]
-    #[test]
-    fn test_tensor_from_ndarray() {
-        let arr = Array::<f64, _>::zeros((1, 1, 1));
-        let tensor = Tensor::from(arr);
-        let expected = Tensor::new(&[1, 1, 1]).with_values(&[0.0]).unwrap();
-        assert_eq!(expected, tensor);
+    macro_rules! ndarray_tests {
+        ($($name:ident: $type:ty, $dim:expr, $values:expr,)*) => {
+            $(
+                #[test]
+                fn $name() {
+                    let tensor = Tensor::<$type>::new(&$dim).with_values(&$values).unwrap();
+                    let dims = Dim($dim);
+                    let array = Array::<$type, _>::from_shape_vec(dims, $values).unwrap();
 
-        let arr = Array::<f32, _>::zeros((1, 2));
-        let tensor = Tensor::from(arr);
-        let expected = Tensor::new(&[1, 2]).with_values(&[0.0, 0.0]).unwrap();
-        assert_eq!(expected, tensor);
+                    let output_array = Array::from(tensor.clone());
+                    assert_eq!(array, output_array);
 
-        let arr = Array::<i32, _>::zeros((2, 2));
-        let tensor = Tensor::from(arr);
-        let expected = Tensor::new(&[2, 2]).with_values(&[0, 0, 0, 0]).unwrap();
-        assert_eq!(expected, tensor);
-
-        let arr = Array::<u8, _>::zeros((3, 2));
-        let tensor = Tensor::from(arr);
-        let expected = Tensor::new(&[3, 2])
-            .with_values(&[0, 0, 0, 0, 0, 0])
-            .unwrap();
-        assert_eq!(expected, tensor);
+                    let output_tensor = Tensor::from(array);
+                    assert_eq!(tensor, output_tensor);
+                }
+            )*
+        }
     }
 
     #[cfg(feature = "ndarray")]
-    #[test]
-    fn test_ndarray_from_tensor() {
-        let tensor = Tensor::<f64>::new(&[1, 1, 1]).with_values(&[0.0]).unwrap();
-        let arr = Array::from(tensor);
-        let expected = Array::<f64, _>::zeros((1, 1, 1)).into_dyn();
-        assert_eq!(expected, arr);
-
-        let tensor = Tensor::<f32>::new(&[1, 2])
-            .with_values(&[0.0, 0.0])
-            .unwrap();
-        let arr = Array::from(tensor);
-        let expected = Array::<f32, _>::zeros((1, 2)).into_dyn();
-        assert_eq!(expected, arr);
-
-        let tensor = Tensor::<i32>::new(&[2, 2])
-            .with_values(&[0, 0, 0, 0])
-            .unwrap();
-        let arr = Array::from(tensor);
-        let expected = Array::<i32, _>::zeros((2, 2)).into_dyn();
-        assert_eq!(expected, arr);
-
-        let tensor = Tensor::<u8>::new(&[3, 2])
-            .with_values(&[0, 0, 0, 0, 0, 0])
-            .unwrap();
-        let arr = Array::from(tensor);
-        let expected = Array::<u8, _>::zeros((3, 2)).into_dyn();
-        assert_eq!(expected, arr);
+    ndarray_tests! {
+        test_ndarray_0: f64, vec![1], vec![0.0],
+        test_ndarray_1: f32, vec![1, 2], vec![3.1, 4.4],
+        test_ndarray_3: i64, vec![2, 2], vec![3, 20, -1, 4],
+        test_ndarray_4: i32, vec![1, 3], vec![-4, 100, -200],
+        test_ndarray_5: u8, vec![2, 2, 2], vec![1, 1, 2, 2, 3, 3, 4, 4],
+        test_ndarray_6: u16, vec![3, 3], vec![0, 1, 2, 0, 1, 2, 0, 1, 2],
     }
 
     #[test]
