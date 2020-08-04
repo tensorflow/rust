@@ -24,10 +24,10 @@ pub struct SavedModelBundle {
     /// The loaded session.
     pub session: Session,
     /// A meta graph definition as raw protocol buffer. This is deprecated in favour of the
-    /// deserialized type
+    /// deserialized type.
     #[deprecated(note = "Please use SavedModelBundle::meta_graph_def() instead")]
     pub meta_graph_def: Vec<u8>,
-    /// A decoded meta-graph definition
+    /// A decoded meta-graph definition.
     meta_graph: MetaGraphDef,
 }
 
