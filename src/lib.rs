@@ -17,6 +17,8 @@
 
 use half::f16;
 use libc::{c_int, c_uint};
+#[cfg(feature = "ndarray")]
+use ndarray::{Array, ArrayBase, Data, Dim, Dimension, IxDynImpl};
 use num_complex::Complex;
 use protobuf::ProtobufEnum;
 use std::borrow::Borrow;
@@ -1423,6 +1425,40 @@ impl<'a, T: TensorType> From<&'a [T]> for Tensor<T> {
     }
 }
 
+#[cfg(feature = "ndarray")]
+/// Convert any ndarray::ArrayBase type into a tensorflow::Tensor
+impl<T, S, D> From<ArrayBase<S, D>> for Tensor<T>
+where
+    T: TensorType,
+    S: Data<Elem = T>,
+    D: Dimension,
+{
+    fn from(value: ArrayBase<S, D>) -> Self {
+        let dims: Vec<u64> = value.shape().iter().map(|x| *x as u64).collect();
+        let mut tensor: Tensor<T> = Self::new(&dims);
+        for (e, v) in tensor.iter_mut().zip(value.iter()) {
+            e.clone_from(v);
+        }
+        tensor
+    }
+}
+
+#[cfg(feature = "ndarray")]
+/// Convert a tensorflow::Tensor into a dynamic dimensional ndarray::ArrayBase that owns its data
+impl<T> From<Tensor<T>> for Array<T, Dim<IxDynImpl>>
+where
+    T: TensorType,
+{
+    fn from(value: Tensor<T>) -> Self {
+        let dims: Vec<usize> = value.dims.iter().map(|x| *x as usize).collect();
+        let dim = Dim(dims);
+        let data: Vec<T> = value.iter().map(|x| x.clone()).collect();
+        // We can safely unwrap this because we know that `data` will have the
+        // correct number of elements to conform to `dim`.
+        Array::from_shape_vec(dim, data).unwrap()
+    }
+}
+
 impl<T: TensorType + PartialEq> PartialEq for Tensor<T> {
     fn eq(&self, other: &Tensor<T>) -> bool {
         self.dims == other.dims && self.deref() == other.deref()
@@ -2238,6 +2274,36 @@ mod tests {
             let tensor = Tensor::<i32>::new(shape).with_values(values).unwrap();
             assert_eq!(expected, format!("{}", tensor));
         }
+    }
+
+    #[cfg(feature = "ndarray")]
+    macro_rules! ndarray_tests {
+        ($($name:ident: $type:ty, $dim:expr, $values:expr,)*) => {
+            $(
+                #[test]
+                fn $name() {
+                    let tensor = Tensor::<$type>::new(&$dim).with_values(&$values).unwrap();
+                    let dims = Dim($dim);
+                    let array = Array::<$type, _>::from_shape_vec(dims, $values).unwrap();
+
+                    let output_array = Array::from(tensor.clone());
+                    assert_eq!(array, output_array);
+
+                    let output_tensor = Tensor::from(array);
+                    assert_eq!(tensor, output_tensor);
+                }
+            )*
+        }
+    }
+
+    #[cfg(feature = "ndarray")]
+    ndarray_tests! {
+        test_ndarray_0: f64, vec![1], vec![0.0],
+        test_ndarray_1: f32, vec![1, 2], vec![3.1, 4.4],
+        test_ndarray_2: i64, vec![2, 2], vec![3, 20, -1, 4],
+        test_ndarray_3: i32, vec![1, 3], vec![-4, 100, -200],
+        test_ndarray_4: u8, vec![2, 2, 2], vec![1, 1, 2, 2, 3, 3, 4, 4],
+        test_ndarray_5: u16, vec![3, 3], vec![0, 1, 2, 0, 1, 2, 0, 1, 2],
     }
 
     #[test]
