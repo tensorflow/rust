@@ -56,4 +56,3 @@ name = "regression_checkpoint"
 
 [[example]]
 name = "xor"
-required-features = ["experimental_training"]
