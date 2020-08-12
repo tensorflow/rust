@@ -57,16 +57,17 @@ run cargo doc -vv --features tensorflow_unstable,private-docs-rs
 (cd tensorflow-sys && run cargo run --example multiplication)
 (cd tensorflow-sys && run cargo doc -vv)
 
-bad_deprecations="$(grep -n '#\[deprecated' src -r --include=*.rs | grep -E -v '([^"\\]|\\.|"([^"\\]|\\.)*")*since' || true)"
-if [[ "${bad_deprecations}" != "" ]]; then
-    echo "ERROR: #[deprecated] attribute(s) found with no 'since' key:"
-    echo "${bad_deprecations}"
-    exit 1
-fi
-
-bad_deprecations="$(grep -n '#\[deprecated' src -r --include=*.rs | grep -E -v '([^"\\]|\\.|"([^"\\]|\\.)*")*note' || true)"
-if [[ "${bad_deprecations}" != "" ]]; then
-    echo "ERROR: #[deprecated] attribute(s) found with no 'note' key:"
-    echo "${bad_deprecations}"
-    exit 1
-fi
+for file in $(find -name '*.rs'); do
+    bad_deprecations="$(rustfmt --emit stdout --config max_width=1000 "$file" | grep '#\[deprecated' | grep -E -v '([^"\\]|\\.|"([^"\\]|\\.)*")*since' || true)"
+    if [[ "${bad_deprecations}" != "" ]]; then
+        echo "ERROR: #[deprecated] attribute(s) found with no 'since' key in $file:"
+        echo "${bad_deprecations}"
+        exit 1
+    fi
+    bad_deprecations="$(rustfmt --emit stdout --config max_width=1000 "$file" | grep '#\[deprecated' | grep -E -v '([^"\\]|\\.|"([^"\\]|\\.)*")*note' || true)"
+    if [[ "${bad_deprecations}" != "" ]]; then
+        echo "ERROR: #[deprecated] attribute(s) found with no 'note' key in $file:"
+        echo "${bad_deprecations}"
+        exit 1
+    fi
+done
