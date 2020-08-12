@@ -180,9 +180,7 @@ use crate::buffer::Buffer;
 mod graph;
 pub use crate::graph::*;
 
-#[cfg(feature = "experimental_training")]
 mod scope;
-#[cfg(feature = "experimental_training")]
 pub use crate::scope::*;
 
 mod session;
@@ -192,20 +190,14 @@ pub mod expr;
 
 pub mod io;
 
-#[cfg(feature = "experimental_training")]
 pub mod ops;
 
-#[cfg(feature = "experimental_training")]
 mod variable;
-#[cfg(feature = "experimental_training")]
 pub use crate::variable::*;
 
-#[cfg(feature = "experimental_training")]
 pub mod train;
 
-#[cfg(feature = "experimental_training")]
 mod saved_model;
-#[cfg(feature = "experimental_training")]
 pub use saved_model::*;
 
 ////////////////////////
@@ -1909,7 +1901,6 @@ impl Shape {
         }
     }
 
-    #[cfg(feature = "experimental_training")]
     // We don't use Into, because we don't want this to be public API.
     fn into_proto(self) -> protos::tensor_shape::TensorShapeProto {
         match self.0 {
@@ -1935,7 +1926,6 @@ impl Shape {
         }
     }
 
-    #[cfg(feature = "experimental_training")]
     // We don't use Into, because we don't want this to be public API.
     fn from_proto(proto: &protos::tensor_shape::TensorShapeProto) -> Self {
         Shape(if proto.get_unknown_rank() {

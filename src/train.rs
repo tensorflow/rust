@@ -1,6 +1,4 @@
 //! This module supports building and training models.
-//!
-//! This module currently requires the `experimental_training` feature.
 
 use crate::ops;
 use crate::DataType;

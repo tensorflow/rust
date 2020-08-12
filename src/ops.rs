@@ -1,7 +1,5 @@
 //! This module exposes functions for building standard operations.
 //!
-//! This module currently requires the `experimental_training` feature.
-//!
 //! Each operation has a struct which can be used as a builder and allows
 //! setting optional attributes:
 //!
