@@ -1,5 +1,28 @@
 # Changelog
 
+## Release 0.16.0
+
+### Additions
+
+- Stabilize new graph generation code (removed experimental_training feature)
+- Add Scope::{with_device, with_control_dependencies}
+- Add optional support for Tensor conversions to/from ndarray::Array
+- Add Library::op_list
+- Allow tensorflow-sys to download prebuilt windows releases
+
+### Changes
+
+- Improve ergonomics for graph building
+  - Allow conversions for arguments to generated ops
+  - Implement From for arrays for Shape
+  - Allow VariableBuilder::shape to take Into<Shape>
+
+### Fixes
+
+- Fix memory safety bug in Operation::control_inputs
+- Allow 0 colons in output names, default to index 0
+- Fix docs.rs (hopefully)
+
 ## Release 0.15.0
 
 ### Additions
