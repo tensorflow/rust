@@ -139,7 +139,7 @@ fn extract<P: AsRef<Path>, P2: AsRef<Path>>(archive_path: P, extract_to: P2) {
                     }
                 }
                 let mut outfile = File::create(&output_path).unwrap();
-                io::copy(&mut zipfile, &mut outfile).unwrap();
+                std::io::copy(&mut zipfile, &mut outfile).unwrap();
             }
         }
     }
