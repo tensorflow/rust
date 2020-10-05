@@ -10,17 +10,15 @@ use std::env::{
 };
 use std::error::Error;
 use std::fs::{self, File};
+use std::io;
 use std::io::{BufWriter, Write};
 use std::path::{Path, PathBuf};
 use std::process::{self, Command};
 
 use curl::easy::Easy;
-#[cfg(not(target_env = "msvc"))]
 use flate2::read::GzDecoder;
 use semver::Version;
-#[cfg(not(target_env = "msvc"))]
 use tar::Archive;
-#[cfg(target_env = "msvc")]
 use zip::ZipArchive;
 
 const FRAMEWORK_LIBRARY: &'static str = "tensorflow_framework";
@@ -106,8 +104,19 @@ fn remove_suffix(value: &mut String, suffix: &str) {
     }
 }
 
-#[cfg(not(target_env = "msvc"))]
-fn extract<P: AsRef<Path>, P2: AsRef<Path>>(archive_path: P, extract_to: P2) {
+fn has_extension<P: AsRef<Path>>(path: P, extension: &str) -> bool {
+    if let Some(os_ext) = path.as_ref().extension() {
+        if let Some(ext) = os_ext.to_str() {
+            ext == extension
+        } else {
+            false
+        }
+    } else {
+        false
+    }
+}
+
+fn extract_tar_gz<P: AsRef<Path>, P2: AsRef<Path>>(archive_path: P, extract_to: P2) {
     let file = File::open(archive_path).unwrap();
     let unzipped = GzDecoder::new(file);
     let mut a = Archive::new(unzipped);
@@ -119,8 +128,7 @@ fn extract<P: AsRef<Path>, P2: AsRef<Path>>(archive_path: P, extract_to: P2) {
 //       copy of the libraries in OUT_DIR.
 //       The same approach could be utilized for the other implementation
 //       of `extract`.
-#[cfg(target_env = "msvc")]
-fn extract<P: AsRef<Path>, P2: AsRef<Path>>(archive_path: P, extract_to: P2) {
+fn extract_zip<P: AsRef<Path>, P2: AsRef<Path>>(archive_path: P, extract_to: P2) {
     fs::create_dir_all(&extract_to).expect("Failed to create output path for zip archive.");
     let file = File::open(archive_path).expect("Unable to open libtensorflow zip archive.");
     let mut archive = ZipArchive::new(file).unwrap();
@@ -139,9 +147,17 @@ fn extract<P: AsRef<Path>, P2: AsRef<Path>>(archive_path: P, extract_to: P2) {
                     }
                 }
                 let mut outfile = File::create(&output_path).unwrap();
-                std::io::copy(&mut zipfile, &mut outfile).unwrap();
+                io::copy(&mut zipfile, &mut outfile).unwrap();
             }
         }
+    }
+}
+
+fn extract<P: AsRef<Path>, P2: AsRef<Path>>(archive_path: P, extract_to: P2) {
+    if has_extension(&archive_path, "zip") {
+        extract_zip(archive_path, extract_to);
+    } else {
+        extract_tar_gz(archive_path, extract_to);
     }
 }
 
@@ -157,10 +173,10 @@ fn install_prebuilt() {
     } else {
         "cpu"
     };
-    #[cfg(target_env = "msvc")]
-    let ext = ".zip";
-    #[cfg(not(target_env = "msvc"))]
-    let ext = ".tar.gz";
+    let ext = match env::consts::OS {
+        "windows" => ".zip",
+        _ => ".tar.gz",
+    };
     let binary_url = format!(
         "https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-{}-{}-{}-{}{}",
         proc_type,
