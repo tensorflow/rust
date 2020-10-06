@@ -76,13 +76,10 @@ fn main() {
     }
 }
 
-#[cfg(not(target_env = "msvc"))]
 fn check_windows_lib() -> bool {
-    false
-}
-
-#[cfg(target_env = "msvc")]
-fn check_windows_lib() -> bool {
+    if env::consts::OS != "windows" {
+        return false;
+    }
     let windows_lib: &str = &format!("{}.lib", LIBRARY);
     if let Ok(path) = env::var("PATH") {
         for p in path.split(";") {
@@ -173,10 +170,8 @@ fn install_prebuilt() {
     } else {
         "cpu"
     };
-    let ext = match env::consts::OS {
-        "windows" => ".zip",
-        _ => ".tar.gz",
-    };
+    let windows = env::consts::OS == "windows";
+    let ext = if windows { ".zip" } else { ".tar.gz" };
     let binary_url = format!(
         "https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-{}-{}-{}-{}{}",
         proc_type,
@@ -222,25 +217,23 @@ fn install_prebuilt() {
     // Extract the tarball.
     let unpacked_dir = download_dir.join(base_name);
     let lib_dir = unpacked_dir.join("lib");
-    #[cfg(not(target_env = "msvc"))]
     let framework_library_file = format!("lib{}.{}", FRAMEWORK_LIBRARY, DLL_EXTENSION);
     let library_file = format!("{}{}.{}", DLL_PREFIX, LIBRARY, DLL_EXTENSION);
 
-    #[cfg(not(target_env = "msvc"))]
     let framework_library_full_path = lib_dir.join(&framework_library_file);
     let library_full_path = lib_dir.join(&library_file);
 
-    #[cfg(not(target_env = "msvc"))]
-    let download_required = !framework_library_full_path.exists() || !library_full_path.exists();
-    #[cfg(target_env = "msvc")]
-    let download_required = !library_full_path.exists();
+    let download_required =
+        (!windows && !framework_library_full_path.exists()) || !library_full_path.exists();
 
     if download_required {
         extract(file_name, &unpacked_dir);
     }
 
-    #[cfg(not(target_env = "msvc"))] // There is no tensorflow_framework.dll
-    println!("cargo:rustc-link-lib=dylib={}", FRAMEWORK_LIBRARY);
+    if env::consts::OS != "windows" {
+        // There is no tensorflow_framework.dll
+        println!("cargo:rustc-link-lib=dylib={}", FRAMEWORK_LIBRARY);
+    }
     println!("cargo:rustc-link-lib=dylib={}", LIBRARY);
     let output = PathBuf::from(&get!("OUT_DIR"));
 
