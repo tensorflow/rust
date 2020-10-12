@@ -4,10 +4,7 @@ extern crate pkg_config;
 extern crate semver;
 extern crate tar;
 
-use std::env::{
-    self,
-    consts::{DLL_EXTENSION, DLL_PREFIX},
-};
+use std::env;
 use std::error::Error;
 use std::fs::{self, File};
 use std::io;
@@ -64,11 +61,10 @@ fn main() {
         Err(_) => false,
     };
 
+    let target_os = target_os();
     if !force_src
-        && env::consts::ARCH == "x86_64"
-        && (env::consts::OS == "linux"
-            || env::consts::OS == "macos"
-            || env::consts::OS == "windows")
+        && target_arch() == "x86_64"
+        && (target_os == "linux" || target_os == "macos" || target_os == "windows")
     {
         install_prebuilt();
     } else {
@@ -76,8 +72,31 @@ fn main() {
     }
 }
 
+fn target_arch() -> String {
+    get!("CARGO_CFG_TARGET_ARCH")
+}
+
+fn target_os() -> String {
+    get!("CARGO_CFG_TARGET_OS")
+}
+
+fn dll_prefix() -> &'static str {
+    match &target_os() as &str {
+        "windows" => "",
+        _ => "lib",
+    }
+}
+
+fn dll_suffix() -> &'static str {
+    match &target_os() as &str {
+        "windows" => ".dll",
+        "macos" => ".dylib",
+        _ => ".so",
+    }
+}
+
 fn check_windows_lib() -> bool {
-    if env::consts::OS != "windows" {
+    if target_os() != "windows" {
         return false;
     }
     let windows_lib: &str = &format!("{}.lib", LIBRARY);
@@ -161,22 +180,22 @@ fn extract<P: AsRef<Path>, P2: AsRef<Path>>(archive_path: P, extract_to: P2) {
 // Downloads and unpacks a prebuilt binary. Only works for certain platforms.
 fn install_prebuilt() {
     // Figure out the file names.
-    let os = match env::consts::OS {
-        "macos" => "darwin",
-        x => x,
+    let os = match &target_os() as &str {
+        "macos" => "darwin".to_string(),
+        x => x.to_string(),
     };
     let proc_type = if cfg!(feature = "tensorflow_gpu") {
         "gpu"
     } else {
         "cpu"
     };
-    let windows = env::consts::OS == "windows";
+    let windows = target_os() == "windows";
     let ext = if windows { ".zip" } else { ".tar.gz" };
     let binary_url = format!(
         "https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-{}-{}-{}-{}{}",
         proc_type,
         os,
-        env::consts::ARCH,
+        target_arch(),
         VERSION,
         ext
     );
@@ -217,8 +236,8 @@ fn install_prebuilt() {
     // Extract the tarball.
     let unpacked_dir = download_dir.join(base_name);
     let lib_dir = unpacked_dir.join("lib");
-    let framework_library_file = format!("lib{}.{}", FRAMEWORK_LIBRARY, DLL_EXTENSION);
-    let library_file = format!("{}{}.{}", DLL_PREFIX, LIBRARY, DLL_EXTENSION);
+    let framework_library_file = format!("{}{}{}", dll_prefix(), FRAMEWORK_LIBRARY, dll_suffix());
+    let library_file = format!("{}{}{}", dll_prefix(), LIBRARY, dll_suffix());
 
     let framework_library_full_path = lib_dir.join(&framework_library_file);
     let library_full_path = lib_dir.join(&library_file);
@@ -230,7 +249,7 @@ fn install_prebuilt() {
         extract(file_name, &unpacked_dir);
     }
 
-    if env::consts::OS != "windows" {
+    if target_os() != "windows" {
         // There is no tensorflow_framework.dll
         println!("cargo:rustc-link-lib=dylib={}", FRAMEWORK_LIBRARY);
     }
@@ -260,8 +279,9 @@ fn install_prebuilt() {
 }
 
 fn build_from_src() {
-    let framework_target = FRAMEWORK_TARGET.to_string() + std::env::consts::DLL_SUFFIX;
-    let target = TARGET.to_string() + std::env::consts::DLL_SUFFIX;
+    let dll_suffix = dll_suffix();
+    let framework_target = FRAMEWORK_TARGET.to_string() + &dll_suffix;
+    let target = TARGET.to_string() + &dll_suffix;
 
     let output = PathBuf::from(&get!("OUT_DIR"));
     log_var!(output);
