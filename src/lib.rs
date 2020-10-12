@@ -47,6 +47,10 @@ use std::slice;
 use std::str::Utf8Error;
 use tensorflow_sys as tf;
 
+pub(crate) mod protos {
+    pub use tensorflow_protos_rs::*;
+}
+
 ////////////////////////
 
 /// Will panic if `msg` contains an embedded 0 byte.
@@ -171,8 +175,6 @@ macro_rules! c_enum {
 }
 
 ////////////////////////
-
-mod protos;
 
 mod buffer;
 use crate::buffer::Buffer;

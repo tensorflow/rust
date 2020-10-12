@@ -11,6 +11,8 @@ use super::Status;
 use super::Tensor;
 use super::TensorType;
 use crate::tf;
+use tensorflow_protos_rs::config::*;
+use protobuf::{parse_from_bytes, Message};
 use libc::{c_char, c_int};
 use std::ffi::CStr;
 use std::ffi::CString;
@@ -462,10 +464,24 @@ impl<'l> SessionRunArgs<'l> {
         self.run_options = Some(Buffer::from(run_options))
     }
 
+    pub fn set_options(&mut self, config: RunOptions) {
+        if let Ok(bytes) = config.write_to_bytes() {
+            self.run_options = Some(Buffer::from(&bytes));
+        }
+    }
+
     /// Returns the serialized [`RunOptions` proto](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/protobuf/config.proto)
     /// Returns none if `RunOption` are not set.
     pub fn get_run_options(&self) -> Option<&[u8]> {
         self.run_options.as_ref().map(std::convert::AsRef::as_ref)
+    }
+
+    pub fn get_options(&self) -> Option<RunOptions> {
+        if let Some(opt) = &self.run_options {
+            parse_from_bytes::<RunOptions>(&opt).ok()
+        } else {
+            None
+        }
     }
 
     /// Returns the serialized [`RunMetadata` proto](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/protobuf/config.proto)
