@@ -11,14 +11,14 @@ use super::Status;
 use super::Tensor;
 use super::TensorType;
 use crate::tf;
-use tensorflow_protos_rs::config::*;
-use protobuf::{parse_from_bytes, Message};
 use libc::{c_char, c_int};
+use protobuf::{parse_from_bytes, Message};
 use std::ffi::CStr;
 use std::ffi::CString;
 use std::marker;
 use std::path::Path;
 use std::ptr;
+use tensorflow_protos_rs::config::*;
 
 /// Aggregation type for a saved model bundle.
 #[derive(Debug)]
