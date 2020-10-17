@@ -29,8 +29,8 @@ const REPOSITORY: &'static str = "https://github.com/tensorflow/tensorflow.git";
 const FRAMEWORK_TARGET: &'static str = "tensorflow:libtensorflow_framework";
 const TARGET: &'static str = "tensorflow:libtensorflow";
 // `VERSION` and `TAG` are separate because the tag is not always `'v' + VERSION`.
-const VERSION: &'static str = "1.15.0";
-const TAG: &'static str = "v1.15.0";
+const VERSION: &'static str = "2.3.0";
+const TAG: &'static str = "v2.3.0";
 const MIN_BAZEL: &'static str = "0.5.4";
 
 macro_rules! get(($name:expr) => (ok!(env::var($name))));
@@ -250,6 +250,22 @@ fn install_prebuilt() {
     println!("cargo:rustc-link-search={}", output.display());
 }
 
+fn symlink<P: AsRef<Path>, P2: AsRef<Path>>(target: P, link: P2) {
+    if link.as_ref().exists() {
+        // Avoid errors if it already exists.
+        fs::remove_file(link.as_ref()).unwrap();
+    }
+    log!(
+        "Creating symlink {:?} pointing to {:?}",
+        link.as_ref(),
+        target.as_ref()
+    );
+    #[cfg(target_os = "windows")]
+    std::os::windows::fs::symlink_file(target, link).unwrap();
+    #[cfg(not(target_os = "windows"))]
+    std::os::unix::fs::symlink(target, link).unwrap();
+}
+
 fn build_from_src() {
     let framework_target = FRAMEWORK_TARGET.to_string() + std::env::consts::DLL_SUFFIX;
     let target = TARGET.to_string() + std::env::consts::DLL_SUFFIX;
@@ -266,9 +282,11 @@ fn build_from_src() {
         log!("Creating directory {:?}", lib_dir);
         fs::create_dir(lib_dir.clone()).unwrap();
     }
-    let framework_library_path = lib_dir.join(format!("lib{}.so", FRAMEWORK_LIBRARY));
+    let framework_unversioned_library_path = lib_dir.join(format!("lib{}.so", FRAMEWORK_LIBRARY));
+    let framework_library_path = lib_dir.join(format!("lib{}.so.2", FRAMEWORK_LIBRARY));
     log_var!(framework_library_path);
-    let library_path = lib_dir.join(format!("lib{}.so", LIBRARY));
+    let unversioned_library_path = lib_dir.join(format!("lib{}.so", LIBRARY));
+    let library_path = lib_dir.join(format!("lib{}.so.2", LIBRARY));
     log_var!(library_path);
     if library_path.exists() && framework_library_path.exists() {
         log!(
@@ -284,9 +302,9 @@ fn build_from_src() {
             );
             process::exit(1);
         }
-        let framework_target_path = &framework_target.replace(":", "/");
+        let framework_target_path = &format!("{}.2", framework_target.replace(":", "/"));
         log_var!(framework_target_path);
-        let target_path = &TARGET.replace(":", "/");
+        let target_path = &format!("{}.so", TARGET.replace(":", "/"));
         log_var!(target_path);
         if !Path::new(&source.join(".git")).exists() {
             run("git", |command| {
@@ -343,12 +361,22 @@ fn build_from_src() {
             framework_target_bazel_bin,
             framework_library_path
         );
-        fs::copy(framework_target_bazel_bin, framework_library_path).unwrap();
+        if framework_library_path.exists() {
+            fs::remove_file(&framework_library_path).unwrap();
+        }
+        fs::copy(framework_target_bazel_bin, &framework_library_path).unwrap();
         let target_bazel_bin = source.join("bazel-bin").join(target_path);
         log!("Copying {:?} to {:?}", target_bazel_bin, library_path);
-        fs::copy(target_bazel_bin, library_path).unwrap();
+        if library_path.exists() {
+            fs::remove_file(&library_path).unwrap();
+        }
+        fs::copy(target_bazel_bin, &library_path).unwrap();
     }
-
+    symlink(
+        framework_library_path.file_name().unwrap(),
+        framework_unversioned_library_path,
+    );
+    symlink(library_path.file_name().unwrap(), unversioned_library_path);
     println!("cargo:rustc-link-lib=dylib={}", FRAMEWORK_LIBRARY);
     println!("cargo:rustc-link-lib=dylib={}", LIBRARY);
     println!("cargo:rustc-link-search={}", lib_dir.display());

@@ -12,7 +12,14 @@ set -e
 
 cd $(dirname $(readlink -f "$0"))
 
-tensorflow_version=1.15.0
+function run {
+    echo "----------------------------------------------------------------------"
+    echo "Running: $@"
+    "$@"
+    echo
+}
+
+tensorflow_version=2.3.0
 
 valgrind_log=valgrind.log
 truncate --size=0 "$valgrind_log"
@@ -20,34 +27,29 @@ truncate --size=0 "$valgrind_log"
 rel_log=$(readlink -f "$PWD"/"$valgrind_log")
 echo "Writing valgrind output to $rel_log."
 
-# Disable jemalloc in TensorFlow.
-export TF_NEED_JEMALLOC=0
-
-# Disable jemalloc in Rust.
-export TF_RUST_BUILD_FROM_SRC=true
-
-# Don't need to rebuild the world, and `cargo clean --package tensorflow-sys` doesn't seem to do the job.
-rm -rf tensorflow-sys/target/*
-rm -rf target/debug/build/tensorflow-sys-*
-
 echo "Building libtensorflow.so"
 
 # This is the very expensive step.
-cargo build -p tensorflow-sys -vvv -j 1
+run cargo build -p tensorflow-sys -vvv -j 1
+
+# Build examples and grab the path to the shared libraries.
+# The filename parsing is a hack because we're not really parsing JSON.
+export LD_LIBRARY_PATH="$(cargo build --features='examples_system_alloc tensorflow_unstable' --example=addition --message-format=json \
+    2>/dev/null | \
+sed -En 's|^.*"([^"]*/target/debug/build/tensorflow-sys-[^"/]*/out)".*$|\1|p')"
+echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
 
 # Run valgrind against all the things.
-export LD_LIBRARY_PATH="$(echo "$PWD"/target/debug/build/tensorflow-sys-*/out/lib-v$tensorflow_version)"
-echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
 echo "Testing tensorflow examples"
 for example in addition regression expressions regression_checkpoint regression_savedmodel; do
-    cargo build --features='examples_system_alloc tensorflow_unstable' --example="$example"
-    valgrind --leak-check=full target/debug/examples/"$example" >> "$valgrind_log" 2>&1
+    run cargo build --features='examples_system_alloc tensorflow_unstable' --example="$example"
+    run valgrind --leak-check=full target/debug/examples/"$example" >> "$valgrind_log" 2>&1
 done
 
 echo "Testing tensorflow-sys examples"
 for example in multiplication; do
     cargo build --features=examples_system_alloc --example="$example" -p tensorflow-sys
-    (cd tensorflow-sys && valgrind --leak-check=full ../target/debug/examples/"$example") >> "$valgrind_log" 2>&1
+    (cd tensorflow-sys && run valgrind --leak-check=full ../target/debug/examples/"$example") >> "$valgrind_log" 2>&1
 done
 
 # Build tests and grab the path to the test binary, because we can't properly run valgrind through cargo.
@@ -58,7 +60,7 @@ sed -En 's|^.*"([^"]*/target/debug/deps/tensorflow-[^"]*)".*$|\1|p')
 
 # Run valgrind against the tests.
 echo "Testing tests"
-valgrind --leak-check=full "$test_binary" >> "$valgrind_log" 2>&1
+run valgrind --leak-check=full "$test_binary" >> "$valgrind_log" 2>&1
 
 # Aggregate results.
 printf "Definitely lost bytes: %9d\n" $(awk '/definitely lost:/{sum+=gensub(",","","g",$4)}END{print sum}' < "$valgrind_log")

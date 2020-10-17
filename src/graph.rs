@@ -2227,7 +2227,7 @@ impl<'a> OperationDescription<'a> {
             tf::TF_SetAttrTensorList(
                 self.inner,
                 c_attr_name.as_ptr(),
-                ptrs.as_ptr() as *const *const tf::TF_Tensor,
+                ptrs.as_ptr() as *const *mut tf::TF_Tensor,
                 ptrs.len() as c_int,
                 status.inner(),
             );

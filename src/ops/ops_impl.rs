@@ -1927,6 +1927,71 @@ pub fn anonymous_random_seed_generator<
 ) -> crate::Result<crate::Operation> {
     AnonymousRandomSeedGenerator::new().build(seed, seed2, scope)
 }
+/// Builder for the `AnonymousSeedGenerator` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct AnonymousSeedGenerator {
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl AnonymousSeedGenerator {
+    /// Creates a new `AnonymousSeedGenerator`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `AnonymousSeedGenerator` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        seed: O0,
+        seed2: O1,
+        reshuffle: O2,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(seed.into(), seed2.into(), reshuffle.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        seed: crate::Output,
+        seed2: crate::Output,
+        reshuffle: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("AnonymousSeedGenerator", |nd| {
+            nd.add_input(seed);
+            nd.add_input(seed2);
+            nd.add_input(reshuffle);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `AnonymousSeedGenerator::new().build(seed, seed2, reshuffle, scope)`.
+pub fn anonymous_seed_generator<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+>(
+    seed: O0,
+    seed2: O1,
+    reshuffle: O2,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    AnonymousSeedGenerator::new().build(seed, seed2, reshuffle, scope)
+}
 /// Builder for the `Any` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct Any {
@@ -3030,6 +3095,7 @@ pub fn apply_centered_rmsprop<
 pub struct ApplyFtrl {
     T: ::std::option::Option<crate::DataType>,
     use_locking: ::std::option::Option<bool>,
+    multiply_linear_by_lr: ::std::option::Option<bool>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -3048,6 +3114,15 @@ impl ApplyFtrl {
     /// Sets the `use_locking` attribute.
     pub fn use_locking<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
         self.use_locking = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `multiply_linear_by_lr` attribute.
+    pub fn multiply_linear_by_lr<ArgType: ::std::convert::Into<bool>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.multiply_linear_by_lr = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -3122,6 +3197,9 @@ impl ApplyFtrl {
             if let ::std::option::Option::Some(value) = &self.use_locking {
                 nd.set_attr_bool("use_locking", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.multiply_linear_by_lr {
+                nd.set_attr_bool("multiply_linear_by_lr", *value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -3155,6 +3233,7 @@ pub fn apply_ftrl<
 pub struct ApplyFtrlV2 {
     T: ::std::option::Option<crate::DataType>,
     use_locking: ::std::option::Option<bool>,
+    multiply_linear_by_lr: ::std::option::Option<bool>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -3173,6 +3252,15 @@ impl ApplyFtrlV2 {
     /// Sets the `use_locking` attribute.
     pub fn use_locking<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
         self.use_locking = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `multiply_linear_by_lr` attribute.
+    pub fn multiply_linear_by_lr<ArgType: ::std::convert::Into<bool>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.multiply_linear_by_lr = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -3251,6 +3339,9 @@ impl ApplyFtrlV2 {
             }
             if let ::std::option::Option::Some(value) = &self.use_locking {
                 nd.set_attr_bool("use_locking", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.multiply_linear_by_lr {
+                nd.set_attr_bool("multiply_linear_by_lr", *value)?;
             }
             ::std::result::Result::Ok(())
         })
@@ -4516,6 +4607,91 @@ pub fn assert<O0: ::std::convert::Into<crate::Output>, O1: ::std::convert::Into<
 ) -> crate::Result<crate::Operation> {
     Assert::new().build(condition, data, scope)
 }
+/// Builder for the `AssertCardinalityDataset` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct AssertCardinalityDataset {
+    output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl AssertCardinalityDataset {
+    /// Creates a new `AssertCardinalityDataset`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `output_types` attribute.
+    pub fn output_types<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.output_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `output_shapes` attribute.
+    pub fn output_shapes<ArgType: ::std::convert::Into<::std::vec::Vec<crate::Shape>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.output_shapes = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `AssertCardinalityDataset` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        input_dataset: O0,
+        cardinality: O1,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(input_dataset.into(), cardinality.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        input_dataset: crate::Output,
+        cardinality: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("AssertCardinalityDataset", |nd| {
+            nd.add_input(input_dataset);
+            nd.add_input(cardinality);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.output_types {
+                nd.set_attr_type_list("output_types", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.output_shapes {
+                nd.set_attr_shape_list("output_shapes", value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `AssertCardinalityDataset::new().build(input_dataset, cardinality, scope)`.
+pub fn assert_cardinality_dataset<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+>(
+    input_dataset: O0,
+    cardinality: O1,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    AssertCardinalityDataset::new().build(input_dataset, cardinality, scope)
+}
 /// Builder for the `AssertNextDataset` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct AssertNextDataset {
@@ -5475,6 +5651,7 @@ pub fn audio_summary_v2<
 /// Builder for the `AutoShardDataset` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct AutoShardDataset {
+    auto_shard_policy: ::std::option::Option<i64>,
     output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
@@ -5484,6 +5661,12 @@ impl AutoShardDataset {
     /// Creates a new `AutoShardDataset`.
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// Sets the `auto_shard_policy` attribute.
+    pub fn auto_shard_policy<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.auto_shard_policy = ::std::option::Option::Some(value.into());
+        self
     }
 
     /// Sets the `output_types` attribute.
@@ -5543,6 +5726,9 @@ impl AutoShardDataset {
             nd.add_input(index);
             for op in &self.control_inputs {
                 nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.auto_shard_policy {
+                nd.set_attr_int("auto_shard_policy", *value)?;
             }
             if let ::std::option::Option::Some(value) = &self.output_types {
                 nd.set_attr_type_list("output_types", value)?;
@@ -6031,6 +6217,95 @@ pub fn avg_pool_grad<
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     AvgPoolGrad::new().build(orig_input_shape, grad, scope)
+}
+/// Builder for the `BandedTriangularSolve` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct BandedTriangularSolve {
+    lower: ::std::option::Option<bool>,
+    adjoint: ::std::option::Option<bool>,
+    T: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl BandedTriangularSolve {
+    /// Creates a new `BandedTriangularSolve`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `lower` attribute.
+    pub fn lower<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.lower = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `adjoint` attribute.
+    pub fn adjoint<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.adjoint = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `BandedTriangularSolve` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        matrix: O0,
+        rhs: O1,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(matrix.into(), rhs.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        matrix: crate::Output,
+        rhs: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("BandedTriangularSolve", |nd| {
+            nd.add_input(matrix);
+            nd.add_input(rhs);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.lower {
+                nd.set_attr_bool("lower", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.adjoint {
+                nd.set_attr_bool("adjoint", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `BandedTriangularSolve::new().build(matrix, rhs, scope)`.
+pub fn banded_triangular_solve<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+>(
+    matrix: O0,
+    rhs: O1,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    BandedTriangularSolve::new().build(matrix, rhs, scope)
 }
 /// Builder for the `Barrier` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -7138,6 +7413,7 @@ pub struct BatchFunction {
     Tin: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     Tcaptured: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     Tout: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    enable_large_batch_splitting: ::std::option::Option<bool>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -7249,6 +7525,15 @@ impl BatchFunction {
         self
     }
 
+    /// Sets the `enable_large_batch_splitting` attribute.
+    pub fn enable_large_batch_splitting<ArgType: ::std::convert::Into<bool>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.enable_large_batch_splitting = ::std::option::Option::Some(value.into());
+        self
+    }
+
     /// Adds a control input.
     pub fn add_control_input(mut self, op: crate::Operation) -> Self {
         self.control_inputs.push(op);
@@ -7315,6 +7600,9 @@ impl BatchFunction {
             }
             if let ::std::option::Option::Some(value) = &self.Tout {
                 nd.set_attr_type_list("Tout", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.enable_large_batch_splitting {
+                nd.set_attr_bool("enable_large_batch_splitting", *value)?;
             }
             ::std::result::Result::Ok(())
         })
@@ -8931,6 +9219,65 @@ pub fn batch_to_space_nd<
 ) -> crate::Result<crate::Operation> {
     BatchToSpaceND::new().build(input, block_shape, crops, scope)
 }
+/// Builder for the `BesselI0` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct BesselI0 {
+    T: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl BesselI0 {
+    /// Creates a new `BesselI0`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `BesselI0` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        x: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(x.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        x: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("BesselI0", |nd| {
+            nd.add_input(x);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `BesselI0::new().build(x, scope)`.
+pub fn bessel_i0<O0: ::std::convert::Into<crate::Output>>(
+    x: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    BesselI0::new().build(x, scope)
+}
 /// Builder for the `BesselI0e` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct BesselI0e {
@@ -8990,6 +9337,65 @@ pub fn bessel_i0e<O0: ::std::convert::Into<crate::Output>>(
 ) -> crate::Result<crate::Operation> {
     BesselI0e::new().build(x, scope)
 }
+/// Builder for the `BesselI1` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct BesselI1 {
+    T: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl BesselI1 {
+    /// Creates a new `BesselI1`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `BesselI1` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        x: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(x.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        x: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("BesselI1", |nd| {
+            nd.add_input(x);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `BesselI1::new().build(x, scope)`.
+pub fn bessel_i1<O0: ::std::convert::Into<crate::Output>>(
+    x: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    BesselI1::new().build(x, scope)
+}
 /// Builder for the `BesselI1e` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct BesselI1e {
@@ -9048,6 +9454,478 @@ pub fn bessel_i1e<O0: ::std::convert::Into<crate::Output>>(
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     BesselI1e::new().build(x, scope)
+}
+/// Builder for the `BesselJ0` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct BesselJ0 {
+    T: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl BesselJ0 {
+    /// Creates a new `BesselJ0`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `BesselJ0` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        x: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(x.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        x: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("BesselJ0", |nd| {
+            nd.add_input(x);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `BesselJ0::new().build(x, scope)`.
+pub fn bessel_j0<O0: ::std::convert::Into<crate::Output>>(
+    x: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    BesselJ0::new().build(x, scope)
+}
+/// Builder for the `BesselJ1` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct BesselJ1 {
+    T: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl BesselJ1 {
+    /// Creates a new `BesselJ1`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `BesselJ1` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        x: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(x.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        x: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("BesselJ1", |nd| {
+            nd.add_input(x);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `BesselJ1::new().build(x, scope)`.
+pub fn bessel_j1<O0: ::std::convert::Into<crate::Output>>(
+    x: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    BesselJ1::new().build(x, scope)
+}
+/// Builder for the `BesselK0` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct BesselK0 {
+    T: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl BesselK0 {
+    /// Creates a new `BesselK0`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `BesselK0` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        x: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(x.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        x: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("BesselK0", |nd| {
+            nd.add_input(x);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `BesselK0::new().build(x, scope)`.
+pub fn bessel_k0<O0: ::std::convert::Into<crate::Output>>(
+    x: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    BesselK0::new().build(x, scope)
+}
+/// Builder for the `BesselK0e` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct BesselK0e {
+    T: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl BesselK0e {
+    /// Creates a new `BesselK0e`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `BesselK0e` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        x: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(x.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        x: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("BesselK0e", |nd| {
+            nd.add_input(x);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `BesselK0e::new().build(x, scope)`.
+pub fn bessel_k0e<O0: ::std::convert::Into<crate::Output>>(
+    x: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    BesselK0e::new().build(x, scope)
+}
+/// Builder for the `BesselK1` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct BesselK1 {
+    T: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl BesselK1 {
+    /// Creates a new `BesselK1`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `BesselK1` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        x: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(x.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        x: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("BesselK1", |nd| {
+            nd.add_input(x);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `BesselK1::new().build(x, scope)`.
+pub fn bessel_k1<O0: ::std::convert::Into<crate::Output>>(
+    x: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    BesselK1::new().build(x, scope)
+}
+/// Builder for the `BesselK1e` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct BesselK1e {
+    T: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl BesselK1e {
+    /// Creates a new `BesselK1e`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `BesselK1e` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        x: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(x.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        x: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("BesselK1e", |nd| {
+            nd.add_input(x);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `BesselK1e::new().build(x, scope)`.
+pub fn bessel_k1e<O0: ::std::convert::Into<crate::Output>>(
+    x: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    BesselK1e::new().build(x, scope)
+}
+/// Builder for the `BesselY0` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct BesselY0 {
+    T: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl BesselY0 {
+    /// Creates a new `BesselY0`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `BesselY0` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        x: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(x.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        x: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("BesselY0", |nd| {
+            nd.add_input(x);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `BesselY0::new().build(x, scope)`.
+pub fn bessel_y0<O0: ::std::convert::Into<crate::Output>>(
+    x: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    BesselY0::new().build(x, scope)
+}
+/// Builder for the `BesselY1` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct BesselY1 {
+    T: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl BesselY1 {
+    /// Creates a new `BesselY1`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `BesselY1` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        x: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(x.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        x: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("BesselY1", |nd| {
+            nd.add_input(x);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `BesselY1::new().build(x, scope)`.
+pub fn bessel_y1<O0: ::std::convert::Into<crate::Output>>(
+    x: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    BesselY1::new().build(x, scope)
 }
 /// Builder for the `Betainc` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -10703,6 +11581,141 @@ pub fn boosted_trees_calculate_best_feature_split<
     BoostedTreesCalculateBestFeatureSplit::new().build(
         node_id_range,
         stats_summary,
+        l1,
+        l2,
+        tree_complexity,
+        min_node_weight,
+        scope,
+    )
+}
+/// Builder for the `BoostedTreesCalculateBestFeatureSplitV2` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct BoostedTreesCalculateBestFeatureSplitV2 {
+    num_features: ::std::option::Option<i64>,
+    logits_dimension: ::std::option::Option<i64>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl BoostedTreesCalculateBestFeatureSplitV2 {
+    /// Creates a new `BoostedTreesCalculateBestFeatureSplitV2`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `num_features` attribute.
+    pub fn num_features<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.num_features = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `logits_dimension` attribute.
+    pub fn logits_dimension<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.logits_dimension = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `BoostedTreesCalculateBestFeatureSplitV2` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+        O3: ::std::convert::Into<crate::Output>,
+        O4: ::std::convert::Into<crate::Output>,
+        O5: ::std::convert::Into<crate::Output>,
+        O6: ::std::convert::Into<crate::Output>,
+        O7: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        node_id_range: O0,
+        stats_summaries_list: O1,
+        split_types: O2,
+        candidate_feature_ids: O3,
+        l1: O4,
+        l2: O5,
+        tree_complexity: O6,
+        min_node_weight: O7,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(
+            node_id_range.into(),
+            stats_summaries_list.into(),
+            split_types.into(),
+            candidate_feature_ids.into(),
+            l1.into(),
+            l2.into(),
+            tree_complexity.into(),
+            min_node_weight.into(),
+            scope,
+        )
+    }
+
+    fn build_impl(
+        &self,
+        node_id_range: crate::Output,
+        stats_summaries_list: crate::Output,
+        split_types: crate::Output,
+        candidate_feature_ids: crate::Output,
+        l1: crate::Output,
+        l2: crate::Output,
+        tree_complexity: crate::Output,
+        min_node_weight: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("BoostedTreesCalculateBestFeatureSplitV2", |nd| {
+            nd.add_input(node_id_range);
+            nd.add_input(stats_summaries_list);
+            nd.add_input(split_types);
+            nd.add_input(candidate_feature_ids);
+            nd.add_input(l1);
+            nd.add_input(l2);
+            nd.add_input(tree_complexity);
+            nd.add_input(min_node_weight);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.num_features {
+                nd.set_attr_int("num_features", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.logits_dimension {
+                nd.set_attr_int("logits_dimension", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `BoostedTreesCalculateBestFeatureSplitV2::new().build(node_id_range, stats_summaries_list, split_types, candidate_feature_ids, l1, l2, tree_complexity, min_node_weight, scope)`.
+pub fn boosted_trees_calculate_best_feature_split_v2<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+    O3: ::std::convert::Into<crate::Output>,
+    O4: ::std::convert::Into<crate::Output>,
+    O5: ::std::convert::Into<crate::Output>,
+    O6: ::std::convert::Into<crate::Output>,
+    O7: ::std::convert::Into<crate::Output>,
+>(
+    node_id_range: O0,
+    stats_summaries_list: O1,
+    split_types: O2,
+    candidate_feature_ids: O3,
+    l1: O4,
+    l2: O5,
+    tree_complexity: O6,
+    min_node_weight: O7,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    BoostedTreesCalculateBestFeatureSplitV2::new().build(
+        node_id_range,
+        stats_summaries_list,
+        split_types,
+        candidate_feature_ids,
         l1,
         l2,
         tree_complexity,
@@ -12616,6 +13629,8 @@ pub fn boosted_trees_update_ensemble<
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct BoostedTreesUpdateEnsembleV2 {
     num_features: ::std::option::Option<i64>,
+    logits_dimension: ::std::option::Option<i64>,
+    num_groups: ::std::option::Option<i64>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -12628,6 +13643,18 @@ impl BoostedTreesUpdateEnsembleV2 {
     /// Sets the `num_features` attribute.
     pub fn num_features<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
         self.num_features = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `logits_dimension` attribute.
+    pub fn logits_dimension<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.logits_dimension = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `num_groups` attribute.
+    pub fn num_groups<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.num_groups = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -12718,6 +13745,12 @@ impl BoostedTreesUpdateEnsembleV2 {
             }
             if let ::std::option::Option::Some(value) = &self.num_features {
                 nd.set_attr_int("num_features", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.logits_dimension {
+                nd.set_attr_int("logits_dimension", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.num_groups {
+                nd.set_attr_int("num_groups", *value)?;
             }
             ::std::result::Result::Ok(())
         })
@@ -13142,6 +14175,193 @@ pub fn bytes_produced_stats_dataset<
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     BytesProducedStatsDataset::new().build(input_dataset, tag, scope)
+}
+/// Builder for the `CSRSparseMatrixComponents` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct CSRSparseMatrixComponents {
+    type_: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl CSRSparseMatrixComponents {
+    /// Creates a new `CSRSparseMatrixComponents`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `type` attribute.
+    pub fn type_<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.type_ = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `CSRSparseMatrixComponents` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        csr_sparse_matrix: O0,
+        index: O1,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(csr_sparse_matrix.into(), index.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        csr_sparse_matrix: crate::Output,
+        index: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("CSRSparseMatrixComponents", |nd| {
+            nd.add_input(csr_sparse_matrix);
+            nd.add_input(index);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.type_ {
+                nd.set_attr_type("type", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `CSRSparseMatrixComponents::new().build(csr_sparse_matrix, index, scope)`.
+pub fn csrsparse_matrix_components<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+>(
+    csr_sparse_matrix: O0,
+    index: O1,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    CSRSparseMatrixComponents::new().build(csr_sparse_matrix, index, scope)
+}
+/// Builder for the `CSRSparseMatrixToDense` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct CSRSparseMatrixToDense {
+    type_: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl CSRSparseMatrixToDense {
+    /// Creates a new `CSRSparseMatrixToDense`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `type` attribute.
+    pub fn type_<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.type_ = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `CSRSparseMatrixToDense` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        sparse_input: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(sparse_input.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        sparse_input: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("CSRSparseMatrixToDense", |nd| {
+            nd.add_input(sparse_input);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.type_ {
+                nd.set_attr_type("type", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `CSRSparseMatrixToDense::new().build(sparse_input, scope)`.
+pub fn csrsparse_matrix_to_dense<O0: ::std::convert::Into<crate::Output>>(
+    sparse_input: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    CSRSparseMatrixToDense::new().build(sparse_input, scope)
+}
+/// Builder for the `CSRSparseMatrixToSparseTensor` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct CSRSparseMatrixToSparseTensor {
+    type_: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl CSRSparseMatrixToSparseTensor {
+    /// Creates a new `CSRSparseMatrixToSparseTensor`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `type` attribute.
+    pub fn type_<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.type_ = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `CSRSparseMatrixToSparseTensor` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        sparse_matrix: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(sparse_matrix.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        sparse_matrix: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("CSRSparseMatrixToSparseTensor", |nd| {
+            nd.add_input(sparse_matrix);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.type_ {
+                nd.set_attr_type("type", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `CSRSparseMatrixToSparseTensor::new().build(sparse_matrix, scope)`.
+pub fn csrsparse_matrix_to_sparse_tensor<O0: ::std::convert::Into<crate::Output>>(
+    sparse_matrix: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    CSRSparseMatrixToSparseTensor::new().build(sparse_matrix, scope)
 }
 /// Builder for the `CSVDataset` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -13595,6 +14815,128 @@ pub fn ctcloss<
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     CTCLoss::new().build(
+        inputs,
+        labels_indices,
+        labels_values,
+        sequence_length,
+        scope,
+    )
+}
+/// Builder for the `CTCLossV2` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct CTCLossV2 {
+    preprocess_collapse_repeated: ::std::option::Option<bool>,
+    ctc_merge_repeated: ::std::option::Option<bool>,
+    ignore_longer_outputs_than_inputs: ::std::option::Option<bool>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl CTCLossV2 {
+    /// Creates a new `CTCLossV2`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `preprocess_collapse_repeated` attribute.
+    pub fn preprocess_collapse_repeated<ArgType: ::std::convert::Into<bool>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.preprocess_collapse_repeated = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `ctc_merge_repeated` attribute.
+    pub fn ctc_merge_repeated<ArgType: ::std::convert::Into<bool>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.ctc_merge_repeated = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `ignore_longer_outputs_than_inputs` attribute.
+    pub fn ignore_longer_outputs_than_inputs<ArgType: ::std::convert::Into<bool>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.ignore_longer_outputs_than_inputs = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `CTCLossV2` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+        O3: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        inputs: O0,
+        labels_indices: O1,
+        labels_values: O2,
+        sequence_length: O3,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(
+            inputs.into(),
+            labels_indices.into(),
+            labels_values.into(),
+            sequence_length.into(),
+            scope,
+        )
+    }
+
+    fn build_impl(
+        &self,
+        inputs: crate::Output,
+        labels_indices: crate::Output,
+        labels_values: crate::Output,
+        sequence_length: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("CTCLossV2", |nd| {
+            nd.add_input(inputs);
+            nd.add_input(labels_indices);
+            nd.add_input(labels_values);
+            nd.add_input(sequence_length);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.preprocess_collapse_repeated {
+                nd.set_attr_bool("preprocess_collapse_repeated", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.ctc_merge_repeated {
+                nd.set_attr_bool("ctc_merge_repeated", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.ignore_longer_outputs_than_inputs {
+                nd.set_attr_bool("ignore_longer_outputs_than_inputs", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `CTCLossV2::new().build(inputs, labels_indices, labels_values, sequence_length, scope)`.
+pub fn ctcloss_v2<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+    O3: ::std::convert::Into<crate::Output>,
+>(
+    inputs: O0,
+    labels_indices: O1,
+    labels_values: O2,
+    sequence_length: O3,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    CTCLossV2::new().build(
         inputs,
         labels_indices,
         labels_values,
@@ -14095,6 +15437,78 @@ pub fn check_numerics<O0: ::std::convert::Into<crate::Output>>(
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     CheckNumerics::new().build(tensor, scope)
+}
+/// Builder for the `CheckNumericsV2` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct CheckNumericsV2 {
+    T: ::std::option::Option<crate::DataType>,
+    message: ::std::option::Option<::std::string::String>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl CheckNumericsV2 {
+    /// Creates a new `CheckNumericsV2`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `message` attribute.
+    pub fn message<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.message = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `CheckNumericsV2` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        tensor: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(tensor.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        tensor: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("CheckNumericsV2", |nd| {
+            nd.add_input(tensor);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.message {
+                nd.set_attr_string("message", value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `CheckNumericsV2::new().build(tensor, scope)`.
+pub fn check_numerics_v2<O0: ::std::convert::Into<crate::Output>>(
+    tensor: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    CheckNumericsV2::new().build(tensor, scope)
 }
 /// Builder for the `Cholesky` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -14618,6 +16032,7 @@ pub struct CollectiveBcastRecv {
     instance_key: ::std::option::Option<i64>,
     shape: ::std::option::Option<crate::Shape>,
     communication_hint: ::std::option::Option<::std::string::String>,
+    timeout_seconds: ::std::option::Option<f32>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -14666,6 +16081,12 @@ impl CollectiveBcastRecv {
         self
     }
 
+    /// Sets the `timeout_seconds` attribute.
+    pub fn timeout_seconds<ArgType: ::std::convert::Into<f32>>(mut self, value: ArgType) -> Self {
+        self.timeout_seconds = ::std::option::Option::Some(value.into());
+        self
+    }
+
     /// Adds a control input.
     pub fn add_control_input(mut self, op: crate::Operation) -> Self {
         self.control_inputs.push(op);
@@ -14700,6 +16121,9 @@ impl CollectiveBcastRecv {
             if let ::std::option::Option::Some(value) = &self.communication_hint {
                 nd.set_attr_string("communication_hint", value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.timeout_seconds {
+                nd.set_attr_float("timeout_seconds", *value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -14718,6 +16142,7 @@ pub struct CollectiveBcastSend {
     instance_key: ::std::option::Option<i64>,
     shape: ::std::option::Option<crate::Shape>,
     communication_hint: ::std::option::Option<::std::string::String>,
+    timeout_seconds: ::std::option::Option<f32>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -14766,6 +16191,12 @@ impl CollectiveBcastSend {
         self
     }
 
+    /// Sets the `timeout_seconds` attribute.
+    pub fn timeout_seconds<ArgType: ::std::convert::Into<f32>>(mut self, value: ArgType) -> Self {
+        self.timeout_seconds = ::std::option::Option::Some(value.into());
+        self
+    }
+
     /// Adds a control input.
     pub fn add_control_input(mut self, op: crate::Operation) -> Self {
         self.control_inputs.push(op);
@@ -14809,6 +16240,9 @@ impl CollectiveBcastSend {
             if let ::std::option::Option::Some(value) = &self.communication_hint {
                 nd.set_attr_string("communication_hint", value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.timeout_seconds {
+                nd.set_attr_float("timeout_seconds", *value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -14830,6 +16264,7 @@ pub struct CollectiveGather {
     instance_key: ::std::option::Option<i64>,
     shape: ::std::option::Option<crate::Shape>,
     communication_hint: ::std::option::Option<::std::string::String>,
+    timeout_seconds: ::std::option::Option<f32>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -14878,6 +16313,12 @@ impl CollectiveGather {
         self
     }
 
+    /// Sets the `timeout_seconds` attribute.
+    pub fn timeout_seconds<ArgType: ::std::convert::Into<f32>>(mut self, value: ArgType) -> Self {
+        self.timeout_seconds = ::std::option::Option::Some(value.into());
+        self
+    }
+
     /// Adds a control input.
     pub fn add_control_input(mut self, op: crate::Operation) -> Self {
         self.control_inputs.push(op);
@@ -14920,6 +16361,9 @@ impl CollectiveGather {
             }
             if let ::std::option::Option::Some(value) = &self.communication_hint {
                 nd.set_attr_string("communication_hint", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.timeout_seconds {
+                nd.set_attr_float("timeout_seconds", *value)?;
             }
             ::std::result::Result::Ok(())
         })
@@ -15014,6 +16458,7 @@ pub struct CollectiveReduce {
     subdiv_offsets: ::std::option::Option<::std::vec::Vec<i64>>,
     wait_for: ::std::option::Option<::std::vec::Vec<i64>>,
     communication_hint: ::std::option::Option<::std::string::String>,
+    timeout_seconds: ::std::option::Option<f32>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -15092,6 +16537,12 @@ impl CollectiveReduce {
         self
     }
 
+    /// Sets the `timeout_seconds` attribute.
+    pub fn timeout_seconds<ArgType: ::std::convert::Into<f32>>(mut self, value: ArgType) -> Self {
+        self.timeout_seconds = ::std::option::Option::Some(value.into());
+        self
+    }
+
     /// Adds a control input.
     pub fn add_control_input(mut self, op: crate::Operation) -> Self {
         self.control_inputs.push(op);
@@ -15143,6 +16594,9 @@ impl CollectiveReduce {
             }
             if let ::std::option::Option::Some(value) = &self.communication_hint {
                 nd.set_attr_string("communication_hint", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.timeout_seconds {
+                nd.set_attr_float("timeout_seconds", *value)?;
             }
             ::std::result::Result::Ok(())
         })
@@ -15488,6 +16942,68 @@ pub fn complex_abs<O0: ::std::convert::Into<crate::Output>>(
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     ComplexAbs::new().build(x, scope)
+}
+/// Builder for the `CompressElement` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct CompressElement {
+    input_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl CompressElement {
+    /// Creates a new `CompressElement`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `input_types` attribute.
+    pub fn input_types<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.input_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `CompressElement` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        components: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(components.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        components: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("CompressElement", |nd| {
+            nd.add_input(components);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.input_types {
+                nd.set_attr_type_list("input_types", value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `CompressElement::new().build(components, scope)`.
+pub fn compress_element<O0: ::std::convert::Into<crate::Output>>(
+    components: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    CompressElement::new().build(components, scope)
 }
 /// Builder for the `ComputeAccidentalHits` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -15999,6 +17515,8 @@ pub struct ConfigureDistributedTPU {
     embedding_config: ::std::option::Option<::std::string::String>,
     tpu_embedding_config: ::std::option::Option<::std::string::String>,
     is_global_init: ::std::option::Option<bool>,
+    enable_whole_mesh_compilations: ::std::option::Option<bool>,
+    compilation_failure_closes_chips: ::std::option::Option<bool>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -16032,6 +17550,24 @@ impl ConfigureDistributedTPU {
         self
     }
 
+    /// Sets the `enable_whole_mesh_compilations` attribute.
+    pub fn enable_whole_mesh_compilations<ArgType: ::std::convert::Into<bool>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.enable_whole_mesh_compilations = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `compilation_failure_closes_chips` attribute.
+    pub fn compilation_failure_closes_chips<ArgType: ::std::convert::Into<bool>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.compilation_failure_closes_chips = ::std::option::Option::Some(value.into());
+        self
+    }
+
     /// Adds a control input.
     pub fn add_control_input(mut self, op: crate::Operation) -> Self {
         self.control_inputs.push(op);
@@ -16056,6 +17592,12 @@ impl ConfigureDistributedTPU {
             }
             if let ::std::option::Option::Some(value) = &self.is_global_init {
                 nd.set_attr_bool("is_global_init", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.enable_whole_mesh_compilations {
+                nd.set_attr_bool("enable_whole_mesh_compilations", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.compilation_failure_closes_chips {
+                nd.set_attr_bool("compilation_failure_closes_chips", *value)?;
             }
             ::std::result::Result::Ok(())
         })
@@ -21035,6 +22577,152 @@ pub fn data_format_vec_permute<O0: ::std::convert::Into<crate::Output>>(
 ) -> crate::Result<crate::Operation> {
     DataFormatVecPermute::new().build(x, scope)
 }
+/// Builder for the `DataServiceDataset` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct DataServiceDataset {
+    task_refresh_interval_hint_ms: ::std::option::Option<i64>,
+    output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl DataServiceDataset {
+    /// Creates a new `DataServiceDataset`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `task_refresh_interval_hint_ms` attribute.
+    pub fn task_refresh_interval_hint_ms<ArgType: ::std::convert::Into<i64>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.task_refresh_interval_hint_ms = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `output_types` attribute.
+    pub fn output_types<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.output_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `output_shapes` attribute.
+    pub fn output_shapes<ArgType: ::std::convert::Into<::std::vec::Vec<crate::Shape>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.output_shapes = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `DataServiceDataset` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+        O3: ::std::convert::Into<crate::Output>,
+        O4: ::std::convert::Into<crate::Output>,
+        O5: ::std::convert::Into<crate::Output>,
+        O6: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        dataset_id: O0,
+        processing_mode: O1,
+        address: O2,
+        protocol: O3,
+        job_name: O4,
+        max_outstanding_requests: O5,
+        iteration_counter: O6,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(
+            dataset_id.into(),
+            processing_mode.into(),
+            address.into(),
+            protocol.into(),
+            job_name.into(),
+            max_outstanding_requests.into(),
+            iteration_counter.into(),
+            scope,
+        )
+    }
+
+    fn build_impl(
+        &self,
+        dataset_id: crate::Output,
+        processing_mode: crate::Output,
+        address: crate::Output,
+        protocol: crate::Output,
+        job_name: crate::Output,
+        max_outstanding_requests: crate::Output,
+        iteration_counter: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("DataServiceDataset", |nd| {
+            nd.add_input(dataset_id);
+            nd.add_input(processing_mode);
+            nd.add_input(address);
+            nd.add_input(protocol);
+            nd.add_input(job_name);
+            nd.add_input(max_outstanding_requests);
+            nd.add_input(iteration_counter);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.task_refresh_interval_hint_ms {
+                nd.set_attr_int("task_refresh_interval_hint_ms", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.output_types {
+                nd.set_attr_type_list("output_types", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.output_shapes {
+                nd.set_attr_shape_list("output_shapes", value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `DataServiceDataset::new().build(dataset_id, processing_mode, address, protocol, job_name, max_outstanding_requests, iteration_counter, scope)`.
+pub fn data_service_dataset<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+    O3: ::std::convert::Into<crate::Output>,
+    O4: ::std::convert::Into<crate::Output>,
+    O5: ::std::convert::Into<crate::Output>,
+    O6: ::std::convert::Into<crate::Output>,
+>(
+    dataset_id: O0,
+    processing_mode: O1,
+    address: O2,
+    protocol: O3,
+    job_name: O4,
+    max_outstanding_requests: O5,
+    iteration_counter: O6,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    DataServiceDataset::new().build(
+        dataset_id,
+        processing_mode,
+        address,
+        protocol,
+        job_name,
+        max_outstanding_requests,
+        iteration_counter,
+        scope,
+    )
+}
 /// Builder for the `DatasetCardinality` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct DatasetCardinality {
@@ -21137,6 +22825,8 @@ pub fn dataset_from_graph<O0: ::std::convert::Into<crate::Output>>(
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct DatasetToGraph {
     stateful_whitelist: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
+    allow_stateful: ::std::option::Option<bool>,
+    strip_device_assignment: ::std::option::Option<bool>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -21154,6 +22844,21 @@ impl DatasetToGraph {
         value: ArgType,
     ) -> Self {
         self.stateful_whitelist = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `allow_stateful` attribute.
+    pub fn allow_stateful<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.allow_stateful = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `strip_device_assignment` attribute.
+    pub fn strip_device_assignment<ArgType: ::std::convert::Into<bool>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.strip_device_assignment = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -21185,6 +22890,12 @@ impl DatasetToGraph {
             if let ::std::option::Option::Some(value) = &self.stateful_whitelist {
                 nd.set_attr_string_list("stateful_whitelist", value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.allow_stateful {
+                nd.set_attr_bool("allow_stateful", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.strip_device_assignment {
+                nd.set_attr_bool("strip_device_assignment", *value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -21196,6 +22907,81 @@ pub fn dataset_to_graph<O0: ::std::convert::Into<crate::Output>>(
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     DatasetToGraph::new().build(input_dataset, scope)
+}
+/// Builder for the `DatasetToGraphV2` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct DatasetToGraphV2 {
+    external_state_policy: ::std::option::Option<i64>,
+    strip_device_assignment: ::std::option::Option<bool>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl DatasetToGraphV2 {
+    /// Creates a new `DatasetToGraphV2`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `external_state_policy` attribute.
+    pub fn external_state_policy<ArgType: ::std::convert::Into<i64>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.external_state_policy = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `strip_device_assignment` attribute.
+    pub fn strip_device_assignment<ArgType: ::std::convert::Into<bool>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.strip_device_assignment = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `DatasetToGraphV2` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        input_dataset: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(input_dataset.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        input_dataset: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("DatasetToGraphV2", |nd| {
+            nd.add_input(input_dataset);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.external_state_policy {
+                nd.set_attr_int("external_state_policy", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.strip_device_assignment {
+                nd.set_attr_bool("strip_device_assignment", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `DatasetToGraphV2::new().build(input_dataset, scope)`.
+pub fn dataset_to_graph_v2<O0: ::std::convert::Into<crate::Output>>(
+    input_dataset: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    DatasetToGraphV2::new().build(input_dataset, scope)
 }
 /// Builder for the `DatasetToSingleElement` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -21341,6 +23127,65 @@ pub fn dataset_to_tfrecord<
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     DatasetToTFRecord::new().build(input_dataset, filename, compression_type, scope)
+}
+/// Builder for the `Dawsn` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct Dawsn {
+    T: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl Dawsn {
+    /// Creates a new `Dawsn`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `Dawsn` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        x: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(x.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        x: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("Dawsn", |nd| {
+            nd.add_input(x);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `Dawsn::new().build(x, scope)`.
+pub fn dawsn<O0: ::std::convert::Into<crate::Output>>(
+    x: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    Dawsn::new().build(x, scope)
 }
 /// Builder for the `DebugGradientIdentity` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -21567,6 +23412,150 @@ pub fn debug_identity<O0: ::std::convert::Into<crate::Output>>(
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     DebugIdentity::new().build(input, scope)
+}
+/// Builder for the `DebugIdentityV2` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct DebugIdentityV2 {
+    T: ::std::option::Option<crate::DataType>,
+    tfdbg_context_id: ::std::option::Option<::std::string::String>,
+    op_name: ::std::option::Option<::std::string::String>,
+    output_slot: ::std::option::Option<i64>,
+    tensor_debug_mode: ::std::option::Option<i64>,
+    debug_urls: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
+    circular_buffer_size: ::std::option::Option<i64>,
+    tfdbg_run_id: ::std::option::Option<::std::string::String>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl DebugIdentityV2 {
+    /// Creates a new `DebugIdentityV2`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `tfdbg_context_id` attribute.
+    pub fn tfdbg_context_id<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.tfdbg_context_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `op_name` attribute.
+    pub fn op_name<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.op_name = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `output_slot` attribute.
+    pub fn output_slot<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.output_slot = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `tensor_debug_mode` attribute.
+    pub fn tensor_debug_mode<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.tensor_debug_mode = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `debug_urls` attribute.
+    pub fn debug_urls<ArgType: ::std::convert::Into<::std::vec::Vec<::std::string::String>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.debug_urls = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `circular_buffer_size` attribute.
+    pub fn circular_buffer_size<ArgType: ::std::convert::Into<i64>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.circular_buffer_size = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `tfdbg_run_id` attribute.
+    pub fn tfdbg_run_id<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.tfdbg_run_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `DebugIdentityV2` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        input: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(input.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        input: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("DebugIdentityV2", |nd| {
+            nd.add_input(input);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.tfdbg_context_id {
+                nd.set_attr_string("tfdbg_context_id", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.op_name {
+                nd.set_attr_string("op_name", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.output_slot {
+                nd.set_attr_int("output_slot", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.tensor_debug_mode {
+                nd.set_attr_int("tensor_debug_mode", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.debug_urls {
+                nd.set_attr_string_list("debug_urls", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.circular_buffer_size {
+                nd.set_attr_int("circular_buffer_size", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.tfdbg_run_id {
+                nd.set_attr_string("tfdbg_run_id", value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `DebugIdentityV2::new().build(input, scope)`.
+pub fn debug_identity_v2<O0: ::std::convert::Into<crate::Output>>(
+    input: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    DebugIdentityV2::new().build(input, scope)
 }
 /// Builder for the `DebugNanCount` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -21813,6 +23802,98 @@ pub fn debug_numeric_summary<O0: ::std::convert::Into<crate::Output>>(
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     DebugNumericSummary::new().build(input, scope)
+}
+/// Builder for the `DebugNumericSummaryV2` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct DebugNumericSummaryV2 {
+    output_dtype: ::std::option::Option<crate::DataType>,
+    T: ::std::option::Option<crate::DataType>,
+    tensor_debug_mode: ::std::option::Option<i64>,
+    tensor_id: ::std::option::Option<i64>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl DebugNumericSummaryV2 {
+    /// Creates a new `DebugNumericSummaryV2`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `output_dtype` attribute.
+    pub fn output_dtype<ArgType: ::std::convert::Into<crate::DataType>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.output_dtype = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `tensor_debug_mode` attribute.
+    pub fn tensor_debug_mode<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.tensor_debug_mode = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `tensor_id` attribute.
+    pub fn tensor_id<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.tensor_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `DebugNumericSummaryV2` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        input: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(input.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        input: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("DebugNumericSummaryV2", |nd| {
+            nd.add_input(input);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.output_dtype {
+                nd.set_attr_type("output_dtype", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.tensor_debug_mode {
+                nd.set_attr_int("tensor_debug_mode", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.tensor_id {
+                nd.set_attr_int("tensor_id", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `DebugNumericSummaryV2::new().build(input, scope)`.
+pub fn debug_numeric_summary_v2<O0: ::std::convert::Into<crate::Output>>(
+    input: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    DebugNumericSummaryV2::new().build(input, scope)
 }
 /// Builder for the `DecodeAndCropJpeg` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -23181,6 +25262,65 @@ pub fn delete_random_seed_generator<
 ) -> crate::Result<crate::Operation> {
     DeleteRandomSeedGenerator::new().build(handle, deleter, scope)
 }
+/// Builder for the `DeleteSeedGenerator` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct DeleteSeedGenerator {
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl DeleteSeedGenerator {
+    /// Creates a new `DeleteSeedGenerator`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `DeleteSeedGenerator` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        handle: O0,
+        deleter: O1,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(handle.into(), deleter.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        handle: crate::Output,
+        deleter: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("DeleteSeedGenerator", |nd| {
+            nd.add_input(handle);
+            nd.add_input(deleter);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `DeleteSeedGenerator::new().build(handle, deleter, scope)`.
+pub fn delete_seed_generator<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+>(
+    handle: O0,
+    deleter: O1,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    DeleteSeedGenerator::new().build(handle, deleter, scope)
+}
 /// Builder for the `DeleteSessionTensor` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct DeleteSessionTensor {
@@ -23229,6 +25369,282 @@ pub fn delete_session_tensor<O0: ::std::convert::Into<crate::Output>>(
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     DeleteSessionTensor::new().build(handle, scope)
+}
+/// Builder for the `DenseBincount` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct DenseBincount {
+    Tidx: ::std::option::Option<crate::DataType>,
+    T: ::std::option::Option<crate::DataType>,
+    binary_output: ::std::option::Option<bool>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl DenseBincount {
+    /// Creates a new `DenseBincount`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `Tidx` attribute.
+    pub fn Tidx<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.Tidx = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `binary_output` attribute.
+    pub fn binary_output<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.binary_output = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `DenseBincount` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        input: O0,
+        size: O1,
+        weights: O2,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(input.into(), size.into(), weights.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        input: crate::Output,
+        size: crate::Output,
+        weights: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("DenseBincount", |nd| {
+            nd.add_input(input);
+            nd.add_input(size);
+            nd.add_input(weights);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.Tidx {
+                nd.set_attr_type("Tidx", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.binary_output {
+                nd.set_attr_bool("binary_output", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `DenseBincount::new().build(input, size, weights, scope)`.
+pub fn dense_bincount<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+>(
+    input: O0,
+    size: O1,
+    weights: O2,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    DenseBincount::new().build(input, size, weights, scope)
+}
+/// Builder for the `DenseCountSparseOutput` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct DenseCountSparseOutput {
+    T: ::std::option::Option<crate::DataType>,
+    minlength: ::std::option::Option<i64>,
+    maxlength: ::std::option::Option<i64>,
+    binary_output: ::std::option::Option<bool>,
+    output_type: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl DenseCountSparseOutput {
+    /// Creates a new `DenseCountSparseOutput`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `minlength` attribute.
+    pub fn minlength<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.minlength = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `maxlength` attribute.
+    pub fn maxlength<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.maxlength = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `binary_output` attribute.
+    pub fn binary_output<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.binary_output = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `output_type` attribute.
+    pub fn output_type<ArgType: ::std::convert::Into<crate::DataType>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.output_type = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `DenseCountSparseOutput` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        values: O0,
+        weights: O1,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(values.into(), weights.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        values: crate::Output,
+        weights: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("DenseCountSparseOutput", |nd| {
+            nd.add_input(values);
+            nd.add_input(weights);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.minlength {
+                nd.set_attr_int("minlength", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.maxlength {
+                nd.set_attr_int("maxlength", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.binary_output {
+                nd.set_attr_bool("binary_output", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.output_type {
+                nd.set_attr_type("output_type", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `DenseCountSparseOutput::new().build(values, weights, scope)`.
+pub fn dense_count_sparse_output<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+>(
+    values: O0,
+    weights: O1,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    DenseCountSparseOutput::new().build(values, weights, scope)
+}
+/// Builder for the `DenseToCSRSparseMatrix` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct DenseToCSRSparseMatrix {
+    T: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl DenseToCSRSparseMatrix {
+    /// Creates a new `DenseToCSRSparseMatrix`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `DenseToCSRSparseMatrix` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        dense_input: O0,
+        indices: O1,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(dense_input.into(), indices.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        dense_input: crate::Output,
+        indices: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("DenseToCSRSparseMatrix", |nd| {
+            nd.add_input(dense_input);
+            nd.add_input(indices);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `DenseToCSRSparseMatrix::new().build(dense_input, indices, scope)`.
+pub fn dense_to_csrsparse_matrix<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+>(
+    dense_input: O0,
+    indices: O1,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    DenseToCSRSparseMatrix::new().build(dense_input, indices, scope)
 }
 /// Builder for the `DenseToDenseSetOperation` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -23616,6 +26032,7 @@ pub struct DepthwiseConv2dNative {
     T: ::std::option::Option<crate::DataType>,
     strides: ::std::option::Option<::std::vec::Vec<i64>>,
     padding: ::std::option::Option<::std::string::String>,
+    explicit_paddings: ::std::option::Option<::std::vec::Vec<i64>>,
     data_format: ::std::option::Option<::std::string::String>,
     dilations: ::std::option::Option<::std::vec::Vec<i64>>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
@@ -23648,6 +26065,15 @@ impl DepthwiseConv2dNative {
         value: ArgType,
     ) -> Self {
         self.padding = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `explicit_paddings` attribute.
+    pub fn explicit_paddings<ArgType: ::std::convert::Into<::std::vec::Vec<i64>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.explicit_paddings = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -23709,6 +26135,9 @@ impl DepthwiseConv2dNative {
             if let ::std::option::Option::Some(value) = &self.padding {
                 nd.set_attr_string("padding", value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.explicit_paddings {
+                nd.set_attr_int_list("explicit_paddings", value)?;
+            }
             if let ::std::option::Option::Some(value) = &self.data_format {
                 nd.set_attr_string("data_format", value)?;
             }
@@ -23737,6 +26166,7 @@ pub struct DepthwiseConv2dNativeBackpropFilter {
     T: ::std::option::Option<crate::DataType>,
     strides: ::std::option::Option<::std::vec::Vec<i64>>,
     padding: ::std::option::Option<::std::string::String>,
+    explicit_paddings: ::std::option::Option<::std::vec::Vec<i64>>,
     data_format: ::std::option::Option<::std::string::String>,
     dilations: ::std::option::Option<::std::vec::Vec<i64>>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
@@ -23769,6 +26199,15 @@ impl DepthwiseConv2dNativeBackpropFilter {
         value: ArgType,
     ) -> Self {
         self.padding = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `explicit_paddings` attribute.
+    pub fn explicit_paddings<ArgType: ::std::convert::Into<::std::vec::Vec<i64>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.explicit_paddings = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -23839,6 +26278,9 @@ impl DepthwiseConv2dNativeBackpropFilter {
             if let ::std::option::Option::Some(value) = &self.padding {
                 nd.set_attr_string("padding", value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.explicit_paddings {
+                nd.set_attr_int_list("explicit_paddings", value)?;
+            }
             if let ::std::option::Option::Some(value) = &self.data_format {
                 nd.set_attr_string("data_format", value)?;
             }
@@ -23869,6 +26311,7 @@ pub struct DepthwiseConv2dNativeBackpropInput {
     T: ::std::option::Option<crate::DataType>,
     strides: ::std::option::Option<::std::vec::Vec<i64>>,
     padding: ::std::option::Option<::std::string::String>,
+    explicit_paddings: ::std::option::Option<::std::vec::Vec<i64>>,
     data_format: ::std::option::Option<::std::string::String>,
     dilations: ::std::option::Option<::std::vec::Vec<i64>>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
@@ -23901,6 +26344,15 @@ impl DepthwiseConv2dNativeBackpropInput {
         value: ArgType,
     ) -> Self {
         self.padding = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `explicit_paddings` attribute.
+    pub fn explicit_paddings<ArgType: ::std::convert::Into<::std::vec::Vec<i64>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.explicit_paddings = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -23971,6 +26423,9 @@ impl DepthwiseConv2dNativeBackpropInput {
             if let ::std::option::Option::Some(value) = &self.padding {
                 nd.set_attr_string("padding", value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.explicit_paddings {
+                nd.set_attr_int_list("explicit_paddings", value)?;
+            }
             if let ::std::option::Option::Some(value) = &self.data_format {
                 nd.set_attr_string("data_format", value)?;
             }
@@ -24000,6 +26455,9 @@ pub fn depthwise_conv2d_native_backprop_input<
 pub struct Dequantize {
     T: ::std::option::Option<crate::DataType>,
     mode: ::std::option::Option<::std::string::String>,
+    narrow_range: ::std::option::Option<bool>,
+    axis: ::std::option::Option<i64>,
+    dtype: ::std::option::Option<crate::DataType>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -24021,6 +26479,24 @@ impl Dequantize {
         value: ArgType,
     ) -> Self {
         self.mode = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `narrow_range` attribute.
+    pub fn narrow_range<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.narrow_range = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `axis` attribute.
+    pub fn axis<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.axis = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `dtype` attribute.
+    pub fn dtype<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.dtype = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -24064,6 +26540,15 @@ impl Dequantize {
             }
             if let ::std::option::Option::Some(value) = &self.mode {
                 nd.set_attr_string("mode", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.narrow_range {
+                nd.set_attr_bool("narrow_range", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.axis {
+                nd.set_attr_int("axis", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.dtype {
+                nd.set_attr_type("dtype", *value)?;
             }
             ::std::result::Result::Ok(())
         })
@@ -24406,6 +26891,56 @@ pub fn destroy_temporary_variable<O0: ::std::convert::Into<crate::Output>>(
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     DestroyTemporaryVariable::new().build(ref_, scope)
+}
+/// Builder for the `DeviceIndex` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct DeviceIndex {
+    device_names: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl DeviceIndex {
+    /// Creates a new `DeviceIndex`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `device_names` attribute.
+    pub fn device_names<ArgType: ::std::convert::Into<::std::vec::Vec<::std::string::String>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.device_names = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `DeviceIndex` operation.
+    pub fn build(&self, scope: &mut crate::Scope) -> crate::Result<crate::Operation> {
+        self.build_impl(scope)
+    }
+
+    fn build_impl(&self, scope: &mut crate::Scope) -> crate::Result<crate::Operation> {
+        scope.new_operation("DeviceIndex", |nd| {
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.device_names {
+                nd.set_attr_string_list("device_names", value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `DeviceIndex::new().build(scope)`.
+pub fn device_index(scope: &mut crate::Scope) -> crate::Result<crate::Operation> {
+    DeviceIndex::new().build(scope)
 }
 /// Builder for the `Diag` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -25298,6 +27833,117 @@ pub fn draw_bounding_boxes_v2<
 ) -> crate::Result<crate::Operation> {
     DrawBoundingBoxesV2::new().build(images, boxes, colors, scope)
 }
+/// Builder for the `DummyIterationCounter` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct DummyIterationCounter {
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl DummyIterationCounter {
+    /// Creates a new `DummyIterationCounter`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `DummyIterationCounter` operation.
+    pub fn build(&self, scope: &mut crate::Scope) -> crate::Result<crate::Operation> {
+        self.build_impl(scope)
+    }
+
+    fn build_impl(&self, scope: &mut crate::Scope) -> crate::Result<crate::Operation> {
+        scope.new_operation("DummyIterationCounter", |nd| {
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `DummyIterationCounter::new().build(scope)`.
+pub fn dummy_iteration_counter(scope: &mut crate::Scope) -> crate::Result<crate::Operation> {
+    DummyIterationCounter::new().build(scope)
+}
+/// Builder for the `DummyMemoryCache` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct DummyMemoryCache {
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl DummyMemoryCache {
+    /// Creates a new `DummyMemoryCache`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `DummyMemoryCache` operation.
+    pub fn build(&self, scope: &mut crate::Scope) -> crate::Result<crate::Operation> {
+        self.build_impl(scope)
+    }
+
+    fn build_impl(&self, scope: &mut crate::Scope) -> crate::Result<crate::Operation> {
+        scope.new_operation("DummyMemoryCache", |nd| {
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `DummyMemoryCache::new().build(scope)`.
+pub fn dummy_memory_cache(scope: &mut crate::Scope) -> crate::Result<crate::Operation> {
+    DummyMemoryCache::new().build(scope)
+}
+/// Builder for the `DummySeedGenerator` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct DummySeedGenerator {
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl DummySeedGenerator {
+    /// Creates a new `DummySeedGenerator`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `DummySeedGenerator` operation.
+    pub fn build(&self, scope: &mut crate::Scope) -> crate::Result<crate::Operation> {
+        self.build_impl(scope)
+    }
+
+    fn build_impl(&self, scope: &mut crate::Scope) -> crate::Result<crate::Operation> {
+        scope.new_operation("DummySeedGenerator", |nd| {
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `DummySeedGenerator::new().build(scope)`.
+pub fn dummy_seed_generator(scope: &mut crate::Scope) -> crate::Result<crate::Operation> {
+    DummySeedGenerator::new().build(scope)
+}
 /// Builder for the `DynamicPartition` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct DynamicPartition {
@@ -25672,6 +28318,85 @@ pub fn edit_distance<
         truth_shape,
         scope,
     )
+}
+/// Builder for the `Eig` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct Eig {
+    compute_v: ::std::option::Option<bool>,
+    T: ::std::option::Option<crate::DataType>,
+    Tout: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl Eig {
+    /// Creates a new `Eig`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `compute_v` attribute.
+    pub fn compute_v<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.compute_v = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tout` attribute.
+    pub fn Tout<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.Tout = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `Eig` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        input: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(input.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        input: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("Eig", |nd| {
+            nd.add_input(input);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.compute_v {
+                nd.set_attr_bool("compute_v", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Tout {
+                nd.set_attr_type("Tout", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `Eig::new().build(input, scope)`.
+pub fn eig<O0: ::std::convert::Into<crate::Output>>(
+    input: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    Eig::new().build(input, scope)
 }
 /// Builder for the `Einsum` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -26624,6 +29349,178 @@ pub fn enqueue_tpuembedding_integer_batch<
 ) -> crate::Result<crate::Operation> {
     EnqueueTPUEmbeddingIntegerBatch::new().build(batch, mode_override, scope)
 }
+/// Builder for the `EnqueueTPUEmbeddingRaggedTensorBatch` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct EnqueueTPUEmbeddingRaggedTensorBatch {
+    T1: ::std::option::Option<crate::DataType>,
+    T2: ::std::option::Option<crate::DataType>,
+    T3: ::std::option::Option<crate::DataType>,
+    N: ::std::option::Option<i64>,
+    device_ordinal: ::std::option::Option<i64>,
+    combiners: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
+    table_ids: ::std::option::Option<::std::vec::Vec<i64>>,
+    max_sequence_lengths: ::std::option::Option<::std::vec::Vec<i64>>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl EnqueueTPUEmbeddingRaggedTensorBatch {
+    /// Creates a new `EnqueueTPUEmbeddingRaggedTensorBatch`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T1` attribute.
+    pub fn T1<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T1 = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `T2` attribute.
+    pub fn T2<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T2 = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `T3` attribute.
+    pub fn T3<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T3 = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `N` attribute.
+    pub fn N<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.N = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `device_ordinal` attribute.
+    pub fn device_ordinal<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.device_ordinal = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `combiners` attribute.
+    pub fn combiners<ArgType: ::std::convert::Into<::std::vec::Vec<::std::string::String>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.combiners = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `table_ids` attribute.
+    pub fn table_ids<ArgType: ::std::convert::Into<::std::vec::Vec<i64>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.table_ids = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `max_sequence_lengths` attribute.
+    pub fn max_sequence_lengths<ArgType: ::std::convert::Into<::std::vec::Vec<i64>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.max_sequence_lengths = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `EnqueueTPUEmbeddingRaggedTensorBatch` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+        O3: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        sample_splits: O0,
+        embedding_indices: O1,
+        aggregation_weights: O2,
+        mode_override: O3,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(
+            sample_splits.into(),
+            embedding_indices.into(),
+            aggregation_weights.into(),
+            mode_override.into(),
+            scope,
+        )
+    }
+
+    fn build_impl(
+        &self,
+        sample_splits: crate::Output,
+        embedding_indices: crate::Output,
+        aggregation_weights: crate::Output,
+        mode_override: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("EnqueueTPUEmbeddingRaggedTensorBatch", |nd| {
+            nd.add_input(sample_splits);
+            nd.add_input(embedding_indices);
+            nd.add_input(aggregation_weights);
+            nd.add_input(mode_override);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T1 {
+                nd.set_attr_type("T1", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.T2 {
+                nd.set_attr_type("T2", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.T3 {
+                nd.set_attr_type("T3", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.N {
+                nd.set_attr_int("N", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.device_ordinal {
+                nd.set_attr_int("device_ordinal", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.combiners {
+                nd.set_attr_string_list("combiners", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.table_ids {
+                nd.set_attr_int_list("table_ids", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.max_sequence_lengths {
+                nd.set_attr_int_list("max_sequence_lengths", value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `EnqueueTPUEmbeddingRaggedTensorBatch::new().build(sample_splits, embedding_indices, aggregation_weights, mode_override, scope)`.
+pub fn enqueue_tpuembedding_ragged_tensor_batch<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+    O3: ::std::convert::Into<crate::Output>,
+>(
+    sample_splits: O0,
+    embedding_indices: O1,
+    aggregation_weights: O2,
+    mode_override: O3,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    EnqueueTPUEmbeddingRaggedTensorBatch::new().build(
+        sample_splits,
+        embedding_indices,
+        aggregation_weights,
+        mode_override,
+        scope,
+    )
+}
 /// Builder for the `EnqueueTPUEmbeddingSparseBatch` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct EnqueueTPUEmbeddingSparseBatch {
@@ -27110,6 +30007,7 @@ pub fn enter<O0: ::std::convert::Into<crate::Output>>(
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct Equal {
     T: ::std::option::Option<crate::DataType>,
+    incompatible_shape_error: ::std::option::Option<bool>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -27122,6 +30020,15 @@ impl Equal {
     /// Sets the `T` attribute.
     pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
         self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `incompatible_shape_error` attribute.
+    pub fn incompatible_shape_error<ArgType: ::std::convert::Into<bool>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.incompatible_shape_error = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -27158,6 +30065,9 @@ impl Equal {
             }
             if let ::std::option::Option::Some(value) = &self.T {
                 nd.set_attr_type("T", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.incompatible_shape_error {
+                nd.set_attr_bool("incompatible_shape_error", *value)?;
             }
             ::std::result::Result::Ok(())
         })
@@ -27289,6 +30199,65 @@ pub fn erfc<O0: ::std::convert::Into<crate::Output>>(
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     Erfc::new().build(x, scope)
+}
+/// Builder for the `Erfinv` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct Erfinv {
+    T: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl Erfinv {
+    /// Creates a new `Erfinv`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `Erfinv` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        x: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(x.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        x: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("Erfinv", |nd| {
+            nd.add_input(x);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `Erfinv::new().build(x, scope)`.
+pub fn erfinv<O0: ::std::convert::Into<crate::Output>>(
+    x: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    Erfinv::new().build(x, scope)
 }
 /// Builder for the `EuclideanNorm` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -27664,6 +30633,7 @@ pub fn experimental_assert_next_dataset<
 /// Builder for the `ExperimentalAutoShardDataset` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct ExperimentalAutoShardDataset {
+    auto_shard_policy: ::std::option::Option<i64>,
     output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
@@ -27673,6 +30643,12 @@ impl ExperimentalAutoShardDataset {
     /// Creates a new `ExperimentalAutoShardDataset`.
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// Sets the `auto_shard_policy` attribute.
+    pub fn auto_shard_policy<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.auto_shard_policy = ::std::option::Option::Some(value.into());
+        self
     }
 
     /// Sets the `output_types` attribute.
@@ -27732,6 +30708,9 @@ impl ExperimentalAutoShardDataset {
             nd.add_input(index);
             for op in &self.control_inputs {
                 nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.auto_shard_policy {
+                nd.set_attr_int("auto_shard_policy", *value)?;
             }
             if let ::std::option::Option::Some(value) = &self.output_types {
                 nd.set_attr_type_list("output_types", value)?;
@@ -31324,6 +34303,65 @@ pub fn experimental_unique_dataset<O0: ::std::convert::Into<crate::Output>>(
 ) -> crate::Result<crate::Operation> {
     ExperimentalUniqueDataset::new().build(input_dataset, scope)
 }
+/// Builder for the `Expint` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct Expint {
+    T: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl Expint {
+    /// Creates a new `Expint`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `Expint` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        x: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(x.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        x: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("Expint", |nd| {
+            nd.add_input(x);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `Expint::new().build(x, scope)`.
+pub fn expint<O0: ::std::convert::Into<crate::Output>>(
+    x: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    Expint::new().build(x, scope)
+}
 /// Builder for the `Expm1` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct Expm1 {
@@ -31490,6 +34528,114 @@ pub fn extract_glimpse<
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     ExtractGlimpse::new().build(input, size, offsets, scope)
+}
+/// Builder for the `ExtractGlimpseV2` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct ExtractGlimpseV2 {
+    centered: ::std::option::Option<bool>,
+    normalized: ::std::option::Option<bool>,
+    uniform_noise: ::std::option::Option<bool>,
+    noise: ::std::option::Option<::std::string::String>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl ExtractGlimpseV2 {
+    /// Creates a new `ExtractGlimpseV2`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `centered` attribute.
+    pub fn centered<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.centered = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `normalized` attribute.
+    pub fn normalized<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.normalized = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `uniform_noise` attribute.
+    pub fn uniform_noise<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.uniform_noise = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `noise` attribute.
+    pub fn noise<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.noise = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `ExtractGlimpseV2` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        input: O0,
+        size: O1,
+        offsets: O2,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(input.into(), size.into(), offsets.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        input: crate::Output,
+        size: crate::Output,
+        offsets: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("ExtractGlimpseV2", |nd| {
+            nd.add_input(input);
+            nd.add_input(size);
+            nd.add_input(offsets);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.centered {
+                nd.set_attr_bool("centered", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.normalized {
+                nd.set_attr_bool("normalized", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.uniform_noise {
+                nd.set_attr_bool("uniform_noise", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.noise {
+                nd.set_attr_string("noise", value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `ExtractGlimpseV2::new().build(input, size, offsets, scope)`.
+pub fn extract_glimpse_v2<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+>(
+    input: O0,
+    size: O1,
+    offsets: O2,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    ExtractGlimpseV2::new().build(input, size, offsets, scope)
 }
 /// Builder for the `ExtractImagePatches` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -34677,11 +37823,130 @@ pub fn fractional_max_pool_grad<
         scope,
     )
 }
+/// Builder for the `FresnelCos` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct FresnelCos {
+    T: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl FresnelCos {
+    /// Creates a new `FresnelCos`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `FresnelCos` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        x: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(x.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        x: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("FresnelCos", |nd| {
+            nd.add_input(x);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `FresnelCos::new().build(x, scope)`.
+pub fn fresnel_cos<O0: ::std::convert::Into<crate::Output>>(
+    x: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    FresnelCos::new().build(x, scope)
+}
+/// Builder for the `FresnelSin` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct FresnelSin {
+    T: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl FresnelSin {
+    /// Creates a new `FresnelSin`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `FresnelSin` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        x: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(x.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        x: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("FresnelSin", |nd| {
+            nd.add_input(x);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `FresnelSin::new().build(x, scope)`.
+pub fn fresnel_sin<O0: ::std::convert::Into<crate::Output>>(
+    x: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    FresnelSin::new().build(x, scope)
+}
 /// Builder for the `FusedBatchNorm` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct FusedBatchNorm {
     T: ::std::option::Option<crate::DataType>,
     epsilon: ::std::option::Option<f32>,
+    exponential_avg_factor: ::std::option::Option<f32>,
     data_format: ::std::option::Option<::std::string::String>,
     is_training: ::std::option::Option<bool>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
@@ -34702,6 +37967,15 @@ impl FusedBatchNorm {
     /// Sets the `epsilon` attribute.
     pub fn epsilon<ArgType: ::std::convert::Into<f32>>(mut self, value: ArgType) -> Self {
         self.epsilon = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `exponential_avg_factor` attribute.
+    pub fn exponential_avg_factor<ArgType: ::std::convert::Into<f32>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.exponential_avg_factor = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -34775,6 +38049,9 @@ impl FusedBatchNorm {
             }
             if let ::std::option::Option::Some(value) = &self.epsilon {
                 nd.set_attr_float("epsilon", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.exponential_avg_factor {
+                nd.set_attr_float("exponential_avg_factor", *value)?;
             }
             if let ::std::option::Option::Some(value) = &self.data_format {
                 nd.set_attr_string("data_format", value)?;
@@ -35240,6 +38517,7 @@ pub struct FusedBatchNormV2 {
     T: ::std::option::Option<crate::DataType>,
     U: ::std::option::Option<crate::DataType>,
     epsilon: ::std::option::Option<f32>,
+    exponential_avg_factor: ::std::option::Option<f32>,
     data_format: ::std::option::Option<::std::string::String>,
     is_training: ::std::option::Option<bool>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
@@ -35266,6 +38544,15 @@ impl FusedBatchNormV2 {
     /// Sets the `epsilon` attribute.
     pub fn epsilon<ArgType: ::std::convert::Into<f32>>(mut self, value: ArgType) -> Self {
         self.epsilon = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `exponential_avg_factor` attribute.
+    pub fn exponential_avg_factor<ArgType: ::std::convert::Into<f32>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.exponential_avg_factor = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -35343,6 +38630,9 @@ impl FusedBatchNormV2 {
             if let ::std::option::Option::Some(value) = &self.epsilon {
                 nd.set_attr_float("epsilon", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.exponential_avg_factor {
+                nd.set_attr_float("exponential_avg_factor", *value)?;
+            }
             if let ::std::option::Option::Some(value) = &self.data_format {
                 nd.set_attr_string("data_format", value)?;
             }
@@ -35377,6 +38667,7 @@ pub struct FusedBatchNormV3 {
     T: ::std::option::Option<crate::DataType>,
     U: ::std::option::Option<crate::DataType>,
     epsilon: ::std::option::Option<f32>,
+    exponential_avg_factor: ::std::option::Option<f32>,
     data_format: ::std::option::Option<::std::string::String>,
     is_training: ::std::option::Option<bool>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
@@ -35403,6 +38694,15 @@ impl FusedBatchNormV3 {
     /// Sets the `epsilon` attribute.
     pub fn epsilon<ArgType: ::std::convert::Into<f32>>(mut self, value: ArgType) -> Self {
         self.epsilon = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `exponential_avg_factor` attribute.
+    pub fn exponential_avg_factor<ArgType: ::std::convert::Into<f32>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.exponential_avg_factor = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -35479,6 +38779,9 @@ impl FusedBatchNormV3 {
             }
             if let ::std::option::Option::Some(value) = &self.epsilon {
                 nd.set_attr_float("epsilon", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.exponential_avg_factor {
+                nd.set_attr_float("exponential_avg_factor", *value)?;
             }
             if let ::std::option::Option::Some(value) = &self.data_format {
                 nd.set_attr_string("data_format", value)?;
@@ -36278,6 +39581,123 @@ pub fn gather_v2<
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     GatherV2::new().build(params, indices, axis, scope)
+}
+/// Builder for the `GenerateBoundingBoxProposals` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct GenerateBoundingBoxProposals {
+    post_nms_topn: ::std::option::Option<i64>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl GenerateBoundingBoxProposals {
+    /// Creates a new `GenerateBoundingBoxProposals`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `post_nms_topn` attribute.
+    pub fn post_nms_topn<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.post_nms_topn = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `GenerateBoundingBoxProposals` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+        O3: ::std::convert::Into<crate::Output>,
+        O4: ::std::convert::Into<crate::Output>,
+        O5: ::std::convert::Into<crate::Output>,
+        O6: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        scores: O0,
+        bbox_deltas: O1,
+        image_info: O2,
+        anchors: O3,
+        nms_threshold: O4,
+        pre_nms_topn: O5,
+        min_size: O6,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(
+            scores.into(),
+            bbox_deltas.into(),
+            image_info.into(),
+            anchors.into(),
+            nms_threshold.into(),
+            pre_nms_topn.into(),
+            min_size.into(),
+            scope,
+        )
+    }
+
+    fn build_impl(
+        &self,
+        scores: crate::Output,
+        bbox_deltas: crate::Output,
+        image_info: crate::Output,
+        anchors: crate::Output,
+        nms_threshold: crate::Output,
+        pre_nms_topn: crate::Output,
+        min_size: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("GenerateBoundingBoxProposals", |nd| {
+            nd.add_input(scores);
+            nd.add_input(bbox_deltas);
+            nd.add_input(image_info);
+            nd.add_input(anchors);
+            nd.add_input(nms_threshold);
+            nd.add_input(pre_nms_topn);
+            nd.add_input(min_size);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.post_nms_topn {
+                nd.set_attr_int("post_nms_topn", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `GenerateBoundingBoxProposals::new().build(scores, bbox_deltas, image_info, anchors, nms_threshold, pre_nms_topn, min_size, scope)`.
+pub fn generate_bounding_box_proposals<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+    O3: ::std::convert::Into<crate::Output>,
+    O4: ::std::convert::Into<crate::Output>,
+    O5: ::std::convert::Into<crate::Output>,
+    O6: ::std::convert::Into<crate::Output>,
+>(
+    scores: O0,
+    bbox_deltas: O1,
+    image_info: O2,
+    anchors: O3,
+    nms_threshold: O4,
+    pre_nms_topn: O5,
+    min_size: O6,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    GenerateBoundingBoxProposals::new().build(
+        scores,
+        bbox_deltas,
+        image_info,
+        anchors,
+        nms_threshold,
+        pre_nms_topn,
+        min_size,
+        scope,
+    )
 }
 /// Builder for the `GenerateVocabRemapping` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -38008,6 +41428,8 @@ pub fn ifft3_d<O0: ::std::convert::Into<crate::Output>>(
 /// Builder for the `IRFFT` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct IRFFT {
+    Treal: ::std::option::Option<crate::DataType>,
+    Tcomplex: ::std::option::Option<crate::DataType>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -38015,6 +41437,21 @@ impl IRFFT {
     /// Creates a new `IRFFT`.
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// Sets the `Treal` attribute.
+    pub fn Treal<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.Treal = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tcomplex` attribute.
+    pub fn Tcomplex<ArgType: ::std::convert::Into<crate::DataType>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Tcomplex = ::std::option::Option::Some(value.into());
+        self
     }
 
     /// Adds a control input.
@@ -38048,6 +41485,12 @@ impl IRFFT {
             for op in &self.control_inputs {
                 nd.add_control_input(op);
             }
+            if let ::std::option::Option::Some(value) = &self.Treal {
+                nd.set_attr_type("Treal", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Tcomplex {
+                nd.set_attr_type("Tcomplex", *value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -38064,6 +41507,8 @@ pub fn irfft<O0: ::std::convert::Into<crate::Output>, O1: ::std::convert::Into<c
 /// Builder for the `IRFFT2D` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct IRFFT2D {
+    Treal: ::std::option::Option<crate::DataType>,
+    Tcomplex: ::std::option::Option<crate::DataType>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -38071,6 +41516,21 @@ impl IRFFT2D {
     /// Creates a new `IRFFT2D`.
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// Sets the `Treal` attribute.
+    pub fn Treal<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.Treal = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tcomplex` attribute.
+    pub fn Tcomplex<ArgType: ::std::convert::Into<crate::DataType>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Tcomplex = ::std::option::Option::Some(value.into());
+        self
     }
 
     /// Adds a control input.
@@ -38104,6 +41564,12 @@ impl IRFFT2D {
             for op in &self.control_inputs {
                 nd.add_control_input(op);
             }
+            if let ::std::option::Option::Some(value) = &self.Treal {
+                nd.set_attr_type("Treal", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Tcomplex {
+                nd.set_attr_type("Tcomplex", *value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -38123,6 +41589,8 @@ pub fn irfft2_d<
 /// Builder for the `IRFFT3D` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct IRFFT3D {
+    Treal: ::std::option::Option<crate::DataType>,
+    Tcomplex: ::std::option::Option<crate::DataType>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -38130,6 +41598,21 @@ impl IRFFT3D {
     /// Creates a new `IRFFT3D`.
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// Sets the `Treal` attribute.
+    pub fn Treal<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.Treal = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tcomplex` attribute.
+    pub fn Tcomplex<ArgType: ::std::convert::Into<crate::DataType>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Tcomplex = ::std::option::Option::Some(value.into());
+        self
     }
 
     /// Adds a control input.
@@ -38162,6 +41645,12 @@ impl IRFFT3D {
             nd.add_input(fft_length);
             for op in &self.control_inputs {
                 nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.Treal {
+                nd.set_attr_type("Treal", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Tcomplex {
+                nd.set_attr_type("Tcomplex", *value)?;
             }
             ::std::result::Result::Ok(())
         })
@@ -38901,6 +42390,107 @@ pub fn imag<O0: ::std::convert::Into<crate::Output>>(
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     Imag::new().build(input, scope)
+}
+/// Builder for the `ImageProjectiveTransformV2` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct ImageProjectiveTransformV2 {
+    dtype: ::std::option::Option<crate::DataType>,
+    interpolation: ::std::option::Option<::std::string::String>,
+    fill_mode: ::std::option::Option<::std::string::String>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl ImageProjectiveTransformV2 {
+    /// Creates a new `ImageProjectiveTransformV2`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `dtype` attribute.
+    pub fn dtype<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.dtype = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `interpolation` attribute.
+    pub fn interpolation<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.interpolation = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `fill_mode` attribute.
+    pub fn fill_mode<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.fill_mode = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `ImageProjectiveTransformV2` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        images: O0,
+        transforms: O1,
+        output_shape: O2,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(images.into(), transforms.into(), output_shape.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        images: crate::Output,
+        transforms: crate::Output,
+        output_shape: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("ImageProjectiveTransformV2", |nd| {
+            nd.add_input(images);
+            nd.add_input(transforms);
+            nd.add_input(output_shape);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.dtype {
+                nd.set_attr_type("dtype", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.interpolation {
+                nd.set_attr_string("interpolation", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.fill_mode {
+                nd.set_attr_string("fill_mode", value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `ImageProjectiveTransformV2::new().build(images, transforms, output_shape, scope)`.
+pub fn image_projective_transform_v2<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+>(
+    images: O0,
+    transforms: O1,
+    output_shape: O2,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    ImageProjectiveTransformV2::new().build(images, transforms, output_shape, scope)
 }
 /// Builder for the `ImageSummary` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -39732,6 +43322,65 @@ pub fn initialize_table<
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     InitializeTable::new().build(table_handle, keys, values, scope)
+}
+/// Builder for the `InitializeTableFromDataset` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct InitializeTableFromDataset {
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl InitializeTableFromDataset {
+    /// Creates a new `InitializeTableFromDataset`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `InitializeTableFromDataset` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        table_handle: O0,
+        dataset: O1,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(table_handle.into(), dataset.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        table_handle: crate::Output,
+        dataset: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("InitializeTableFromDataset", |nd| {
+            nd.add_input(table_handle);
+            nd.add_input(dataset);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `InitializeTableFromDataset::new().build(table_handle, dataset, scope)`.
+pub fn initialize_table_from_dataset<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+>(
+    table_handle: O0,
+    dataset: O1,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    InitializeTableFromDataset::new().build(table_handle, dataset, scope)
 }
 /// Builder for the `InitializeTableFromTextFile` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -42913,6 +46562,170 @@ pub fn left_shift<
 ) -> crate::Result<crate::Operation> {
     LeftShift::new().build(x, y, scope)
 }
+/// Builder for the `LegacyParallelInterleaveDatasetV2` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct LegacyParallelInterleaveDatasetV2 {
+    f: ::std::option::Option<::std::string::String>,
+    deterministic: ::std::option::Option<::std::string::String>,
+    Targuments: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl LegacyParallelInterleaveDatasetV2 {
+    /// Creates a new `LegacyParallelInterleaveDatasetV2`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `f` attribute.
+    pub fn f<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.f = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `deterministic` attribute.
+    pub fn deterministic<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.deterministic = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Targuments` attribute.
+    pub fn Targuments<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Targuments = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `output_types` attribute.
+    pub fn output_types<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.output_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `output_shapes` attribute.
+    pub fn output_shapes<ArgType: ::std::convert::Into<::std::vec::Vec<crate::Shape>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.output_shapes = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `LegacyParallelInterleaveDatasetV2` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+        O3: ::std::convert::Into<crate::Output>,
+        O4: ::std::convert::Into<crate::Output>,
+        O5: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        input_dataset: O0,
+        other_arguments: O1,
+        cycle_length: O2,
+        block_length: O3,
+        buffer_output_elements: O4,
+        prefetch_input_elements: O5,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(
+            input_dataset.into(),
+            other_arguments.into(),
+            cycle_length.into(),
+            block_length.into(),
+            buffer_output_elements.into(),
+            prefetch_input_elements.into(),
+            scope,
+        )
+    }
+
+    fn build_impl(
+        &self,
+        input_dataset: crate::Output,
+        other_arguments: crate::Output,
+        cycle_length: crate::Output,
+        block_length: crate::Output,
+        buffer_output_elements: crate::Output,
+        prefetch_input_elements: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("LegacyParallelInterleaveDatasetV2", |nd| {
+            nd.add_input(input_dataset);
+            nd.add_input(other_arguments);
+            nd.add_input(cycle_length);
+            nd.add_input(block_length);
+            nd.add_input(buffer_output_elements);
+            nd.add_input(prefetch_input_elements);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.f {
+                nd.set_attr_string("f", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.deterministic {
+                nd.set_attr_string("deterministic", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Targuments {
+                nd.set_attr_type_list("Targuments", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.output_types {
+                nd.set_attr_type_list("output_types", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.output_shapes {
+                nd.set_attr_shape_list("output_shapes", value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `LegacyParallelInterleaveDatasetV2::new().build(input_dataset, other_arguments, cycle_length, block_length, buffer_output_elements, prefetch_input_elements, scope)`.
+pub fn legacy_parallel_interleave_dataset_v2<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+    O3: ::std::convert::Into<crate::Output>,
+    O4: ::std::convert::Into<crate::Output>,
+    O5: ::std::convert::Into<crate::Output>,
+>(
+    input_dataset: O0,
+    other_arguments: O1,
+    cycle_length: O2,
+    block_length: O3,
+    buffer_output_elements: O4,
+    prefetch_input_elements: O5,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    LegacyParallelInterleaveDatasetV2::new().build(
+        input_dataset,
+        other_arguments,
+        cycle_length,
+        block_length,
+        buffer_output_elements,
+        prefetch_input_elements,
+        scope,
+    )
+}
 /// Builder for the `Less` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct Less {
@@ -43398,6 +47211,130 @@ pub fn load_and_remap_matrix<
         scope,
     )
 }
+/// Builder for the `LoadDataset` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct LoadDataset {
+    output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
+    compression: ::std::option::Option<::std::string::String>,
+    reader_func: ::std::option::Option<::std::string::String>,
+    Treader_func_args: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl LoadDataset {
+    /// Creates a new `LoadDataset`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `output_types` attribute.
+    pub fn output_types<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.output_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `output_shapes` attribute.
+    pub fn output_shapes<ArgType: ::std::convert::Into<::std::vec::Vec<crate::Shape>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.output_shapes = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `compression` attribute.
+    pub fn compression<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.compression = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `reader_func` attribute.
+    pub fn reader_func<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.reader_func = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Treader_func_args` attribute.
+    pub fn Treader_func_args<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Treader_func_args = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `LoadDataset` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        path: O0,
+        reader_func_other_args: O1,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(path.into(), reader_func_other_args.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        path: crate::Output,
+        reader_func_other_args: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("LoadDataset", |nd| {
+            nd.add_input(path);
+            nd.add_input(reader_func_other_args);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.output_types {
+                nd.set_attr_type_list("output_types", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.output_shapes {
+                nd.set_attr_shape_list("output_shapes", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.compression {
+                nd.set_attr_string("compression", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.reader_func {
+                nd.set_attr_string("reader_func", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Treader_func_args {
+                nd.set_attr_type_list("Treader_func_args", value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `LoadDataset::new().build(path, reader_func_other_args, scope)`.
+pub fn load_dataset<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+>(
+    path: O0,
+    reader_func_other_args: O1,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    LoadDataset::new().build(path, reader_func_other_args, scope)
+}
 /// Builder for the `LoadTPUEmbeddingADAMParameters` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct LoadTPUEmbeddingADAMParameters {
@@ -43405,6 +47342,7 @@ pub struct LoadTPUEmbeddingADAMParameters {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -43438,6 +47376,15 @@ impl LoadTPUEmbeddingADAMParameters {
     /// Sets the `shard_id` attribute.
     pub fn shard_id<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
         self.shard_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -43488,6 +47435,9 @@ impl LoadTPUEmbeddingADAMParameters {
             if let ::std::option::Option::Some(value) = &self.shard_id {
                 nd.set_attr_int("shard_id", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.config {
+                nd.set_attr_string("config", value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -43513,6 +47463,7 @@ pub struct LoadTPUEmbeddingADAMParametersGradAccumDebug {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -43546,6 +47497,15 @@ impl LoadTPUEmbeddingADAMParametersGradAccumDebug {
     /// Sets the `shard_id` attribute.
     pub fn shard_id<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
         self.shard_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -43606,6 +47566,9 @@ impl LoadTPUEmbeddingADAMParametersGradAccumDebug {
             if let ::std::option::Option::Some(value) = &self.shard_id {
                 nd.set_attr_int("shard_id", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.config {
+                nd.set_attr_string("config", value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -43639,6 +47602,7 @@ pub struct LoadTPUEmbeddingAdadeltaParameters {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -43672,6 +47636,15 @@ impl LoadTPUEmbeddingAdadeltaParameters {
     /// Sets the `shard_id` attribute.
     pub fn shard_id<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
         self.shard_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -43727,6 +47700,9 @@ impl LoadTPUEmbeddingAdadeltaParameters {
             if let ::std::option::Option::Some(value) = &self.shard_id {
                 nd.set_attr_int("shard_id", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.config {
+                nd.set_attr_string("config", value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -43752,6 +47728,7 @@ pub struct LoadTPUEmbeddingAdadeltaParametersGradAccumDebug {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -43785,6 +47762,15 @@ impl LoadTPUEmbeddingAdadeltaParametersGradAccumDebug {
     /// Sets the `shard_id` attribute.
     pub fn shard_id<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
         self.shard_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -43845,6 +47831,9 @@ impl LoadTPUEmbeddingAdadeltaParametersGradAccumDebug {
             if let ::std::option::Option::Some(value) = &self.shard_id {
                 nd.set_attr_int("shard_id", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.config {
+                nd.set_attr_string("config", value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -43878,6 +47867,7 @@ pub struct LoadTPUEmbeddingAdagradParameters {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -43911,6 +47901,15 @@ impl LoadTPUEmbeddingAdagradParameters {
     /// Sets the `shard_id` attribute.
     pub fn shard_id<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
         self.shard_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -43957,6 +47956,9 @@ impl LoadTPUEmbeddingAdagradParameters {
             if let ::std::option::Option::Some(value) = &self.shard_id {
                 nd.set_attr_int("shard_id", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.config {
+                nd.set_attr_string("config", value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -43980,6 +47982,7 @@ pub struct LoadTPUEmbeddingAdagradParametersGradAccumDebug {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -44013,6 +48016,15 @@ impl LoadTPUEmbeddingAdagradParametersGradAccumDebug {
     /// Sets the `shard_id` attribute.
     pub fn shard_id<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
         self.shard_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -44068,6 +48080,9 @@ impl LoadTPUEmbeddingAdagradParametersGradAccumDebug {
             if let ::std::option::Option::Some(value) = &self.shard_id {
                 nd.set_attr_int("shard_id", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.config {
+                nd.set_attr_string("config", value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -44098,6 +48113,7 @@ pub struct LoadTPUEmbeddingCenteredRMSPropParameters {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -44131,6 +48147,15 @@ impl LoadTPUEmbeddingCenteredRMSPropParameters {
     /// Sets the `shard_id` attribute.
     pub fn shard_id<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
         self.shard_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -44185,6 +48210,9 @@ impl LoadTPUEmbeddingCenteredRMSPropParameters {
             if let ::std::option::Option::Some(value) = &self.shard_id {
                 nd.set_attr_int("shard_id", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.config {
+                nd.set_attr_string("config", value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -44212,6 +48240,7 @@ pub struct LoadTPUEmbeddingFTRLParameters {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -44245,6 +48274,15 @@ impl LoadTPUEmbeddingFTRLParameters {
     /// Sets the `shard_id` attribute.
     pub fn shard_id<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
         self.shard_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -44300,6 +48338,9 @@ impl LoadTPUEmbeddingFTRLParameters {
             if let ::std::option::Option::Some(value) = &self.shard_id {
                 nd.set_attr_int("shard_id", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.config {
+                nd.set_attr_string("config", value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -44325,6 +48366,7 @@ pub struct LoadTPUEmbeddingFTRLParametersGradAccumDebug {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -44358,6 +48400,15 @@ impl LoadTPUEmbeddingFTRLParametersGradAccumDebug {
     /// Sets the `shard_id` attribute.
     pub fn shard_id<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
         self.shard_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -44418,6 +48469,9 @@ impl LoadTPUEmbeddingFTRLParametersGradAccumDebug {
             if let ::std::option::Option::Some(value) = &self.shard_id {
                 nd.set_attr_int("shard_id", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.config {
+                nd.set_attr_string("config", value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -44451,6 +48505,7 @@ pub struct LoadTPUEmbeddingMDLAdagradLightParameters {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -44484,6 +48539,15 @@ impl LoadTPUEmbeddingMDLAdagradLightParameters {
     /// Sets the `shard_id` attribute.
     pub fn shard_id<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
         self.shard_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -44544,6 +48608,9 @@ impl LoadTPUEmbeddingMDLAdagradLightParameters {
             if let ::std::option::Option::Some(value) = &self.shard_id {
                 nd.set_attr_int("shard_id", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.config {
+                nd.set_attr_string("config", value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -44577,6 +48644,7 @@ pub struct LoadTPUEmbeddingMomentumParameters {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -44610,6 +48678,15 @@ impl LoadTPUEmbeddingMomentumParameters {
     /// Sets the `shard_id` attribute.
     pub fn shard_id<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
         self.shard_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -44656,6 +48733,9 @@ impl LoadTPUEmbeddingMomentumParameters {
             if let ::std::option::Option::Some(value) = &self.shard_id {
                 nd.set_attr_int("shard_id", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.config {
+                nd.set_attr_string("config", value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -44679,6 +48759,7 @@ pub struct LoadTPUEmbeddingMomentumParametersGradAccumDebug {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -44712,6 +48793,15 @@ impl LoadTPUEmbeddingMomentumParametersGradAccumDebug {
     /// Sets the `shard_id` attribute.
     pub fn shard_id<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
         self.shard_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -44767,6 +48857,9 @@ impl LoadTPUEmbeddingMomentumParametersGradAccumDebug {
             if let ::std::option::Option::Some(value) = &self.shard_id {
                 nd.set_attr_int("shard_id", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.config {
+                nd.set_attr_string("config", value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -44797,6 +48890,7 @@ pub struct LoadTPUEmbeddingProximalAdagradParameters {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -44830,6 +48924,15 @@ impl LoadTPUEmbeddingProximalAdagradParameters {
     /// Sets the `shard_id` attribute.
     pub fn shard_id<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
         self.shard_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -44876,6 +48979,9 @@ impl LoadTPUEmbeddingProximalAdagradParameters {
             if let ::std::option::Option::Some(value) = &self.shard_id {
                 nd.set_attr_int("shard_id", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.config {
+                nd.set_attr_string("config", value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -44899,6 +49005,7 @@ pub struct LoadTPUEmbeddingProximalAdagradParametersGradAccumDebug {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -44932,6 +49039,15 @@ impl LoadTPUEmbeddingProximalAdagradParametersGradAccumDebug {
     /// Sets the `shard_id` attribute.
     pub fn shard_id<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
         self.shard_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -44989,6 +49105,9 @@ impl LoadTPUEmbeddingProximalAdagradParametersGradAccumDebug {
                 if let ::std::option::Option::Some(value) = &self.shard_id {
                     nd.set_attr_int("shard_id", *value)?;
                 }
+                if let ::std::option::Option::Some(value) = &self.config {
+                    nd.set_attr_string("config", value)?;
+                }
                 ::std::result::Result::Ok(())
             },
         )
@@ -45013,6 +49132,269 @@ pub fn load_tpuembedding_proximal_adagrad_parameters_grad_accum_debug<
         scope,
     )
 }
+/// Builder for the `LoadTPUEmbeddingProximalYogiParameters` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct LoadTPUEmbeddingProximalYogiParameters {
+    table_id: ::std::option::Option<i64>,
+    table_name: ::std::option::Option<::std::string::String>,
+    num_shards: ::std::option::Option<i64>,
+    shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl LoadTPUEmbeddingProximalYogiParameters {
+    /// Creates a new `LoadTPUEmbeddingProximalYogiParameters`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `table_id` attribute.
+    pub fn table_id<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.table_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `table_name` attribute.
+    pub fn table_name<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.table_name = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `num_shards` attribute.
+    pub fn num_shards<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.num_shards = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `shard_id` attribute.
+    pub fn shard_id<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.shard_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `LoadTPUEmbeddingProximalYogiParameters` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        parameters: O0,
+        v: O1,
+        m: O2,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(parameters.into(), v.into(), m.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        parameters: crate::Output,
+        v: crate::Output,
+        m: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("LoadTPUEmbeddingProximalYogiParameters", |nd| {
+            nd.add_input(parameters);
+            nd.add_input(v);
+            nd.add_input(m);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.table_id {
+                nd.set_attr_int("table_id", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.table_name {
+                nd.set_attr_string("table_name", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.num_shards {
+                nd.set_attr_int("num_shards", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.shard_id {
+                nd.set_attr_int("shard_id", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.config {
+                nd.set_attr_string("config", value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `LoadTPUEmbeddingProximalYogiParameters::new().build(parameters, v, m, scope)`.
+pub fn load_tpuembedding_proximal_yogi_parameters<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+>(
+    parameters: O0,
+    v: O1,
+    m: O2,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    LoadTPUEmbeddingProximalYogiParameters::new().build(parameters, v, m, scope)
+}
+/// Builder for the `LoadTPUEmbeddingProximalYogiParametersGradAccumDebug` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct LoadTPUEmbeddingProximalYogiParametersGradAccumDebug {
+    table_id: ::std::option::Option<i64>,
+    table_name: ::std::option::Option<::std::string::String>,
+    num_shards: ::std::option::Option<i64>,
+    shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl LoadTPUEmbeddingProximalYogiParametersGradAccumDebug {
+    /// Creates a new `LoadTPUEmbeddingProximalYogiParametersGradAccumDebug`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `table_id` attribute.
+    pub fn table_id<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.table_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `table_name` attribute.
+    pub fn table_name<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.table_name = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `num_shards` attribute.
+    pub fn num_shards<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.num_shards = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `shard_id` attribute.
+    pub fn shard_id<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.shard_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `LoadTPUEmbeddingProximalYogiParametersGradAccumDebug` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+        O3: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        parameters: O0,
+        v: O1,
+        m: O2,
+        gradient_accumulators: O3,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(
+            parameters.into(),
+            v.into(),
+            m.into(),
+            gradient_accumulators.into(),
+            scope,
+        )
+    }
+
+    fn build_impl(
+        &self,
+        parameters: crate::Output,
+        v: crate::Output,
+        m: crate::Output,
+        gradient_accumulators: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation(
+            "LoadTPUEmbeddingProximalYogiParametersGradAccumDebug",
+            |nd| {
+                nd.add_input(parameters);
+                nd.add_input(v);
+                nd.add_input(m);
+                nd.add_input(gradient_accumulators);
+                for op in &self.control_inputs {
+                    nd.add_control_input(op);
+                }
+                if let ::std::option::Option::Some(value) = &self.table_id {
+                    nd.set_attr_int("table_id", *value)?;
+                }
+                if let ::std::option::Option::Some(value) = &self.table_name {
+                    nd.set_attr_string("table_name", value)?;
+                }
+                if let ::std::option::Option::Some(value) = &self.num_shards {
+                    nd.set_attr_int("num_shards", *value)?;
+                }
+                if let ::std::option::Option::Some(value) = &self.shard_id {
+                    nd.set_attr_int("shard_id", *value)?;
+                }
+                if let ::std::option::Option::Some(value) = &self.config {
+                    nd.set_attr_string("config", value)?;
+                }
+                ::std::result::Result::Ok(())
+            },
+        )
+    }
+}
+
+/// Shorthand for `LoadTPUEmbeddingProximalYogiParametersGradAccumDebug::new().build(parameters, v, m, gradient_accumulators, scope)`.
+pub fn load_tpuembedding_proximal_yogi_parameters_grad_accum_debug<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+    O3: ::std::convert::Into<crate::Output>,
+>(
+    parameters: O0,
+    v: O1,
+    m: O2,
+    gradient_accumulators: O3,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    LoadTPUEmbeddingProximalYogiParametersGradAccumDebug::new().build(
+        parameters,
+        v,
+        m,
+        gradient_accumulators,
+        scope,
+    )
+}
 /// Builder for the `LoadTPUEmbeddingRMSPropParameters` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct LoadTPUEmbeddingRMSPropParameters {
@@ -45020,6 +49402,7 @@ pub struct LoadTPUEmbeddingRMSPropParameters {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -45053,6 +49436,15 @@ impl LoadTPUEmbeddingRMSPropParameters {
     /// Sets the `shard_id` attribute.
     pub fn shard_id<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
         self.shard_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -45103,6 +49495,9 @@ impl LoadTPUEmbeddingRMSPropParameters {
             if let ::std::option::Option::Some(value) = &self.shard_id {
                 nd.set_attr_int("shard_id", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.config {
+                nd.set_attr_string("config", value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -45128,6 +49523,7 @@ pub struct LoadTPUEmbeddingRMSPropParametersGradAccumDebug {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -45161,6 +49557,15 @@ impl LoadTPUEmbeddingRMSPropParametersGradAccumDebug {
     /// Sets the `shard_id` attribute.
     pub fn shard_id<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
         self.shard_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -45221,6 +49626,9 @@ impl LoadTPUEmbeddingRMSPropParametersGradAccumDebug {
             if let ::std::option::Option::Some(value) = &self.shard_id {
                 nd.set_attr_int("shard_id", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.config {
+                nd.set_attr_string("config", value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -45254,6 +49662,7 @@ pub struct LoadTPUEmbeddingStochasticGradientDescentParameters {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -45287,6 +49696,15 @@ impl LoadTPUEmbeddingStochasticGradientDescentParameters {
     /// Sets the `shard_id` attribute.
     pub fn shard_id<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
         self.shard_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -45329,6 +49747,9 @@ impl LoadTPUEmbeddingStochasticGradientDescentParameters {
                 if let ::std::option::Option::Some(value) = &self.shard_id {
                     nd.set_attr_int("shard_id", *value)?;
                 }
+                if let ::std::option::Option::Some(value) = &self.config {
+                    nd.set_attr_string("config", value)?;
+                }
                 ::std::result::Result::Ok(())
             },
         )
@@ -45343,6 +49764,128 @@ pub fn load_tpuembedding_stochastic_gradient_descent_parameters<
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     LoadTPUEmbeddingStochasticGradientDescentParameters::new().build(parameters, scope)
+}
+/// Builder for the `LoadTPUEmbeddingStochasticGradientDescentParametersGradAccumDebug` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct LoadTPUEmbeddingStochasticGradientDescentParametersGradAccumDebug {
+    table_id: ::std::option::Option<i64>,
+    table_name: ::std::option::Option<::std::string::String>,
+    num_shards: ::std::option::Option<i64>,
+    shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl LoadTPUEmbeddingStochasticGradientDescentParametersGradAccumDebug {
+    /// Creates a new `LoadTPUEmbeddingStochasticGradientDescentParametersGradAccumDebug`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `table_id` attribute.
+    pub fn table_id<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.table_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `table_name` attribute.
+    pub fn table_name<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.table_name = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `num_shards` attribute.
+    pub fn num_shards<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.num_shards = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `shard_id` attribute.
+    pub fn shard_id<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.shard_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `LoadTPUEmbeddingStochasticGradientDescentParametersGradAccumDebug` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        parameters: O0,
+        gradient_accumulators: O1,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(parameters.into(), gradient_accumulators.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        parameters: crate::Output,
+        gradient_accumulators: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation(
+            "LoadTPUEmbeddingStochasticGradientDescentParametersGradAccumDebug",
+            |nd| {
+                nd.add_input(parameters);
+                nd.add_input(gradient_accumulators);
+                for op in &self.control_inputs {
+                    nd.add_control_input(op);
+                }
+                if let ::std::option::Option::Some(value) = &self.table_id {
+                    nd.set_attr_int("table_id", *value)?;
+                }
+                if let ::std::option::Option::Some(value) = &self.table_name {
+                    nd.set_attr_string("table_name", value)?;
+                }
+                if let ::std::option::Option::Some(value) = &self.num_shards {
+                    nd.set_attr_int("num_shards", *value)?;
+                }
+                if let ::std::option::Option::Some(value) = &self.shard_id {
+                    nd.set_attr_int("shard_id", *value)?;
+                }
+                if let ::std::option::Option::Some(value) = &self.config {
+                    nd.set_attr_string("config", value)?;
+                }
+                ::std::result::Result::Ok(())
+            },
+        )
+    }
+}
+
+/// Shorthand for `LoadTPUEmbeddingStochasticGradientDescentParametersGradAccumDebug::new().build(parameters, gradient_accumulators, scope)`.
+pub fn load_tpuembedding_stochastic_gradient_descent_parameters_grad_accum_debug<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+>(
+    parameters: O0,
+    gradient_accumulators: O1,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    LoadTPUEmbeddingStochasticGradientDescentParametersGradAccumDebug::new().build(
+        parameters,
+        gradient_accumulators,
+        scope,
+    )
 }
 /// Builder for the `Log` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -48672,6 +53215,94 @@ pub fn matrix_diag_part_v2<
 ) -> crate::Result<crate::Operation> {
     MatrixDiagPartV2::new().build(input, k, padding_value, scope)
 }
+/// Builder for the `MatrixDiagPartV3` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct MatrixDiagPartV3 {
+    T: ::std::option::Option<crate::DataType>,
+    align: ::std::option::Option<::std::string::String>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl MatrixDiagPartV3 {
+    /// Creates a new `MatrixDiagPartV3`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `align` attribute.
+    pub fn align<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.align = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `MatrixDiagPartV3` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        input: O0,
+        k: O1,
+        padding_value: O2,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(input.into(), k.into(), padding_value.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        input: crate::Output,
+        k: crate::Output,
+        padding_value: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("MatrixDiagPartV3", |nd| {
+            nd.add_input(input);
+            nd.add_input(k);
+            nd.add_input(padding_value);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.align {
+                nd.set_attr_string("align", value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `MatrixDiagPartV3::new().build(input, k, padding_value, scope)`.
+pub fn matrix_diag_part_v3<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+>(
+    input: O0,
+    k: O1,
+    padding_value: O2,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    MatrixDiagPartV3::new().build(input, k, padding_value, scope)
+}
 /// Builder for the `MatrixDiagV2` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct MatrixDiagV2 {
@@ -48765,6 +53396,113 @@ pub fn matrix_diag_v2<
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     MatrixDiagV2::new().build(diagonal, k, num_rows, num_cols, padding_value, scope)
+}
+/// Builder for the `MatrixDiagV3` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct MatrixDiagV3 {
+    T: ::std::option::Option<crate::DataType>,
+    align: ::std::option::Option<::std::string::String>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl MatrixDiagV3 {
+    /// Creates a new `MatrixDiagV3`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `align` attribute.
+    pub fn align<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.align = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `MatrixDiagV3` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+        O3: ::std::convert::Into<crate::Output>,
+        O4: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        diagonal: O0,
+        k: O1,
+        num_rows: O2,
+        num_cols: O3,
+        padding_value: O4,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(
+            diagonal.into(),
+            k.into(),
+            num_rows.into(),
+            num_cols.into(),
+            padding_value.into(),
+            scope,
+        )
+    }
+
+    fn build_impl(
+        &self,
+        diagonal: crate::Output,
+        k: crate::Output,
+        num_rows: crate::Output,
+        num_cols: crate::Output,
+        padding_value: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("MatrixDiagV3", |nd| {
+            nd.add_input(diagonal);
+            nd.add_input(k);
+            nd.add_input(num_rows);
+            nd.add_input(num_cols);
+            nd.add_input(padding_value);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.align {
+                nd.set_attr_string("align", value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `MatrixDiagV3::new().build(diagonal, k, num_rows, num_cols, padding_value, scope)`.
+pub fn matrix_diag_v3<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+    O3: ::std::convert::Into<crate::Output>,
+    O4: ::std::convert::Into<crate::Output>,
+>(
+    diagonal: O0,
+    k: O1,
+    num_rows: O2,
+    num_cols: O3,
+    padding_value: O4,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    MatrixDiagV3::new().build(diagonal, k, num_rows, num_cols, padding_value, scope)
 }
 /// Builder for the `MatrixExponential` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -49096,6 +53834,94 @@ pub fn matrix_set_diag_v2<
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     MatrixSetDiagV2::new().build(input, diagonal, k, scope)
+}
+/// Builder for the `MatrixSetDiagV3` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct MatrixSetDiagV3 {
+    T: ::std::option::Option<crate::DataType>,
+    align: ::std::option::Option<::std::string::String>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl MatrixSetDiagV3 {
+    /// Creates a new `MatrixSetDiagV3`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `align` attribute.
+    pub fn align<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.align = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `MatrixSetDiagV3` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        input: O0,
+        diagonal: O1,
+        k: O2,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(input.into(), diagonal.into(), k.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        input: crate::Output,
+        diagonal: crate::Output,
+        k: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("MatrixSetDiagV3", |nd| {
+            nd.add_input(input);
+            nd.add_input(diagonal);
+            nd.add_input(k);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.align {
+                nd.set_attr_string("align", value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `MatrixSetDiagV3::new().build(input, diagonal, k, scope)`.
+pub fn matrix_set_diag_v3<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+>(
+    input: O0,
+    diagonal: O1,
+    k: O2,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    MatrixSetDiagV3::new().build(input, diagonal, k, scope)
 }
 /// Builder for the `MatrixSolve` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -51867,6 +56693,94 @@ pub fn mirror_pad_grad<
 ) -> crate::Result<crate::Operation> {
     MirrorPadGrad::new().build(input, paddings, scope)
 }
+/// Builder for the `MlirPassthroughOp` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct MlirPassthroughOp {
+    mlir_module: ::std::option::Option<::std::string::String>,
+    Tinputs: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    Toutputs: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl MlirPassthroughOp {
+    /// Creates a new `MlirPassthroughOp`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `mlir_module` attribute.
+    pub fn mlir_module<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.mlir_module = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tinputs` attribute.
+    pub fn Tinputs<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Tinputs = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Toutputs` attribute.
+    pub fn Toutputs<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Toutputs = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `MlirPassthroughOp` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        inputs: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(inputs.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        inputs: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("MlirPassthroughOp", |nd| {
+            nd.add_input(inputs);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.mlir_module {
+                nd.set_attr_string("mlir_module", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Tinputs {
+                nd.set_attr_type_list("Tinputs", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Toutputs {
+                nd.set_attr_type_list("Toutputs", value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `MlirPassthroughOp::new().build(inputs, scope)`.
+pub fn mlir_passthrough_op<O0: ::std::convert::Into<crate::Output>>(
+    inputs: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    MlirPassthroughOp::new().build(inputs, scope)
+}
 /// Builder for the `Mod` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct Mod {
@@ -53766,6 +58680,65 @@ pub fn nccl_reduce<O0: ::std::convert::Into<crate::Output>>(
 ) -> crate::Result<crate::Operation> {
     NcclReduce::new().build(input, scope)
 }
+/// Builder for the `Ndtri` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct Ndtri {
+    T: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl Ndtri {
+    /// Creates a new `Ndtri`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `Ndtri` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        x: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(x.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        x: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("Ndtri", |nd| {
+            nd.add_input(x);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `Ndtri::new().build(x, scope)`.
+pub fn ndtri<O0: ::std::convert::Into<crate::Output>>(
+    x: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    Ndtri::new().build(x, scope)
+}
 /// Builder for the `NearestNeighbors` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct NearestNeighbors {
@@ -54945,6 +59918,7 @@ pub fn non_serializable_dataset<O0: ::std::convert::Into<crate::Output>>(
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct NotEqual {
     T: ::std::option::Option<crate::DataType>,
+    incompatible_shape_error: ::std::option::Option<bool>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -54957,6 +59931,15 @@ impl NotEqual {
     /// Sets the `T` attribute.
     pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
         self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `incompatible_shape_error` attribute.
+    pub fn incompatible_shape_error<ArgType: ::std::convert::Into<bool>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.incompatible_shape_error = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -54993,6 +59976,9 @@ impl NotEqual {
             }
             if let ::std::option::Option::Some(value) = &self.T {
                 nd.set_attr_type("T", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.incompatible_shape_error {
+                nd.set_attr_bool("incompatible_shape_error", *value)?;
             }
             ::std::result::Result::Ok(())
         })
@@ -57880,6 +62866,334 @@ pub fn parallel_interleave_dataset_v2<
         scope,
     )
 }
+/// Builder for the `ParallelInterleaveDatasetV3` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct ParallelInterleaveDatasetV3 {
+    f: ::std::option::Option<::std::string::String>,
+    deterministic: ::std::option::Option<::std::string::String>,
+    Targuments: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl ParallelInterleaveDatasetV3 {
+    /// Creates a new `ParallelInterleaveDatasetV3`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `f` attribute.
+    pub fn f<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.f = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `deterministic` attribute.
+    pub fn deterministic<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.deterministic = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Targuments` attribute.
+    pub fn Targuments<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Targuments = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `output_types` attribute.
+    pub fn output_types<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.output_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `output_shapes` attribute.
+    pub fn output_shapes<ArgType: ::std::convert::Into<::std::vec::Vec<crate::Shape>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.output_shapes = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `ParallelInterleaveDatasetV3` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+        O3: ::std::convert::Into<crate::Output>,
+        O4: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        input_dataset: O0,
+        other_arguments: O1,
+        cycle_length: O2,
+        block_length: O3,
+        num_parallel_calls: O4,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(
+            input_dataset.into(),
+            other_arguments.into(),
+            cycle_length.into(),
+            block_length.into(),
+            num_parallel_calls.into(),
+            scope,
+        )
+    }
+
+    fn build_impl(
+        &self,
+        input_dataset: crate::Output,
+        other_arguments: crate::Output,
+        cycle_length: crate::Output,
+        block_length: crate::Output,
+        num_parallel_calls: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("ParallelInterleaveDatasetV3", |nd| {
+            nd.add_input(input_dataset);
+            nd.add_input(other_arguments);
+            nd.add_input(cycle_length);
+            nd.add_input(block_length);
+            nd.add_input(num_parallel_calls);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.f {
+                nd.set_attr_string("f", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.deterministic {
+                nd.set_attr_string("deterministic", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Targuments {
+                nd.set_attr_type_list("Targuments", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.output_types {
+                nd.set_attr_type_list("output_types", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.output_shapes {
+                nd.set_attr_shape_list("output_shapes", value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `ParallelInterleaveDatasetV3::new().build(input_dataset, other_arguments, cycle_length, block_length, num_parallel_calls, scope)`.
+pub fn parallel_interleave_dataset_v3<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+    O3: ::std::convert::Into<crate::Output>,
+    O4: ::std::convert::Into<crate::Output>,
+>(
+    input_dataset: O0,
+    other_arguments: O1,
+    cycle_length: O2,
+    block_length: O3,
+    num_parallel_calls: O4,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    ParallelInterleaveDatasetV3::new().build(
+        input_dataset,
+        other_arguments,
+        cycle_length,
+        block_length,
+        num_parallel_calls,
+        scope,
+    )
+}
+/// Builder for the `ParallelInterleaveDatasetV4` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct ParallelInterleaveDatasetV4 {
+    f: ::std::option::Option<::std::string::String>,
+    deterministic: ::std::option::Option<::std::string::String>,
+    Targuments: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl ParallelInterleaveDatasetV4 {
+    /// Creates a new `ParallelInterleaveDatasetV4`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `f` attribute.
+    pub fn f<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.f = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `deterministic` attribute.
+    pub fn deterministic<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.deterministic = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Targuments` attribute.
+    pub fn Targuments<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Targuments = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `output_types` attribute.
+    pub fn output_types<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.output_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `output_shapes` attribute.
+    pub fn output_shapes<ArgType: ::std::convert::Into<::std::vec::Vec<crate::Shape>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.output_shapes = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `ParallelInterleaveDatasetV4` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+        O3: ::std::convert::Into<crate::Output>,
+        O4: ::std::convert::Into<crate::Output>,
+        O5: ::std::convert::Into<crate::Output>,
+        O6: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        input_dataset: O0,
+        other_arguments: O1,
+        cycle_length: O2,
+        block_length: O3,
+        buffer_output_elements: O4,
+        prefetch_input_elements: O5,
+        num_parallel_calls: O6,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(
+            input_dataset.into(),
+            other_arguments.into(),
+            cycle_length.into(),
+            block_length.into(),
+            buffer_output_elements.into(),
+            prefetch_input_elements.into(),
+            num_parallel_calls.into(),
+            scope,
+        )
+    }
+
+    fn build_impl(
+        &self,
+        input_dataset: crate::Output,
+        other_arguments: crate::Output,
+        cycle_length: crate::Output,
+        block_length: crate::Output,
+        buffer_output_elements: crate::Output,
+        prefetch_input_elements: crate::Output,
+        num_parallel_calls: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("ParallelInterleaveDatasetV4", |nd| {
+            nd.add_input(input_dataset);
+            nd.add_input(other_arguments);
+            nd.add_input(cycle_length);
+            nd.add_input(block_length);
+            nd.add_input(buffer_output_elements);
+            nd.add_input(prefetch_input_elements);
+            nd.add_input(num_parallel_calls);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.f {
+                nd.set_attr_string("f", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.deterministic {
+                nd.set_attr_string("deterministic", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Targuments {
+                nd.set_attr_type_list("Targuments", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.output_types {
+                nd.set_attr_type_list("output_types", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.output_shapes {
+                nd.set_attr_shape_list("output_shapes", value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `ParallelInterleaveDatasetV4::new().build(input_dataset, other_arguments, cycle_length, block_length, buffer_output_elements, prefetch_input_elements, num_parallel_calls, scope)`.
+pub fn parallel_interleave_dataset_v4<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+    O3: ::std::convert::Into<crate::Output>,
+    O4: ::std::convert::Into<crate::Output>,
+    O5: ::std::convert::Into<crate::Output>,
+    O6: ::std::convert::Into<crate::Output>,
+>(
+    input_dataset: O0,
+    other_arguments: O1,
+    cycle_length: O2,
+    block_length: O3,
+    buffer_output_elements: O4,
+    prefetch_input_elements: O5,
+    num_parallel_calls: O6,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    ParallelInterleaveDatasetV4::new().build(
+        input_dataset,
+        other_arguments,
+        cycle_length,
+        block_length,
+        buffer_output_elements,
+        prefetch_input_elements,
+        num_parallel_calls,
+        scope,
+    )
+}
 /// Builder for the `ParallelMapDataset` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct ParallelMapDataset {
@@ -58037,6 +63351,167 @@ pub fn parallel_map_dataset<
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     ParallelMapDataset::new().build(input_dataset, other_arguments, num_parallel_calls, scope)
+}
+/// Builder for the `ParallelMapDatasetV2` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct ParallelMapDatasetV2 {
+    f: ::std::option::Option<::std::string::String>,
+    Targuments: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
+    use_inter_op_parallelism: ::std::option::Option<bool>,
+    deterministic: ::std::option::Option<::std::string::String>,
+    preserve_cardinality: ::std::option::Option<bool>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl ParallelMapDatasetV2 {
+    /// Creates a new `ParallelMapDatasetV2`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `f` attribute.
+    pub fn f<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.f = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Targuments` attribute.
+    pub fn Targuments<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Targuments = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `output_types` attribute.
+    pub fn output_types<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.output_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `output_shapes` attribute.
+    pub fn output_shapes<ArgType: ::std::convert::Into<::std::vec::Vec<crate::Shape>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.output_shapes = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `use_inter_op_parallelism` attribute.
+    pub fn use_inter_op_parallelism<ArgType: ::std::convert::Into<bool>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.use_inter_op_parallelism = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `deterministic` attribute.
+    pub fn deterministic<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.deterministic = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `preserve_cardinality` attribute.
+    pub fn preserve_cardinality<ArgType: ::std::convert::Into<bool>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.preserve_cardinality = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `ParallelMapDatasetV2` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        input_dataset: O0,
+        other_arguments: O1,
+        num_parallel_calls: O2,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(
+            input_dataset.into(),
+            other_arguments.into(),
+            num_parallel_calls.into(),
+            scope,
+        )
+    }
+
+    fn build_impl(
+        &self,
+        input_dataset: crate::Output,
+        other_arguments: crate::Output,
+        num_parallel_calls: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("ParallelMapDatasetV2", |nd| {
+            nd.add_input(input_dataset);
+            nd.add_input(other_arguments);
+            nd.add_input(num_parallel_calls);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.f {
+                nd.set_attr_string("f", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Targuments {
+                nd.set_attr_type_list("Targuments", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.output_types {
+                nd.set_attr_type_list("output_types", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.output_shapes {
+                nd.set_attr_shape_list("output_shapes", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.use_inter_op_parallelism {
+                nd.set_attr_bool("use_inter_op_parallelism", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.deterministic {
+                nd.set_attr_string("deterministic", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.preserve_cardinality {
+                nd.set_attr_bool("preserve_cardinality", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `ParallelMapDatasetV2::new().build(input_dataset, other_arguments, num_parallel_calls, scope)`.
+pub fn parallel_map_dataset_v2<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+>(
+    input_dataset: O0,
+    other_arguments: O1,
+    num_parallel_calls: O2,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    ParallelMapDatasetV2::new().build(input_dataset, other_arguments, num_parallel_calls, scope)
 }
 /// Builder for the `ParameterizedTruncatedNormal` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -58323,6 +63798,9 @@ pub struct ParseExampleDataset {
     output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     sloppy: ::std::option::Option<bool>,
+    ragged_keys: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
+    ragged_value_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    ragged_split_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -58401,6 +63879,33 @@ impl ParseExampleDataset {
         self
     }
 
+    /// Sets the `ragged_keys` attribute.
+    pub fn ragged_keys<ArgType: ::std::convert::Into<::std::vec::Vec<::std::string::String>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.ragged_keys = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `ragged_value_types` attribute.
+    pub fn ragged_value_types<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.ragged_value_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `ragged_split_types` attribute.
+    pub fn ragged_split_types<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.ragged_split_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
     /// Adds a control input.
     pub fn add_control_input(mut self, op: crate::Operation) -> Self {
         self.control_inputs.push(op);
@@ -58465,6 +63970,15 @@ impl ParseExampleDataset {
             if let ::std::option::Option::Some(value) = &self.sloppy {
                 nd.set_attr_bool("sloppy", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.ragged_keys {
+                nd.set_attr_string_list("ragged_keys", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.ragged_value_types {
+                nd.set_attr_type_list("ragged_value_types", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.ragged_split_types {
+                nd.set_attr_type_list("ragged_split_types", value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -58482,6 +63996,393 @@ pub fn parse_example_dataset<
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     ParseExampleDataset::new().build(input_dataset, num_parallel_calls, dense_defaults, scope)
+}
+/// Builder for the `ParseExampleDatasetV2` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct ParseExampleDatasetV2 {
+    sparse_keys: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
+    dense_keys: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
+    sparse_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    Tdense: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    dense_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
+    output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
+    deterministic: ::std::option::Option<::std::string::String>,
+    ragged_keys: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
+    ragged_value_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    ragged_split_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl ParseExampleDatasetV2 {
+    /// Creates a new `ParseExampleDatasetV2`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `sparse_keys` attribute.
+    pub fn sparse_keys<ArgType: ::std::convert::Into<::std::vec::Vec<::std::string::String>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.sparse_keys = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `dense_keys` attribute.
+    pub fn dense_keys<ArgType: ::std::convert::Into<::std::vec::Vec<::std::string::String>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.dense_keys = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `sparse_types` attribute.
+    pub fn sparse_types<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.sparse_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tdense` attribute.
+    pub fn Tdense<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Tdense = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `dense_shapes` attribute.
+    pub fn dense_shapes<ArgType: ::std::convert::Into<::std::vec::Vec<crate::Shape>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.dense_shapes = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `output_types` attribute.
+    pub fn output_types<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.output_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `output_shapes` attribute.
+    pub fn output_shapes<ArgType: ::std::convert::Into<::std::vec::Vec<crate::Shape>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.output_shapes = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `deterministic` attribute.
+    pub fn deterministic<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.deterministic = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `ragged_keys` attribute.
+    pub fn ragged_keys<ArgType: ::std::convert::Into<::std::vec::Vec<::std::string::String>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.ragged_keys = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `ragged_value_types` attribute.
+    pub fn ragged_value_types<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.ragged_value_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `ragged_split_types` attribute.
+    pub fn ragged_split_types<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.ragged_split_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `ParseExampleDatasetV2` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        input_dataset: O0,
+        num_parallel_calls: O1,
+        dense_defaults: O2,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(
+            input_dataset.into(),
+            num_parallel_calls.into(),
+            dense_defaults.into(),
+            scope,
+        )
+    }
+
+    fn build_impl(
+        &self,
+        input_dataset: crate::Output,
+        num_parallel_calls: crate::Output,
+        dense_defaults: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("ParseExampleDatasetV2", |nd| {
+            nd.add_input(input_dataset);
+            nd.add_input(num_parallel_calls);
+            nd.add_input(dense_defaults);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.sparse_keys {
+                nd.set_attr_string_list("sparse_keys", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.dense_keys {
+                nd.set_attr_string_list("dense_keys", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.sparse_types {
+                nd.set_attr_type_list("sparse_types", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Tdense {
+                nd.set_attr_type_list("Tdense", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.dense_shapes {
+                nd.set_attr_shape_list("dense_shapes", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.output_types {
+                nd.set_attr_type_list("output_types", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.output_shapes {
+                nd.set_attr_shape_list("output_shapes", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.deterministic {
+                nd.set_attr_string("deterministic", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.ragged_keys {
+                nd.set_attr_string_list("ragged_keys", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.ragged_value_types {
+                nd.set_attr_type_list("ragged_value_types", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.ragged_split_types {
+                nd.set_attr_type_list("ragged_split_types", value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `ParseExampleDatasetV2::new().build(input_dataset, num_parallel_calls, dense_defaults, scope)`.
+pub fn parse_example_dataset_v2<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+>(
+    input_dataset: O0,
+    num_parallel_calls: O1,
+    dense_defaults: O2,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    ParseExampleDatasetV2::new().build(input_dataset, num_parallel_calls, dense_defaults, scope)
+}
+/// Builder for the `ParseExampleV2` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct ParseExampleV2 {
+    Tdense: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    num_sparse: ::std::option::Option<i64>,
+    sparse_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    ragged_value_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    ragged_split_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    dense_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl ParseExampleV2 {
+    /// Creates a new `ParseExampleV2`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `Tdense` attribute.
+    pub fn Tdense<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Tdense = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `num_sparse` attribute.
+    pub fn num_sparse<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.num_sparse = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `sparse_types` attribute.
+    pub fn sparse_types<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.sparse_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `ragged_value_types` attribute.
+    pub fn ragged_value_types<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.ragged_value_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `ragged_split_types` attribute.
+    pub fn ragged_split_types<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.ragged_split_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `dense_shapes` attribute.
+    pub fn dense_shapes<ArgType: ::std::convert::Into<::std::vec::Vec<crate::Shape>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.dense_shapes = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `ParseExampleV2` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+        O3: ::std::convert::Into<crate::Output>,
+        O4: ::std::convert::Into<crate::Output>,
+        O5: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        serialized: O0,
+        names: O1,
+        sparse_keys: O2,
+        dense_keys: O3,
+        ragged_keys: O4,
+        dense_defaults: O5,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(
+            serialized.into(),
+            names.into(),
+            sparse_keys.into(),
+            dense_keys.into(),
+            ragged_keys.into(),
+            dense_defaults.into(),
+            scope,
+        )
+    }
+
+    fn build_impl(
+        &self,
+        serialized: crate::Output,
+        names: crate::Output,
+        sparse_keys: crate::Output,
+        dense_keys: crate::Output,
+        ragged_keys: crate::Output,
+        dense_defaults: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("ParseExampleV2", |nd| {
+            nd.add_input(serialized);
+            nd.add_input(names);
+            nd.add_input(sparse_keys);
+            nd.add_input(dense_keys);
+            nd.add_input(ragged_keys);
+            nd.add_input(dense_defaults);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.Tdense {
+                nd.set_attr_type_list("Tdense", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.num_sparse {
+                nd.set_attr_int("num_sparse", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.sparse_types {
+                nd.set_attr_type_list("sparse_types", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.ragged_value_types {
+                nd.set_attr_type_list("ragged_value_types", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.ragged_split_types {
+                nd.set_attr_type_list("ragged_split_types", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.dense_shapes {
+                nd.set_attr_shape_list("dense_shapes", value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `ParseExampleV2::new().build(serialized, names, sparse_keys, dense_keys, ragged_keys, dense_defaults, scope)`.
+pub fn parse_example_v2<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+    O3: ::std::convert::Into<crate::Output>,
+    O4: ::std::convert::Into<crate::Output>,
+    O5: ::std::convert::Into<crate::Output>,
+>(
+    serialized: O0,
+    names: O1,
+    sparse_keys: O2,
+    dense_keys: O3,
+    ragged_keys: O4,
+    dense_defaults: O5,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    ParseExampleV2::new().build(
+        serialized,
+        names,
+        sparse_keys,
+        dense_keys,
+        ragged_keys,
+        dense_defaults,
+        scope,
+    )
 }
 /// Builder for the `ParseSequenceExample` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -58760,6 +64661,317 @@ pub fn parse_sequence_example<
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     ParseSequenceExample::new().build(serialized, debug_name, context_dense_defaults, scope)
+}
+/// Builder for the `ParseSequenceExampleV2` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct ParseSequenceExampleV2 {
+    Ncontext_sparse: ::std::option::Option<i64>,
+    Tcontext_dense: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    context_sparse_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    context_ragged_value_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    context_ragged_split_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    context_dense_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
+    Nfeature_list_sparse: ::std::option::Option<i64>,
+    Nfeature_list_dense: ::std::option::Option<i64>,
+    feature_list_dense_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    feature_list_sparse_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    feature_list_ragged_value_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    feature_list_ragged_split_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    feature_list_dense_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl ParseSequenceExampleV2 {
+    /// Creates a new `ParseSequenceExampleV2`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `Ncontext_sparse` attribute.
+    pub fn Ncontext_sparse<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.Ncontext_sparse = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tcontext_dense` attribute.
+    pub fn Tcontext_dense<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Tcontext_dense = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `context_sparse_types` attribute.
+    pub fn context_sparse_types<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.context_sparse_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `context_ragged_value_types` attribute.
+    pub fn context_ragged_value_types<
+        ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>,
+    >(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.context_ragged_value_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `context_ragged_split_types` attribute.
+    pub fn context_ragged_split_types<
+        ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>,
+    >(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.context_ragged_split_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `context_dense_shapes` attribute.
+    pub fn context_dense_shapes<ArgType: ::std::convert::Into<::std::vec::Vec<crate::Shape>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.context_dense_shapes = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Nfeature_list_sparse` attribute.
+    pub fn Nfeature_list_sparse<ArgType: ::std::convert::Into<i64>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Nfeature_list_sparse = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Nfeature_list_dense` attribute.
+    pub fn Nfeature_list_dense<ArgType: ::std::convert::Into<i64>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Nfeature_list_dense = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `feature_list_dense_types` attribute.
+    pub fn feature_list_dense_types<
+        ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>,
+    >(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.feature_list_dense_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `feature_list_sparse_types` attribute.
+    pub fn feature_list_sparse_types<
+        ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>,
+    >(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.feature_list_sparse_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `feature_list_ragged_value_types` attribute.
+    pub fn feature_list_ragged_value_types<
+        ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>,
+    >(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.feature_list_ragged_value_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `feature_list_ragged_split_types` attribute.
+    pub fn feature_list_ragged_split_types<
+        ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>,
+    >(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.feature_list_ragged_split_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `feature_list_dense_shapes` attribute.
+    pub fn feature_list_dense_shapes<
+        ArgType: ::std::convert::Into<::std::vec::Vec<crate::Shape>>,
+    >(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.feature_list_dense_shapes = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `ParseSequenceExampleV2` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+        O3: ::std::convert::Into<crate::Output>,
+        O4: ::std::convert::Into<crate::Output>,
+        O5: ::std::convert::Into<crate::Output>,
+        O6: ::std::convert::Into<crate::Output>,
+        O7: ::std::convert::Into<crate::Output>,
+        O8: ::std::convert::Into<crate::Output>,
+        O9: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        serialized: O0,
+        debug_name: O1,
+        context_sparse_keys: O2,
+        context_dense_keys: O3,
+        context_ragged_keys: O4,
+        feature_list_sparse_keys: O5,
+        feature_list_dense_keys: O6,
+        feature_list_ragged_keys: O7,
+        feature_list_dense_missing_assumed_empty: O8,
+        context_dense_defaults: O9,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(
+            serialized.into(),
+            debug_name.into(),
+            context_sparse_keys.into(),
+            context_dense_keys.into(),
+            context_ragged_keys.into(),
+            feature_list_sparse_keys.into(),
+            feature_list_dense_keys.into(),
+            feature_list_ragged_keys.into(),
+            feature_list_dense_missing_assumed_empty.into(),
+            context_dense_defaults.into(),
+            scope,
+        )
+    }
+
+    fn build_impl(
+        &self,
+        serialized: crate::Output,
+        debug_name: crate::Output,
+        context_sparse_keys: crate::Output,
+        context_dense_keys: crate::Output,
+        context_ragged_keys: crate::Output,
+        feature_list_sparse_keys: crate::Output,
+        feature_list_dense_keys: crate::Output,
+        feature_list_ragged_keys: crate::Output,
+        feature_list_dense_missing_assumed_empty: crate::Output,
+        context_dense_defaults: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("ParseSequenceExampleV2", |nd| {
+            nd.add_input(serialized);
+            nd.add_input(debug_name);
+            nd.add_input(context_sparse_keys);
+            nd.add_input(context_dense_keys);
+            nd.add_input(context_ragged_keys);
+            nd.add_input(feature_list_sparse_keys);
+            nd.add_input(feature_list_dense_keys);
+            nd.add_input(feature_list_ragged_keys);
+            nd.add_input(feature_list_dense_missing_assumed_empty);
+            nd.add_input(context_dense_defaults);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.Ncontext_sparse {
+                nd.set_attr_int("Ncontext_sparse", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Tcontext_dense {
+                nd.set_attr_type_list("Tcontext_dense", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.context_sparse_types {
+                nd.set_attr_type_list("context_sparse_types", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.context_ragged_value_types {
+                nd.set_attr_type_list("context_ragged_value_types", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.context_ragged_split_types {
+                nd.set_attr_type_list("context_ragged_split_types", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.context_dense_shapes {
+                nd.set_attr_shape_list("context_dense_shapes", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Nfeature_list_sparse {
+                nd.set_attr_int("Nfeature_list_sparse", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Nfeature_list_dense {
+                nd.set_attr_int("Nfeature_list_dense", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.feature_list_dense_types {
+                nd.set_attr_type_list("feature_list_dense_types", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.feature_list_sparse_types {
+                nd.set_attr_type_list("feature_list_sparse_types", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.feature_list_ragged_value_types {
+                nd.set_attr_type_list("feature_list_ragged_value_types", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.feature_list_ragged_split_types {
+                nd.set_attr_type_list("feature_list_ragged_split_types", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.feature_list_dense_shapes {
+                nd.set_attr_shape_list("feature_list_dense_shapes", value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `ParseSequenceExampleV2::new().build(serialized, debug_name, context_sparse_keys, context_dense_keys, context_ragged_keys, feature_list_sparse_keys, feature_list_dense_keys, feature_list_ragged_keys, feature_list_dense_missing_assumed_empty, context_dense_defaults, scope)`.
+pub fn parse_sequence_example_v2<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+    O3: ::std::convert::Into<crate::Output>,
+    O4: ::std::convert::Into<crate::Output>,
+    O5: ::std::convert::Into<crate::Output>,
+    O6: ::std::convert::Into<crate::Output>,
+    O7: ::std::convert::Into<crate::Output>,
+    O8: ::std::convert::Into<crate::Output>,
+    O9: ::std::convert::Into<crate::Output>,
+>(
+    serialized: O0,
+    debug_name: O1,
+    context_sparse_keys: O2,
+    context_dense_keys: O3,
+    context_ragged_keys: O4,
+    feature_list_sparse_keys: O5,
+    feature_list_dense_keys: O6,
+    feature_list_ragged_keys: O7,
+    feature_list_dense_missing_assumed_empty: O8,
+    context_dense_defaults: O9,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    ParseSequenceExampleV2::new().build(
+        serialized,
+        debug_name,
+        context_sparse_keys,
+        context_dense_keys,
+        context_ragged_keys,
+        feature_list_sparse_keys,
+        feature_list_dense_keys,
+        feature_list_ragged_keys,
+        feature_list_dense_missing_assumed_empty,
+        context_dense_defaults,
+        scope,
+    )
 }
 /// Builder for the `ParseSingleExample` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -60972,6 +67184,7 @@ pub struct QuantizeAndDequantizeV2 {
     T: ::std::option::Option<crate::DataType>,
     round_mode: ::std::option::Option<::std::string::String>,
     narrow_range: ::std::option::Option<bool>,
+    axis: ::std::option::Option<i64>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -61017,6 +67230,12 @@ impl QuantizeAndDequantizeV2 {
     /// Sets the `narrow_range` attribute.
     pub fn narrow_range<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
         self.narrow_range = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `axis` attribute.
+    pub fn axis<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.axis = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -61073,6 +67292,9 @@ impl QuantizeAndDequantizeV2 {
             if let ::std::option::Option::Some(value) = &self.narrow_range {
                 nd.set_attr_bool("narrow_range", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.axis {
+                nd.set_attr_int("axis", *value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -61098,6 +67320,7 @@ pub struct QuantizeAndDequantizeV3 {
     range_given: ::std::option::Option<bool>,
     T: ::std::option::Option<crate::DataType>,
     narrow_range: ::std::option::Option<bool>,
+    axis: ::std::option::Option<i64>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -61128,6 +67351,12 @@ impl QuantizeAndDequantizeV3 {
     /// Sets the `narrow_range` attribute.
     pub fn narrow_range<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
         self.narrow_range = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `axis` attribute.
+    pub fn axis<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.axis = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -61187,6 +67416,9 @@ impl QuantizeAndDequantizeV3 {
             }
             if let ::std::option::Option::Some(value) = &self.narrow_range {
                 nd.set_attr_bool("narrow_range", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.axis {
+                nd.set_attr_int("axis", *value)?;
             }
             ::std::result::Result::Ok(())
         })
@@ -61305,6 +67537,9 @@ pub struct QuantizeV2 {
     T: ::std::option::Option<crate::DataType>,
     mode: ::std::option::Option<::std::string::String>,
     round_mode: ::std::option::Option<::std::string::String>,
+    narrow_range: ::std::option::Option<bool>,
+    axis: ::std::option::Option<i64>,
+    ensure_minimum_range: ::std::option::Option<f32>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -61335,6 +67570,27 @@ impl QuantizeV2 {
         value: ArgType,
     ) -> Self {
         self.round_mode = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `narrow_range` attribute.
+    pub fn narrow_range<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.narrow_range = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `axis` attribute.
+    pub fn axis<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.axis = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `ensure_minimum_range` attribute.
+    pub fn ensure_minimum_range<ArgType: ::std::convert::Into<f32>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.ensure_minimum_range = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -61381,6 +67637,15 @@ impl QuantizeV2 {
             }
             if let ::std::option::Option::Some(value) = &self.round_mode {
                 nd.set_attr_string("round_mode", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.narrow_range {
+                nd.set_attr_bool("narrow_range", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.axis {
+                nd.set_attr_int("axis", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.ensure_minimum_range {
+                nd.set_attr_float("ensure_minimum_range", *value)?;
             }
             ::std::result::Result::Ok(())
         })
@@ -64914,6 +71179,7 @@ pub struct QuantizedDepthwiseConv2DWithBiasAndRelu {
     strides: ::std::option::Option<::std::vec::Vec<i64>>,
     padding: ::std::option::Option<::std::string::String>,
     dilations: ::std::option::Option<::std::vec::Vec<i64>>,
+    padding_list: ::std::option::Option<::std::vec::Vec<i64>>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -64974,6 +71240,15 @@ impl QuantizedDepthwiseConv2DWithBiasAndRelu {
         value: ArgType,
     ) -> Self {
         self.dilations = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `padding_list` attribute.
+    pub fn padding_list<ArgType: ::std::convert::Into<::std::vec::Vec<i64>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.padding_list = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -65055,6 +71330,9 @@ impl QuantizedDepthwiseConv2DWithBiasAndRelu {
             if let ::std::option::Option::Some(value) = &self.dilations {
                 nd.set_attr_int_list("dilations", value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.padding_list {
+                nd.set_attr_int_list("padding_list", value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -65093,6 +71371,7 @@ pub struct QuantizedDepthwiseConv2DWithBiasAndReluAndRequantize {
     strides: ::std::option::Option<::std::vec::Vec<i64>>,
     padding: ::std::option::Option<::std::string::String>,
     dilations: ::std::option::Option<::std::vec::Vec<i64>>,
+    padding_list: ::std::option::Option<::std::vec::Vec<i64>>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -65159,6 +71438,15 @@ impl QuantizedDepthwiseConv2DWithBiasAndReluAndRequantize {
         value: ArgType,
     ) -> Self {
         self.dilations = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `padding_list` attribute.
+    pub fn padding_list<ArgType: ::std::convert::Into<::std::vec::Vec<i64>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.padding_list = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -65254,6 +71542,9 @@ impl QuantizedDepthwiseConv2DWithBiasAndReluAndRequantize {
                 }
                 if let ::std::option::Option::Some(value) = &self.dilations {
                     nd.set_attr_int_list("dilations", value)?;
+                }
+                if let ::std::option::Option::Some(value) = &self.padding_list {
+                    nd.set_attr_int_list("padding_list", value)?;
                 }
                 ::std::result::Result::Ok(())
             },
@@ -65756,6 +72047,205 @@ pub fn quantized_mat_mul_with_bias<
 ) -> crate::Result<crate::Operation> {
     QuantizedMatMulWithBias::new().build(a, b, bias, min_a, max_a, min_b, max_b, scope)
 }
+/// Builder for the `QuantizedMatMulWithBiasAndDequantize` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct QuantizedMatMulWithBiasAndDequantize {
+    T1: ::std::option::Option<crate::DataType>,
+    T2: ::std::option::Option<crate::DataType>,
+    Tbias: ::std::option::Option<crate::DataType>,
+    Toutput: ::std::option::Option<crate::DataType>,
+    transpose_a: ::std::option::Option<bool>,
+    transpose_b: ::std::option::Option<bool>,
+    input_quant_mode: ::std::option::Option<::std::string::String>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl QuantizedMatMulWithBiasAndDequantize {
+    /// Creates a new `QuantizedMatMulWithBiasAndDequantize`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T1` attribute.
+    pub fn T1<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T1 = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `T2` attribute.
+    pub fn T2<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T2 = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tbias` attribute.
+    pub fn Tbias<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.Tbias = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Toutput` attribute.
+    pub fn Toutput<ArgType: ::std::convert::Into<crate::DataType>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Toutput = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `transpose_a` attribute.
+    pub fn transpose_a<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.transpose_a = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `transpose_b` attribute.
+    pub fn transpose_b<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.transpose_b = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `input_quant_mode` attribute.
+    pub fn input_quant_mode<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.input_quant_mode = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `QuantizedMatMulWithBiasAndDequantize` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+        O3: ::std::convert::Into<crate::Output>,
+        O4: ::std::convert::Into<crate::Output>,
+        O5: ::std::convert::Into<crate::Output>,
+        O6: ::std::convert::Into<crate::Output>,
+        O7: ::std::convert::Into<crate::Output>,
+        O8: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        a: O0,
+        b: O1,
+        bias: O2,
+        min_a: O3,
+        max_a: O4,
+        min_b: O5,
+        max_b: O6,
+        min_freezed_output: O7,
+        max_freezed_output: O8,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(
+            a.into(),
+            b.into(),
+            bias.into(),
+            min_a.into(),
+            max_a.into(),
+            min_b.into(),
+            max_b.into(),
+            min_freezed_output.into(),
+            max_freezed_output.into(),
+            scope,
+        )
+    }
+
+    fn build_impl(
+        &self,
+        a: crate::Output,
+        b: crate::Output,
+        bias: crate::Output,
+        min_a: crate::Output,
+        max_a: crate::Output,
+        min_b: crate::Output,
+        max_b: crate::Output,
+        min_freezed_output: crate::Output,
+        max_freezed_output: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("QuantizedMatMulWithBiasAndDequantize", |nd| {
+            nd.add_input(a);
+            nd.add_input(b);
+            nd.add_input(bias);
+            nd.add_input(min_a);
+            nd.add_input(max_a);
+            nd.add_input(min_b);
+            nd.add_input(max_b);
+            nd.add_input(min_freezed_output);
+            nd.add_input(max_freezed_output);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T1 {
+                nd.set_attr_type("T1", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.T2 {
+                nd.set_attr_type("T2", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Tbias {
+                nd.set_attr_type("Tbias", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Toutput {
+                nd.set_attr_type("Toutput", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.transpose_a {
+                nd.set_attr_bool("transpose_a", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.transpose_b {
+                nd.set_attr_bool("transpose_b", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.input_quant_mode {
+                nd.set_attr_string("input_quant_mode", value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `QuantizedMatMulWithBiasAndDequantize::new().build(a, b, bias, min_a, max_a, min_b, max_b, min_freezed_output, max_freezed_output, scope)`.
+pub fn quantized_mat_mul_with_bias_and_dequantize<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+    O3: ::std::convert::Into<crate::Output>,
+    O4: ::std::convert::Into<crate::Output>,
+    O5: ::std::convert::Into<crate::Output>,
+    O6: ::std::convert::Into<crate::Output>,
+    O7: ::std::convert::Into<crate::Output>,
+    O8: ::std::convert::Into<crate::Output>,
+>(
+    a: O0,
+    b: O1,
+    bias: O2,
+    min_a: O3,
+    max_a: O4,
+    min_b: O5,
+    max_b: O6,
+    min_freezed_output: O7,
+    max_freezed_output: O8,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    QuantizedMatMulWithBiasAndDequantize::new().build(
+        a,
+        b,
+        bias,
+        min_a,
+        max_a,
+        min_b,
+        max_b,
+        min_freezed_output,
+        max_freezed_output,
+        scope,
+    )
+}
 /// Builder for the `QuantizedMatMulWithBiasAndRelu` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct QuantizedMatMulWithBiasAndRelu {
@@ -66107,6 +72597,205 @@ pub fn quantized_mat_mul_with_bias_and_relu_and_requantize<
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     QuantizedMatMulWithBiasAndReluAndRequantize::new().build(
+        a,
+        b,
+        bias,
+        min_a,
+        max_a,
+        min_b,
+        max_b,
+        min_freezed_output,
+        max_freezed_output,
+        scope,
+    )
+}
+/// Builder for the `QuantizedMatMulWithBiasAndRequantize` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct QuantizedMatMulWithBiasAndRequantize {
+    T1: ::std::option::Option<crate::DataType>,
+    T2: ::std::option::Option<crate::DataType>,
+    Tbias: ::std::option::Option<crate::DataType>,
+    Toutput: ::std::option::Option<crate::DataType>,
+    transpose_a: ::std::option::Option<bool>,
+    transpose_b: ::std::option::Option<bool>,
+    input_quant_mode: ::std::option::Option<::std::string::String>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl QuantizedMatMulWithBiasAndRequantize {
+    /// Creates a new `QuantizedMatMulWithBiasAndRequantize`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T1` attribute.
+    pub fn T1<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T1 = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `T2` attribute.
+    pub fn T2<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T2 = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tbias` attribute.
+    pub fn Tbias<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.Tbias = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Toutput` attribute.
+    pub fn Toutput<ArgType: ::std::convert::Into<crate::DataType>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Toutput = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `transpose_a` attribute.
+    pub fn transpose_a<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.transpose_a = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `transpose_b` attribute.
+    pub fn transpose_b<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.transpose_b = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `input_quant_mode` attribute.
+    pub fn input_quant_mode<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.input_quant_mode = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `QuantizedMatMulWithBiasAndRequantize` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+        O3: ::std::convert::Into<crate::Output>,
+        O4: ::std::convert::Into<crate::Output>,
+        O5: ::std::convert::Into<crate::Output>,
+        O6: ::std::convert::Into<crate::Output>,
+        O7: ::std::convert::Into<crate::Output>,
+        O8: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        a: O0,
+        b: O1,
+        bias: O2,
+        min_a: O3,
+        max_a: O4,
+        min_b: O5,
+        max_b: O6,
+        min_freezed_output: O7,
+        max_freezed_output: O8,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(
+            a.into(),
+            b.into(),
+            bias.into(),
+            min_a.into(),
+            max_a.into(),
+            min_b.into(),
+            max_b.into(),
+            min_freezed_output.into(),
+            max_freezed_output.into(),
+            scope,
+        )
+    }
+
+    fn build_impl(
+        &self,
+        a: crate::Output,
+        b: crate::Output,
+        bias: crate::Output,
+        min_a: crate::Output,
+        max_a: crate::Output,
+        min_b: crate::Output,
+        max_b: crate::Output,
+        min_freezed_output: crate::Output,
+        max_freezed_output: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("QuantizedMatMulWithBiasAndRequantize", |nd| {
+            nd.add_input(a);
+            nd.add_input(b);
+            nd.add_input(bias);
+            nd.add_input(min_a);
+            nd.add_input(max_a);
+            nd.add_input(min_b);
+            nd.add_input(max_b);
+            nd.add_input(min_freezed_output);
+            nd.add_input(max_freezed_output);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T1 {
+                nd.set_attr_type("T1", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.T2 {
+                nd.set_attr_type("T2", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Tbias {
+                nd.set_attr_type("Tbias", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Toutput {
+                nd.set_attr_type("Toutput", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.transpose_a {
+                nd.set_attr_bool("transpose_a", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.transpose_b {
+                nd.set_attr_bool("transpose_b", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.input_quant_mode {
+                nd.set_attr_string("input_quant_mode", value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `QuantizedMatMulWithBiasAndRequantize::new().build(a, b, bias, min_a, max_a, min_b, max_b, min_freezed_output, max_freezed_output, scope)`.
+pub fn quantized_mat_mul_with_bias_and_requantize<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+    O3: ::std::convert::Into<crate::Output>,
+    O4: ::std::convert::Into<crate::Output>,
+    O5: ::std::convert::Into<crate::Output>,
+    O6: ::std::convert::Into<crate::Output>,
+    O7: ::std::convert::Into<crate::Output>,
+    O8: ::std::convert::Into<crate::Output>,
+>(
+    a: O0,
+    b: O1,
+    bias: O2,
+    min_a: O3,
+    max_a: O4,
+    min_b: O5,
+    max_b: O6,
+    min_freezed_output: O7,
+    max_freezed_output: O8,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    QuantizedMatMulWithBiasAndRequantize::new().build(
         a,
         b,
         bias,
@@ -67979,6 +74668,8 @@ pub fn queue_size_v2<O0: ::std::convert::Into<crate::Output>>(
 /// Builder for the `RFFT` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct RFFT {
+    Treal: ::std::option::Option<crate::DataType>,
+    Tcomplex: ::std::option::Option<crate::DataType>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -67986,6 +74677,21 @@ impl RFFT {
     /// Creates a new `RFFT`.
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// Sets the `Treal` attribute.
+    pub fn Treal<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.Treal = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tcomplex` attribute.
+    pub fn Tcomplex<ArgType: ::std::convert::Into<crate::DataType>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Tcomplex = ::std::option::Option::Some(value.into());
+        self
     }
 
     /// Adds a control input.
@@ -68019,6 +74725,12 @@ impl RFFT {
             for op in &self.control_inputs {
                 nd.add_control_input(op);
             }
+            if let ::std::option::Option::Some(value) = &self.Treal {
+                nd.set_attr_type("Treal", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Tcomplex {
+                nd.set_attr_type("Tcomplex", *value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -68035,6 +74747,8 @@ pub fn rfft<O0: ::std::convert::Into<crate::Output>, O1: ::std::convert::Into<cr
 /// Builder for the `RFFT2D` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct RFFT2D {
+    Treal: ::std::option::Option<crate::DataType>,
+    Tcomplex: ::std::option::Option<crate::DataType>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -68042,6 +74756,21 @@ impl RFFT2D {
     /// Creates a new `RFFT2D`.
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// Sets the `Treal` attribute.
+    pub fn Treal<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.Treal = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tcomplex` attribute.
+    pub fn Tcomplex<ArgType: ::std::convert::Into<crate::DataType>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Tcomplex = ::std::option::Option::Some(value.into());
+        self
     }
 
     /// Adds a control input.
@@ -68075,6 +74804,12 @@ impl RFFT2D {
             for op in &self.control_inputs {
                 nd.add_control_input(op);
             }
+            if let ::std::option::Option::Some(value) = &self.Treal {
+                nd.set_attr_type("Treal", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Tcomplex {
+                nd.set_attr_type("Tcomplex", *value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -68091,6 +74826,8 @@ pub fn rfft2_d<O0: ::std::convert::Into<crate::Output>, O1: ::std::convert::Into
 /// Builder for the `RFFT3D` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct RFFT3D {
+    Treal: ::std::option::Option<crate::DataType>,
+    Tcomplex: ::std::option::Option<crate::DataType>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -68098,6 +74835,21 @@ impl RFFT3D {
     /// Creates a new `RFFT3D`.
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// Sets the `Treal` attribute.
+    pub fn Treal<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.Treal = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tcomplex` attribute.
+    pub fn Tcomplex<ArgType: ::std::convert::Into<crate::DataType>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Tcomplex = ::std::option::Option::Some(value.into());
+        self
     }
 
     /// Adds a control input.
@@ -68130,6 +74882,12 @@ impl RFFT3D {
             nd.add_input(fft_length);
             for op in &self.control_inputs {
                 nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.Treal {
+                nd.set_attr_type("Treal", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Tcomplex {
+                nd.set_attr_type("Tcomplex", *value)?;
             }
             ::std::result::Result::Ok(())
         })
@@ -68202,6 +74960,461 @@ pub fn rgbto_hsv<O0: ::std::convert::Into<crate::Output>>(
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     RGBToHSV::new().build(images, scope)
+}
+/// Builder for the `RaggedBincount` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct RaggedBincount {
+    Tidx: ::std::option::Option<crate::DataType>,
+    T: ::std::option::Option<crate::DataType>,
+    binary_output: ::std::option::Option<bool>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl RaggedBincount {
+    /// Creates a new `RaggedBincount`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `Tidx` attribute.
+    pub fn Tidx<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.Tidx = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `binary_output` attribute.
+    pub fn binary_output<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.binary_output = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `RaggedBincount` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+        O3: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        splits: O0,
+        values: O1,
+        size: O2,
+        weights: O3,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(
+            splits.into(),
+            values.into(),
+            size.into(),
+            weights.into(),
+            scope,
+        )
+    }
+
+    fn build_impl(
+        &self,
+        splits: crate::Output,
+        values: crate::Output,
+        size: crate::Output,
+        weights: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("RaggedBincount", |nd| {
+            nd.add_input(splits);
+            nd.add_input(values);
+            nd.add_input(size);
+            nd.add_input(weights);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.Tidx {
+                nd.set_attr_type("Tidx", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.binary_output {
+                nd.set_attr_bool("binary_output", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `RaggedBincount::new().build(splits, values, size, weights, scope)`.
+pub fn ragged_bincount<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+    O3: ::std::convert::Into<crate::Output>,
+>(
+    splits: O0,
+    values: O1,
+    size: O2,
+    weights: O3,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    RaggedBincount::new().build(splits, values, size, weights, scope)
+}
+/// Builder for the `RaggedCountSparseOutput` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct RaggedCountSparseOutput {
+    T: ::std::option::Option<crate::DataType>,
+    minlength: ::std::option::Option<i64>,
+    maxlength: ::std::option::Option<i64>,
+    binary_output: ::std::option::Option<bool>,
+    output_type: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl RaggedCountSparseOutput {
+    /// Creates a new `RaggedCountSparseOutput`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `minlength` attribute.
+    pub fn minlength<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.minlength = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `maxlength` attribute.
+    pub fn maxlength<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.maxlength = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `binary_output` attribute.
+    pub fn binary_output<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.binary_output = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `output_type` attribute.
+    pub fn output_type<ArgType: ::std::convert::Into<crate::DataType>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.output_type = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `RaggedCountSparseOutput` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        splits: O0,
+        values: O1,
+        weights: O2,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(splits.into(), values.into(), weights.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        splits: crate::Output,
+        values: crate::Output,
+        weights: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("RaggedCountSparseOutput", |nd| {
+            nd.add_input(splits);
+            nd.add_input(values);
+            nd.add_input(weights);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.minlength {
+                nd.set_attr_int("minlength", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.maxlength {
+                nd.set_attr_int("maxlength", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.binary_output {
+                nd.set_attr_bool("binary_output", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.output_type {
+                nd.set_attr_type("output_type", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `RaggedCountSparseOutput::new().build(splits, values, weights, scope)`.
+pub fn ragged_count_sparse_output<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+>(
+    splits: O0,
+    values: O1,
+    weights: O2,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    RaggedCountSparseOutput::new().build(splits, values, weights, scope)
+}
+/// Builder for the `RaggedCross` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct RaggedCross {
+    Nsparse: ::std::option::Option<i64>,
+    input_order: ::std::option::Option<::std::string::String>,
+    hashed_output: ::std::option::Option<bool>,
+    num_buckets: ::std::option::Option<i64>,
+    hash_key: ::std::option::Option<i64>,
+    ragged_values_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    ragged_splits_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    sparse_values_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    dense_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    out_values_type: ::std::option::Option<crate::DataType>,
+    out_row_splits_type: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl RaggedCross {
+    /// Creates a new `RaggedCross`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `Nsparse` attribute.
+    pub fn Nsparse<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.Nsparse = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `input_order` attribute.
+    pub fn input_order<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.input_order = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `hashed_output` attribute.
+    pub fn hashed_output<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.hashed_output = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `num_buckets` attribute.
+    pub fn num_buckets<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.num_buckets = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `hash_key` attribute.
+    pub fn hash_key<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.hash_key = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `ragged_values_types` attribute.
+    pub fn ragged_values_types<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.ragged_values_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `ragged_splits_types` attribute.
+    pub fn ragged_splits_types<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.ragged_splits_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `sparse_values_types` attribute.
+    pub fn sparse_values_types<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.sparse_values_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `dense_types` attribute.
+    pub fn dense_types<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.dense_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `out_values_type` attribute.
+    pub fn out_values_type<ArgType: ::std::convert::Into<crate::DataType>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.out_values_type = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `out_row_splits_type` attribute.
+    pub fn out_row_splits_type<ArgType: ::std::convert::Into<crate::DataType>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.out_row_splits_type = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `RaggedCross` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+        O3: ::std::convert::Into<crate::Output>,
+        O4: ::std::convert::Into<crate::Output>,
+        O5: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        ragged_values: O0,
+        ragged_row_splits: O1,
+        sparse_indices: O2,
+        sparse_values: O3,
+        sparse_shape: O4,
+        dense_inputs: O5,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(
+            ragged_values.into(),
+            ragged_row_splits.into(),
+            sparse_indices.into(),
+            sparse_values.into(),
+            sparse_shape.into(),
+            dense_inputs.into(),
+            scope,
+        )
+    }
+
+    fn build_impl(
+        &self,
+        ragged_values: crate::Output,
+        ragged_row_splits: crate::Output,
+        sparse_indices: crate::Output,
+        sparse_values: crate::Output,
+        sparse_shape: crate::Output,
+        dense_inputs: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("RaggedCross", |nd| {
+            nd.add_input(ragged_values);
+            nd.add_input(ragged_row_splits);
+            nd.add_input(sparse_indices);
+            nd.add_input(sparse_values);
+            nd.add_input(sparse_shape);
+            nd.add_input(dense_inputs);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.Nsparse {
+                nd.set_attr_int("Nsparse", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.input_order {
+                nd.set_attr_string("input_order", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.hashed_output {
+                nd.set_attr_bool("hashed_output", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.num_buckets {
+                nd.set_attr_int("num_buckets", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.hash_key {
+                nd.set_attr_int("hash_key", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.ragged_values_types {
+                nd.set_attr_type_list("ragged_values_types", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.ragged_splits_types {
+                nd.set_attr_type_list("ragged_splits_types", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.sparse_values_types {
+                nd.set_attr_type_list("sparse_values_types", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.dense_types {
+                nd.set_attr_type_list("dense_types", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.out_values_type {
+                nd.set_attr_type("out_values_type", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.out_row_splits_type {
+                nd.set_attr_type("out_row_splits_type", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `RaggedCross::new().build(ragged_values, ragged_row_splits, sparse_indices, sparse_values, sparse_shape, dense_inputs, scope)`.
+pub fn ragged_cross<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+    O3: ::std::convert::Into<crate::Output>,
+    O4: ::std::convert::Into<crate::Output>,
+    O5: ::std::convert::Into<crate::Output>,
+>(
+    ragged_values: O0,
+    ragged_row_splits: O1,
+    sparse_indices: O2,
+    sparse_values: O3,
+    sparse_shape: O4,
+    dense_inputs: O5,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    RaggedCross::new().build(
+        ragged_values,
+        ragged_row_splits,
+        sparse_indices,
+        sparse_values,
+        sparse_shape,
+        dense_inputs,
+        scope,
+    )
 }
 /// Builder for the `RaggedGather` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -71610,6 +78823,121 @@ impl RecordInput {
 pub fn record_input(scope: &mut crate::Scope) -> crate::Result<crate::Operation> {
     RecordInput::new().build(scope)
 }
+/// Builder for the `Recv` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct Recv {
+    tensor_type: ::std::option::Option<crate::DataType>,
+    tensor_name: ::std::option::Option<::std::string::String>,
+    send_device: ::std::option::Option<::std::string::String>,
+    send_device_incarnation: ::std::option::Option<i64>,
+    recv_device: ::std::option::Option<::std::string::String>,
+    client_terminated: ::std::option::Option<bool>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl Recv {
+    /// Creates a new `Recv`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `tensor_type` attribute.
+    pub fn tensor_type<ArgType: ::std::convert::Into<crate::DataType>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.tensor_type = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `tensor_name` attribute.
+    pub fn tensor_name<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.tensor_name = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `send_device` attribute.
+    pub fn send_device<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.send_device = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `send_device_incarnation` attribute.
+    pub fn send_device_incarnation<ArgType: ::std::convert::Into<i64>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.send_device_incarnation = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `recv_device` attribute.
+    pub fn recv_device<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.recv_device = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `client_terminated` attribute.
+    pub fn client_terminated<ArgType: ::std::convert::Into<bool>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.client_terminated = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `Recv` operation.
+    pub fn build(&self, scope: &mut crate::Scope) -> crate::Result<crate::Operation> {
+        self.build_impl(scope)
+    }
+
+    fn build_impl(&self, scope: &mut crate::Scope) -> crate::Result<crate::Operation> {
+        scope.new_operation("Recv", |nd| {
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.tensor_type {
+                nd.set_attr_type("tensor_type", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.tensor_name {
+                nd.set_attr_string("tensor_name", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.send_device {
+                nd.set_attr_string("send_device", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.send_device_incarnation {
+                nd.set_attr_int("send_device_incarnation", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.recv_device {
+                nd.set_attr_string("recv_device", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.client_terminated {
+                nd.set_attr_bool("client_terminated", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `Recv::new().build(scope)`.
+pub fn recv(scope: &mut crate::Scope) -> crate::Result<crate::Operation> {
+    Recv::new().build(scope)
+}
 /// Builder for the `RecvTPUEmbeddingActivations` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct RecvTPUEmbeddingActivations {
@@ -72522,6 +79850,84 @@ pub fn regex_replace<
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     RegexReplace::new().build(input, pattern, rewrite, scope)
+}
+/// Builder for the `RegisterDataset` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct RegisterDataset {
+    external_state_policy: ::std::option::Option<i64>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl RegisterDataset {
+    /// Creates a new `RegisterDataset`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `external_state_policy` attribute.
+    pub fn external_state_policy<ArgType: ::std::convert::Into<i64>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.external_state_policy = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `RegisterDataset` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        dataset: O0,
+        address: O1,
+        protocol: O2,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(dataset.into(), address.into(), protocol.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        dataset: crate::Output,
+        address: crate::Output,
+        protocol: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("RegisterDataset", |nd| {
+            nd.add_input(dataset);
+            nd.add_input(address);
+            nd.add_input(protocol);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.external_state_policy {
+                nd.set_attr_int("external_state_policy", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `RegisterDataset::new().build(dataset, address, protocol, scope)`.
+pub fn register_dataset<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+>(
+    dataset: O0,
+    address: O1,
+    protocol: O2,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    RegisterDataset::new().build(dataset, address, protocol, scope)
 }
 /// Builder for the `Relu` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -75597,6 +83003,7 @@ pub fn resource_apply_centered_rmsprop<
 pub struct ResourceApplyFtrl {
     T: ::std::option::Option<crate::DataType>,
     use_locking: ::std::option::Option<bool>,
+    multiply_linear_by_lr: ::std::option::Option<bool>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -75615,6 +83022,15 @@ impl ResourceApplyFtrl {
     /// Sets the `use_locking` attribute.
     pub fn use_locking<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
         self.use_locking = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `multiply_linear_by_lr` attribute.
+    pub fn multiply_linear_by_lr<ArgType: ::std::convert::Into<bool>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.multiply_linear_by_lr = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -75689,6 +83105,9 @@ impl ResourceApplyFtrl {
             if let ::std::option::Option::Some(value) = &self.use_locking {
                 nd.set_attr_bool("use_locking", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.multiply_linear_by_lr {
+                nd.set_attr_bool("multiply_linear_by_lr", *value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -75722,6 +83141,7 @@ pub fn resource_apply_ftrl<
 pub struct ResourceApplyFtrlV2 {
     T: ::std::option::Option<crate::DataType>,
     use_locking: ::std::option::Option<bool>,
+    multiply_linear_by_lr: ::std::option::Option<bool>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -75740,6 +83160,15 @@ impl ResourceApplyFtrlV2 {
     /// Sets the `use_locking` attribute.
     pub fn use_locking<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
         self.use_locking = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `multiply_linear_by_lr` attribute.
+    pub fn multiply_linear_by_lr<ArgType: ::std::convert::Into<bool>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.multiply_linear_by_lr = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -75818,6 +83247,9 @@ impl ResourceApplyFtrlV2 {
             }
             if let ::std::option::Option::Some(value) = &self.use_locking {
                 nd.set_attr_bool("use_locking", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.multiply_linear_by_lr {
+                nd.set_attr_bool("multiply_linear_by_lr", *value)?;
             }
             ::std::result::Result::Ok(())
         })
@@ -77520,6 +84952,202 @@ pub fn resource_scatter_nd_add<
 ) -> crate::Result<crate::Operation> {
     ResourceScatterNdAdd::new().build(ref_, indices, updates, scope)
 }
+/// Builder for the `ResourceScatterNdMax` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct ResourceScatterNdMax {
+    T: ::std::option::Option<crate::DataType>,
+    Tindices: ::std::option::Option<crate::DataType>,
+    use_locking: ::std::option::Option<bool>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl ResourceScatterNdMax {
+    /// Creates a new `ResourceScatterNdMax`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tindices` attribute.
+    pub fn Tindices<ArgType: ::std::convert::Into<crate::DataType>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Tindices = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `use_locking` attribute.
+    pub fn use_locking<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.use_locking = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `ResourceScatterNdMax` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        ref_: O0,
+        indices: O1,
+        updates: O2,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(ref_.into(), indices.into(), updates.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        ref_: crate::Output,
+        indices: crate::Output,
+        updates: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("ResourceScatterNdMax", |nd| {
+            nd.add_input(ref_);
+            nd.add_input(indices);
+            nd.add_input(updates);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Tindices {
+                nd.set_attr_type("Tindices", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.use_locking {
+                nd.set_attr_bool("use_locking", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `ResourceScatterNdMax::new().build(ref_, indices, updates, scope)`.
+pub fn resource_scatter_nd_max<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+>(
+    ref_: O0,
+    indices: O1,
+    updates: O2,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    ResourceScatterNdMax::new().build(ref_, indices, updates, scope)
+}
+/// Builder for the `ResourceScatterNdMin` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct ResourceScatterNdMin {
+    T: ::std::option::Option<crate::DataType>,
+    Tindices: ::std::option::Option<crate::DataType>,
+    use_locking: ::std::option::Option<bool>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl ResourceScatterNdMin {
+    /// Creates a new `ResourceScatterNdMin`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tindices` attribute.
+    pub fn Tindices<ArgType: ::std::convert::Into<crate::DataType>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Tindices = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `use_locking` attribute.
+    pub fn use_locking<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.use_locking = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `ResourceScatterNdMin` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        ref_: O0,
+        indices: O1,
+        updates: O2,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(ref_.into(), indices.into(), updates.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        ref_: crate::Output,
+        indices: crate::Output,
+        updates: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("ResourceScatterNdMin", |nd| {
+            nd.add_input(ref_);
+            nd.add_input(indices);
+            nd.add_input(updates);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Tindices {
+                nd.set_attr_type("Tindices", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.use_locking {
+                nd.set_attr_bool("use_locking", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `ResourceScatterNdMin::new().build(ref_, indices, updates, scope)`.
+pub fn resource_scatter_nd_min<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+>(
+    ref_: O0,
+    indices: O1,
+    updates: O2,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    ResourceScatterNdMin::new().build(ref_, indices, updates, scope)
+}
 /// Builder for the `ResourceScatterNdSub` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct ResourceScatterNdSub {
@@ -78617,6 +86245,7 @@ pub struct ResourceSparseApplyFtrl {
     T: ::std::option::Option<crate::DataType>,
     Tindices: ::std::option::Option<crate::DataType>,
     use_locking: ::std::option::Option<bool>,
+    multiply_linear_by_lr: ::std::option::Option<bool>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -78644,6 +86273,15 @@ impl ResourceSparseApplyFtrl {
     /// Sets the `use_locking` attribute.
     pub fn use_locking<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
         self.use_locking = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `multiply_linear_by_lr` attribute.
+    pub fn multiply_linear_by_lr<ArgType: ::std::convert::Into<bool>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.multiply_linear_by_lr = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -78726,6 +86364,9 @@ impl ResourceSparseApplyFtrl {
             if let ::std::option::Option::Some(value) = &self.use_locking {
                 nd.set_attr_bool("use_locking", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.multiply_linear_by_lr {
+                nd.set_attr_bool("multiply_linear_by_lr", *value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -78764,6 +86405,7 @@ pub struct ResourceSparseApplyFtrlV2 {
     T: ::std::option::Option<crate::DataType>,
     Tindices: ::std::option::Option<crate::DataType>,
     use_locking: ::std::option::Option<bool>,
+    multiply_linear_by_lr: ::std::option::Option<bool>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -78791,6 +86433,15 @@ impl ResourceSparseApplyFtrlV2 {
     /// Sets the `use_locking` attribute.
     pub fn use_locking<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
         self.use_locking = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `multiply_linear_by_lr` attribute.
+    pub fn multiply_linear_by_lr<ArgType: ::std::convert::Into<bool>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.multiply_linear_by_lr = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -78877,6 +86528,9 @@ impl ResourceSparseApplyFtrlV2 {
             }
             if let ::std::option::Option::Some(value) = &self.use_locking {
                 nd.set_attr_bool("use_locking", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.multiply_linear_by_lr {
+                nd.set_attr_bool("multiply_linear_by_lr", *value)?;
             }
             ::std::result::Result::Ok(())
         })
@@ -80003,6 +87657,7 @@ pub struct RetrieveTPUEmbeddingADAMParameters {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -80039,6 +87694,15 @@ impl RetrieveTPUEmbeddingADAMParameters {
         self
     }
 
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
+        self
+    }
+
     /// Adds a control input.
     pub fn add_control_input(mut self, op: crate::Operation) -> Self {
         self.control_inputs.push(op);
@@ -80067,6 +87731,9 @@ impl RetrieveTPUEmbeddingADAMParameters {
             if let ::std::option::Option::Some(value) = &self.shard_id {
                 nd.set_attr_int("shard_id", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.config {
+                nd.set_attr_string("config", value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -80085,6 +87752,7 @@ pub struct RetrieveTPUEmbeddingADAMParametersGradAccumDebug {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -80121,6 +87789,15 @@ impl RetrieveTPUEmbeddingADAMParametersGradAccumDebug {
         self
     }
 
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
+        self
+    }
+
     /// Adds a control input.
     pub fn add_control_input(mut self, op: crate::Operation) -> Self {
         self.control_inputs.push(op);
@@ -80149,6 +87826,9 @@ impl RetrieveTPUEmbeddingADAMParametersGradAccumDebug {
             if let ::std::option::Option::Some(value) = &self.shard_id {
                 nd.set_attr_int("shard_id", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.config {
+                nd.set_attr_string("config", value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -80167,6 +87847,7 @@ pub struct RetrieveTPUEmbeddingAdadeltaParameters {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -80203,6 +87884,15 @@ impl RetrieveTPUEmbeddingAdadeltaParameters {
         self
     }
 
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
+        self
+    }
+
     /// Adds a control input.
     pub fn add_control_input(mut self, op: crate::Operation) -> Self {
         self.control_inputs.push(op);
@@ -80231,6 +87921,9 @@ impl RetrieveTPUEmbeddingAdadeltaParameters {
             if let ::std::option::Option::Some(value) = &self.shard_id {
                 nd.set_attr_int("shard_id", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.config {
+                nd.set_attr_string("config", value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -80249,6 +87942,7 @@ pub struct RetrieveTPUEmbeddingAdadeltaParametersGradAccumDebug {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -80285,6 +87979,15 @@ impl RetrieveTPUEmbeddingAdadeltaParametersGradAccumDebug {
         self
     }
 
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
+        self
+    }
+
     /// Adds a control input.
     pub fn add_control_input(mut self, op: crate::Operation) -> Self {
         self.control_inputs.push(op);
@@ -80315,6 +88018,9 @@ impl RetrieveTPUEmbeddingAdadeltaParametersGradAccumDebug {
                 if let ::std::option::Option::Some(value) = &self.shard_id {
                     nd.set_attr_int("shard_id", *value)?;
                 }
+                if let ::std::option::Option::Some(value) = &self.config {
+                    nd.set_attr_string("config", value)?;
+                }
                 ::std::result::Result::Ok(())
             },
         )
@@ -80334,6 +88040,7 @@ pub struct RetrieveTPUEmbeddingAdagradParameters {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -80370,6 +88077,15 @@ impl RetrieveTPUEmbeddingAdagradParameters {
         self
     }
 
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
+        self
+    }
+
     /// Adds a control input.
     pub fn add_control_input(mut self, op: crate::Operation) -> Self {
         self.control_inputs.push(op);
@@ -80398,6 +88114,9 @@ impl RetrieveTPUEmbeddingAdagradParameters {
             if let ::std::option::Option::Some(value) = &self.shard_id {
                 nd.set_attr_int("shard_id", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.config {
+                nd.set_attr_string("config", value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -80416,6 +88135,7 @@ pub struct RetrieveTPUEmbeddingAdagradParametersGradAccumDebug {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -80452,6 +88172,15 @@ impl RetrieveTPUEmbeddingAdagradParametersGradAccumDebug {
         self
     }
 
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
+        self
+    }
+
     /// Adds a control input.
     pub fn add_control_input(mut self, op: crate::Operation) -> Self {
         self.control_inputs.push(op);
@@ -80482,6 +88211,9 @@ impl RetrieveTPUEmbeddingAdagradParametersGradAccumDebug {
                 if let ::std::option::Option::Some(value) = &self.shard_id {
                     nd.set_attr_int("shard_id", *value)?;
                 }
+                if let ::std::option::Option::Some(value) = &self.config {
+                    nd.set_attr_string("config", value)?;
+                }
                 ::std::result::Result::Ok(())
             },
         )
@@ -80501,6 +88233,7 @@ pub struct RetrieveTPUEmbeddingCenteredRMSPropParameters {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -80537,6 +88270,15 @@ impl RetrieveTPUEmbeddingCenteredRMSPropParameters {
         self
     }
 
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
+        self
+    }
+
     /// Adds a control input.
     pub fn add_control_input(mut self, op: crate::Operation) -> Self {
         self.control_inputs.push(op);
@@ -80565,6 +88307,9 @@ impl RetrieveTPUEmbeddingCenteredRMSPropParameters {
             if let ::std::option::Option::Some(value) = &self.shard_id {
                 nd.set_attr_int("shard_id", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.config {
+                nd.set_attr_string("config", value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -80583,6 +88328,7 @@ pub struct RetrieveTPUEmbeddingFTRLParameters {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -80619,6 +88365,15 @@ impl RetrieveTPUEmbeddingFTRLParameters {
         self
     }
 
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
+        self
+    }
+
     /// Adds a control input.
     pub fn add_control_input(mut self, op: crate::Operation) -> Self {
         self.control_inputs.push(op);
@@ -80647,6 +88402,9 @@ impl RetrieveTPUEmbeddingFTRLParameters {
             if let ::std::option::Option::Some(value) = &self.shard_id {
                 nd.set_attr_int("shard_id", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.config {
+                nd.set_attr_string("config", value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -80665,6 +88423,7 @@ pub struct RetrieveTPUEmbeddingFTRLParametersGradAccumDebug {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -80701,6 +88460,15 @@ impl RetrieveTPUEmbeddingFTRLParametersGradAccumDebug {
         self
     }
 
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
+        self
+    }
+
     /// Adds a control input.
     pub fn add_control_input(mut self, op: crate::Operation) -> Self {
         self.control_inputs.push(op);
@@ -80729,6 +88497,9 @@ impl RetrieveTPUEmbeddingFTRLParametersGradAccumDebug {
             if let ::std::option::Option::Some(value) = &self.shard_id {
                 nd.set_attr_int("shard_id", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.config {
+                nd.set_attr_string("config", value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -80747,6 +88518,7 @@ pub struct RetrieveTPUEmbeddingMDLAdagradLightParameters {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -80783,6 +88555,15 @@ impl RetrieveTPUEmbeddingMDLAdagradLightParameters {
         self
     }
 
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
+        self
+    }
+
     /// Adds a control input.
     pub fn add_control_input(mut self, op: crate::Operation) -> Self {
         self.control_inputs.push(op);
@@ -80811,6 +88592,9 @@ impl RetrieveTPUEmbeddingMDLAdagradLightParameters {
             if let ::std::option::Option::Some(value) = &self.shard_id {
                 nd.set_attr_int("shard_id", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.config {
+                nd.set_attr_string("config", value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -80829,6 +88613,7 @@ pub struct RetrieveTPUEmbeddingMomentumParameters {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -80865,6 +88650,15 @@ impl RetrieveTPUEmbeddingMomentumParameters {
         self
     }
 
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
+        self
+    }
+
     /// Adds a control input.
     pub fn add_control_input(mut self, op: crate::Operation) -> Self {
         self.control_inputs.push(op);
@@ -80893,6 +88687,9 @@ impl RetrieveTPUEmbeddingMomentumParameters {
             if let ::std::option::Option::Some(value) = &self.shard_id {
                 nd.set_attr_int("shard_id", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.config {
+                nd.set_attr_string("config", value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -80911,6 +88708,7 @@ pub struct RetrieveTPUEmbeddingMomentumParametersGradAccumDebug {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -80947,6 +88745,15 @@ impl RetrieveTPUEmbeddingMomentumParametersGradAccumDebug {
         self
     }
 
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
+        self
+    }
+
     /// Adds a control input.
     pub fn add_control_input(mut self, op: crate::Operation) -> Self {
         self.control_inputs.push(op);
@@ -80977,6 +88784,9 @@ impl RetrieveTPUEmbeddingMomentumParametersGradAccumDebug {
                 if let ::std::option::Option::Some(value) = &self.shard_id {
                     nd.set_attr_int("shard_id", *value)?;
                 }
+                if let ::std::option::Option::Some(value) = &self.config {
+                    nd.set_attr_string("config", value)?;
+                }
                 ::std::result::Result::Ok(())
             },
         )
@@ -80996,6 +88806,7 @@ pub struct RetrieveTPUEmbeddingProximalAdagradParameters {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -81032,6 +88843,15 @@ impl RetrieveTPUEmbeddingProximalAdagradParameters {
         self
     }
 
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
+        self
+    }
+
     /// Adds a control input.
     pub fn add_control_input(mut self, op: crate::Operation) -> Self {
         self.control_inputs.push(op);
@@ -81060,6 +88880,9 @@ impl RetrieveTPUEmbeddingProximalAdagradParameters {
             if let ::std::option::Option::Some(value) = &self.shard_id {
                 nd.set_attr_int("shard_id", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.config {
+                nd.set_attr_string("config", value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -81078,6 +88901,7 @@ pub struct RetrieveTPUEmbeddingProximalAdagradParametersGradAccumDebug {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -81114,6 +88938,15 @@ impl RetrieveTPUEmbeddingProximalAdagradParametersGradAccumDebug {
         self
     }
 
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
+        self
+    }
+
     /// Adds a control input.
     pub fn add_control_input(mut self, op: crate::Operation) -> Self {
         self.control_inputs.push(op);
@@ -81144,6 +88977,9 @@ impl RetrieveTPUEmbeddingProximalAdagradParametersGradAccumDebug {
                 if let ::std::option::Option::Some(value) = &self.shard_id {
                     nd.set_attr_int("shard_id", *value)?;
                 }
+                if let ::std::option::Option::Some(value) = &self.config {
+                    nd.set_attr_string("config", value)?;
+                }
                 ::std::result::Result::Ok(())
             },
         )
@@ -81156,6 +88992,199 @@ pub fn retrieve_tpuembedding_proximal_adagrad_parameters_grad_accum_debug(
 ) -> crate::Result<crate::Operation> {
     RetrieveTPUEmbeddingProximalAdagradParametersGradAccumDebug::new().build(scope)
 }
+/// Builder for the `RetrieveTPUEmbeddingProximalYogiParameters` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct RetrieveTPUEmbeddingProximalYogiParameters {
+    table_id: ::std::option::Option<i64>,
+    table_name: ::std::option::Option<::std::string::String>,
+    num_shards: ::std::option::Option<i64>,
+    shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl RetrieveTPUEmbeddingProximalYogiParameters {
+    /// Creates a new `RetrieveTPUEmbeddingProximalYogiParameters`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `table_id` attribute.
+    pub fn table_id<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.table_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `table_name` attribute.
+    pub fn table_name<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.table_name = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `num_shards` attribute.
+    pub fn num_shards<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.num_shards = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `shard_id` attribute.
+    pub fn shard_id<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.shard_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `RetrieveTPUEmbeddingProximalYogiParameters` operation.
+    pub fn build(&self, scope: &mut crate::Scope) -> crate::Result<crate::Operation> {
+        self.build_impl(scope)
+    }
+
+    fn build_impl(&self, scope: &mut crate::Scope) -> crate::Result<crate::Operation> {
+        scope.new_operation("RetrieveTPUEmbeddingProximalYogiParameters", |nd| {
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.table_id {
+                nd.set_attr_int("table_id", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.table_name {
+                nd.set_attr_string("table_name", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.num_shards {
+                nd.set_attr_int("num_shards", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.shard_id {
+                nd.set_attr_int("shard_id", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.config {
+                nd.set_attr_string("config", value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `RetrieveTPUEmbeddingProximalYogiParameters::new().build(scope)`.
+pub fn retrieve_tpuembedding_proximal_yogi_parameters(
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    RetrieveTPUEmbeddingProximalYogiParameters::new().build(scope)
+}
+/// Builder for the `RetrieveTPUEmbeddingProximalYogiParametersGradAccumDebug` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct RetrieveTPUEmbeddingProximalYogiParametersGradAccumDebug {
+    table_id: ::std::option::Option<i64>,
+    table_name: ::std::option::Option<::std::string::String>,
+    num_shards: ::std::option::Option<i64>,
+    shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl RetrieveTPUEmbeddingProximalYogiParametersGradAccumDebug {
+    /// Creates a new `RetrieveTPUEmbeddingProximalYogiParametersGradAccumDebug`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `table_id` attribute.
+    pub fn table_id<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.table_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `table_name` attribute.
+    pub fn table_name<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.table_name = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `num_shards` attribute.
+    pub fn num_shards<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.num_shards = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `shard_id` attribute.
+    pub fn shard_id<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.shard_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `RetrieveTPUEmbeddingProximalYogiParametersGradAccumDebug` operation.
+    pub fn build(&self, scope: &mut crate::Scope) -> crate::Result<crate::Operation> {
+        self.build_impl(scope)
+    }
+
+    fn build_impl(&self, scope: &mut crate::Scope) -> crate::Result<crate::Operation> {
+        scope.new_operation(
+            "RetrieveTPUEmbeddingProximalYogiParametersGradAccumDebug",
+            |nd| {
+                for op in &self.control_inputs {
+                    nd.add_control_input(op);
+                }
+                if let ::std::option::Option::Some(value) = &self.table_id {
+                    nd.set_attr_int("table_id", *value)?;
+                }
+                if let ::std::option::Option::Some(value) = &self.table_name {
+                    nd.set_attr_string("table_name", value)?;
+                }
+                if let ::std::option::Option::Some(value) = &self.num_shards {
+                    nd.set_attr_int("num_shards", *value)?;
+                }
+                if let ::std::option::Option::Some(value) = &self.shard_id {
+                    nd.set_attr_int("shard_id", *value)?;
+                }
+                if let ::std::option::Option::Some(value) = &self.config {
+                    nd.set_attr_string("config", value)?;
+                }
+                ::std::result::Result::Ok(())
+            },
+        )
+    }
+}
+
+/// Shorthand for `RetrieveTPUEmbeddingProximalYogiParametersGradAccumDebug::new().build(scope)`.
+pub fn retrieve_tpuembedding_proximal_yogi_parameters_grad_accum_debug(
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    RetrieveTPUEmbeddingProximalYogiParametersGradAccumDebug::new().build(scope)
+}
 /// Builder for the `RetrieveTPUEmbeddingRMSPropParameters` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct RetrieveTPUEmbeddingRMSPropParameters {
@@ -81163,6 +89192,7 @@ pub struct RetrieveTPUEmbeddingRMSPropParameters {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -81199,6 +89229,15 @@ impl RetrieveTPUEmbeddingRMSPropParameters {
         self
     }
 
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
+        self
+    }
+
     /// Adds a control input.
     pub fn add_control_input(mut self, op: crate::Operation) -> Self {
         self.control_inputs.push(op);
@@ -81227,6 +89266,9 @@ impl RetrieveTPUEmbeddingRMSPropParameters {
             if let ::std::option::Option::Some(value) = &self.shard_id {
                 nd.set_attr_int("shard_id", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.config {
+                nd.set_attr_string("config", value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -81245,6 +89287,7 @@ pub struct RetrieveTPUEmbeddingRMSPropParametersGradAccumDebug {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -81281,6 +89324,15 @@ impl RetrieveTPUEmbeddingRMSPropParametersGradAccumDebug {
         self
     }
 
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
+        self
+    }
+
     /// Adds a control input.
     pub fn add_control_input(mut self, op: crate::Operation) -> Self {
         self.control_inputs.push(op);
@@ -81311,6 +89363,9 @@ impl RetrieveTPUEmbeddingRMSPropParametersGradAccumDebug {
                 if let ::std::option::Option::Some(value) = &self.shard_id {
                     nd.set_attr_int("shard_id", *value)?;
                 }
+                if let ::std::option::Option::Some(value) = &self.config {
+                    nd.set_attr_string("config", value)?;
+                }
                 ::std::result::Result::Ok(())
             },
         )
@@ -81330,6 +89385,7 @@ pub struct RetrieveTPUEmbeddingStochasticGradientDescentParameters {
     table_name: ::std::option::Option<::std::string::String>,
     num_shards: ::std::option::Option<i64>,
     shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -81366,6 +89422,15 @@ impl RetrieveTPUEmbeddingStochasticGradientDescentParameters {
         self
     }
 
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
+        self
+    }
+
     /// Adds a control input.
     pub fn add_control_input(mut self, op: crate::Operation) -> Self {
         self.control_inputs.push(op);
@@ -81396,6 +89461,9 @@ impl RetrieveTPUEmbeddingStochasticGradientDescentParameters {
                 if let ::std::option::Option::Some(value) = &self.shard_id {
                     nd.set_attr_int("shard_id", *value)?;
                 }
+                if let ::std::option::Option::Some(value) = &self.config {
+                    nd.set_attr_string("config", value)?;
+                }
                 ::std::result::Result::Ok(())
             },
         )
@@ -81407,6 +89475,104 @@ pub fn retrieve_tpuembedding_stochastic_gradient_descent_parameters(
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     RetrieveTPUEmbeddingStochasticGradientDescentParameters::new().build(scope)
+}
+/// Builder for the `RetrieveTPUEmbeddingStochasticGradientDescentParametersGradAccumDebug` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct RetrieveTPUEmbeddingStochasticGradientDescentParametersGradAccumDebug {
+    table_id: ::std::option::Option<i64>,
+    table_name: ::std::option::Option<::std::string::String>,
+    num_shards: ::std::option::Option<i64>,
+    shard_id: ::std::option::Option<i64>,
+    config: ::std::option::Option<::std::string::String>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl RetrieveTPUEmbeddingStochasticGradientDescentParametersGradAccumDebug {
+    /// Creates a new `RetrieveTPUEmbeddingStochasticGradientDescentParametersGradAccumDebug`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `table_id` attribute.
+    pub fn table_id<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.table_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `table_name` attribute.
+    pub fn table_name<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.table_name = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `num_shards` attribute.
+    pub fn num_shards<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.num_shards = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `shard_id` attribute.
+    pub fn shard_id<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.shard_id = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `config` attribute.
+    pub fn config<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.config = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `RetrieveTPUEmbeddingStochasticGradientDescentParametersGradAccumDebug` operation.
+    pub fn build(&self, scope: &mut crate::Scope) -> crate::Result<crate::Operation> {
+        self.build_impl(scope)
+    }
+
+    fn build_impl(&self, scope: &mut crate::Scope) -> crate::Result<crate::Operation> {
+        scope.new_operation(
+            "RetrieveTPUEmbeddingStochasticGradientDescentParametersGradAccumDebug",
+            |nd| {
+                for op in &self.control_inputs {
+                    nd.add_control_input(op);
+                }
+                if let ::std::option::Option::Some(value) = &self.table_id {
+                    nd.set_attr_int("table_id", *value)?;
+                }
+                if let ::std::option::Option::Some(value) = &self.table_name {
+                    nd.set_attr_string("table_name", value)?;
+                }
+                if let ::std::option::Option::Some(value) = &self.num_shards {
+                    nd.set_attr_int("num_shards", *value)?;
+                }
+                if let ::std::option::Option::Some(value) = &self.shard_id {
+                    nd.set_attr_int("shard_id", *value)?;
+                }
+                if let ::std::option::Option::Some(value) = &self.config {
+                    nd.set_attr_string("config", value)?;
+                }
+                ::std::result::Result::Ok(())
+            },
+        )
+    }
+}
+
+/// Shorthand for `RetrieveTPUEmbeddingStochasticGradientDescentParametersGradAccumDebug::new().build(scope)`.
+pub fn retrieve_tpuembedding_stochastic_gradient_descent_parameters_grad_accum_debug(
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    RetrieveTPUEmbeddingStochasticGradientDescentParametersGradAccumDebug::new().build(scope)
 }
 /// Builder for the `Reverse` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -82709,6 +90875,125 @@ pub fn save<
 ) -> crate::Result<crate::Operation> {
     Save::new().build(filename, tensor_names, data, scope)
 }
+/// Builder for the `SaveDataset` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct SaveDataset {
+    compression: ::std::option::Option<::std::string::String>,
+    shard_func: ::std::option::Option<::std::string::String>,
+    use_shard_func: ::std::option::Option<bool>,
+    Tshard_func_args: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl SaveDataset {
+    /// Creates a new `SaveDataset`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `compression` attribute.
+    pub fn compression<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.compression = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `shard_func` attribute.
+    pub fn shard_func<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.shard_func = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `use_shard_func` attribute.
+    pub fn use_shard_func<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.use_shard_func = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tshard_func_args` attribute.
+    pub fn Tshard_func_args<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Tshard_func_args = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `SaveDataset` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        input_dataset: O0,
+        path: O1,
+        shard_func_other_args: O2,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(
+            input_dataset.into(),
+            path.into(),
+            shard_func_other_args.into(),
+            scope,
+        )
+    }
+
+    fn build_impl(
+        &self,
+        input_dataset: crate::Output,
+        path: crate::Output,
+        shard_func_other_args: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("SaveDataset", |nd| {
+            nd.add_input(input_dataset);
+            nd.add_input(path);
+            nd.add_input(shard_func_other_args);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.compression {
+                nd.set_attr_string("compression", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.shard_func {
+                nd.set_attr_string("shard_func", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.use_shard_func {
+                nd.set_attr_bool("use_shard_func", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Tshard_func_args {
+                nd.set_attr_type_list("Tshard_func_args", value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `SaveDataset::new().build(input_dataset, path, shard_func_other_args, scope)`.
+pub fn save_dataset<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+>(
+    input_dataset: O0,
+    path: O1,
+    shard_func_other_args: O2,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    SaveDataset::new().build(input_dataset, path, shard_func_other_args, scope)
+}
 /// Builder for the `SaveSlices` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct SaveSlices {
@@ -83187,6 +91472,7 @@ pub struct ScanDataset {
     output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     preserve_cardinality: ::std::option::Option<bool>,
+    use_default_device: ::std::option::Option<bool>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -83250,6 +91536,15 @@ impl ScanDataset {
         self
     }
 
+    /// Sets the `use_default_device` attribute.
+    pub fn use_default_device<ArgType: ::std::convert::Into<bool>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.use_default_device = ::std::option::Option::Some(value.into());
+        self
+    }
+
     /// Adds a control input.
     pub fn add_control_input(mut self, op: crate::Operation) -> Self {
         self.control_inputs.push(op);
@@ -83307,6 +91602,9 @@ impl ScanDataset {
             }
             if let ::std::option::Option::Some(value) = &self.preserve_cardinality {
                 nd.set_attr_bool("preserve_cardinality", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.use_default_device {
+                nd.set_attr_bool("use_default_device", *value)?;
             }
             ::std::result::Result::Ok(())
         })
@@ -84001,6 +92299,202 @@ pub fn scatter_nd_add<
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     ScatterNdAdd::new().build(ref_, indices, updates, scope)
+}
+/// Builder for the `ScatterNdMax` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct ScatterNdMax {
+    T: ::std::option::Option<crate::DataType>,
+    Tindices: ::std::option::Option<crate::DataType>,
+    use_locking: ::std::option::Option<bool>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl ScatterNdMax {
+    /// Creates a new `ScatterNdMax`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tindices` attribute.
+    pub fn Tindices<ArgType: ::std::convert::Into<crate::DataType>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Tindices = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `use_locking` attribute.
+    pub fn use_locking<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.use_locking = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `ScatterNdMax` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        ref_: O0,
+        indices: O1,
+        updates: O2,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(ref_.into(), indices.into(), updates.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        ref_: crate::Output,
+        indices: crate::Output,
+        updates: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("ScatterNdMax", |nd| {
+            nd.add_input(ref_);
+            nd.add_input(indices);
+            nd.add_input(updates);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Tindices {
+                nd.set_attr_type("Tindices", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.use_locking {
+                nd.set_attr_bool("use_locking", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `ScatterNdMax::new().build(ref_, indices, updates, scope)`.
+pub fn scatter_nd_max<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+>(
+    ref_: O0,
+    indices: O1,
+    updates: O2,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    ScatterNdMax::new().build(ref_, indices, updates, scope)
+}
+/// Builder for the `ScatterNdMin` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct ScatterNdMin {
+    T: ::std::option::Option<crate::DataType>,
+    Tindices: ::std::option::Option<crate::DataType>,
+    use_locking: ::std::option::Option<bool>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl ScatterNdMin {
+    /// Creates a new `ScatterNdMin`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tindices` attribute.
+    pub fn Tindices<ArgType: ::std::convert::Into<crate::DataType>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Tindices = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `use_locking` attribute.
+    pub fn use_locking<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.use_locking = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `ScatterNdMin` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        ref_: O0,
+        indices: O1,
+        updates: O2,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(ref_.into(), indices.into(), updates.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        ref_: crate::Output,
+        indices: crate::Output,
+        updates: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("ScatterNdMin", |nd| {
+            nd.add_input(ref_);
+            nd.add_input(indices);
+            nd.add_input(updates);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Tindices {
+                nd.set_attr_type("Tindices", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.use_locking {
+                nd.set_attr_bool("use_locking", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `ScatterNdMin::new().build(ref_, indices, updates, scope)`.
+pub fn scatter_nd_min<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+>(
+    ref_: O0,
+    indices: O1,
+    updates: O2,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    ScatterNdMin::new().build(ref_, indices, updates, scope)
 }
 /// Builder for the `ScatterNdNonAliasingAdd` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -85904,6 +94398,130 @@ pub fn selu_grad<
 ) -> crate::Result<crate::Operation> {
     SeluGrad::new().build(gradients, outputs, scope)
 }
+/// Builder for the `Send` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct Send {
+    T: ::std::option::Option<crate::DataType>,
+    tensor_name: ::std::option::Option<::std::string::String>,
+    send_device: ::std::option::Option<::std::string::String>,
+    send_device_incarnation: ::std::option::Option<i64>,
+    recv_device: ::std::option::Option<::std::string::String>,
+    client_terminated: ::std::option::Option<bool>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl Send {
+    /// Creates a new `Send`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `tensor_name` attribute.
+    pub fn tensor_name<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.tensor_name = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `send_device` attribute.
+    pub fn send_device<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.send_device = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `send_device_incarnation` attribute.
+    pub fn send_device_incarnation<ArgType: ::std::convert::Into<i64>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.send_device_incarnation = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `recv_device` attribute.
+    pub fn recv_device<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.recv_device = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `client_terminated` attribute.
+    pub fn client_terminated<ArgType: ::std::convert::Into<bool>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.client_terminated = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `Send` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        tensor: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(tensor.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        tensor: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("Send", |nd| {
+            nd.add_input(tensor);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.tensor_name {
+                nd.set_attr_string("tensor_name", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.send_device {
+                nd.set_attr_string("send_device", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.send_device_incarnation {
+                nd.set_attr_int("send_device_incarnation", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.recv_device {
+                nd.set_attr_string("recv_device", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.client_terminated {
+                nd.set_attr_bool("client_terminated", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `Send::new().build(tensor, scope)`.
+pub fn send<O0: ::std::convert::Into<crate::Output>>(
+    tensor: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    Send::new().build(tensor, scope)
+}
 /// Builder for the `SendTPUEmbeddingGradients` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct SendTPUEmbeddingGradients {
@@ -85999,6 +94617,7 @@ pub fn send_tpuembedding_gradients<
 /// Builder for the `SerializeIterator` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct SerializeIterator {
+    external_state_policy: ::std::option::Option<i64>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -86006,6 +94625,15 @@ impl SerializeIterator {
     /// Creates a new `SerializeIterator`.
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// Sets the `external_state_policy` attribute.
+    pub fn external_state_policy<ArgType: ::std::convert::Into<i64>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.external_state_policy = ::std::option::Option::Some(value.into());
+        self
     }
 
     /// Adds a control input.
@@ -86032,6 +94660,9 @@ impl SerializeIterator {
             nd.add_input(resource_handle);
             for op in &self.control_inputs {
                 nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.external_state_policy {
+                nd.set_attr_int("external_state_policy", *value)?;
             }
             ::std::result::Result::Ok(())
         })
@@ -86876,6 +95507,7 @@ pub fn sharded_filespec<
 pub struct ShuffleAndRepeatDataset {
     output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
+    reshuffle_each_iteration: ::std::option::Option<bool>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -86900,6 +95532,15 @@ impl ShuffleAndRepeatDataset {
         value: ArgType,
     ) -> Self {
         self.output_shapes = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `reshuffle_each_iteration` attribute.
+    pub fn reshuffle_each_iteration<ArgType: ::std::convert::Into<bool>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.reshuffle_each_iteration = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -86959,6 +95600,9 @@ impl ShuffleAndRepeatDataset {
             if let ::std::option::Option::Some(value) = &self.output_shapes {
                 nd.set_attr_shape_list("output_shapes", value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.reshuffle_each_iteration {
+                nd.set_attr_bool("reshuffle_each_iteration", *value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -86980,6 +95624,144 @@ pub fn shuffle_and_repeat_dataset<
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     ShuffleAndRepeatDataset::new().build(input_dataset, buffer_size, seed, seed2, count, scope)
+}
+/// Builder for the `ShuffleAndRepeatDatasetV2` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct ShuffleAndRepeatDatasetV2 {
+    reshuffle_each_iteration: ::std::option::Option<bool>,
+    output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl ShuffleAndRepeatDatasetV2 {
+    /// Creates a new `ShuffleAndRepeatDatasetV2`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `reshuffle_each_iteration` attribute.
+    pub fn reshuffle_each_iteration<ArgType: ::std::convert::Into<bool>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.reshuffle_each_iteration = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `output_types` attribute.
+    pub fn output_types<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.output_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `output_shapes` attribute.
+    pub fn output_shapes<ArgType: ::std::convert::Into<::std::vec::Vec<crate::Shape>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.output_shapes = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `ShuffleAndRepeatDatasetV2` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+        O3: ::std::convert::Into<crate::Output>,
+        O4: ::std::convert::Into<crate::Output>,
+        O5: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        input_dataset: O0,
+        buffer_size: O1,
+        seed: O2,
+        seed2: O3,
+        count: O4,
+        seed_generator: O5,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(
+            input_dataset.into(),
+            buffer_size.into(),
+            seed.into(),
+            seed2.into(),
+            count.into(),
+            seed_generator.into(),
+            scope,
+        )
+    }
+
+    fn build_impl(
+        &self,
+        input_dataset: crate::Output,
+        buffer_size: crate::Output,
+        seed: crate::Output,
+        seed2: crate::Output,
+        count: crate::Output,
+        seed_generator: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("ShuffleAndRepeatDatasetV2", |nd| {
+            nd.add_input(input_dataset);
+            nd.add_input(buffer_size);
+            nd.add_input(seed);
+            nd.add_input(seed2);
+            nd.add_input(count);
+            nd.add_input(seed_generator);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.reshuffle_each_iteration {
+                nd.set_attr_bool("reshuffle_each_iteration", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.output_types {
+                nd.set_attr_type_list("output_types", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.output_shapes {
+                nd.set_attr_shape_list("output_shapes", value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `ShuffleAndRepeatDatasetV2::new().build(input_dataset, buffer_size, seed, seed2, count, seed_generator, scope)`.
+pub fn shuffle_and_repeat_dataset_v2<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+    O3: ::std::convert::Into<crate::Output>,
+    O4: ::std::convert::Into<crate::Output>,
+    O5: ::std::convert::Into<crate::Output>,
+>(
+    input_dataset: O0,
+    buffer_size: O1,
+    seed: O2,
+    seed2: O3,
+    count: O4,
+    seed_generator: O5,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    ShuffleAndRepeatDatasetV2::new().build(
+        input_dataset,
+        buffer_size,
+        seed,
+        seed2,
+        count,
+        seed_generator,
+        scope,
+    )
 }
 /// Builder for the `ShuffleDataset` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -87192,6 +95974,136 @@ pub fn shuffle_dataset_v2<
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     ShuffleDatasetV2::new().build(input_dataset, buffer_size, seed_generator, scope)
+}
+/// Builder for the `ShuffleDatasetV3` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct ShuffleDatasetV3 {
+    reshuffle_each_iteration: ::std::option::Option<bool>,
+    output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl ShuffleDatasetV3 {
+    /// Creates a new `ShuffleDatasetV3`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `reshuffle_each_iteration` attribute.
+    pub fn reshuffle_each_iteration<ArgType: ::std::convert::Into<bool>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.reshuffle_each_iteration = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `output_types` attribute.
+    pub fn output_types<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.output_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `output_shapes` attribute.
+    pub fn output_shapes<ArgType: ::std::convert::Into<::std::vec::Vec<crate::Shape>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.output_shapes = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `ShuffleDatasetV3` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+        O3: ::std::convert::Into<crate::Output>,
+        O4: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        input_dataset: O0,
+        buffer_size: O1,
+        seed: O2,
+        seed2: O3,
+        seed_generator: O4,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(
+            input_dataset.into(),
+            buffer_size.into(),
+            seed.into(),
+            seed2.into(),
+            seed_generator.into(),
+            scope,
+        )
+    }
+
+    fn build_impl(
+        &self,
+        input_dataset: crate::Output,
+        buffer_size: crate::Output,
+        seed: crate::Output,
+        seed2: crate::Output,
+        seed_generator: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("ShuffleDatasetV3", |nd| {
+            nd.add_input(input_dataset);
+            nd.add_input(buffer_size);
+            nd.add_input(seed);
+            nd.add_input(seed2);
+            nd.add_input(seed_generator);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.reshuffle_each_iteration {
+                nd.set_attr_bool("reshuffle_each_iteration", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.output_types {
+                nd.set_attr_type_list("output_types", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.output_shapes {
+                nd.set_attr_shape_list("output_shapes", value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `ShuffleDatasetV3::new().build(input_dataset, buffer_size, seed, seed2, seed_generator, scope)`.
+pub fn shuffle_dataset_v3<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+    O3: ::std::convert::Into<crate::Output>,
+    O4: ::std::convert::Into<crate::Output>,
+>(
+    input_dataset: O0,
+    buffer_size: O1,
+    seed: O2,
+    seed2: O3,
+    seed_generator: O4,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    ShuffleDatasetV3::new().build(
+        input_dataset,
+        buffer_size,
+        seed,
+        seed2,
+        seed_generator,
+        scope,
+    )
 }
 /// Builder for the `ShutdownDistributedTPU` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -88134,6 +97046,11 @@ pub struct SnapshotDataset {
     reader_buffer_size: ::std::option::Option<i64>,
     num_writer_threads: ::std::option::Option<i64>,
     writer_buffer_size: ::std::option::Option<i64>,
+    shuffle_on_read: ::std::option::Option<bool>,
+    seed: ::std::option::Option<i64>,
+    seed2: ::std::option::Option<i64>,
+    mode: ::std::option::Option<::std::string::String>,
+    snapshot_name: ::std::option::Option<::std::string::String>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -88239,6 +97156,42 @@ impl SnapshotDataset {
         self
     }
 
+    /// Sets the `shuffle_on_read` attribute.
+    pub fn shuffle_on_read<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.shuffle_on_read = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `seed` attribute.
+    pub fn seed<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.seed = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `seed2` attribute.
+    pub fn seed2<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.seed2 = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `mode` attribute.
+    pub fn mode<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.mode = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `snapshot_name` attribute.
+    pub fn snapshot_name<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.snapshot_name = ::std::option::Option::Some(value.into());
+        self
+    }
+
     /// Adds a control input.
     pub fn add_control_input(mut self, op: crate::Operation) -> Self {
         self.control_inputs.push(op);
@@ -88303,6 +97256,21 @@ impl SnapshotDataset {
             if let ::std::option::Option::Some(value) = &self.writer_buffer_size {
                 nd.set_attr_int("writer_buffer_size", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.shuffle_on_read {
+                nd.set_attr_bool("shuffle_on_read", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.seed {
+                nd.set_attr_int("seed", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.seed2 {
+                nd.set_attr_int("seed2", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.mode {
+                nd.set_attr_string("mode", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.snapshot_name {
+                nd.set_attr_string("snapshot_name", value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -88318,6 +97286,255 @@ pub fn snapshot_dataset<
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     SnapshotDataset::new().build(input_dataset, path, scope)
+}
+/// Builder for the `SnapshotDatasetV2` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct SnapshotDatasetV2 {
+    output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
+    compression: ::std::option::Option<::std::string::String>,
+    reader_func: ::std::option::Option<::std::string::String>,
+    shard_func: ::std::option::Option<::std::string::String>,
+    Treader_func_args: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    Tshard_func_args: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl SnapshotDatasetV2 {
+    /// Creates a new `SnapshotDatasetV2`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `output_types` attribute.
+    pub fn output_types<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.output_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `output_shapes` attribute.
+    pub fn output_shapes<ArgType: ::std::convert::Into<::std::vec::Vec<crate::Shape>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.output_shapes = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `compression` attribute.
+    pub fn compression<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.compression = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `reader_func` attribute.
+    pub fn reader_func<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.reader_func = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `shard_func` attribute.
+    pub fn shard_func<ArgType: ::std::convert::Into<::std::string::String>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.shard_func = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Treader_func_args` attribute.
+    pub fn Treader_func_args<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Treader_func_args = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tshard_func_args` attribute.
+    pub fn Tshard_func_args<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Tshard_func_args = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `SnapshotDatasetV2` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+        O3: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        input_dataset: O0,
+        path: O1,
+        reader_func_other_args: O2,
+        shard_func_other_args: O3,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(
+            input_dataset.into(),
+            path.into(),
+            reader_func_other_args.into(),
+            shard_func_other_args.into(),
+            scope,
+        )
+    }
+
+    fn build_impl(
+        &self,
+        input_dataset: crate::Output,
+        path: crate::Output,
+        reader_func_other_args: crate::Output,
+        shard_func_other_args: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("SnapshotDatasetV2", |nd| {
+            nd.add_input(input_dataset);
+            nd.add_input(path);
+            nd.add_input(reader_func_other_args);
+            nd.add_input(shard_func_other_args);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.output_types {
+                nd.set_attr_type_list("output_types", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.output_shapes {
+                nd.set_attr_shape_list("output_shapes", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.compression {
+                nd.set_attr_string("compression", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.reader_func {
+                nd.set_attr_string("reader_func", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.shard_func {
+                nd.set_attr_string("shard_func", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Treader_func_args {
+                nd.set_attr_type_list("Treader_func_args", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Tshard_func_args {
+                nd.set_attr_type_list("Tshard_func_args", value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `SnapshotDatasetV2::new().build(input_dataset, path, reader_func_other_args, shard_func_other_args, scope)`.
+pub fn snapshot_dataset_v2<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+    O3: ::std::convert::Into<crate::Output>,
+>(
+    input_dataset: O0,
+    path: O1,
+    reader_func_other_args: O2,
+    shard_func_other_args: O3,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    SnapshotDatasetV2::new().build(
+        input_dataset,
+        path,
+        reader_func_other_args,
+        shard_func_other_args,
+        scope,
+    )
+}
+/// Builder for the `SobolSample` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct SobolSample {
+    dtype: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl SobolSample {
+    /// Creates a new `SobolSample`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `dtype` attribute.
+    pub fn dtype<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.dtype = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `SobolSample` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        dim: O0,
+        num_results: O1,
+        skip: O2,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(dim.into(), num_results.into(), skip.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        dim: crate::Output,
+        num_results: crate::Output,
+        skip: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("SobolSample", |nd| {
+            nd.add_input(dim);
+            nd.add_input(num_results);
+            nd.add_input(skip);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.dtype {
+                nd.set_attr_type("dtype", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `SobolSample::new().build(dim, num_results, skip, scope)`.
+pub fn sobol_sample<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+>(
+    dim: O0,
+    num_results: O1,
+    skip: O2,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    SobolSample::new().build(dim, num_results, skip, scope)
 }
 /// Builder for the `Softmax` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -90090,6 +99307,7 @@ pub struct SparseApplyFtrl {
     T: ::std::option::Option<crate::DataType>,
     Tindices: ::std::option::Option<crate::DataType>,
     use_locking: ::std::option::Option<bool>,
+    multiply_linear_by_lr: ::std::option::Option<bool>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -90117,6 +99335,15 @@ impl SparseApplyFtrl {
     /// Sets the `use_locking` attribute.
     pub fn use_locking<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
         self.use_locking = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `multiply_linear_by_lr` attribute.
+    pub fn multiply_linear_by_lr<ArgType: ::std::convert::Into<bool>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.multiply_linear_by_lr = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -90199,6 +99426,9 @@ impl SparseApplyFtrl {
             if let ::std::option::Option::Some(value) = &self.use_locking {
                 nd.set_attr_bool("use_locking", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.multiply_linear_by_lr {
+                nd.set_attr_bool("multiply_linear_by_lr", *value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -90237,6 +99467,7 @@ pub struct SparseApplyFtrlV2 {
     T: ::std::option::Option<crate::DataType>,
     Tindices: ::std::option::Option<crate::DataType>,
     use_locking: ::std::option::Option<bool>,
+    multiply_linear_by_lr: ::std::option::Option<bool>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -90264,6 +99495,15 @@ impl SparseApplyFtrlV2 {
     /// Sets the `use_locking` attribute.
     pub fn use_locking<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
         self.use_locking = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `multiply_linear_by_lr` attribute.
+    pub fn multiply_linear_by_lr<ArgType: ::std::convert::Into<bool>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.multiply_linear_by_lr = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -90350,6 +99590,9 @@ impl SparseApplyFtrlV2 {
             }
             if let ::std::option::Option::Some(value) = &self.use_locking {
                 nd.set_attr_bool("use_locking", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.multiply_linear_by_lr {
+                nd.set_attr_bool("multiply_linear_by_lr", *value)?;
             }
             ::std::result::Result::Ok(())
         })
@@ -90931,6 +100174,120 @@ pub fn sparse_apply_rmsprop<
         var, ms, mom, lr, rho, momentum, epsilon, grad, indices, scope,
     )
 }
+/// Builder for the `SparseBincount` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct SparseBincount {
+    Tidx: ::std::option::Option<crate::DataType>,
+    T: ::std::option::Option<crate::DataType>,
+    binary_output: ::std::option::Option<bool>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl SparseBincount {
+    /// Creates a new `SparseBincount`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `Tidx` attribute.
+    pub fn Tidx<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.Tidx = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `binary_output` attribute.
+    pub fn binary_output<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.binary_output = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `SparseBincount` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+        O3: ::std::convert::Into<crate::Output>,
+        O4: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        indices: O0,
+        values: O1,
+        dense_shape: O2,
+        size: O3,
+        weights: O4,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(
+            indices.into(),
+            values.into(),
+            dense_shape.into(),
+            size.into(),
+            weights.into(),
+            scope,
+        )
+    }
+
+    fn build_impl(
+        &self,
+        indices: crate::Output,
+        values: crate::Output,
+        dense_shape: crate::Output,
+        size: crate::Output,
+        weights: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("SparseBincount", |nd| {
+            nd.add_input(indices);
+            nd.add_input(values);
+            nd.add_input(dense_shape);
+            nd.add_input(size);
+            nd.add_input(weights);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.Tidx {
+                nd.set_attr_type("Tidx", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.binary_output {
+                nd.set_attr_bool("binary_output", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `SparseBincount::new().build(indices, values, dense_shape, size, weights, scope)`.
+pub fn sparse_bincount<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+    O3: ::std::convert::Into<crate::Output>,
+    O4: ::std::convert::Into<crate::Output>,
+>(
+    indices: O0,
+    values: O1,
+    dense_shape: O2,
+    size: O3,
+    weights: O4,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    SparseBincount::new().build(indices, values, dense_shape, size, weights, scope)
+}
 /// Builder for the `SparseConcat` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct SparseConcat {
@@ -91122,6 +100479,136 @@ impl SparseConditionalAccumulator {
 pub fn sparse_conditional_accumulator(scope: &mut crate::Scope) -> crate::Result<crate::Operation> {
     SparseConditionalAccumulator::new().build(scope)
 }
+/// Builder for the `SparseCountSparseOutput` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct SparseCountSparseOutput {
+    T: ::std::option::Option<crate::DataType>,
+    minlength: ::std::option::Option<i64>,
+    maxlength: ::std::option::Option<i64>,
+    binary_output: ::std::option::Option<bool>,
+    output_type: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl SparseCountSparseOutput {
+    /// Creates a new `SparseCountSparseOutput`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `minlength` attribute.
+    pub fn minlength<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.minlength = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `maxlength` attribute.
+    pub fn maxlength<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.maxlength = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `binary_output` attribute.
+    pub fn binary_output<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.binary_output = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `output_type` attribute.
+    pub fn output_type<ArgType: ::std::convert::Into<crate::DataType>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.output_type = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `SparseCountSparseOutput` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+        O3: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        indices: O0,
+        values: O1,
+        dense_shape: O2,
+        weights: O3,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(
+            indices.into(),
+            values.into(),
+            dense_shape.into(),
+            weights.into(),
+            scope,
+        )
+    }
+
+    fn build_impl(
+        &self,
+        indices: crate::Output,
+        values: crate::Output,
+        dense_shape: crate::Output,
+        weights: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("SparseCountSparseOutput", |nd| {
+            nd.add_input(indices);
+            nd.add_input(values);
+            nd.add_input(dense_shape);
+            nd.add_input(weights);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.minlength {
+                nd.set_attr_int("minlength", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.maxlength {
+                nd.set_attr_int("maxlength", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.binary_output {
+                nd.set_attr_bool("binary_output", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.output_type {
+                nd.set_attr_type("output_type", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `SparseCountSparseOutput::new().build(indices, values, dense_shape, weights, scope)`.
+pub fn sparse_count_sparse_output<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+    O3: ::std::convert::Into<crate::Output>,
+>(
+    indices: O0,
+    values: O1,
+    dense_shape: O2,
+    weights: O3,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    SparseCountSparseOutput::new().build(indices, values, dense_shape, weights, scope)
+}
 /// Builder for the `SparseCross` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct SparseCross {
@@ -91290,6 +100777,269 @@ pub fn sparse_cross<
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     SparseCross::new().build(indices, values, shapes, dense_inputs, scope)
+}
+/// Builder for the `SparseCrossHashed` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct SparseCrossHashed {
+    N: ::std::option::Option<i64>,
+    sparse_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    dense_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl SparseCrossHashed {
+    /// Creates a new `SparseCrossHashed`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `N` attribute.
+    pub fn N<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.N = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `sparse_types` attribute.
+    pub fn sparse_types<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.sparse_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `dense_types` attribute.
+    pub fn dense_types<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.dense_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `SparseCrossHashed` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+        O3: ::std::convert::Into<crate::Output>,
+        O4: ::std::convert::Into<crate::Output>,
+        O5: ::std::convert::Into<crate::Output>,
+        O6: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        indices: O0,
+        values: O1,
+        shapes: O2,
+        dense_inputs: O3,
+        num_buckets: O4,
+        strong_hash: O5,
+        salt: O6,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(
+            indices.into(),
+            values.into(),
+            shapes.into(),
+            dense_inputs.into(),
+            num_buckets.into(),
+            strong_hash.into(),
+            salt.into(),
+            scope,
+        )
+    }
+
+    fn build_impl(
+        &self,
+        indices: crate::Output,
+        values: crate::Output,
+        shapes: crate::Output,
+        dense_inputs: crate::Output,
+        num_buckets: crate::Output,
+        strong_hash: crate::Output,
+        salt: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("SparseCrossHashed", |nd| {
+            nd.add_input(indices);
+            nd.add_input(values);
+            nd.add_input(shapes);
+            nd.add_input(dense_inputs);
+            nd.add_input(num_buckets);
+            nd.add_input(strong_hash);
+            nd.add_input(salt);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.N {
+                nd.set_attr_int("N", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.sparse_types {
+                nd.set_attr_type_list("sparse_types", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.dense_types {
+                nd.set_attr_type_list("dense_types", value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `SparseCrossHashed::new().build(indices, values, shapes, dense_inputs, num_buckets, strong_hash, salt, scope)`.
+pub fn sparse_cross_hashed<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+    O3: ::std::convert::Into<crate::Output>,
+    O4: ::std::convert::Into<crate::Output>,
+    O5: ::std::convert::Into<crate::Output>,
+    O6: ::std::convert::Into<crate::Output>,
+>(
+    indices: O0,
+    values: O1,
+    shapes: O2,
+    dense_inputs: O3,
+    num_buckets: O4,
+    strong_hash: O5,
+    salt: O6,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    SparseCrossHashed::new().build(
+        indices,
+        values,
+        shapes,
+        dense_inputs,
+        num_buckets,
+        strong_hash,
+        salt,
+        scope,
+    )
+}
+/// Builder for the `SparseCrossV2` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct SparseCrossV2 {
+    N: ::std::option::Option<i64>,
+    sparse_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    dense_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl SparseCrossV2 {
+    /// Creates a new `SparseCrossV2`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `N` attribute.
+    pub fn N<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.N = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `sparse_types` attribute.
+    pub fn sparse_types<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.sparse_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `dense_types` attribute.
+    pub fn dense_types<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.dense_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `SparseCrossV2` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+        O3: ::std::convert::Into<crate::Output>,
+        O4: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        indices: O0,
+        values: O1,
+        shapes: O2,
+        dense_inputs: O3,
+        sep: O4,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(
+            indices.into(),
+            values.into(),
+            shapes.into(),
+            dense_inputs.into(),
+            sep.into(),
+            scope,
+        )
+    }
+
+    fn build_impl(
+        &self,
+        indices: crate::Output,
+        values: crate::Output,
+        shapes: crate::Output,
+        dense_inputs: crate::Output,
+        sep: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("SparseCrossV2", |nd| {
+            nd.add_input(indices);
+            nd.add_input(values);
+            nd.add_input(shapes);
+            nd.add_input(dense_inputs);
+            nd.add_input(sep);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.N {
+                nd.set_attr_int("N", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.sparse_types {
+                nd.set_attr_type_list("sparse_types", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.dense_types {
+                nd.set_attr_type_list("dense_types", value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `SparseCrossV2::new().build(indices, values, shapes, dense_inputs, sep, scope)`.
+pub fn sparse_cross_v2<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+    O3: ::std::convert::Into<crate::Output>,
+    O4: ::std::convert::Into<crate::Output>,
+>(
+    indices: O0,
+    values: O1,
+    shapes: O2,
+    dense_inputs: O3,
+    sep: O4,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    SparseCrossV2::new().build(indices, values, shapes, dense_inputs, sep, scope)
 }
 /// Builder for the `SparseDenseCwiseAdd` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -91826,6 +101576,817 @@ pub fn sparse_mat_mul<
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     SparseMatMul::new().build(a, b, scope)
+}
+/// Builder for the `SparseMatrixAdd` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct SparseMatrixAdd {
+    T: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl SparseMatrixAdd {
+    /// Creates a new `SparseMatrixAdd`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `SparseMatrixAdd` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+        O3: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        a: O0,
+        b: O1,
+        alpha: O2,
+        beta: O3,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(a.into(), b.into(), alpha.into(), beta.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        a: crate::Output,
+        b: crate::Output,
+        alpha: crate::Output,
+        beta: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("SparseMatrixAdd", |nd| {
+            nd.add_input(a);
+            nd.add_input(b);
+            nd.add_input(alpha);
+            nd.add_input(beta);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `SparseMatrixAdd::new().build(a, b, alpha, beta, scope)`.
+pub fn sparse_matrix_add<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+    O3: ::std::convert::Into<crate::Output>,
+>(
+    a: O0,
+    b: O1,
+    alpha: O2,
+    beta: O3,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    SparseMatrixAdd::new().build(a, b, alpha, beta, scope)
+}
+/// Builder for the `SparseMatrixMatMul` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct SparseMatrixMatMul {
+    T: ::std::option::Option<crate::DataType>,
+    transpose_a: ::std::option::Option<bool>,
+    transpose_b: ::std::option::Option<bool>,
+    adjoint_a: ::std::option::Option<bool>,
+    adjoint_b: ::std::option::Option<bool>,
+    transpose_output: ::std::option::Option<bool>,
+    conjugate_output: ::std::option::Option<bool>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl SparseMatrixMatMul {
+    /// Creates a new `SparseMatrixMatMul`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `transpose_a` attribute.
+    pub fn transpose_a<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.transpose_a = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `transpose_b` attribute.
+    pub fn transpose_b<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.transpose_b = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `adjoint_a` attribute.
+    pub fn adjoint_a<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.adjoint_a = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `adjoint_b` attribute.
+    pub fn adjoint_b<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.adjoint_b = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `transpose_output` attribute.
+    pub fn transpose_output<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.transpose_output = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `conjugate_output` attribute.
+    pub fn conjugate_output<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.conjugate_output = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `SparseMatrixMatMul` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        a: O0,
+        b: O1,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(a.into(), b.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        a: crate::Output,
+        b: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("SparseMatrixMatMul", |nd| {
+            nd.add_input(a);
+            nd.add_input(b);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.transpose_a {
+                nd.set_attr_bool("transpose_a", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.transpose_b {
+                nd.set_attr_bool("transpose_b", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.adjoint_a {
+                nd.set_attr_bool("adjoint_a", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.adjoint_b {
+                nd.set_attr_bool("adjoint_b", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.transpose_output {
+                nd.set_attr_bool("transpose_output", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.conjugate_output {
+                nd.set_attr_bool("conjugate_output", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `SparseMatrixMatMul::new().build(a, b, scope)`.
+pub fn sparse_matrix_mat_mul<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+>(
+    a: O0,
+    b: O1,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    SparseMatrixMatMul::new().build(a, b, scope)
+}
+/// Builder for the `SparseMatrixMul` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct SparseMatrixMul {
+    T: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl SparseMatrixMul {
+    /// Creates a new `SparseMatrixMul`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `SparseMatrixMul` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        a: O0,
+        b: O1,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(a.into(), b.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        a: crate::Output,
+        b: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("SparseMatrixMul", |nd| {
+            nd.add_input(a);
+            nd.add_input(b);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `SparseMatrixMul::new().build(a, b, scope)`.
+pub fn sparse_matrix_mul<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+>(
+    a: O0,
+    b: O1,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    SparseMatrixMul::new().build(a, b, scope)
+}
+/// Builder for the `SparseMatrixNNZ` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct SparseMatrixNNZ {
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl SparseMatrixNNZ {
+    /// Creates a new `SparseMatrixNNZ`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `SparseMatrixNNZ` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        sparse_matrix: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(sparse_matrix.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        sparse_matrix: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("SparseMatrixNNZ", |nd| {
+            nd.add_input(sparse_matrix);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `SparseMatrixNNZ::new().build(sparse_matrix, scope)`.
+pub fn sparse_matrix_nnz<O0: ::std::convert::Into<crate::Output>>(
+    sparse_matrix: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    SparseMatrixNNZ::new().build(sparse_matrix, scope)
+}
+/// Builder for the `SparseMatrixOrderingAMD` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct SparseMatrixOrderingAMD {
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl SparseMatrixOrderingAMD {
+    /// Creates a new `SparseMatrixOrderingAMD`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `SparseMatrixOrderingAMD` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        input: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(input.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        input: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("SparseMatrixOrderingAMD", |nd| {
+            nd.add_input(input);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `SparseMatrixOrderingAMD::new().build(input, scope)`.
+pub fn sparse_matrix_ordering_amd<O0: ::std::convert::Into<crate::Output>>(
+    input: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    SparseMatrixOrderingAMD::new().build(input, scope)
+}
+/// Builder for the `SparseMatrixSoftmax` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct SparseMatrixSoftmax {
+    type_: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl SparseMatrixSoftmax {
+    /// Creates a new `SparseMatrixSoftmax`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `type` attribute.
+    pub fn type_<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.type_ = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `SparseMatrixSoftmax` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        logits: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(logits.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        logits: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("SparseMatrixSoftmax", |nd| {
+            nd.add_input(logits);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.type_ {
+                nd.set_attr_type("type", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `SparseMatrixSoftmax::new().build(logits, scope)`.
+pub fn sparse_matrix_softmax<O0: ::std::convert::Into<crate::Output>>(
+    logits: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    SparseMatrixSoftmax::new().build(logits, scope)
+}
+/// Builder for the `SparseMatrixSoftmaxGrad` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct SparseMatrixSoftmaxGrad {
+    type_: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl SparseMatrixSoftmaxGrad {
+    /// Creates a new `SparseMatrixSoftmaxGrad`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `type` attribute.
+    pub fn type_<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.type_ = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `SparseMatrixSoftmaxGrad` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        softmax: O0,
+        grad_softmax: O1,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(softmax.into(), grad_softmax.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        softmax: crate::Output,
+        grad_softmax: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("SparseMatrixSoftmaxGrad", |nd| {
+            nd.add_input(softmax);
+            nd.add_input(grad_softmax);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.type_ {
+                nd.set_attr_type("type", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `SparseMatrixSoftmaxGrad::new().build(softmax, grad_softmax, scope)`.
+pub fn sparse_matrix_softmax_grad<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+>(
+    softmax: O0,
+    grad_softmax: O1,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    SparseMatrixSoftmaxGrad::new().build(softmax, grad_softmax, scope)
+}
+/// Builder for the `SparseMatrixSparseCholesky` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct SparseMatrixSparseCholesky {
+    type_: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl SparseMatrixSparseCholesky {
+    /// Creates a new `SparseMatrixSparseCholesky`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `type` attribute.
+    pub fn type_<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.type_ = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `SparseMatrixSparseCholesky` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        input: O0,
+        permutation: O1,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(input.into(), permutation.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        input: crate::Output,
+        permutation: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("SparseMatrixSparseCholesky", |nd| {
+            nd.add_input(input);
+            nd.add_input(permutation);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.type_ {
+                nd.set_attr_type("type", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `SparseMatrixSparseCholesky::new().build(input, permutation, scope)`.
+pub fn sparse_matrix_sparse_cholesky<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+>(
+    input: O0,
+    permutation: O1,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    SparseMatrixSparseCholesky::new().build(input, permutation, scope)
+}
+/// Builder for the `SparseMatrixSparseMatMul` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct SparseMatrixSparseMatMul {
+    type_: ::std::option::Option<crate::DataType>,
+    transpose_a: ::std::option::Option<bool>,
+    transpose_b: ::std::option::Option<bool>,
+    adjoint_a: ::std::option::Option<bool>,
+    adjoint_b: ::std::option::Option<bool>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl SparseMatrixSparseMatMul {
+    /// Creates a new `SparseMatrixSparseMatMul`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `type` attribute.
+    pub fn type_<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.type_ = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `transpose_a` attribute.
+    pub fn transpose_a<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.transpose_a = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `transpose_b` attribute.
+    pub fn transpose_b<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.transpose_b = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `adjoint_a` attribute.
+    pub fn adjoint_a<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.adjoint_a = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `adjoint_b` attribute.
+    pub fn adjoint_b<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.adjoint_b = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `SparseMatrixSparseMatMul` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        a: O0,
+        b: O1,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(a.into(), b.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        a: crate::Output,
+        b: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("SparseMatrixSparseMatMul", |nd| {
+            nd.add_input(a);
+            nd.add_input(b);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.type_ {
+                nd.set_attr_type("type", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.transpose_a {
+                nd.set_attr_bool("transpose_a", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.transpose_b {
+                nd.set_attr_bool("transpose_b", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.adjoint_a {
+                nd.set_attr_bool("adjoint_a", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.adjoint_b {
+                nd.set_attr_bool("adjoint_b", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `SparseMatrixSparseMatMul::new().build(a, b, scope)`.
+pub fn sparse_matrix_sparse_mat_mul<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+>(
+    a: O0,
+    b: O1,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    SparseMatrixSparseMatMul::new().build(a, b, scope)
+}
+/// Builder for the `SparseMatrixTranspose` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct SparseMatrixTranspose {
+    conjugate: ::std::option::Option<bool>,
+    type_: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl SparseMatrixTranspose {
+    /// Creates a new `SparseMatrixTranspose`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `conjugate` attribute.
+    pub fn conjugate<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.conjugate = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `type` attribute.
+    pub fn type_<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.type_ = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `SparseMatrixTranspose` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        input: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(input.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        input: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("SparseMatrixTranspose", |nd| {
+            nd.add_input(input);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.conjugate {
+                nd.set_attr_bool("conjugate", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.type_ {
+                nd.set_attr_type("type", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `SparseMatrixTranspose::new().build(input, scope)`.
+pub fn sparse_matrix_transpose<O0: ::std::convert::Into<crate::Output>>(
+    input: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    SparseMatrixTranspose::new().build(input, scope)
+}
+/// Builder for the `SparseMatrixZeros` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct SparseMatrixZeros {
+    type_: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl SparseMatrixZeros {
+    /// Creates a new `SparseMatrixZeros`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `type` attribute.
+    pub fn type_<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.type_ = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `SparseMatrixZeros` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        dense_shape: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(dense_shape.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        dense_shape: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("SparseMatrixZeros", |nd| {
+            nd.add_input(dense_shape);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.type_ {
+                nd.set_attr_type("type", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `SparseMatrixZeros::new().build(dense_shape, scope)`.
+pub fn sparse_matrix_zeros<O0: ::std::convert::Into<crate::Output>>(
+    dense_shape: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    SparseMatrixZeros::new().build(dense_shape, scope)
 }
 /// Builder for the `SparseReduceMax` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -92394,6 +102955,7 @@ pub fn sparse_reshape<
 pub struct SparseSegmentMean {
     T: ::std::option::Option<crate::DataType>,
     Tidx: ::std::option::Option<crate::DataType>,
+    Tsegmentids: ::std::option::Option<crate::DataType>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -92412,6 +102974,15 @@ impl SparseSegmentMean {
     /// Sets the `Tidx` attribute.
     pub fn Tidx<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
         self.Tidx = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tsegmentids` attribute.
+    pub fn Tsegmentids<ArgType: ::std::convert::Into<crate::DataType>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Tsegmentids = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -92456,6 +103027,9 @@ impl SparseSegmentMean {
             if let ::std::option::Option::Some(value) = &self.Tidx {
                 nd.set_attr_type("Tidx", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.Tsegmentids {
+                nd.set_attr_type("Tsegmentids", *value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -92479,6 +103053,7 @@ pub fn sparse_segment_mean<
 pub struct SparseSegmentMeanGrad {
     T: ::std::option::Option<crate::DataType>,
     Tidx: ::std::option::Option<crate::DataType>,
+    Tsegmentids: ::std::option::Option<crate::DataType>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -92497,6 +103072,15 @@ impl SparseSegmentMeanGrad {
     /// Sets the `Tidx` attribute.
     pub fn Tidx<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
         self.Tidx = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tsegmentids` attribute.
+    pub fn Tsegmentids<ArgType: ::std::convert::Into<crate::DataType>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Tsegmentids = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -92551,6 +103135,9 @@ impl SparseSegmentMeanGrad {
             if let ::std::option::Option::Some(value) = &self.Tidx {
                 nd.set_attr_type("Tidx", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.Tsegmentids {
+                nd.set_attr_type("Tsegmentids", *value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -92577,6 +103164,7 @@ pub struct SparseSegmentMeanWithNumSegments {
     T: ::std::option::Option<crate::DataType>,
     Tidx: ::std::option::Option<crate::DataType>,
     Tnumsegments: ::std::option::Option<crate::DataType>,
+    Tsegmentids: ::std::option::Option<crate::DataType>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -92604,6 +103192,15 @@ impl SparseSegmentMeanWithNumSegments {
         value: ArgType,
     ) -> Self {
         self.Tnumsegments = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tsegmentids` attribute.
+    pub fn Tsegmentids<ArgType: ::std::convert::Into<crate::DataType>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Tsegmentids = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -92661,6 +103258,9 @@ impl SparseSegmentMeanWithNumSegments {
             if let ::std::option::Option::Some(value) = &self.Tnumsegments {
                 nd.set_attr_type("Tnumsegments", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.Tsegmentids {
+                nd.set_attr_type("Tsegmentids", *value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -92686,6 +103286,7 @@ pub fn sparse_segment_mean_with_num_segments<
 pub struct SparseSegmentSqrtN {
     T: ::std::option::Option<crate::DataType>,
     Tidx: ::std::option::Option<crate::DataType>,
+    Tsegmentids: ::std::option::Option<crate::DataType>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -92704,6 +103305,15 @@ impl SparseSegmentSqrtN {
     /// Sets the `Tidx` attribute.
     pub fn Tidx<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
         self.Tidx = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tsegmentids` attribute.
+    pub fn Tsegmentids<ArgType: ::std::convert::Into<crate::DataType>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Tsegmentids = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -92748,6 +103358,9 @@ impl SparseSegmentSqrtN {
             if let ::std::option::Option::Some(value) = &self.Tidx {
                 nd.set_attr_type("Tidx", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.Tsegmentids {
+                nd.set_attr_type("Tsegmentids", *value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -92771,6 +103384,7 @@ pub fn sparse_segment_sqrt_n<
 pub struct SparseSegmentSqrtNGrad {
     T: ::std::option::Option<crate::DataType>,
     Tidx: ::std::option::Option<crate::DataType>,
+    Tsegmentids: ::std::option::Option<crate::DataType>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -92789,6 +103403,15 @@ impl SparseSegmentSqrtNGrad {
     /// Sets the `Tidx` attribute.
     pub fn Tidx<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
         self.Tidx = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tsegmentids` attribute.
+    pub fn Tsegmentids<ArgType: ::std::convert::Into<crate::DataType>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Tsegmentids = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -92843,6 +103466,9 @@ impl SparseSegmentSqrtNGrad {
             if let ::std::option::Option::Some(value) = &self.Tidx {
                 nd.set_attr_type("Tidx", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.Tsegmentids {
+                nd.set_attr_type("Tsegmentids", *value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -92869,6 +103495,7 @@ pub struct SparseSegmentSqrtNWithNumSegments {
     T: ::std::option::Option<crate::DataType>,
     Tidx: ::std::option::Option<crate::DataType>,
     Tnumsegments: ::std::option::Option<crate::DataType>,
+    Tsegmentids: ::std::option::Option<crate::DataType>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -92896,6 +103523,15 @@ impl SparseSegmentSqrtNWithNumSegments {
         value: ArgType,
     ) -> Self {
         self.Tnumsegments = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tsegmentids` attribute.
+    pub fn Tsegmentids<ArgType: ::std::convert::Into<crate::DataType>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Tsegmentids = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -92953,6 +103589,9 @@ impl SparseSegmentSqrtNWithNumSegments {
             if let ::std::option::Option::Some(value) = &self.Tnumsegments {
                 nd.set_attr_type("Tnumsegments", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.Tsegmentids {
+                nd.set_attr_type("Tsegmentids", *value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -92978,6 +103617,7 @@ pub fn sparse_segment_sqrt_nwith_num_segments<
 pub struct SparseSegmentSum {
     T: ::std::option::Option<crate::DataType>,
     Tidx: ::std::option::Option<crate::DataType>,
+    Tsegmentids: ::std::option::Option<crate::DataType>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -92996,6 +103636,15 @@ impl SparseSegmentSum {
     /// Sets the `Tidx` attribute.
     pub fn Tidx<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
         self.Tidx = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tsegmentids` attribute.
+    pub fn Tsegmentids<ArgType: ::std::convert::Into<crate::DataType>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Tsegmentids = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -93040,6 +103689,9 @@ impl SparseSegmentSum {
             if let ::std::option::Option::Some(value) = &self.Tidx {
                 nd.set_attr_type("Tidx", *value)?;
             }
+            if let ::std::option::Option::Some(value) = &self.Tsegmentids {
+                nd.set_attr_type("Tsegmentids", *value)?;
+            }
             ::std::result::Result::Ok(())
         })
     }
@@ -93064,6 +103716,7 @@ pub struct SparseSegmentSumWithNumSegments {
     T: ::std::option::Option<crate::DataType>,
     Tidx: ::std::option::Option<crate::DataType>,
     Tnumsegments: ::std::option::Option<crate::DataType>,
+    Tsegmentids: ::std::option::Option<crate::DataType>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -93091,6 +103744,15 @@ impl SparseSegmentSumWithNumSegments {
         value: ArgType,
     ) -> Self {
         self.Tnumsegments = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tsegmentids` attribute.
+    pub fn Tsegmentids<ArgType: ::std::convert::Into<crate::DataType>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Tsegmentids = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -93147,6 +103809,9 @@ impl SparseSegmentSumWithNumSegments {
             }
             if let ::std::option::Option::Some(value) = &self.Tnumsegments {
                 nd.set_attr_type("Tnumsegments", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Tsegmentids {
+                nd.set_attr_type("Tsegmentids", *value)?;
             }
             ::std::result::Result::Ok(())
         })
@@ -94113,6 +104778,81 @@ pub fn sparse_tensor_slice_dataset<
 ) -> crate::Result<crate::Operation> {
     SparseTensorSliceDataset::new().build(indices, values, dense_shape, scope)
 }
+/// Builder for the `SparseTensorToCSRSparseMatrix` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct SparseTensorToCSRSparseMatrix {
+    T: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl SparseTensorToCSRSparseMatrix {
+    /// Creates a new `SparseTensorToCSRSparseMatrix`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `SparseTensorToCSRSparseMatrix` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        indices: O0,
+        values: O1,
+        dense_shape: O2,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(indices.into(), values.into(), dense_shape.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        indices: crate::Output,
+        values: crate::Output,
+        dense_shape: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("SparseTensorToCSRSparseMatrix", |nd| {
+            nd.add_input(indices);
+            nd.add_input(values);
+            nd.add_input(dense_shape);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `SparseTensorToCSRSparseMatrix::new().build(indices, values, dense_shape, scope)`.
+pub fn sparse_tensor_to_csrsparse_matrix<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+>(
+    indices: O0,
+    values: O1,
+    dense_shape: O2,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    SparseTensorToCSRSparseMatrix::new().build(indices, values, dense_shape, scope)
+}
 /// Builder for the `SparseToDense` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct SparseToDense {
@@ -94360,6 +105100,65 @@ pub fn sparse_to_sparse_set_operation<
         set2_shape,
         scope,
     )
+}
+/// Builder for the `Spence` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct Spence {
+    T: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl Spence {
+    /// Creates a new `Spence`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `Spence` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        x: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(x.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        x: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("Spence", |nd| {
+            nd.add_input(x);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `Spence::new().build(x, scope)`.
+pub fn spence<O0: ::std::convert::Into<crate::Output>>(
+    x: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    Spence::new().build(x, scope)
 }
 /// Builder for the `Split` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -96896,6 +107695,340 @@ pub fn stateless_multinomial<
 ) -> crate::Result<crate::Operation> {
     StatelessMultinomial::new().build(logits, num_samples, seed, scope)
 }
+/// Builder for the `StatelessParameterizedTruncatedNormal` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct StatelessParameterizedTruncatedNormal {
+    S: ::std::option::Option<crate::DataType>,
+    Tseed: ::std::option::Option<crate::DataType>,
+    dtype: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl StatelessParameterizedTruncatedNormal {
+    /// Creates a new `StatelessParameterizedTruncatedNormal`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `S` attribute.
+    pub fn S<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.S = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tseed` attribute.
+    pub fn Tseed<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.Tseed = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `dtype` attribute.
+    pub fn dtype<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.dtype = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `StatelessParameterizedTruncatedNormal` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+        O3: ::std::convert::Into<crate::Output>,
+        O4: ::std::convert::Into<crate::Output>,
+        O5: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        shape: O0,
+        seed: O1,
+        means: O2,
+        stddevs: O3,
+        minvals: O4,
+        maxvals: O5,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(
+            shape.into(),
+            seed.into(),
+            means.into(),
+            stddevs.into(),
+            minvals.into(),
+            maxvals.into(),
+            scope,
+        )
+    }
+
+    fn build_impl(
+        &self,
+        shape: crate::Output,
+        seed: crate::Output,
+        means: crate::Output,
+        stddevs: crate::Output,
+        minvals: crate::Output,
+        maxvals: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("StatelessParameterizedTruncatedNormal", |nd| {
+            nd.add_input(shape);
+            nd.add_input(seed);
+            nd.add_input(means);
+            nd.add_input(stddevs);
+            nd.add_input(minvals);
+            nd.add_input(maxvals);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.S {
+                nd.set_attr_type("S", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Tseed {
+                nd.set_attr_type("Tseed", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.dtype {
+                nd.set_attr_type("dtype", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `StatelessParameterizedTruncatedNormal::new().build(shape, seed, means, stddevs, minvals, maxvals, scope)`.
+pub fn stateless_parameterized_truncated_normal<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+    O3: ::std::convert::Into<crate::Output>,
+    O4: ::std::convert::Into<crate::Output>,
+    O5: ::std::convert::Into<crate::Output>,
+>(
+    shape: O0,
+    seed: O1,
+    means: O2,
+    stddevs: O3,
+    minvals: O4,
+    maxvals: O5,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    StatelessParameterizedTruncatedNormal::new()
+        .build(shape, seed, means, stddevs, minvals, maxvals, scope)
+}
+/// Builder for the `StatelessRandomBinomial` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct StatelessRandomBinomial {
+    S: ::std::option::Option<crate::DataType>,
+    Tseed: ::std::option::Option<crate::DataType>,
+    T: ::std::option::Option<crate::DataType>,
+    dtype: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl StatelessRandomBinomial {
+    /// Creates a new `StatelessRandomBinomial`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `S` attribute.
+    pub fn S<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.S = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tseed` attribute.
+    pub fn Tseed<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.Tseed = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `dtype` attribute.
+    pub fn dtype<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.dtype = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `StatelessRandomBinomial` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+        O3: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        shape: O0,
+        seed: O1,
+        counts: O2,
+        probs: O3,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(
+            shape.into(),
+            seed.into(),
+            counts.into(),
+            probs.into(),
+            scope,
+        )
+    }
+
+    fn build_impl(
+        &self,
+        shape: crate::Output,
+        seed: crate::Output,
+        counts: crate::Output,
+        probs: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("StatelessRandomBinomial", |nd| {
+            nd.add_input(shape);
+            nd.add_input(seed);
+            nd.add_input(counts);
+            nd.add_input(probs);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.S {
+                nd.set_attr_type("S", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Tseed {
+                nd.set_attr_type("Tseed", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.dtype {
+                nd.set_attr_type("dtype", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `StatelessRandomBinomial::new().build(shape, seed, counts, probs, scope)`.
+pub fn stateless_random_binomial<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+    O3: ::std::convert::Into<crate::Output>,
+>(
+    shape: O0,
+    seed: O1,
+    counts: O2,
+    probs: O3,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    StatelessRandomBinomial::new().build(shape, seed, counts, probs, scope)
+}
+/// Builder for the `StatelessRandomGammaV2` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct StatelessRandomGammaV2 {
+    dtype: ::std::option::Option<crate::DataType>,
+    T: ::std::option::Option<crate::DataType>,
+    Tseed: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl StatelessRandomGammaV2 {
+    /// Creates a new `StatelessRandomGammaV2`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `dtype` attribute.
+    pub fn dtype<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.dtype = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tseed` attribute.
+    pub fn Tseed<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.Tseed = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `StatelessRandomGammaV2` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        shape: O0,
+        seed: O1,
+        alpha: O2,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(shape.into(), seed.into(), alpha.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        shape: crate::Output,
+        seed: crate::Output,
+        alpha: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("StatelessRandomGammaV2", |nd| {
+            nd.add_input(shape);
+            nd.add_input(seed);
+            nd.add_input(alpha);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.dtype {
+                nd.set_attr_type("dtype", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Tseed {
+                nd.set_attr_type("Tseed", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `StatelessRandomGammaV2::new().build(shape, seed, alpha, scope)`.
+pub fn stateless_random_gamma_v2<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+>(
+    shape: O0,
+    seed: O1,
+    alpha: O2,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    StatelessRandomGammaV2::new().build(shape, seed, alpha, scope)
+}
 /// Builder for the `StatelessRandomNormal` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct StatelessRandomNormal {
@@ -96985,6 +108118,111 @@ pub fn stateless_random_normal<
 ) -> crate::Result<crate::Operation> {
     StatelessRandomNormal::new().build(shape, seed, scope)
 }
+/// Builder for the `StatelessRandomPoisson` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct StatelessRandomPoisson {
+    Rtype: ::std::option::Option<crate::DataType>,
+    dtype: ::std::option::Option<crate::DataType>,
+    T: ::std::option::Option<crate::DataType>,
+    Tseed: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl StatelessRandomPoisson {
+    /// Creates a new `StatelessRandomPoisson`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `Rtype` attribute.
+    pub fn Rtype<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.Rtype = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `dtype` attribute.
+    pub fn dtype<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.dtype = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tseed` attribute.
+    pub fn Tseed<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.Tseed = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `StatelessRandomPoisson` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        shape: O0,
+        seed: O1,
+        lam: O2,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(shape.into(), seed.into(), lam.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        shape: crate::Output,
+        seed: crate::Output,
+        lam: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("StatelessRandomPoisson", |nd| {
+            nd.add_input(shape);
+            nd.add_input(seed);
+            nd.add_input(lam);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.Rtype {
+                nd.set_attr_type("Rtype", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.dtype {
+                nd.set_attr_type("dtype", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Tseed {
+                nd.set_attr_type("Tseed", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `StatelessRandomPoisson::new().build(shape, seed, lam, scope)`.
+pub fn stateless_random_poisson<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+>(
+    shape: O0,
+    seed: O1,
+    lam: O2,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    StatelessRandomPoisson::new().build(shape, seed, lam, scope)
+}
 /// Builder for the `StatelessRandomUniform` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct StatelessRandomUniform {
@@ -97073,6 +108311,95 @@ pub fn stateless_random_uniform<
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     StatelessRandomUniform::new().build(shape, seed, scope)
+}
+/// Builder for the `StatelessRandomUniformFullInt` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct StatelessRandomUniformFullInt {
+    dtype: ::std::option::Option<crate::DataType>,
+    T: ::std::option::Option<crate::DataType>,
+    Tseed: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl StatelessRandomUniformFullInt {
+    /// Creates a new `StatelessRandomUniformFullInt`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `dtype` attribute.
+    pub fn dtype<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.dtype = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tseed` attribute.
+    pub fn Tseed<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.Tseed = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `StatelessRandomUniformFullInt` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        shape: O0,
+        seed: O1,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(shape.into(), seed.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        shape: crate::Output,
+        seed: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("StatelessRandomUniformFullInt", |nd| {
+            nd.add_input(shape);
+            nd.add_input(seed);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.dtype {
+                nd.set_attr_type("dtype", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Tseed {
+                nd.set_attr_type("Tseed", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `StatelessRandomUniformFullInt::new().build(shape, seed, scope)`.
+pub fn stateless_random_uniform_full_int<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+>(
+    shape: O0,
+    seed: O1,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    StatelessRandomUniformFullInt::new().build(shape, seed, scope)
 }
 /// Builder for the `StatelessRandomUniformInt` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -100138,6 +111465,7 @@ pub struct TPUPartitionedCall {
     Tin: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     Tout: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     f: ::std::option::Option<::std::string::String>,
+    autotuner_thresh: ::std::option::Option<i64>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -100171,6 +111499,12 @@ impl TPUPartitionedCall {
         value: ArgType,
     ) -> Self {
         self.f = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `autotuner_thresh` attribute.
+    pub fn autotuner_thresh<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.autotuner_thresh = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -100213,6 +111547,9 @@ impl TPUPartitionedCall {
             }
             if let ::std::option::Option::Some(value) = &self.f {
                 nd.set_attr_string("f", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.autotuner_thresh {
+                nd.set_attr_int("autotuner_thresh", *value)?;
             }
             ::std::result::Result::Ok(())
         })
@@ -100398,6 +111735,9 @@ pub fn tpureplicate_metadata(scope: &mut crate::Scope) -> crate::Result<crate::O
 pub struct TPUReplicatedInput {
     N: ::std::option::Option<i64>,
     T: ::std::option::Option<crate::DataType>,
+    is_mirrored_variable: ::std::option::Option<bool>,
+    index: ::std::option::Option<i64>,
+    is_packed: ::std::option::Option<bool>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -100416,6 +111756,27 @@ impl TPUReplicatedInput {
     /// Sets the `T` attribute.
     pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
         self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `is_mirrored_variable` attribute.
+    pub fn is_mirrored_variable<ArgType: ::std::convert::Into<bool>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.is_mirrored_variable = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `index` attribute.
+    pub fn index<ArgType: ::std::convert::Into<i64>>(mut self, value: ArgType) -> Self {
+        self.index = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `is_packed` attribute.
+    pub fn is_packed<ArgType: ::std::convert::Into<bool>>(mut self, value: ArgType) -> Self {
+        self.is_packed = ::std::option::Option::Some(value.into());
         self
     }
 
@@ -100449,6 +111810,15 @@ impl TPUReplicatedInput {
             }
             if let ::std::option::Option::Some(value) = &self.T {
                 nd.set_attr_type("T", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.is_mirrored_variable {
+                nd.set_attr_bool("is_mirrored_variable", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.index {
+                nd.set_attr_int("index", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.is_packed {
+                nd.set_attr_bool("is_packed", *value)?;
             }
             ::std::result::Result::Ok(())
         })
@@ -105745,6 +117115,182 @@ pub fn tensor_scatter_add<
 ) -> crate::Result<crate::Operation> {
     TensorScatterAdd::new().build(tensor, indices, updates, scope)
 }
+/// Builder for the `TensorScatterMax` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct TensorScatterMax {
+    T: ::std::option::Option<crate::DataType>,
+    Tindices: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl TensorScatterMax {
+    /// Creates a new `TensorScatterMax`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tindices` attribute.
+    pub fn Tindices<ArgType: ::std::convert::Into<crate::DataType>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Tindices = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `TensorScatterMax` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        tensor: O0,
+        indices: O1,
+        updates: O2,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(tensor.into(), indices.into(), updates.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        tensor: crate::Output,
+        indices: crate::Output,
+        updates: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("TensorScatterMax", |nd| {
+            nd.add_input(tensor);
+            nd.add_input(indices);
+            nd.add_input(updates);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Tindices {
+                nd.set_attr_type("Tindices", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `TensorScatterMax::new().build(tensor, indices, updates, scope)`.
+pub fn tensor_scatter_max<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+>(
+    tensor: O0,
+    indices: O1,
+    updates: O2,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    TensorScatterMax::new().build(tensor, indices, updates, scope)
+}
+/// Builder for the `TensorScatterMin` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct TensorScatterMin {
+    T: ::std::option::Option<crate::DataType>,
+    Tindices: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl TensorScatterMin {
+    /// Creates a new `TensorScatterMin`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `Tindices` attribute.
+    pub fn Tindices<ArgType: ::std::convert::Into<crate::DataType>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.Tindices = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `TensorScatterMin` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+        O2: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        tensor: O0,
+        indices: O1,
+        updates: O2,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(tensor.into(), indices.into(), updates.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        tensor: crate::Output,
+        indices: crate::Output,
+        updates: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("TensorScatterMin", |nd| {
+            nd.add_input(tensor);
+            nd.add_input(indices);
+            nd.add_input(updates);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.Tindices {
+                nd.set_attr_type("Tindices", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `TensorScatterMin::new().build(tensor, indices, updates, scope)`.
+pub fn tensor_scatter_min<
+    O0: ::std::convert::Into<crate::Output>,
+    O1: ::std::convert::Into<crate::Output>,
+    O2: ::std::convert::Into<crate::Output>,
+>(
+    tensor: O0,
+    indices: O1,
+    updates: O2,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    TensorScatterMin::new().build(tensor, indices, updates, scope)
+}
 /// Builder for the `TensorScatterSub` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct TensorScatterSub {
@@ -107022,6 +118568,65 @@ impl Timestamp {
 pub fn timestamp(scope: &mut crate::Scope) -> crate::Result<crate::Operation> {
     Timestamp::new().build(scope)
 }
+/// Builder for the `ToBool` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct ToBool {
+    T: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl ToBool {
+    /// Creates a new `ToBool`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `ToBool` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        input: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(input.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        input: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("ToBool", |nd| {
+            nd.add_input(input);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `ToBool::new().build(input, scope)`.
+pub fn to_bool<O0: ::std::convert::Into<crate::Output>>(
+    input: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    ToBool::new().build(input, scope)
+}
 /// Builder for the `TopK` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
 pub struct TopK {
@@ -108045,6 +119650,81 @@ pub fn unbatch_grad<
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     UnbatchGrad::new().build(original_input, batch_index, grad, id, scope)
+}
+/// Builder for the `UncompressElement` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct UncompressElement {
+    output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
+    output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl UncompressElement {
+    /// Creates a new `UncompressElement`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `output_types` attribute.
+    pub fn output_types<ArgType: ::std::convert::Into<::std::vec::Vec<crate::DataType>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.output_types = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Sets the `output_shapes` attribute.
+    pub fn output_shapes<ArgType: ::std::convert::Into<::std::vec::Vec<crate::Shape>>>(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.output_shapes = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `UncompressElement` operation.
+    pub fn build<O0: ::std::convert::Into<crate::Output>>(
+        &self,
+        compressed: O0,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(compressed.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        compressed: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("UncompressElement", |nd| {
+            nd.add_input(compressed);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.output_types {
+                nd.set_attr_type_list("output_types", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.output_shapes {
+                nd.set_attr_shape_list("output_shapes", value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `UncompressElement::new().build(compressed, scope)`.
+pub fn uncompress_element<O0: ::std::convert::Into<crate::Output>>(
+    compressed: O0,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    UncompressElement::new().build(compressed, scope)
 }
 /// Builder for the `UnicodeDecode` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
@@ -109943,6 +121623,7 @@ pub struct VarHandleOp {
     shared_name: ::std::option::Option<::std::string::String>,
     dtype: ::std::option::Option<crate::DataType>,
     shape: ::std::option::Option<crate::Shape>,
+    allowed_devices: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
     control_inputs: ::std::vec::Vec<crate::Operation>,
 }
 
@@ -109982,6 +121663,17 @@ impl VarHandleOp {
         self
     }
 
+    /// Sets the `allowed_devices` attribute.
+    pub fn allowed_devices<
+        ArgType: ::std::convert::Into<::std::vec::Vec<::std::string::String>>,
+    >(
+        mut self,
+        value: ArgType,
+    ) -> Self {
+        self.allowed_devices = ::std::option::Option::Some(value.into());
+        self
+    }
+
     /// Adds a control input.
     pub fn add_control_input(mut self, op: crate::Operation) -> Self {
         self.control_inputs.push(op);
@@ -110009,6 +121701,9 @@ impl VarHandleOp {
             }
             if let ::std::option::Option::Some(value) = &self.shape {
                 nd.set_attr_shape("shape", value)?;
+            }
+            if let ::std::option::Option::Some(value) = &self.allowed_devices {
+                nd.set_attr_string_list("allowed_devices", value)?;
             }
             ::std::result::Result::Ok(())
         })
@@ -111511,6 +123206,72 @@ pub fn xdivy<O0: ::std::convert::Into<crate::Output>, O1: ::std::convert::Into<c
     scope: &mut crate::Scope,
 ) -> crate::Result<crate::Operation> {
     Xdivy::new().build(x, y, scope)
+}
+/// Builder for the `Xlog1py` operation.
+#[derive(::std::fmt::Debug, ::std::default::Default)]
+pub struct Xlog1py {
+    T: ::std::option::Option<crate::DataType>,
+    control_inputs: ::std::vec::Vec<crate::Operation>,
+}
+
+impl Xlog1py {
+    /// Creates a new `Xlog1py`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `T` attribute.
+    pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(mut self, value: ArgType) -> Self {
+        self.T = ::std::option::Option::Some(value.into());
+        self
+    }
+
+    /// Adds a control input.
+    pub fn add_control_input(mut self, op: crate::Operation) -> Self {
+        self.control_inputs.push(op);
+        self
+    }
+
+    /// Builds the `Xlog1py` operation.
+    pub fn build<
+        O0: ::std::convert::Into<crate::Output>,
+        O1: ::std::convert::Into<crate::Output>,
+    >(
+        &self,
+        x: O0,
+        y: O1,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        self.build_impl(x.into(), y.into(), scope)
+    }
+
+    fn build_impl(
+        &self,
+        x: crate::Output,
+        y: crate::Output,
+        scope: &mut crate::Scope,
+    ) -> crate::Result<crate::Operation> {
+        scope.new_operation("Xlog1py", |nd| {
+            nd.add_input(x);
+            nd.add_input(y);
+            for op in &self.control_inputs {
+                nd.add_control_input(op);
+            }
+            if let ::std::option::Option::Some(value) = &self.T {
+                nd.set_attr_type("T", *value)?;
+            }
+            ::std::result::Result::Ok(())
+        })
+    }
+}
+
+/// Shorthand for `Xlog1py::new().build(x, y, scope)`.
+pub fn xlog1py<O0: ::std::convert::Into<crate::Output>, O1: ::std::convert::Into<crate::Output>>(
+    x: O0,
+    y: O1,
+    scope: &mut crate::Scope,
+) -> crate::Result<crate::Operation> {
+    Xlog1py::new().build(x, y, scope)
 }
 /// Builder for the `Xlogy` operation.
 #[derive(::std::fmt::Debug, ::std::default::Default)]
