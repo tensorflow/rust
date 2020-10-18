@@ -1,5 +1,6 @@
 language: rust
-dist: trusty # still in beta, but required for the prebuilt TF binaries
+dist: focal
+osx_image: xcode12
 
 cache:
   cargo: true
@@ -50,7 +51,6 @@ addons:
       # Re-enable if we ever re-enable building from source on Travis. Only needed for building TensorFlow itself, not the Rust bindings.
       # - g++-4.9
       # - gcc-4.9
-      - oracle-java8-installer
       - swig
 
 notifications:
