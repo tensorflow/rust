@@ -4,23 +4,18 @@ extern crate pkg_config;
 extern crate semver;
 extern crate tar;
 
-use std::env::{
-    self,
-    consts::{DLL_EXTENSION, DLL_PREFIX},
-};
+use std::env;
 use std::error::Error;
 use std::fs::{self, File};
+use std::io;
 use std::io::{BufWriter, Write};
 use std::path::{Path, PathBuf};
 use std::process::{self, Command};
 
 use curl::easy::Easy;
-#[cfg(not(target_env = "msvc"))]
 use flate2::read::GzDecoder;
 use semver::Version;
-#[cfg(not(target_env = "msvc"))]
 use tar::Archive;
-#[cfg(target_env = "msvc")]
 use zip::ZipArchive;
 
 const FRAMEWORK_LIBRARY: &'static str = "tensorflow_framework";
@@ -66,11 +61,10 @@ fn main() {
         Err(_) => false,
     };
 
+    let target_os = target_os();
     if !force_src
-        && env::consts::ARCH == "x86_64"
-        && (env::consts::OS == "linux"
-            || env::consts::OS == "macos"
-            || env::consts::OS == "windows")
+        && target_arch() == "x86_64"
+        && (target_os == "linux" || target_os == "macos" || target_os == "windows")
     {
         install_prebuilt();
     } else {
@@ -78,13 +72,33 @@ fn main() {
     }
 }
 
-#[cfg(not(target_env = "msvc"))]
-fn check_windows_lib() -> bool {
-    false
+fn target_arch() -> String {
+    get!("CARGO_CFG_TARGET_ARCH")
 }
 
-#[cfg(target_env = "msvc")]
+fn target_os() -> String {
+    get!("CARGO_CFG_TARGET_OS")
+}
+
+fn dll_prefix() -> &'static str {
+    match &target_os() as &str {
+        "windows" => "",
+        _ => "lib",
+    }
+}
+
+fn dll_suffix() -> &'static str {
+    match &target_os() as &str {
+        "windows" => ".dll",
+        "macos" => ".dylib",
+        _ => ".so",
+    }
+}
+
 fn check_windows_lib() -> bool {
+    if target_os() != "windows" {
+        return false;
+    }
     let windows_lib: &str = &format!("{}.lib", LIBRARY);
     if let Ok(path) = env::var("PATH") {
         for p in path.split(";") {
@@ -106,8 +120,19 @@ fn remove_suffix(value: &mut String, suffix: &str) {
     }
 }
 
-#[cfg(not(target_env = "msvc"))]
-fn extract<P: AsRef<Path>, P2: AsRef<Path>>(archive_path: P, extract_to: P2) {
+fn has_extension<P: AsRef<Path>>(path: P, extension: &str) -> bool {
+    if let Some(os_ext) = path.as_ref().extension() {
+        if let Some(ext) = os_ext.to_str() {
+            ext == extension
+        } else {
+            false
+        }
+    } else {
+        false
+    }
+}
+
+fn extract_tar_gz<P: AsRef<Path>, P2: AsRef<Path>>(archive_path: P, extract_to: P2) {
     let file = File::open(archive_path).unwrap();
     let unzipped = GzDecoder::new(file);
     let mut a = Archive::new(unzipped);
@@ -119,8 +144,7 @@ fn extract<P: AsRef<Path>, P2: AsRef<Path>>(archive_path: P, extract_to: P2) {
 //       copy of the libraries in OUT_DIR.
 //       The same approach could be utilized for the other implementation
 //       of `extract`.
-#[cfg(target_env = "msvc")]
-fn extract<P: AsRef<Path>, P2: AsRef<Path>>(archive_path: P, extract_to: P2) {
+fn extract_zip<P: AsRef<Path>, P2: AsRef<Path>>(archive_path: P, extract_to: P2) {
     fs::create_dir_all(&extract_to).expect("Failed to create output path for zip archive.");
     let file = File::open(archive_path).expect("Unable to open libtensorflow zip archive.");
     let mut archive = ZipArchive::new(file).unwrap();
@@ -139,33 +163,39 @@ fn extract<P: AsRef<Path>, P2: AsRef<Path>>(archive_path: P, extract_to: P2) {
                     }
                 }
                 let mut outfile = File::create(&output_path).unwrap();
-                std::io::copy(&mut zipfile, &mut outfile).unwrap();
+                io::copy(&mut zipfile, &mut outfile).unwrap();
             }
         }
+    }
+}
+
+fn extract<P: AsRef<Path>, P2: AsRef<Path>>(archive_path: P, extract_to: P2) {
+    if has_extension(&archive_path, "zip") {
+        extract_zip(archive_path, extract_to);
+    } else {
+        extract_tar_gz(archive_path, extract_to);
     }
 }
 
 // Downloads and unpacks a prebuilt binary. Only works for certain platforms.
 fn install_prebuilt() {
     // Figure out the file names.
-    let os = match env::consts::OS {
-        "macos" => "darwin",
-        x => x,
+    let os = match &target_os() as &str {
+        "macos" => "darwin".to_string(),
+        x => x.to_string(),
     };
     let proc_type = if cfg!(feature = "tensorflow_gpu") {
         "gpu"
     } else {
         "cpu"
     };
-    #[cfg(target_env = "msvc")]
-    let ext = ".zip";
-    #[cfg(not(target_env = "msvc"))]
-    let ext = ".tar.gz";
+    let windows = target_os() == "windows";
+    let ext = if windows { ".zip" } else { ".tar.gz" };
     let binary_url = format!(
         "https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-{}-{}-{}-{}{}",
         proc_type,
         os,
-        env::consts::ARCH,
+        target_arch(),
         VERSION,
         ext
     );
@@ -206,25 +236,23 @@ fn install_prebuilt() {
     // Extract the tarball.
     let unpacked_dir = download_dir.join(base_name);
     let lib_dir = unpacked_dir.join("lib");
-    #[cfg(not(target_env = "msvc"))]
-    let framework_library_file = format!("lib{}.{}", FRAMEWORK_LIBRARY, DLL_EXTENSION);
-    let library_file = format!("{}{}.{}", DLL_PREFIX, LIBRARY, DLL_EXTENSION);
+    let framework_library_file = format!("{}{}{}", dll_prefix(), FRAMEWORK_LIBRARY, dll_suffix());
+    let library_file = format!("{}{}{}", dll_prefix(), LIBRARY, dll_suffix());
 
-    #[cfg(not(target_env = "msvc"))]
     let framework_library_full_path = lib_dir.join(&framework_library_file);
     let library_full_path = lib_dir.join(&library_file);
 
-    #[cfg(not(target_env = "msvc"))]
-    let download_required = !framework_library_full_path.exists() || !library_full_path.exists();
-    #[cfg(target_env = "msvc")]
-    let download_required = !library_full_path.exists();
+    let download_required =
+        (!windows && !framework_library_full_path.exists()) || !library_full_path.exists();
 
     if download_required {
         extract(file_name, &unpacked_dir);
     }
 
-    #[cfg(not(target_env = "msvc"))] // There is no tensorflow_framework.dll
-    println!("cargo:rustc-link-lib=dylib={}", FRAMEWORK_LIBRARY);
+    if target_os() != "windows" {
+        // There is no tensorflow_framework.dll
+        println!("cargo:rustc-link-lib=dylib={}", FRAMEWORK_LIBRARY);
+    }
     println!("cargo:rustc-link-lib=dylib={}", LIBRARY);
     let output = PathBuf::from(&get!("OUT_DIR"));
 
@@ -251,8 +279,9 @@ fn install_prebuilt() {
 }
 
 fn build_from_src() {
-    let framework_target = FRAMEWORK_TARGET.to_string() + std::env::consts::DLL_SUFFIX;
-    let target = TARGET.to_string() + std::env::consts::DLL_SUFFIX;
+    let dll_suffix = dll_suffix();
+    let framework_target = FRAMEWORK_TARGET.to_string() + &dll_suffix;
+    let target = TARGET.to_string() + &dll_suffix;
 
     let output = PathBuf::from(&get!("OUT_DIR"));
     log_var!(output);
