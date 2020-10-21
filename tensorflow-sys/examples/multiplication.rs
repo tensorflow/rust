@@ -48,7 +48,7 @@ fn main() {
 
         let session = nonnull!(ffi::TF_NewSession(graph, options, status));
         let mut inputs = vec![];
-        let mut input_tensors: Vec<*const ffi::TF_Tensor> = vec![];
+        let mut input_tensors: Vec<*mut ffi::TF_Tensor> = vec![];
 
         let name = CString::new("a").unwrap();
         let mut data = vec![1f32, 2.0, 3.0];
