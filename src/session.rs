@@ -12,7 +12,7 @@ use super::Tensor;
 use super::TensorType;
 use crate::tf;
 use libc::{c_char, c_int};
-use protobuf::{parse_from_bytes, Message};
+use protobuf::{parse_from_bytes, Message, ProtobufResult};
 use std::ffi::CStr;
 use std::ffi::CString;
 use std::marker;
@@ -464,10 +464,10 @@ impl<'l> SessionRunArgs<'l> {
         self.run_options = Some(Buffer::from(run_options))
     }
 
-    pub fn set_options(&mut self, config: RunOptions) {
-        if let Ok(bytes) = config.write_to_bytes() {
-            self.run_options = Some(Buffer::from(&bytes));
-        }
+    pub fn set_run_options_protobuf(&mut self, config: &RunOptions) -> ProtobufResult<()> {
+        let bytes = config.write_to_bytes()?;
+        self.run_options = Some(Buffer::from(&bytes));
+        Ok(())
     }
 
     /// Returns the serialized [`RunOptions` proto](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/protobuf/config.proto)
