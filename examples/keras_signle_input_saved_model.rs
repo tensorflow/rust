@@ -29,7 +29,7 @@ fn main() {
     let mut args = SessionRunArgs::new();
     args.add_feed(&input_op, 0, &tensor);
     let out = args.request_fetch(&output_op, 0);
-    //
+
     let result = session.run(&mut args);
     if result.is_err() {
         panic!("Error occured during calculations: {:?}", result);
