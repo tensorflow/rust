@@ -2628,6 +2628,17 @@ mod tests {
         );
         assert_eq!(42, op.get_attr_int("seed").unwrap());
 
+        // Issue #289
+        let op = {
+            let mut nd = g.new_operation("CheckBools", "CheckBools").unwrap();
+            nd.set_attr_bool_list("attr1", &[true, true]).unwrap();
+            nd.finish().unwrap()
+        };
+        assert_eq!(
+            &[true, true],
+            &op.get_attr_bool_list("attr1").unwrap() as &[bool]
+        );
+
         // TODO: Support get_attr_*/set_attr_*:
         // - bool_list
         // - tensor_list
