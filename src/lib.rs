@@ -1839,6 +1839,27 @@ impl OpAttrDef {
     }
 }
 
+/// Types of attribute values for an operation
+#[derive(Debug)]
+#[non_exhaustive]
+pub enum AttrValue {
+    s(Vec<u8>), 
+    i(i64), 
+    f(f32), 
+    b(bool), 
+    field_type(protos::types::DataType), 
+    shape(protos::tensor_shape::TensorShapeProto), 
+    tensor(protos::tensor::TensorProto), 
+    list(AttrValue_ListValue), 
+    func(NameAttrList), 
+    placeholder(String),
+}
+
+#[derive(Debug)]
+pub struct NameAttrList {}
+
+#[derive(Debug)]
+pub struct AttrValue_ListValue {}
 ////////////////////////
 
 /// Returns a string describing version information of the
