@@ -20,7 +20,8 @@ use libc::{c_int, c_uint};
 #[cfg(feature = "ndarray")]
 use ndarray::{Array, ArrayBase, Data, Dim, Dimension, IxDynImpl};
 use num_complex::Complex;
-use protobuf::ProtobufEnum;
+use protobuf::{ProtobufEnum, CachedSize, UnknownFields};
+use std::collections::HashMap;
 use std::borrow::Borrow;
 use std::cell::Cell;
 use std::cell::RefCell;
@@ -1840,26 +1841,36 @@ impl OpAttrDef {
 }
 
 /// Types of attribute values for an operation
-#[derive(Debug)]
 #[non_exhaustive]
+#[derive(Debug)]
 pub enum AttrValue {
-    s(Vec<u8>), 
-    i(i64), 
-    f(f32), 
-    b(bool), 
-    field_type(protos::types::DataType), 
-    shape(protos::tensor_shape::TensorShapeProto), 
-    tensor(protos::tensor::TensorProto), 
-    list(AttrValue_ListValue), 
-    func(NameAttrList), 
-    placeholder(String),
+    S(Vec<u8>), 
+    I(i64), 
+    F(f32), 
+    B(bool), 
+    Field_type(protos::types::DataType), 
+    Shape(Shape), 
+    Tensor(protos::tensor::TensorProto), 
+    List(AttrValue_ListValue), 
+    Func(NameAttrList), 
+    Placeholder(String),
 }
 
 #[derive(Debug)]
-pub struct NameAttrList {}
+pub struct NameAttrList {
+    // message fields
+    pub name: String,
+    // TODO: the AttrValue type in this hashmap is the incorrect type. Please ref to
+    // protos/attr_value.rs:1381
+    pub attr: HashMap<::std::string::String, AttrValue>,
+    // special fields
+    pub unknown_fields: UnknownFields,
+    pub cached_size: CachedSize,
+}
 
 #[derive(Debug)]
 pub struct AttrValue_ListValue {}
+
 ////////////////////////
 
 /// Returns a string describing version information of the
