@@ -1721,6 +1721,8 @@ pub struct OpArgDef {
     type_list_attr: String,
     is_ref: bool,
     // TODO: Add "default_value" and "allowed_values" from OpDef_AttrDef proto
+    default_value: Option<AttrValue>,
+    allowed_values: Option<AttrValue>,
 }
 
 impl OpArgDef {
@@ -1848,10 +1850,10 @@ pub enum AttrValue {
     I(i64), 
     F(f32), 
     B(bool), 
-    Field_type(protos::types::DataType), 
+    Field_type(DataType), 
     Shape(Shape), 
     Tensor(protos::tensor::TensorProto), 
-    List(AttrValue_ListValue), 
+    List(AttrValueList), 
     Func(NameAttrList), 
     Placeholder(String),
 }
@@ -1863,13 +1865,10 @@ pub struct NameAttrList {
     // TODO: the AttrValue type in this hashmap is the incorrect type. Please ref to
     // protos/attr_value.rs:1381
     pub attr: HashMap<::std::string::String, AttrValue>,
-    // special fields
-    pub unknown_fields: UnknownFields,
-    pub cached_size: CachedSize,
 }
 
 #[derive(Debug)]
-pub struct AttrValue_ListValue {}
+pub struct AttrValueList {}
 
 ////////////////////////
 
