@@ -1868,7 +1868,16 @@ pub struct NameAttrList {
 }
 
 #[derive(Debug)]
-pub struct AttrValueList {}
+pub struct AttrValueList {
+    pub s: Vec<Vec<u8>>,
+    pub i: Vec<i64>,
+    pub f: Vec<f32>,
+    pub b: Vec<bool>,
+    pub field_type: Vec<DataType>,
+    pub shape: Vec<Shape>,
+    pub tensor: Vec<protos::tensor::TensorProto>,
+    pub func: Vec<NameAttrList>,
+}
 
 ////////////////////////
 
