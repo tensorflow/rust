@@ -258,7 +258,7 @@ impl Scope {
     }
 
     /// Return a new scope. All ops created with the new scope will have
-    /// kernel_label as the value for their '_kernel' attribute;
+    /// kernel_label as the value for their '_kernel' attribute.
     pub fn with_kernel_label(&self, kernel_label: &str) -> Scope {
         Scope {
             graph: self.graph.clone(),
