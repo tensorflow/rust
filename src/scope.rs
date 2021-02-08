@@ -162,7 +162,7 @@ impl Scope {
             },
             device: self.device.clone(),
             control_deps: self.control_deps.clone(),
-            kernel_label: "".to_string(),
+            kernel_label: self.kernel_label.clone(),
         }
     }
 
@@ -177,7 +177,7 @@ impl Scope {
             op_names: self.op_names.clone(),
             device: self.device.clone(),
             control_deps: self.control_deps.clone(),
-            kernel_label: "".to_string(),
+            kernel_label: self.kernel_label.clone(),
         }
     }
 
@@ -217,7 +217,7 @@ impl Scope {
             op_names: self.op_names.clone(),
             device: device.to_string(),
             control_deps: self.control_deps.clone(),
-            kernel_label: "".to_string(),
+            kernel_label: self.kernel_label.clone(),
         }
     }
 
@@ -238,7 +238,7 @@ impl Scope {
                 .chain(control_deps.iter())
                 .cloned()
                 .collect(),
-            kernel_label: "".to_string(),
+            kernel_label: self.kernel_label.clone(),
         }
     }
 
@@ -253,7 +253,7 @@ impl Scope {
             op_names: self.op_names.clone(),
             device: self.device.clone(),
             control_deps: vec![],
-            kernel_label: "".to_string(),
+            kernel_label: self.kernel_label.clone(),
         }
     }
 
