@@ -103,6 +103,7 @@ pub struct Scope {
     device: String,
     control_deps: Vec<Operation>,
     kernel_label: String,
+    xla_cluster: String,
 }
 
 impl Scope {
@@ -119,6 +120,7 @@ impl Scope {
             device: "".to_string(),
             control_deps: Vec::new(),
             kernel_label: "".to_string(),
+            xla_cluster: "".to_string(),
         }
     }
 
@@ -163,6 +165,7 @@ impl Scope {
             device: self.device.clone(),
             control_deps: self.control_deps.clone(),
             kernel_label: self.kernel_label.clone(),
+            xla_cluster: self.xla_cluster.clone(),
         }
     }
 
@@ -178,6 +181,7 @@ impl Scope {
             device: self.device.clone(),
             control_deps: self.control_deps.clone(),
             kernel_label: self.kernel_label.clone(),
+            xla_cluster: self.xla_cluster.clone(),
         }
     }
 
@@ -218,6 +222,7 @@ impl Scope {
             device: device.to_string(),
             control_deps: self.control_deps.clone(),
             kernel_label: self.kernel_label.clone(),
+            xla_cluster: self.xla_cluster.clone(),
         }
     }
 
@@ -239,6 +244,7 @@ impl Scope {
                 .cloned()
                 .collect(),
             kernel_label: self.kernel_label.clone(),
+            xla_cluster: self.xla_cluster.clone(),
         }
     }
 
@@ -254,6 +260,7 @@ impl Scope {
             device: self.device.clone(),
             control_deps: vec![],
             kernel_label: self.kernel_label.clone(),
+            xla_cluster: self.xla_cluster.clone(),
         }
     }
 
@@ -269,6 +276,23 @@ impl Scope {
             device: self.device.clone(),
             control_deps: self.control_deps.clone(),
             kernel_label: kernel_label.to_string(),
+            xla_cluster: self.xla_cluster.clone(),
+        }
+    }
+
+    /// Returns a new scope. All ops created within the returned scope will have
+    /// their '_XlaCluster' attribute set to xla_cluster.
+    pub fn with_xla_cluster(&self, xla_cluster: &str) -> Scope {
+        Scope {
+            graph: self.graph.clone(),
+            name: self.name.clone(),
+            children_names: self.children_names.clone(),
+            op_name: self.op_name.clone(),
+            op_names: self.op_names.clone(),
+            device: self.device.clone(),
+            control_deps: self.control_deps.clone(),
+            kernel_label: self.kernel_label.clone(),
+            xla_cluster: xla_cluster.to_string(),
         }
     }
 
@@ -287,6 +311,9 @@ impl Scope {
         }
         if !self.kernel_label.is_empty() {
             nd.set_attr_string("_kernel", &self.kernel_label)?;
+        }
+        if !self.xla_cluster.is_empty() {
+            nd.set_attr_string("_XlaCluster", &self.xla_cluster)?;
         }
         f(&mut nd)?;
         Ok(nd.finish()?)
@@ -366,6 +393,19 @@ mod tests {
                 .new_operation("NoOp", |_| Ok(()))
                 .unwrap()
                 .get_attr_string("_kernel")
+                .unwrap(),
+            "foo"
+        );
+    }
+
+    #[test]
+    fn xla_cluster() {
+        assert_eq!(
+            Scope::new_root_scope()
+                .with_xla_cluster("foo")
+                .new_operation("NoOp", |_| Ok(()))
+                .unwrap()
+                .get_attr_string("_XlaCluster")
                 .unwrap(),
             "foo"
         );
