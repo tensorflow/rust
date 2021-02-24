@@ -46,7 +46,7 @@ fn main() {
     args.add_feed(&input_op1, 0, &tensor1);
     args.add_feed(&input_op2, 0, &tensor2);
     let out = args.request_fetch(&output_op, 0);
-    let result = session
+    session
         .run(&mut args)
         .expect("Error occured during calculations: {:?}");
     let out_res: f32 = args.fetch(out).unwrap()[0];
