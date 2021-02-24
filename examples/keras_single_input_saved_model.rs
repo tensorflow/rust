@@ -6,8 +6,12 @@ fn main() {
     // For multiple inputs _input is not being appended to signature input parameter name.
     let signature_input_parameter_name = "test_in_input";
     let signature_output_parameter_name = "test_out";
-    let save_dir = "examples/keras_single_input_saved_model";
-    let tensor = Tensor::from(&[0.1, 0.2, 0.3, 0.4, 0.5][..]);
+    
+    let save_dir =
+        "examples/keras_single_input_saved_model";
+    let tensor: Tensor<f32> = Tensor::new(&[1, 5])
+        .with_values(&[0.1, 0.2, 0.3, 0.4, 0.5])
+        .expect("Can't create tensor");
     let mut graph = Graph::new();
 
     let bundle = SavedModelBundle::load(&SessionOptions::new(), &["serve"], &mut graph, save_dir)
@@ -37,7 +41,7 @@ fn main() {
 
     let out = args.request_fetch(&output_op, 0);
 
-    let result = session
+    session
         .run(&mut args)
         .expect("Error occurred during calculations");
     let out_res: f32 = args.fetch(out).unwrap()[0];
