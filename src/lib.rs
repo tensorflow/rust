@@ -1844,7 +1844,7 @@ impl OpAttrDef {
 
 /// Types of attribute values for an operation
 #[non_exhaustive]
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum AttrValue {
     S(Vec<u8>), 
     I(i64), 
@@ -1852,13 +1852,13 @@ pub enum AttrValue {
     B(bool), 
     Field_type(DataType), 
     Shape(Shape), 
-    Tensor(protos::tensor::TensorProto), 
+    Tensor(Box<dyn AnyTensor>), 
     List(AttrValueList), 
     Func(NameAttrList), 
     Placeholder(String),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct NameAttrList {
     // message fields
     pub name: String,
@@ -1867,7 +1867,7 @@ pub struct NameAttrList {
     pub attr: HashMap<::std::string::String, AttrValue>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AttrValueList {
     pub s: Vec<Vec<u8>>,
     pub i: Vec<i64>,
@@ -1875,7 +1875,7 @@ pub struct AttrValueList {
     pub b: Vec<bool>,
     pub field_type: Vec<DataType>,
     pub shape: Vec<Shape>,
-    pub tensor: Vec<protos::tensor::TensorProto>,
+    pub tensor: Vec<Box<dyn AnyTensor>>,
     pub func: Vec<NameAttrList>,
 }
 
