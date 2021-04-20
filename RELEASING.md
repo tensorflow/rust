@@ -15,6 +15,7 @@ Note that any crate not mentioned here (e.g. tensorflow-proto-codegen, tensorflo
 1. Check out a clean copy.  Note that `cargo publish` packages up untracked files.  Use `--allow-dirty` at your peril.
 1. Fetch from the main repo
 1. Ensure that the TensorFlow version is a real release, not a release candidate
+1. Ensure that the minimum supported Rust version in the README is up to date
 1. Update changelog.
 1. Bump version number of `tensorflow-sys` if necessary
    1. Run `git log v${PREVIOUS_VERSION}..HEAD tensorflow-sys` and see if there were any changes. If not, skip.

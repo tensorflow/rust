@@ -38,6 +38,8 @@ so if you are unsure please [check out the docs](https://www.tensorflow.org/inst
 Some of the examples use TensorFlow code written in Python and require a full TensorFlow
 installation.
 
+The minimum supported Rust version is 1.49.
+
 ### Usage
 Add this to your `Cargo.toml`:
 
