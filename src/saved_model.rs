@@ -125,6 +125,16 @@ impl TensorInfo {
         &self.name
     }
 
+    /// Returns the data type of the tensor.
+    pub fn dtype(&self) -> DataType {
+        self.dtype
+    }
+
+    /// Returns the shape of the tensor.
+    pub fn shape(&self) -> &Shape {
+        &self.shape
+    }
+
     // We don't use Into, because we don't want this to be public API.
     fn into_proto(self) -> protos::meta_graph::TensorInfo {
         let mut info = protos::meta_graph::TensorInfo::new();
@@ -171,6 +181,11 @@ impl SignatureDef {
     /// Adds an output parameter.
     pub fn add_output_info(&mut self, name: String, info: TensorInfo) {
         self.outputs.insert(name, info);
+    }
+
+    /// Returns the method name.
+    pub fn method_name(&self) -> &str {
+        &self.method_name
     }
 
     /// Returns the input parameters.
