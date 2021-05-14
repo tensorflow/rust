@@ -20,7 +20,8 @@ use libc::{c_int, c_uint};
 #[cfg(feature = "ndarray")]
 use ndarray::{Array, ArrayBase, Data, Dim, Dimension, IxDynImpl};
 use num_complex::Complex;
-use protobuf::ProtobufEnum;
+use protobuf::{ProtobufEnum, CachedSize, UnknownFields};
+use std::collections::HashMap;
 use std::borrow::Borrow;
 use std::cell::Cell;
 use std::cell::RefCell;
@@ -1720,6 +1721,8 @@ pub struct OpArgDef {
     type_list_attr: String,
     is_ref: bool,
     // TODO: Add "default_value" and "allowed_values" from OpDef_AttrDef proto
+    default_value: Option<AttrValue>,
+    allowed_values: Option<AttrValue>,
 }
 
 impl OpArgDef {
@@ -1837,6 +1840,43 @@ impl OpAttrDef {
             minimum: proto.get_minimum(),
         })
     }
+}
+
+/// Types of attribute values for an operation
+#[non_exhaustive]
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum AttrValue {
+    S(Vec<u8>), 
+    I(i64), 
+    F(f32), 
+    B(bool), 
+    Field_type(DataType), 
+    Shape(Shape), 
+    Tensor(Box<dyn AnyTensor>), 
+    List(AttrValueList), 
+    Func(NameAttrList), 
+    Placeholder(String),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct NameAttrList {
+    // message fields
+    pub name: String,
+    // TODO: the AttrValue type in this hashmap is the incorrect type. Please ref to
+    // protos/attr_value.rs:1381
+    pub attr: HashMap<::std::string::String, AttrValue>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AttrValueList {
+    pub s: Vec<Vec<u8>>,
+    pub i: Vec<i64>,
+    pub f: Vec<f32>,
+    pub b: Vec<bool>,
+    pub field_type: Vec<DataType>,
+    pub shape: Vec<Shape>,
+    pub tensor: Vec<Box<dyn AnyTensor>>,
+    pub func: Vec<NameAttrList>,
 }
 
 ////////////////////////

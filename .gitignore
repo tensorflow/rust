@@ -1,3 +1,4 @@
+.gitignore
 *~
 *.log
 Cargo.lock
@@ -7,3 +8,4 @@ travis-ci/travis_rsa
 .idea
 test_resources/io/actual.tfrecord
 test_resources/io/roundtrip.tfrecord
+tags
