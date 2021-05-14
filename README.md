@@ -32,7 +32,7 @@ compiling TensorFlow itself:
  - Optionally, CUDA packages to support GPU-based processing
 
 The TensorFlow website provides detailed instructions on how to obtain and install said dependencies,
-so if you are unsure please [check out the docs](https://www.tensorflow.org/install/install_sources)
+so if you are unsure please [check out the docs](https://www.tensorflow.org/install/source)
  for further details.
 
 Some of the examples use TensorFlow code written in Python and require a full TensorFlow
