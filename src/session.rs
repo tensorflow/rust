@@ -12,11 +12,13 @@ use super::Tensor;
 use super::TensorType;
 use crate::tf;
 use libc::{c_char, c_int};
+use protobuf::{parse_from_bytes, Message, ProtobufResult};
 use std::ffi::CStr;
 use std::ffi::CString;
 use std::marker;
 use std::path::Path;
 use std::ptr;
+use tensorflow_protos_rs::config::*;
 
 /// Aggregation type for a saved model bundle.
 #[derive(Debug)]
@@ -432,10 +434,24 @@ impl<'l> SessionRunArgs<'l> {
         self.run_options = Some(Buffer::from(run_options))
     }
 
+    pub fn set_run_options_protobuf(&mut self, config: &RunOptions) -> ProtobufResult<()> {
+        let bytes = config.write_to_bytes()?;
+        self.run_options = Some(Buffer::from(&bytes));
+        Ok(())
+    }
+
     /// Returns the serialized [`RunOptions` proto](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/protobuf/config.proto)
     /// Returns none if `RunOption` are not set.
     pub fn get_run_options(&self) -> Option<&[u8]> {
         self.run_options.as_ref().map(std::convert::AsRef::as_ref)
+    }
+
+    pub fn get_options(&self) -> Option<RunOptions> {
+        if let Some(opt) = &self.run_options {
+            parse_from_bytes::<RunOptions>(&opt).ok()
+        } else {
+            None
+        }
     }
 
     /// Returns the serialized [`RunMetadata` proto](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/protobuf/config.proto)
