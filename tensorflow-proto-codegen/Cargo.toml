@@ -5,6 +5,6 @@ authors = ["Adam Crume <acrume@google.com>"]
 edition = "2018"
 
 [dependencies]
-protoc-rust = "2.7.0"
+protoc-rust = "2.23.0"
 
 [workspace]

@@ -9,8 +9,9 @@ fi
 
 # See https://github.com/servo/rust-bindgen/issues/550 as to why
 # this is blacklisted.
-bindgen_options="--blacklist-type max_align_t --size_t-is-usize --default-enum-style=rust"
-include_dir="/usr/include"
+bindgen_options="--blacklist-type max_align_t --size_t-is-usize --default-enum-style=rust --generate-inline-functions"
+# TODO: revert
+include_dir="$HOME/git/tensorflow"
 
 cmd="bindgen ${bindgen_options} ${include_dir}/tensorflow/c/c_api.h --output src/bindgen.rs --  -I ${include_dir}"
 echo ${cmd}

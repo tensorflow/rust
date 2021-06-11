@@ -3,8 +3,8 @@
 //! See the [tensorflow docs](https://www.tensorflow.org/api_guides/python/python_io#tfrecords-format-details)
 //! for details of this format.
 use byteorder::{ByteOrder, LittleEndian, ReadBytesExt, WriteBytesExt};
-
-use crc::crc32;
+use crc::Crc;
+use crc::CRC_32_ISCSI;
 use std::{
     error::Error,
     fmt, io,
@@ -14,6 +14,8 @@ use std::{
 fn mask_crc(crc: u32) -> u32 {
     ((crc >> 15) | (crc << 17)).wrapping_add(0xa282_ead8u32)
 }
+
+const CASTAGNOLI: Crc<u32> = Crc::<u32>::new(&CRC_32_ISCSI);
 
 /// A type for writing bytes in the TFRecords format.
 #[derive(Debug)]
@@ -48,11 +50,11 @@ where
         let mut len_bytes = [0u8; 8];
         (&mut len_bytes[..]).write_u64::<LittleEndian>(bytes.len() as u64)?;
 
-        let masked_len_crc32c = mask_crc(crc32::checksum_castagnoli(&len_bytes));
+        let masked_len_crc32c = mask_crc(CASTAGNOLI.checksum(&len_bytes));
         let mut len_crc32_bytes = [0u8; 4];
         (&mut len_crc32_bytes[..]).write_u32::<LittleEndian>(masked_len_crc32c)?;
 
-        let masked_bytes_crc32c = mask_crc(crc32::checksum_castagnoli(&bytes));
+        let masked_bytes_crc32c = mask_crc(CASTAGNOLI.checksum(&bytes));
         let mut bytes_crc32_bytes = [0u8; 4];
         (&mut bytes_crc32_bytes[..]).write_u32::<LittleEndian>(masked_bytes_crc32c)?;
 
@@ -138,7 +140,7 @@ where
     }
 
     fn checksum(&mut self, bytes: &[u8]) -> Result<bool, RecordReadError> {
-        let actual_bytes_crc32 = mask_crc(crc32::checksum_castagnoli(&bytes));
+        let actual_bytes_crc32 = mask_crc(CASTAGNOLI.checksum(&bytes));
         let expected_bytes_crc32 = self.reader.read_u32::<LittleEndian>()?;
         if actual_bytes_crc32 != expected_bytes_crc32 {
             return Ok(false);
