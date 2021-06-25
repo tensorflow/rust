@@ -19,7 +19,7 @@ function run {
     echo
 }
 
-tensorflow_version=2.3.0
+tensorflow_version=2.5.0
 
 valgrind_log=valgrind.log
 truncate --size=0 "$valgrind_log"
@@ -63,10 +63,10 @@ echo "Testing tests"
 run valgrind --leak-check=full "$test_binary" >> "$valgrind_log" 2>&1
 
 # Aggregate results.
-printf "Definitely lost bytes: %9d\n" $(awk '/definitely lost:/{sum+=gensub(",","","g",$4)}END{print sum}' < "$valgrind_log")
-printf "Indirectly lost bytes: %9d\n" $(awk '/indirectly lost:/{sum+=gensub(",","","g",$4)}END{print sum}' < "$valgrind_log")
-printf "Possibly lost bytes:   %9d\n" $(awk '/possibly lost:/{sum+=gensub(",","","g",$4)}END{print sum}' < "$valgrind_log")
-printf "Still reachable bytes: %9d\n" $(awk '/still reachable:/{sum+=gensub(",","","g",$4)}END{print sum}' < "$valgrind_log")
+printf "Definitely lost bytes: %9d\n" $(awk '/definitely lost:/{gsub(",","",$4);sum+=$4}END{print sum}' < "$valgrind_log")
+printf "Indirectly lost bytes: %9d\n" $(awk '/indirectly lost:/{gsub(",","",$4);sum+=$4}END{print sum}' < "$valgrind_log")
+printf "Possibly lost bytes:   %9d\n" $(awk '/possibly lost:/{gsub(",","",$4);sum+=$4}END{print sum}' < "$valgrind_log")
+printf "Still reachable bytes: %9d\n" $(awk '/still reachable:/{gsub(",","",$4);sum+=$4}END{print sum}' < "$valgrind_log")
 
 if egrep -i -q "invalid read|invalid write" "$valgrind_log"; then
     echo "Invalid operations detected"
