@@ -720,7 +720,7 @@ macro_rules! tensor_type {
     };
 }
 
-tensor_type!(f16, Half, half::consts::ZERO, half::consts::ONE);
+tensor_type!(f16, Half, f16::ZERO, f16::ONE);
 tensor_type!(f32, Float, 0.0, 1.0);
 tensor_type!(f64, Double, 0.0, 1.0);
 tensor_type!(i32, Int32, 0, 1);
@@ -844,7 +844,7 @@ tensor_type!(
 unsafe extern "C" fn string_deallocator(
     data: *mut std_c_void,
     length: size_t,
-    deallocator_arg: *mut std_c_void,
+    _deallocator_arg: *mut std_c_void,
 ) {
     let align = mem::align_of::<tf::TF_TString>();
     let size = mem::size_of::<tf::TF_TString>();
@@ -854,9 +854,9 @@ unsafe extern "C" fn string_deallocator(
         process::abort();
     });
     let count = length / size;
-    let tstrings = unsafe { slice::from_raw_parts_mut(data as *mut tf::TF_TString, count) };
+    let tstrings = slice::from_raw_parts_mut(data as *mut tf::TF_TString, count);
     for i in 0..count {
-        unsafe { tf::TF_StringDealloc(&mut tstrings[i]) };
+        tf::TF_StringDealloc(&mut tstrings[i]);
     }
     alloc::dealloc(data as *mut _, layout);
 }
@@ -920,7 +920,7 @@ impl TensorType for String {
                 ));
             }
             let buf = slice::from_raw_parts_mut(ptr, packed_size);
-            let mut tstrings =
+            let tstrings =
                 slice::from_raw_parts_mut(buf.as_ptr() as *mut tf::TF_TString, data.len());
             for i in 0..data.len() {
                 tf::TF_StringInit(&mut tstrings[i]);
@@ -1528,8 +1528,8 @@ impl Library {
                 (*heap_buf).length = stack_buf.length;
                 Buffer::<u8>::from_c(heap_buf, true)
             };
-            let op_proto: protos::op_def::OpList =
-                protobuf::parse_from_bytes(&buf).map_err(|e| {
+            let op_proto: protos::op_def::OpList = protobuf::Message::parse_from_bytes(&buf)
+                .map_err(|e| {
                     Status::new_set_lossy(
                         Code::InvalidArgument,
                         &format!("Invalid serialized OpList: {}", e),

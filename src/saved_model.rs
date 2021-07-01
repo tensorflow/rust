@@ -262,8 +262,8 @@ pub struct MetaGraphDef {
 impl MetaGraphDef {
     // We don't use From, because we don't want this to be public API.
     pub(crate) fn from_serialized_proto(data: &[u8]) -> Result<Self> {
-        let proto: protos::meta_graph::MetaGraphDef =
-            protobuf::parse_from_bytes(data).map_err(|e| {
+        let proto: protos::meta_graph::MetaGraphDef = protobuf::Message::parse_from_bytes(data)
+            .map_err(|e| {
                 Status::new_set_lossy(
                     Code::InvalidArgument,
                     &format!("Invalid serialized MetaGraphDef: {}", e),
@@ -495,7 +495,7 @@ impl SavedModelSaver {
     ) -> std::result::Result<(), SaveModelError> {
         let mut meta_graph = self.meta_graph.clone();
         let graph_bytes = graph.graph_def()?;
-        let graph_def = match protobuf::parse_from_bytes(&graph_bytes) {
+        let graph_def = match protobuf::Message::parse_from_bytes(&graph_bytes) {
             Ok(x) => x,
             Err(e) => {
                 return Err(Status::new_set_lossy(

@@ -115,10 +115,10 @@ impl Parse for DefineOpInput {
             }
             input.parse::<Token![,]>()?;
             let ident: Ident = input.parse()?;
-            if ident.to_string() == "args" {
+            if ident == "args" {
                 let new_args: Args = input.parse()?;
                 args.extend(new_args.args);
-            } else if ident.to_string() == "attrs" {
+            } else if ident == "attrs" {
                 let new_attrs: Attrs = input.parse()?;
                 attrs.extend(new_attrs.attrs);
             } else {
