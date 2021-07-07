@@ -1420,6 +1420,20 @@ impl<'a, T: TensorType> From<&'a [T]> for Tensor<T> {
     }
 }
 
+#[rustversion::since(1.51)]
+impl<'a, T: TensorType, const N: usize> From<[T; N]> for Tensor<T> {
+    fn from(data: [T; N]) -> Tensor<T> {
+        Tensor::from(&data[..])
+    }
+}
+
+#[rustversion::since(1.51)]
+impl<'a, T: TensorType, const N: usize> From<&[T; N]> for Tensor<T> {
+    fn from(data: &[T; N]) -> Tensor<T> {
+        Tensor::from(&data[..])
+    }
+}
+
 #[cfg(feature = "ndarray")]
 /// Convert any ndarray::ArrayBase type into a tensorflow::Tensor
 impl<T, S, D> From<ArrayBase<S, D>> for Tensor<T>
@@ -2033,14 +2047,78 @@ macro_rules! shape_from_array {
     };
 }
 
+#[rustversion::not(since(1.51))]
 shape_from_array!(0);
+#[rustversion::not(since(1.51))]
 shape_from_array!(1);
+#[rustversion::not(since(1.51))]
 shape_from_array!(2);
+#[rustversion::not(since(1.51))]
 shape_from_array!(3);
+#[rustversion::not(since(1.51))]
 shape_from_array!(4);
+#[rustversion::not(since(1.51))]
 shape_from_array!(5);
+#[rustversion::not(since(1.51))]
 shape_from_array!(6);
+#[rustversion::not(since(1.51))]
 shape_from_array!(7);
+
+#[rustversion::since(1.51)]
+impl<const N: usize> From<[i32; N]> for Shape {
+    fn from(data: [i32; N]) -> Shape {
+        Shape::from(&data[..])
+    }
+}
+
+#[rustversion::since(1.51)]
+impl<const N: usize> From<[u32; N]> for Shape {
+    fn from(data: [u32; N]) -> Shape {
+        Shape::from(&data[..])
+    }
+}
+
+#[rustversion::since(1.51)]
+impl<const N: usize> From<[i64; N]> for Shape {
+    fn from(data: [i64; N]) -> Shape {
+        Shape::from(&data[..])
+    }
+}
+
+#[rustversion::since(1.51)]
+impl<const N: usize> From<[u64; N]> for Shape {
+    fn from(data: [u64; N]) -> Shape {
+        Shape::from(&data[..])
+    }
+}
+
+#[rustversion::since(1.51)]
+impl<const N: usize> From<&[i32; N]> for Shape {
+    fn from(data: &[i32; N]) -> Shape {
+        Shape::from(&data[..])
+    }
+}
+
+#[rustversion::since(1.51)]
+impl<const N: usize> From<&[u32; N]> for Shape {
+    fn from(data: &[u32; N]) -> Shape {
+        Shape::from(&data[..])
+    }
+}
+
+#[rustversion::since(1.51)]
+impl<const N: usize> From<&[i64; N]> for Shape {
+    fn from(data: &[i64; N]) -> Shape {
+        Shape::from(&data[..])
+    }
+}
+
+#[rustversion::since(1.51)]
+impl<const N: usize> From<&[u64; N]> for Shape {
+    fn from(data: &[u64; N]) -> Shape {
+        Shape::from(&data[..])
+    }
+}
 
 impl Into<Option<Vec<Option<i64>>>> for Shape {
     fn into(self) -> Option<Vec<Option<i64>>> {
@@ -2247,6 +2325,20 @@ mod tests {
         assert_ne!(a, d);
     }
 
+    #[rustversion::since(1.51)]
+    #[test]
+    fn tensor_from_array() {
+        let x = Tensor::<i32>::from([1, 2, 3]);
+        assert_eq!(x.as_ref(), &[1, 2, 3]);
+    }
+
+    #[rustversion::since(1.51)]
+    #[test]
+    fn tensor_from_array_ref() {
+        let x = Tensor::<i32>::from(&[1, 2, 3]);
+        assert_eq!(x.as_ref(), &[1, 2, 3]);
+    }
+
     #[test]
     fn tensor_display() {
         let tests = [
@@ -2346,5 +2438,23 @@ mod tests {
     #[test]
     fn shape_from_array1_ref() {
         assert_eq!(Shape::from(&[1]), Shape::from(&[1][..]));
+    }
+
+    #[rustversion::since(1.51)]
+    #[test]
+    fn shape_from_array8() {
+        assert_eq!(
+            Shape::from([1, 2, 3, 4, 5, 6, 7, 8]),
+            Shape::from(&[1, 2, 3, 4, 5, 6, 7, 8][..])
+        );
+    }
+
+    #[rustversion::since(1.51)]
+    #[test]
+    fn shape_from_array8_ref() {
+        assert_eq!(
+            Shape::from(&[1, 2, 3, 4, 5, 6, 7, 8]),
+            Shape::from(&[1, 2, 3, 4, 5, 6, 7, 8][..])
+        );
     }
 }

@@ -58,7 +58,7 @@ run cargo doc -vv --features tensorflow_unstable,private-docs-rs
 (cd tensorflow-sys && run cargo run --example tf_version)
 (cd tensorflow-sys && run cargo doc -vv)
 
-for file in $(find -name '*.rs'); do
+for file in $(find . -name target -prune -o -name '*.rs' -print); do
     bad_deprecations="$(rustfmt --emit stdout --config max_width=1000 "$file" | grep '#\[deprecated' | grep -E -v '([^"\\]|\\.|"([^"\\]|\\.)*")*since' || true)"
     if [[ "${bad_deprecations}" != "" ]]; then
         echo "ERROR: #[deprecated] attribute(s) found with no 'since' key in $file:"
