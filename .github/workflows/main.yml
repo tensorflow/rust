@@ -1,0 +1,25 @@
+name: TensorFlow Rust
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    env:
+      RUST_BACKTRACE: 1
+      TF_RUST_BUILD_FROM_SRC: false
+      
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Add rustfmt
+        run: rustup component add rustfmt
+
+      - name: Run all tests
+        run: ./test-all
