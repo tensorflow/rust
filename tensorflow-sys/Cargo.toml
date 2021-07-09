@@ -19,7 +19,7 @@ edition = "2018"
 features = ["private-docs-rs"]
 
 [dependencies]
-libc = "0.2.43"
+libc = "0.2.98"
 
 [build-dependencies]
 curl = "0.4.38"
