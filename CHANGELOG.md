@@ -1,5 +1,25 @@
 # Changelog
 
+## Release 0.17.0
+
+### Additions
+
+- Support Tensor::from and Shape::from for arrays (requires Rust 1.51)
+- Add dtype and shape accessors to TensorInfo
+- Implement Scope::with_xla_cluster
+- Add Scope::with_kernel_label
+
+### Changes
+
+- Upgrade to TensorFlow 2.5
+- Deprecate Session::from_saved_model in favor of SavedModelBundle::load
+
+## Release 0.16.1
+
+### Fixes
+
+- Fix Windows build
+
 ## Release 0.16.0
 
 ### Additions
