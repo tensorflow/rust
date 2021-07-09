@@ -1,6 +1,8 @@
-import tensorflow as tf
+# TODO: Stop using v1 compatibility
+import tensorflow.compat.v1 as tf
 
 
+tf.disable_eager_execution()
 x = tf.placeholder(tf.int32, name = 'x')
 y = tf.placeholder(tf.int32, name = 'y')
 z = tf.add(x, y, name = 'z')
