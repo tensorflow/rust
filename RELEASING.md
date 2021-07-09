@@ -2,7 +2,7 @@
 
 1. Generate protos
    1. Run `cd tensorflow-proto-codegen; cargo run -- $PATH_TO_TENSORFLOW $PWD/..`
-   1. Update Cargo.toml to ensure version of protobuf exactly equals version of protoc_rust used
+   1. Update Cargo.toml in root and tensorflow-op-codegen to ensure version of protobuf exactly equals version of protoc_rust used
 1. Generate ops
    1. Run `cd tensorflow-op-codegen; cargo run -- $PATH_TO_TENSORFLOW $PWD/..`
    1. Run `cargo fmt` to format generated code
