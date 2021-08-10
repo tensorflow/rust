@@ -46,7 +46,7 @@ fn merge_protos<M: Message>(ops: Vec<M>) -> Result<M, ProtobufError> {
     for op in ops {
         op.write_to_vec(&mut out)?;
     }
-    protobuf::parse_from_bytes(&out)
+    Message::parse_from_bytes(&out)
 }
 
 type ParseResult<'a, O> = IResult<&'a [u8], O, VerboseError<&'a [u8]>>;
