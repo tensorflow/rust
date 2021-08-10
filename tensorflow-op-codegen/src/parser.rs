@@ -28,7 +28,7 @@ use nom::error::VerboseError;
 use nom::multi::many0;
 use nom::multi::many1;
 use nom::multi::many_till;
-use nom::multi::separated_list;
+use nom::multi::separated_list0;
 use nom::sequence::delimited;
 use nom::sequence::pair;
 use nom::sequence::preceded;
@@ -51,7 +51,7 @@ fn merge_protos<M: Message>(ops: Vec<M>) -> Result<M, ProtobufError> {
 
 type ParseResult<'a, O> = IResult<&'a [u8], O, VerboseError<&'a [u8]>>;
 
-fn space<'a>() -> impl Fn(&'a [u8]) -> ParseResult<'a, ()> {
+fn space<'a>() -> impl FnMut(&'a [u8]) -> ParseResult<'a, ()> {
     map(many0(one_of(" \t\r\n")), |_| ())
 }
 
@@ -260,12 +260,12 @@ where
     }
 }
 
-fn message<'a, M, F>(field: F) -> impl Fn(&'a [u8]) -> ParseResult<'a, M>
+fn message<'a, M, F>(field: F) -> impl FnMut(&'a [u8]) -> ParseResult<'a, M>
 where
     M: Message,
-    F: Fn(&'a [u8]) -> ParseResult<'a, M>,
+    F: FnMut(&'a [u8]) -> ParseResult<'a, M>,
 {
-    map_res(separated_list(space(), field), merge_protos)
+    map_res(separated_list0(space(), field), merge_protos)
 }
 
 fn tensor_shape_proto_dim<'a>(input: &'a [u8]) -> ParseResult<'a, TensorShapeProto_Dim> {
