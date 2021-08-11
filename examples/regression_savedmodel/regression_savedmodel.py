@@ -1,43 +1,47 @@
 import tensorflow as tf
-from tensorflow.python.saved_model.builder import SavedModelBuilder
-from tensorflow.python.saved_model.signature_def_utils import build_signature_def
-from tensorflow.python.saved_model.signature_constants import REGRESS_METHOD_NAME
-from tensorflow.python.saved_model.tag_constants import TRAINING, SERVING
-from tensorflow.python.saved_model.utils import build_tensor_info
 
-x = tf.placeholder(tf.float32, name='x')
-y = tf.placeholder(tf.float32, name='y')
 
-w = tf.Variable(tf.random_uniform([1], -1.0, 1.0), name='w')
-b = tf.Variable(tf.zeros([1]), name='b')
-y_hat = tf.add(w * x, b, name="y_hat")
+class LinearRegresstion(tf.Module):
+    def __init__(self, name=None):
+        super(LinearRegresstion, self).__init__(name=name)
+        self.w = tf.Variable(tf.random.uniform([1], -1.0, 1.0), name='w')
+        self.b = tf.Variable(tf.zeros([1]), name='b')
+        self.optimizer = tf.keras.optimizers.SGD(0.5)
 
-loss = tf.reduce_mean(tf.square(y_hat - y))
-optimizer = tf.train.GradientDescentOptimizer(0.5)
-train = optimizer.minimize(loss, name='train')
+    @tf.function
+    def __call__(self, x):
+        y_hat = self.w * x + self.b
+        return y_hat
 
-init = tf.variables_initializer(tf.global_variables(), name='init')
+    @tf.function
+    def get_w(self):
+        return {'output': self.w}
+
+    @tf.function
+    def get_b(self):
+        return {'output': self.b}
+
+    @tf.function
+    def train(self, x, y):
+        with tf.GradientTape() as tape:
+            y_hat = self(x)
+            loss = tf.reduce_mean(tf.square(y_hat - y))
+        grads = tape.gradient(loss, self.trainable_variables)
+        _ = self.optimizer.apply_gradients(zip(grads, self.trainable_variables))
+        return {'loss': loss}
+
+
+model = LinearRegresstion()
+
+# Get concrete functions to generate signatures
+x = tf.TensorSpec([None], tf.float32, name='x')
+y = tf.TensorSpec([None], tf.float32, name='y')
+
+train = model.train.get_concrete_function(x, y)
+w = model.get_w.get_concrete_function()
+b = model.get_b.get_concrete_function()
+
+signatures = {'train': train, 'w': w, 'b': b}
 
 directory = 'examples/regression_savedmodel'
-builder = SavedModelBuilder(directory)
-
-with tf.Session(graph=tf.get_default_graph()) as sess:
-    sess.run(init)
-
-    signature_inputs = {
-        "x": build_tensor_info(x),
-        "y": build_tensor_info(y)
-    }
-    signature_outputs = {
-        "out": build_tensor_info(y_hat)
-    }
-    signature_def = build_signature_def(
-        signature_inputs, signature_outputs,
-        REGRESS_METHOD_NAME)
-    builder.add_meta_graph_and_variables(
-        sess, [TRAINING, SERVING],
-        signature_def_map={
-            REGRESS_METHOD_NAME: signature_def
-        },
-        assets_collection=tf.get_collection(tf.GraphKeys.ASSET_FILEPATHS))
-    builder.save(as_text=False)
+tf.saved_model.save(model, directory, signatures=signatures)
