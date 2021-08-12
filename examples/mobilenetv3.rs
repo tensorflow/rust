@@ -1,5 +1,5 @@
 use std::error::Error;
-use std::path::Path;
+use std::path::PathBuf;
 use std::result::Result;
 use tensorflow::Code;
 use tensorflow::Graph;
@@ -15,14 +15,15 @@ use image::GenericImageView;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let export_dir = "examples/mobilenetv3";
-    if !Path::new(export_dir).exists() {
+    let model_file: PathBuf = [export_dir, "saved_model.pb"].iter().collect();
+    if !model_file.exists() {
         return Err(Box::new(
             Status::new_set(
                 Code::NotFound,
                 &format!(
                     "Run 'python examples/mobilenetv3/create_model.py' to generate \
                      {} and try again.",
-                    export_dir
+                    model_file.display()
                 ),
             )
             .unwrap(),
