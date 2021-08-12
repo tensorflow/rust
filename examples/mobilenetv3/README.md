@@ -1,6 +1,6 @@
-## About sample image
+## About a sample image
 
-A sample image (image file in `218`) was obtained from the ImageNet dataset.
+The sample image in `sample_image` was taken by dskkato, and can be used under the same license of this repository.
 
 ## About model inputs/outputs nodes
 

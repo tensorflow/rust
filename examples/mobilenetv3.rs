@@ -32,7 +32,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // Create input variables for our addition
     let mut x = Tensor::new(&[1, 224, 224, 3]);
-    let img = ImageReader::open("examples/mobilenetv3/sample.jpeg")?.decode()?;
+    let img = ImageReader::open("examples/mobilenetv3/sample.png")?.decode()?;
     for (i, (_, _, pixel)) in img.pixels().enumerate() {
         x[3 * i] = pixel.0[0] as f32;
         x[3 * i + 1] = pixel.0[1] as f32;
