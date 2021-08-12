@@ -60,18 +60,15 @@ fn main() -> Result<(), Box<dyn Error>> {
     let token_output = args.request_fetch(op_output, 0);
     session.run(&mut args)?;
 
-    // Check our results.
+    // Check the output.
     let output: Tensor<f32> = args.fetch(token_output)?;
-    let mut res = Vec::<f32>::new();
-    for v in output.iter() {
-        res.push(v.clone());
-    }
 
-    // Calculate argmax of the result
+    // Calculate argmax of the output
     let (max_idx, _max_val) =
-        res.iter()
+        output
+            .iter()
             .enumerate()
-            .fold((0, res[0]), |(idx_max, val_max), (idx, val)| {
+            .fold((0, output[0]), |(idx_max, val_max), (idx, val)| {
                 if &val_max > val {
                     (idx_max, val_max)
                 } else {
@@ -79,7 +76,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                 }
             });
 
-    println!("{:?}", max_idx);
+    // This index is expected to be identical with that of the Python code
+    println!("{}", max_idx);
 
     Ok(())
 }
