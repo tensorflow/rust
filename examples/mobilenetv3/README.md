@@ -4,7 +4,7 @@ A sample image (image file in `218`) was obtained from the ImageNet dataset.
 
 ## About model inputs/outputs nodes
 
-There are several ways to verify model inputs/outputs nodes. One convinient way to interact with SavedModel format is `saved_model_cli` which is installed with tensorflow 2.x.
+There are several ways to verify model inputs/outputs nodes. One convenient way to interact with SavedModel format is `saved_model_cli` which is installed with tensorflow 2.x.
 
 ```sh
 saved_model_cli show --dir examples/mobilenetv3 --tag serve --signature_def serving_default
