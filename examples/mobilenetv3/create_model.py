@@ -25,4 +25,10 @@ tf.io.write_file(directory + "/sample.png", buf)
 
 # check model prediction
 predict = model(small[tf.newaxis, :, :, :])
-print(tf.math.argmax(predict, axis=1))
+predict = predict.numpy()
+decoded = tf.keras.applications.imagenet_utils.decode_predictions(predict, top=1)[0]
+
+print(predict.argmax(axis=1))
+print("class_name | class_description | score")
+print("-----------+-------------------+------")
+print(f"{decoded[0][0]:>10} | {decoded[0][1]:>17} | {decoded[0][2]:0.3f}")
