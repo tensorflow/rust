@@ -35,6 +35,7 @@ rustversion = "1.0.5"
 [dev-dependencies]
 random = "0.12.2"
 serial_test = "0.5.1"
+image = "0.23.14"
 
 [features]
 tensorflow_gpu = ["tensorflow-sys/tensorflow_gpu"]
@@ -63,3 +64,6 @@ name = "regression_checkpoint"
 
 [[example]]
 name = "xor"
+
+[[example]]
+name = "mobilenetv3"
