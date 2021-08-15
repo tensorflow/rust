@@ -76,8 +76,9 @@ fn main() -> Result<(), Box<dyn Error>> {
                 }
             });
 
-    // This index is expected to be identical with that of the Python code
-    println!("{}", max_idx);
+    // This index is expected to be identical with that of the Python code,
+    // but this is not guaranteed due to floating operations.
+    println!("argmax={}", max_idx);
 
     Ok(())
 }
