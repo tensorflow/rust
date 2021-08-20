@@ -46,18 +46,31 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // Load the saved model exported by regression_savedmodel.py.
     let mut graph = Graph::new();
-    let session = SavedModelBundle::load(
-        &SessionOptions::new(),
-        &["train", "serve"],
-        &mut graph,
-        export_dir,
-    )?
-    .session;
-    let op_x = graph.operation_by_name_required("x")?;
-    let op_y = graph.operation_by_name_required("y")?;
-    let op_train = graph.operation_by_name_required("train")?;
-    let op_w = graph.operation_by_name_required("w")?;
-    let op_b = graph.operation_by_name_required("b")?;
+    let bundle =
+        SavedModelBundle::load(&SessionOptions::new(), &["serve"], &mut graph, export_dir)?;
+    let session = &bundle.session;
+
+    // train
+    let train_signature = bundle.meta_graph_def().get_signature("train")?;
+    let x_info = train_signature.get_input("x")?;
+    let y_info = train_signature.get_input("y")?;
+    let loss_info = train_signature.get_output("loss")?;
+    let op_x = graph.operation_by_name_required(&x_info.name().name)?;
+    let op_y = graph.operation_by_name_required(&y_info.name().name)?;
+    let op_train = graph.operation_by_name_required(&loss_info.name().name)?;
+
+    // internal parameters
+    let op_b = {
+        let b_signature = bundle.meta_graph_def().get_signature("b")?;
+        let b_info = b_signature.get_output("output")?;
+        graph.operation_by_name_required(&b_info.name().name)?
+    };
+
+    let op_w = {
+        let w_signature = bundle.meta_graph_def().get_signature("w")?;
+        let w_info = w_signature.get_output("output")?;
+        graph.operation_by_name_required(&w_info.name().name)?
+    };
 
     // Train the model (e.g. for fine tuning).
     let mut train_step = SessionRunArgs::new();

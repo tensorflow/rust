@@ -1,12 +1,16 @@
 import tensorflow as tf
 
+# check tensorflow version is 2.x 
+tf_major_version = tf.__version__.split('.')[0]
+assert tf_major_version == '2'
 
-x = tf.placeholder(tf.int32, name = 'x')
-y = tf.placeholder(tf.int32, name = 'y')
-z = tf.add(x, y, name = 'z')
+@tf.function
+def add(x, y):
+    tf.add(x, y, name='z')
 
-tf.variables_initializer(tf.global_variables(), name = 'init')
+x = tf.TensorSpec((), dtype=tf.dtypes.int32, name='x')
+y = tf.TensorSpec((), dtype=tf.dtypes.int32, name='y')
 
-definition = tf.Session().graph_def
+concrete_function = add.get_concrete_function(x, y)
 directory = 'examples/addition'
-tf.train.write_graph(definition, directory, 'model.pb', as_text=False)
+tf.io.write_graph(concrete_function.graph, directory, 'model.pb', as_text=False)

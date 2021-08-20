@@ -257,7 +257,10 @@ fn define_op<W: Write>(
             t => {
                 return Err(io::Error::new(
                     ErrorKind::InvalidInput,
-                    format!("unrecognized field type {:?} for attribute {:?} of op {:?}", t, &attr.name, &op_name),
+                    format!(
+                        "unrecognized field type {:?} for attribute {:?} of op {:?}",
+                        t, &attr.name, &op_name
+                    ),
                 ))
             }
         };

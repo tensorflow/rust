@@ -1,6 +1,6 @@
 [package]
 name = "tensorflow-sys"
-version = "0.19.0"
+version = "0.20.0"
 license = "Apache-2.0"
 authors = [
   "Adam Crume <acrume@google.com>",
@@ -19,7 +19,7 @@ edition = "2018"
 features = ["private-docs-rs"]
 
 [dependencies]
-libc = "0.2.43"
+libc = "0.2.98"
 
 [build-dependencies]
 curl = "0.4.38"
