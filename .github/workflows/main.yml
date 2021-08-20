@@ -1,4 +1,4 @@
-name: TensorFlow Rust
+name: Build Status
 
 on:
   push:
