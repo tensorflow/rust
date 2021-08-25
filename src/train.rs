@@ -219,7 +219,7 @@ fn create_zeros_slot(
     primary: &Variable,
     dtype: Option<DataType>,
 ) -> Result<Variable> {
-    let dtype = dtype.unwrap_or_else(|| primary.dtype);
+    let dtype = dtype.unwrap_or(primary.dtype);
     let zeros = ops::ZerosLike::new()
         .add_control_input(primary.initializer.clone())
         .build(primary.output.clone(), scope)?;
@@ -277,7 +277,6 @@ mod tests {
     use crate::Session;
     use crate::SessionOptions;
     use crate::SessionRunArgs;
-    use crate::Shape;
     use crate::Tensor;
 
     #[test]
