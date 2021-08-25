@@ -14,7 +14,6 @@ use libc::c_uchar;
 use libc::c_uint;
 use libc::c_void;
 use libc::size_t;
-use std;
 use std::cmp;
 use std::ffi::CStr;
 use std::ffi::CString;
@@ -674,12 +673,9 @@ impl Graph {
             None => None,
             Some(r) => Some(r?),
         };
-        // Don't use Option::map because the CStrings need to outlive the
-        // pointers and Option::map consumes the Option.
-        let output_names_ptrs: Option<Vec<*const c_char>> = match &output_names_cstrs {
-            None => None,
-            Some(ref slice) => Some(slice.iter().map(|s| s.as_ptr()).collect()),
-        };
+        let output_names_ptrs: Option<Vec<*const c_char>> = output_names_cstrs
+            .as_ref()
+            .map(|slice| slice.iter().map(|s| s.as_ptr()).collect());
         let output_names_ptrs_ptr = match &output_names_ptrs {
             None => ptr::null(),
             Some(ref v) => v.as_ptr(),
@@ -1767,10 +1763,12 @@ impl FromStr for OutputName {
         let index = match splits.len() {
             2 => splits[1].parse::<c_int>()?,
             1 => 0,
-            _ => Err(Status::new_set_lossy(
-                Code::InvalidArgument,
-                "Name contains more than one colon (':')",
-            ))?,
+            _ => {
+                return Err(Status::new_set_lossy(
+                    Code::InvalidArgument,
+                    "Name contains more than one colon (':')",
+                ))
+            }
         };
         Ok(Self {
             name: splits[0].to_string(),
@@ -2072,13 +2070,7 @@ impl<'a> OperationDescription<'a> {
             match value.0 {
                 None => tf::TF_SetAttrShape(self.inner, c_attr_name.as_ptr(), ptr::null(), -1),
                 Some(ref dims) => {
-                    let c_dims: Vec<i64> = dims
-                        .iter()
-                        .map(|x| match *x {
-                            Some(d) => d,
-                            None => -1,
-                        })
-                        .collect();
+                    let c_dims: Vec<i64> = dims.iter().map(|x| (*x).unwrap_or(-1)).collect();
                     tf::TF_SetAttrShape(
                         self.inner,
                         c_attr_name.as_ptr(),
@@ -2101,16 +2093,9 @@ impl<'a> OperationDescription<'a> {
         // Convert Option<i64> in each shape to i64 with None becoming -1.
         let c_dims: Vec<Option<Vec<i64>>> = value
             .iter()
-            .map(|x| match x.0 {
-                None => None,
-                Some(ref dims) => Some(
-                    dims.iter()
-                        .map(|x| match *x {
-                            None => -1,
-                            Some(d) => d,
-                        })
-                        .collect(),
-                ),
+            .map(|x| {
+                x.0.as_ref()
+                    .map(|dims| dims.iter().map(|x| (*x).unwrap_or(-1)).collect())
             })
             .collect();
         let ptrs: Vec<*const i64> = c_dims
