@@ -80,7 +80,7 @@ macro_rules! impl_new {
                 unsafe {
                     let inner = tf::$call();
                     assert!(!inner.is_null());
-                    $name { inner: inner }
+                    $name { inner }
                 }
             }
         }
@@ -515,10 +515,9 @@ impl Display for Status {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "{}: ", self.code())?;
         let msg = unsafe {
-            match CStr::from_ptr(tf::TF_Message(self.inner)).to_str() {
-                Ok(s) => s,
-                Err(_) => "<invalid UTF-8 in message>",
-            }
+            CStr::from_ptr(tf::TF_Message(self.inner))
+                .to_str()
+                .unwrap_or("<invalid UTF-8 in message>")
         };
         f.write_str(msg)
     }
@@ -529,10 +528,9 @@ impl Debug for Status {
         write!(f, "{{inner:{:?}, ", self.inner)?;
         write!(f, "{}: ", self.code())?;
         let msg = unsafe {
-            match CStr::from_ptr(tf::TF_Message(self.inner)).to_str() {
-                Ok(s) => s,
-                Err(_) => "<invalid UTF-8 in message>",
-            }
+            CStr::from_ptr(tf::TF_Message(self.inner))
+                .to_str()
+                .unwrap_or("<invalid UTF-8 in message>")
         };
         f.write_str(msg)?;
         write!(f, "}}")?;
@@ -855,8 +853,8 @@ unsafe extern "C" fn string_deallocator(
     });
     let count = length / size;
     let tstrings = slice::from_raw_parts_mut(data as *mut tf::TF_TString, count);
-    for i in 0..count {
-        tf::TF_StringDealloc(&mut tstrings[i]);
+    for tstring in tstrings.iter_mut() {
+        tf::TF_StringDealloc(tstring);
     }
     alloc::dealloc(data as *mut _, layout);
 }
@@ -884,11 +882,11 @@ impl TensorType for String {
         let tstrings =
             unsafe { slice::from_raw_parts(data.as_ptr() as *const tf::TF_TString, count) };
         let mut out = Vec::with_capacity(count);
-        for i in 0..count {
+        for tstring in tstrings.iter() {
             let byte_slice = unsafe {
                 slice::from_raw_parts(
-                    tf::TF_StringGetDataPointer(&tstrings[i]) as *const u8,
-                    tf::TF_StringGetSize(&tstrings[i]),
+                    tf::TF_StringGetDataPointer(tstring) as *const u8,
+                    tf::TF_StringGetSize(tstring),
                 )
             };
             out.push(std::str::from_utf8(byte_slice)?.to_string());
@@ -1931,10 +1929,7 @@ impl Shape {
                 for in_dim in v {
                     shape.mut_dim().push({
                         let mut out_dim = protos::tensor_shape::TensorShapeProto_Dim::new();
-                        out_dim.set_size(match in_dim {
-                            None => -1,
-                            Some(d) => d,
-                        });
+                        out_dim.set_size(in_dim.unwrap_or(-1));
                         out_dim
                     });
                 }
@@ -1995,6 +1990,7 @@ impl From<&[u64]> for Shape {
     }
 }
 
+#[rustversion::not(since(1.51))]
 macro_rules! shape_from_array {
     ($N:expr) => {
         impl From<[i32; $N]> for Shape {

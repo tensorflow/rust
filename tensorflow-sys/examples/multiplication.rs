@@ -16,7 +16,7 @@ macro_rules! nonnull(
 macro_rules! ok(
     ($status:expr) => ({
         if ffi::TF_GetCode($status) != ffi::TF_OK {
-            panic!(CStr::from_ptr(ffi::TF_Message($status)).to_string_lossy().into_owned());
+            panic!("{}", CStr::from_ptr(ffi::TF_Message($status)).to_string_lossy().into_owned());
         }
     });
 );
