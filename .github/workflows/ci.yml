@@ -28,8 +28,6 @@ jobs:
           toolchain: ${{ matrix.rust }}
           override: true
           components: rustfmt
-      - name: Install valgrind
-        run: sudo apt-get install -y valgrind
       - run: ./test-all
 
   clippy:
