@@ -31,8 +31,8 @@ const MIN_BAZEL: &str = "3.7.2";
 macro_rules! get(($name:expr) => (ok!(env::var($name))));
 macro_rules! ok(($expression:expr) => ($expression.unwrap()));
 macro_rules! log {
-    ($fmt:expr) => (println!(concat!("libtensorflow-sys/build.rs:{}: ", $fmt), line!()));
-    ($fmt:expr, $($arg:tt)*) => (println!(concat!("libtensorflow-sys/build.rs:{}: ", $fmt),
+    ($fmt:expr) => (println!(concat!("tensorflow-sys/build.rs:{}: ", $fmt), line!()));
+    ($fmt:expr, $($arg:tt)*) => (println!(concat!("tensorflow-sys/build.rs:{}: ", $fmt),
     line!(), $($arg)*));
 }
 macro_rules! log_var(($var:ident) => (log!(concat!(stringify!($var), " = {:?}"), $var)));
