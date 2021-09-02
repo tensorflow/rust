@@ -2,8 +2,10 @@
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
 
+mod eager;
+pub use eager::*;
+
 include!("c_api.rs");
-include!("eager/c_api.rs");
 
 pub use crate::TF_AttrType::*;
 pub use crate::TF_Code::*;

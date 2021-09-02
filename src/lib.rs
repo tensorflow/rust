@@ -196,6 +196,8 @@ pub mod io;
 
 pub mod ops;
 
+pub mod eager;
+
 mod variable;
 pub use crate::variable::*;
 
