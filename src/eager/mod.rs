@@ -80,6 +80,7 @@ pub struct TensorHandle {
 }
 
 impl TensorHandle {
+    ///
     pub fn resolve<T: TensorType>(self) -> Result<Tensor<T>> {
         let status = Status::new();
         unsafe {
@@ -153,7 +154,7 @@ where
 }
 
 ///
-pub fn read_file<T>(filename: T) -> Result<Tensor<String>>
+pub fn read_file<T>(filename: T) -> Result<TensorHandle>
 where
     T: ToHandle,
 {
@@ -173,12 +174,7 @@ where
             (&mut num_output) as *mut i32,
             status.inner,
         );
-        let tf_tensor = tf::TFE_TensorHandleResolve(res[0], status.inner);
-        if tf_tensor.is_null() {
-            Err(status)
-        } else {
-            Ok(Tensor::from_tf_tensor(tf_tensor).unwrap())
-        }
+        Ok(TensorHandle { inner: res[0] })
     }
 }
 
@@ -242,7 +238,8 @@ mod test {
         let filename: Tensor<String> =
             Tensor::from(String::from("test_resources/io/sample_text.txt"));
 
-        let z: Result<Tensor<String>> = read_file(filename);
+        let h = read_file(filename).unwrap();
+        let z: Result<Tensor<String>> = h.resolve();
         assert!(z.is_ok());
         let z = z.unwrap();
         assert_eq!(z.len(), 1);
