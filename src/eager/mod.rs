@@ -79,6 +79,16 @@ pub struct TensorHandle {
     inner: *mut tf::TFE_TensorHandle,
 }
 
+impl TensorHandle {
+    pub fn resolve<T: TensorType>(self) -> Result<Tensor<T>> {
+        let status = Status::new();
+        unsafe {
+            let tf_tensor = tf::TFE_TensorHandleResolve(self.inner, status.inner);
+            Ok(Tensor::from_tf_tensor(tf_tensor).unwrap())
+        }
+    }
+}
+
 impl Drop for TensorHandle {
     fn drop(&mut self) {
         unsafe {
@@ -116,7 +126,7 @@ impl ToHandle for TensorHandle {
 }
 
 /// add
-pub fn add<T1, T2>(x: T1, y: T2) -> Result<Tensor<i32>>
+pub fn add<T1, T2>(x: T1, y: T2) -> Result<TensorHandle>
 where
     T1: ToHandle,
     T2: ToHandle,
@@ -138,8 +148,7 @@ where
             (&mut num_output) as *mut i32,
             status.inner,
         );
-        let tf_tensor = tf::TFE_TensorHandleResolve(res[0], status.inner);
-        Ok(Tensor::from_tf_tensor(tf_tensor).unwrap())
+        Ok(TensorHandle { inner: res[0] })
     }
 }
 
@@ -201,18 +210,31 @@ mod test {
         x[0] = 2i32;
         let y = x.clone();
 
-        let z: Result<Tensor<i32>> = add(x, y);
+        let h = add(x, y).unwrap();
+        let z: Result<Tensor<i32>> = h.resolve();
         assert!(z.is_ok());
         let z = z.unwrap();
         assert_eq!(z[0], 4i32);
 
-        let z: Tensor<i32> = add(z.clone(), z.clone()).unwrap();
+        let h = add(z.clone(), z.clone()).unwrap();
+        let z: Tensor<i32> = h.resolve().unwrap();
         assert_eq!(z[0], 8i32);
 
         let h1 = z.clone().to_handle().unwrap();
         let h2 = z.clone().to_handle().unwrap();
-        let z: Tensor<i32> = add(h1, h2).unwrap();
+        let h = add(h1, h2).unwrap();
+        let z: Tensor<i32> = h.resolve().unwrap();
         assert_eq!(z[0], 16i32);
+
+        let h1 = z.clone().to_handle().unwrap();
+        let h2 = z.clone().to_handle().unwrap();
+        let h = add(h1, h2).unwrap();
+
+        let h1 = z.clone().to_handle().unwrap();
+        let h = add(h1, h).unwrap();
+        let z: Tensor<i32> = h.resolve().unwrap();
+
+        assert_eq!(z[0], 48i32);
     }
 
     #[test]
