@@ -178,6 +178,37 @@ where
     }
 }
 
+///
+pub fn decode_png<T>(contents: T, channels: i64, dtype: tf::TF_DataType) -> Result<TensorHandle>
+where
+    T: ToHandle,
+{
+    unsafe {
+        let add = CString::new("DecodePng").unwrap();
+        let status = Status::new();
+        let opts = ContextOptions::new();
+        let context = Context::new_with_options(opts).unwrap();
+        let op = tf::TFE_NewOp(context.inner, add.as_ptr(), status.inner);
+        tf::TFE_OpAddInput(op, contents.to_handle()?.inner, status.inner);
+
+        // Attributes
+        let attr_name = CString::new("channels").unwrap();
+        tf::TFE_OpSetAttrInt(op, attr_name.as_ptr(), channels);
+        let attr_name = CString::new("dtype").unwrap();
+        tf::TFE_OpSetAttrType(op, attr_name.as_ptr(), dtype);
+
+        let mut num_output = 1;
+        let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
+        tf::TFE_Execute(
+            op,
+            res.as_mut_ptr(),
+            (&mut num_output) as *mut i32,
+            status.inner,
+        );
+        Ok(TensorHandle { inner: res[0] })
+    }
+}
+
 #[cfg(test)]
 mod test {
 
@@ -245,6 +276,18 @@ mod test {
         assert_eq!(z.len(), 1);
         assert_eq!(z[0].len(), 32);
         assert_eq!(z[0], "This a sample text for unittest.")
+    }
+
+    #[test]
+    fn decode_png_test() {
+        let filename: Tensor<String> = Tensor::from(String::from("test_resources/sample.png"));
+
+        let h = read_file(filename).unwrap();
+        let h = decode_png(h, 3, tf::TF_DataType::TF_UINT8).unwrap();
+        let z: Result<Tensor<u8>> = h.resolve();
+        assert!(z.is_ok());
+        let z = z.unwrap();
+        assert_eq!(z.len(), 224 * 224 * 3);
     }
 
     #[test]
