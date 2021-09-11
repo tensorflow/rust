@@ -1,8 +1,7 @@
 use crate::Result;
-use crate::{AnyTensor, Status, Tensor, TensorType};
+use crate::{AnyTensor, DataType, Status, Tensor, TensorType};
 use std::ffi::CString;
 use tensorflow_sys as tf;
-use tf::TFE_ContextListDevices;
 
 ///
 #[derive(Debug)]
@@ -61,7 +60,7 @@ impl Context {
     ///
     pub fn list_devices(&self) -> *mut tf::TF_DeviceList {
         let status = Status::new();
-        unsafe { TFE_ContextListDevices(self.inner, status.inner) }
+        unsafe { tf::TFE_ContextListDevices(self.inner, status.inner) }
     }
 }
 
@@ -179,7 +178,7 @@ where
 }
 
 ///
-pub fn decode_png<T>(contents: T, channels: i64, dtype: tf::TF_DataType) -> Result<TensorHandle>
+pub fn decode_png<T>(contents: T, channels: i64, dtype: DataType) -> Result<TensorHandle>
 where
     T: ToHandle,
 {
@@ -195,7 +194,7 @@ where
         let attr_name = CString::new("channels").unwrap();
         tf::TFE_OpSetAttrInt(op, attr_name.as_ptr(), channels);
         let attr_name = CString::new("dtype").unwrap();
-        tf::TFE_OpSetAttrType(op, attr_name.as_ptr(), dtype);
+        tf::TFE_OpSetAttrType(op, attr_name.as_ptr(), dtype.to_c());
 
         let mut num_output = 1;
         let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
@@ -223,6 +222,33 @@ where
         tf::TFE_OpAddInput(op, contents.to_handle()?.inner, status.inner);
 
         // Attributes
+
+        let mut num_output = 1;
+        let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
+        tf::TFE_Execute(
+            op,
+            res.as_mut_ptr(),
+            (&mut num_output) as *mut i32,
+            status.inner,
+        );
+        Ok(TensorHandle { inner: res[0] })
+    }
+}
+
+///
+pub fn expand_dims<T1, T2>(input: T1, dim: T2) -> Result<TensorHandle>
+where
+    T1: ToHandle,
+    T2: ToHandle,
+{
+    unsafe {
+        let op_name = CString::new("ExpandDims").unwrap();
+        let status = Status::new();
+        let opts = ContextOptions::new();
+        let context = Context::new_with_options(opts).unwrap();
+        let op = tf::TFE_NewOp(context.inner, op_name.as_ptr(), status.inner);
+        tf::TFE_OpAddInput(op, input.to_handle()?.inner, status.inner);
+        tf::TFE_OpAddInput(op, dim.to_handle()?.inner, status.inner);
 
         let mut num_output = 1;
         let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
@@ -310,7 +336,7 @@ mod test {
         let filename: Tensor<String> = Tensor::from(String::from("test_resources/sample.png"));
 
         let h = read_file(filename).unwrap();
-        let h = decode_png(h, 3, tf::TF_UINT8).unwrap();
+        let h = decode_png(h, 3, DataType::UInt8).unwrap();
         let z: Result<Tensor<u8>> = h.resolve();
         assert!(z.is_ok());
         let z = z.unwrap();
@@ -322,11 +348,32 @@ mod test {
         let contents = std::fs::read_to_string("test_resources/sample.txt").unwrap();
         let input = Tensor::from(contents);
         let h = decode_base64(input).unwrap();
-        let h = decode_png(h, 3, tf::TF_UINT8).unwrap();
+        let h = decode_png(h, 3, DataType::UInt8).unwrap();
         let z: Result<Tensor<u8>> = h.resolve();
         assert!(z.is_ok());
         let z = z.unwrap();
         assert_eq!(z.len(), 224 * 224 * 3);
+    }
+
+    #[test]
+    fn expand_dims_test() {
+        let x = Tensor::<u8>::new(&[224, 224, 3]);
+        let dim = Tensor::from([0]);
+        let z = expand_dims(x, dim).unwrap();
+        let z: Tensor<u8> = z.resolve().unwrap();
+        assert_eq!(
+            z.shape().0.unwrap(),
+            vec![Some(1), Some(224), Some(224), Some(3)]
+        );
+
+        let x = Tensor::<i32>::new(&[224, 224, 3]);
+        let dim = Tensor::from([0]);
+        let z = expand_dims(x, dim).unwrap();
+        let z: Tensor<i32> = z.resolve().unwrap();
+        assert_eq!(
+            z.shape().0.unwrap(),
+            vec![Some(1), Some(224), Some(224), Some(3)]
+        );
     }
 
     #[test]
