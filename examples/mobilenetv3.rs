@@ -1,7 +1,9 @@
 use std::error::Error;
 use std::path::PathBuf;
 use std::result::Result;
+use tensorflow::eager::*;
 use tensorflow::Code;
+use tensorflow::DataType;
 use tensorflow::Graph;
 use tensorflow::SavedModelBundle;
 use tensorflow::SessionOptions;
@@ -9,9 +11,6 @@ use tensorflow::SessionRunArgs;
 use tensorflow::Status;
 use tensorflow::Tensor;
 use tensorflow::DEFAULT_SERVING_SIGNATURE_DEF_KEY;
-
-use image::io::Reader as ImageReader;
-use image::GenericImageView;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let export_dir = "examples/mobilenetv3";
@@ -31,13 +30,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     // Create input variables for our addition
-    let mut x = Tensor::new(&[1, 224, 224, 3]);
-    let img = ImageReader::open("examples/mobilenetv3/sample.png")?.decode()?;
-    for (i, (_, _, pixel)) in img.pixels().enumerate() {
-        x[3 * i] = pixel.0[0] as f32;
-        x[3 * i + 1] = pixel.0[1] as f32;
-        x[3 * i + 2] = pixel.0[2] as f32;
-    }
+    let filename: Tensor<String> = Tensor::from(String::from("examples/mobilenetv3/sample.png"));
+    let buf = read_file(filename).unwrap();
+    let img = decode_png(buf, 3, DataType::UInt8).unwrap();
+    let handle = expand_dims(img, Tensor::from([0])).unwrap();
+    let x: Tensor<u8> = handle.resolve().unwrap();
 
     // Load the saved model exported by zenn_savedmodel.py.
     let mut graph = Graph::new();

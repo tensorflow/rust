@@ -1,8 +1,10 @@
 import tensorflow as tf
 
+x = tf.keras.Input((224, 224, 3), name="input_1", dtype=tf.uint8)
+
 # default input shape 224x224x3
 model = tf.keras.applications.MobileNetV3Small(
-    input_shape=(224, 224, 3), weights="imagenet"
+    input_tensor=x, weights="imagenet"
 )
 
 # save the model
