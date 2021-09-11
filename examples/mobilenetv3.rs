@@ -33,8 +33,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     let filename: Tensor<String> = Tensor::from(String::from("examples/mobilenetv3/sample.png"));
     let buf = read_file(filename).unwrap();
     let img = decode_png(buf, 3, DataType::UInt8).unwrap();
-    let handle = expand_dims(img, Tensor::from([0])).unwrap();
-    let x: Tensor<u8> = handle.resolve().unwrap();
+    let dim = Tensor::from([0]);
+    let images = expand_dims(img, dim).unwrap();
+    let size = Tensor::from(&[224, 224]);
+    let handle = resize_blinear(images, size, false, false).unwrap();
+    let x: Tensor<f32> = handle.resolve().unwrap();
 
     // Load the saved model exported by zenn_savedmodel.py.
     let mut graph = Graph::new();
