@@ -79,6 +79,17 @@ pub struct TensorHandle {
     inner: *mut tf::TFE_TensorHandle,
 }
 
+impl TensorHandle {
+    ///
+    pub fn resolve<T: TensorType>(self) -> Result<Tensor<T>> {
+        let status = Status::new();
+        unsafe {
+            let tf_tensor = tf::TFE_TensorHandleResolve(self.inner, status.inner);
+            Ok(Tensor::from_tf_tensor(tf_tensor).unwrap())
+        }
+    }
+}
+
 impl Drop for TensorHandle {
     fn drop(&mut self) {
         unsafe {
@@ -116,7 +127,7 @@ impl ToHandle for TensorHandle {
 }
 
 /// add
-pub fn add<T1, T2>(x: T1, y: T2) -> Result<Tensor<i32>>
+pub fn add<T1, T2>(x: T1, y: T2) -> Result<TensorHandle>
 where
     T1: ToHandle,
     T2: ToHandle,
@@ -138,13 +149,12 @@ where
             (&mut num_output) as *mut i32,
             status.inner,
         );
-        let tf_tensor = tf::TFE_TensorHandleResolve(res[0], status.inner);
-        Ok(Tensor::from_tf_tensor(tf_tensor).unwrap())
+        Ok(TensorHandle { inner: res[0] })
     }
 }
 
 ///
-pub fn read_file<T>(filename: T) -> Result<Tensor<String>>
+pub fn read_file<T>(filename: T) -> Result<TensorHandle>
 where
     T: ToHandle,
 {
@@ -164,12 +174,65 @@ where
             (&mut num_output) as *mut i32,
             status.inner,
         );
-        let tf_tensor = tf::TFE_TensorHandleResolve(res[0], status.inner);
-        if tf_tensor.is_null() {
-            Err(status)
-        } else {
-            Ok(Tensor::from_tf_tensor(tf_tensor).unwrap())
-        }
+        Ok(TensorHandle { inner: res[0] })
+    }
+}
+
+///
+pub fn decode_png<T>(contents: T, channels: i64, dtype: tf::TF_DataType) -> Result<TensorHandle>
+where
+    T: ToHandle,
+{
+    unsafe {
+        let add = CString::new("DecodePng").unwrap();
+        let status = Status::new();
+        let opts = ContextOptions::new();
+        let context = Context::new_with_options(opts).unwrap();
+        let op = tf::TFE_NewOp(context.inner, add.as_ptr(), status.inner);
+        tf::TFE_OpAddInput(op, contents.to_handle()?.inner, status.inner);
+
+        // Attributes
+        let attr_name = CString::new("channels").unwrap();
+        tf::TFE_OpSetAttrInt(op, attr_name.as_ptr(), channels);
+        let attr_name = CString::new("dtype").unwrap();
+        tf::TFE_OpSetAttrType(op, attr_name.as_ptr(), dtype);
+
+        let mut num_output = 1;
+        let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
+        tf::TFE_Execute(
+            op,
+            res.as_mut_ptr(),
+            (&mut num_output) as *mut i32,
+            status.inner,
+        );
+        Ok(TensorHandle { inner: res[0] })
+    }
+}
+
+///
+pub fn decode_base64<T>(contents: T) -> Result<TensorHandle>
+where
+    T: ToHandle,
+{
+    unsafe {
+        let add = CString::new("DecodeBase64").unwrap();
+        let status = Status::new();
+        let opts = ContextOptions::new();
+        let context = Context::new_with_options(opts).unwrap();
+        let op = tf::TFE_NewOp(context.inner, add.as_ptr(), status.inner);
+        tf::TFE_OpAddInput(op, contents.to_handle()?.inner, status.inner);
+
+        // Attributes
+
+        let mut num_output = 1;
+        let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
+        tf::TFE_Execute(
+            op,
+            res.as_mut_ptr(),
+            (&mut num_output) as *mut i32,
+            status.inner,
+        );
+        Ok(TensorHandle { inner: res[0] })
     }
 }
 
@@ -201,18 +264,31 @@ mod test {
         x[0] = 2i32;
         let y = x.clone();
 
-        let z: Result<Tensor<i32>> = add(x, y);
+        let h = add(x, y).unwrap();
+        let z: Result<Tensor<i32>> = h.resolve();
         assert!(z.is_ok());
         let z = z.unwrap();
         assert_eq!(z[0], 4i32);
 
-        let z: Tensor<i32> = add(z.clone(), z.clone()).unwrap();
+        let h = add(z.clone(), z.clone()).unwrap();
+        let z: Tensor<i32> = h.resolve().unwrap();
         assert_eq!(z[0], 8i32);
 
         let h1 = z.clone().to_handle().unwrap();
         let h2 = z.clone().to_handle().unwrap();
-        let z: Tensor<i32> = add(h1, h2).unwrap();
+        let h = add(h1, h2).unwrap();
+        let z: Tensor<i32> = h.resolve().unwrap();
         assert_eq!(z[0], 16i32);
+
+        let h1 = z.clone().to_handle().unwrap();
+        let h2 = z.clone().to_handle().unwrap();
+        let h = add(h1, h2).unwrap();
+
+        let h1 = z.clone().to_handle().unwrap();
+        let h = add(h1, h).unwrap();
+        let z: Tensor<i32> = h.resolve().unwrap();
+
+        assert_eq!(z[0], 48i32);
     }
 
     #[test]
@@ -220,12 +296,37 @@ mod test {
         let filename: Tensor<String> =
             Tensor::from(String::from("test_resources/io/sample_text.txt"));
 
-        let z: Result<Tensor<String>> = read_file(filename);
+        let h = read_file(filename).unwrap();
+        let z: Result<Tensor<String>> = h.resolve();
         assert!(z.is_ok());
         let z = z.unwrap();
         assert_eq!(z.len(), 1);
         assert_eq!(z[0].len(), 32);
         assert_eq!(z[0], "This a sample text for unittest.")
+    }
+
+    #[test]
+    fn decode_png_test() {
+        let filename: Tensor<String> = Tensor::from(String::from("test_resources/sample.png"));
+
+        let h = read_file(filename).unwrap();
+        let h = decode_png(h, 3, tf::TF_UINT8).unwrap();
+        let z: Result<Tensor<u8>> = h.resolve();
+        assert!(z.is_ok());
+        let z = z.unwrap();
+        assert_eq!(z.len(), 224 * 224 * 3);
+    }
+
+    #[test]
+    fn decode_base64_test() {
+        let contents = std::fs::read_to_string("test_resources/sample.txt").unwrap();
+        let input = Tensor::from(contents);
+        let h = decode_base64(input).unwrap();
+        let h = decode_png(h, 3, tf::TF_UINT8).unwrap();
+        let z: Result<Tensor<u8>> = h.resolve();
+        assert!(z.is_ok());
+        let z = z.unwrap();
+        assert_eq!(z.len(), 224 * 224 * 3);
     }
 
     #[test]
