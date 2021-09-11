@@ -236,6 +236,43 @@ where
 }
 
 ///
+pub fn resize_blinear<T1, T2>(
+    images: T1,
+    size: T2,
+    align_corners: bool,
+    half_pixel_centers: bool,
+) -> Result<TensorHandle>
+where
+    T1: ToHandle,
+    T2: ToHandle,
+{
+    unsafe {
+        let op_name = CString::new("ResizeBilinear").unwrap();
+        let status = Status::new();
+        let opts = ContextOptions::new();
+        let context = Context::new_with_options(opts).unwrap();
+        let op = tf::TFE_NewOp(context.inner, op_name.as_ptr(), status.inner);
+        tf::TFE_OpAddInput(op, images.to_handle()?.inner, status.inner);
+        tf::TFE_OpAddInput(op, size.to_handle()?.inner, status.inner);
+
+        let attr = CString::new("align_corners").unwrap();
+        tf::TFE_OpSetAttrBool(op, attr.as_ptr(), align_corners as u8);
+        let attr = CString::new("half_pixel_centers").unwrap();
+        tf::TFE_OpSetAttrBool(op, attr.as_ptr(), half_pixel_centers as u8);
+
+        let mut num_output = 1;
+        let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
+        tf::TFE_Execute(
+            op,
+            res.as_mut_ptr(),
+            (&mut num_output) as *mut i32,
+            status.inner,
+        );
+        Ok(TensorHandle { inner: res[0] })
+    }
+}
+
+///
 pub fn expand_dims<T1, T2>(input: T1, dim: T2) -> Result<TensorHandle>
 where
     T1: ToHandle,
@@ -373,6 +410,19 @@ mod test {
         assert_eq!(
             z.shape().0.unwrap(),
             vec![Some(1), Some(224), Some(224), Some(3)]
+        );
+    }
+
+    #[test]
+    fn resize_bilinear_test() {
+        let x = Tensor::<i32>::new(&[1, 224, 224, 3]);
+        let size = Tensor::from(&[448, 448]);
+        let expanded = resize_blinear(x, size, false, false).unwrap();
+        dbg!(&expanded);
+        let expanded: Tensor<f32> = expanded.resolve().unwrap();
+        assert_eq!(
+            expanded.shape().0.unwrap(),
+            vec![Some(1), Some(448), Some(448), Some(3)]
         );
     }
 
