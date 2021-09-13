@@ -31,13 +31,15 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // Create input variables for our addition
     let filename: Tensor<String> = Tensor::from(String::from("examples/mobilenetv3/sample.png"));
-    let buf = read_file(filename).unwrap();
-    let img = decode_png(buf, 3, DataType::UInt8).unwrap();
+    let opts = ContextOptions::new();
+    let ctx = &Context::new(opts).unwrap();
+    let buf = read_file(ctx, filename).unwrap();
+    let img = decode_png(ctx, buf, 3, DataType::UInt8).unwrap();
     let dim = Tensor::from([0]);
-    let images = expand_dims(img, dim).unwrap();
+    let images = expand_dims(ctx, img, dim).unwrap();
     let size = Tensor::from(&[224, 224]);
-    let handle = resize_blinear(images, size, false, false).unwrap();
-    let x: Tensor<f32> = handle.resolve().unwrap();
+    let handle = resize_blinear(ctx, images, size, false, false).unwrap();
+    let x: Tensor<f32> = handle.resolve().unwrap().unwrap();
 
     // Load the saved model exported by zenn_savedmodel.py.
     let mut graph = Graph::new();
