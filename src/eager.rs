@@ -1,11 +1,12 @@
+//! C API extensions to experiment with eager execution of kernels.
+//! WARNING: Unlike tensorflow/c/c_api.h, the API here is not guaranteed to be
+//! stable and can change without notice.
+#![cfg(feature = "eager")]
 use std::ffi::{CStr, CString};
 
 use tensorflow_sys as tf;
-use tf::TFE_TensorDebugInfo;
 
-use crate::Device;
-use crate::Result;
-use crate::{AnyTensor, DataType, Status, Tensor, TensorType};
+use crate::{AnyTensor, DataType, Device, Result, Status, Tensor, TensorType};
 
 /// Options that can be passed during context creation.
 #[derive(Debug)]
@@ -262,7 +263,7 @@ impl TensorHandle {
 /// profiling tensors.
 #[derive(Debug)]
 pub struct DebugInfo {
-    inner: *mut TFE_TensorDebugInfo,
+    inner: *mut tf::TFE_TensorDebugInfo,
 }
 impl_drop!(DebugInfo, TFE_DeleteTensorDebugInfo);
 
@@ -368,7 +369,7 @@ pub fn decode_png<T>(
     ctx: &Context,
     contents: T,
     channels: i64,
-    dtype: tf::TF_DataType,
+    dtype: DataType,
 ) -> Result<TensorHandle>
 where
     T: ToHandle,
@@ -383,7 +384,93 @@ where
         let attr_name = CString::new("channels").unwrap();
         tf::TFE_OpSetAttrInt(op, attr_name.as_ptr(), channels);
         let attr_name = CString::new("dtype").unwrap();
-        tf::TFE_OpSetAttrType(op, attr_name.as_ptr(), dtype);
+        tf::TFE_OpSetAttrType(op, attr_name.as_ptr(), dtype.to_c());
+
+        let mut num_output = 1;
+        let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
+        tf::TFE_Execute(
+            op,
+            res.as_mut_ptr(),
+            (&mut num_output) as *mut i32,
+            status.inner,
+        );
+        Ok(TensorHandle { inner: res[0] })
+    }
+}
+
+///
+pub fn decode_base64<T>(ctx: &Context, contents: T) -> Result<TensorHandle>
+where
+    T: ToHandle,
+{
+    let status = Status::new();
+    unsafe {
+        let add = CString::new("DecodeBase64").unwrap();
+        let op = tf::TFE_NewOp(ctx.inner, add.as_ptr(), status.inner);
+        tf::TFE_OpAddInput(op, contents.to_handle()?.inner, status.inner);
+
+        // Attributes
+
+        let mut num_output = 1;
+        let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
+        tf::TFE_Execute(
+            op,
+            res.as_mut_ptr(),
+            (&mut num_output) as *mut i32,
+            status.inner,
+        );
+        Ok(TensorHandle { inner: res[0] })
+    }
+}
+
+///
+pub fn resize_blinear<T1, T2>(
+    ctx: &Context,
+    images: T1,
+    size: T2,
+    align_corners: bool,
+    half_pixel_centers: bool,
+) -> Result<TensorHandle>
+where
+    T1: ToHandle,
+    T2: ToHandle,
+{
+    unsafe {
+        let op_name = CString::new("ResizeBilinear").unwrap();
+        let status = Status::new();
+        let op = tf::TFE_NewOp(ctx.inner, op_name.as_ptr(), status.inner);
+        tf::TFE_OpAddInput(op, images.to_handle()?.inner, status.inner);
+        tf::TFE_OpAddInput(op, size.to_handle()?.inner, status.inner);
+
+        let attr = CString::new("align_corners").unwrap();
+        tf::TFE_OpSetAttrBool(op, attr.as_ptr(), align_corners as u8);
+        let attr = CString::new("half_pixel_centers").unwrap();
+        tf::TFE_OpSetAttrBool(op, attr.as_ptr(), half_pixel_centers as u8);
+
+        let mut num_output = 1;
+        let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
+        tf::TFE_Execute(
+            op,
+            res.as_mut_ptr(),
+            (&mut num_output) as *mut i32,
+            status.inner,
+        );
+        Ok(TensorHandle { inner: res[0] })
+    }
+}
+
+///
+pub fn expand_dims<T1, T2>(ctx: &Context, input: T1, dim: T2) -> Result<TensorHandle>
+where
+    T1: ToHandle,
+    T2: ToHandle,
+{
+    unsafe {
+        let op_name = CString::new("ExpandDims").unwrap();
+        let status = Status::new();
+        let op = tf::TFE_NewOp(ctx.inner, op_name.as_ptr(), status.inner);
+        tf::TFE_OpAddInput(op, input.to_handle()?.inner, status.inner);
+        tf::TFE_OpAddInput(op, dim.to_handle()?.inner, status.inner);
 
         let mut num_output = 1;
         let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
@@ -480,7 +567,7 @@ mod test {
         let opts = ContextOptions::new();
         let ctx = &Context::new(opts).unwrap();
         let h = read_file(ctx, filename).unwrap();
-        let h = decode_png(ctx, h, 3, tf::TF_DataType::TF_UINT8).unwrap();
+        let h = decode_png(ctx, h, 3, DataType::UInt8).unwrap();
         let z: Option<Tensor<u8>> = h.resolve().unwrap();
         assert!(z.is_some());
         let z = z.unwrap();
