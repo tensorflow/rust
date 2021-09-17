@@ -36,9 +36,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     let buf = read_file(ctx, filename).unwrap();
     let img = decode_png(ctx, buf, 3, DataType::UInt8).unwrap();
     let dim = Tensor::from([0]);
-    let images = expand_dims(ctx, img, dim).unwrap();
+    let images = expand_dims(ctx, img, dim.to_handle().unwrap(), DataType::Int8).unwrap();
     let size = Tensor::from(&[224, 224]);
-    let handle = resize_blinear(ctx, images, size, false, false).unwrap();
+    let handle = resize_bilinear(ctx, images, size.to_handle().unwrap(), false, false).unwrap();
     let x: Tensor<f32> = handle.resolve().unwrap().unwrap();
 
     // Load the saved model exported by zenn_savedmodel.py.
