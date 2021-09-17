@@ -327,7 +327,7 @@ impl ToHandle for TensorHandle {
 //         let op = tf::TFE_NewOp(ctx.inner, add.as_ptr(), status.inner);
 //         tf::TFE_OpAddInput(op, x.to_handle()?.inner, status.inner);
 //         tf::TFE_OpAddInput(op, y.to_handle()?.inner, status.inner);
-// 
+//
 //         let mut num_output = 1;
 //         let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
 //         tf::TFE_Execute(
@@ -343,7 +343,7 @@ impl ToHandle for TensorHandle {
 //         }
 //     }
 // }
-// 
+//
 // ///
 // pub fn read_file<T>(ctx: &Context, filename: T) -> Result<TensorHandle>
 // where
@@ -354,7 +354,7 @@ impl ToHandle for TensorHandle {
 //         let status = Status::new();
 //         let op = tf::TFE_NewOp(ctx.inner, add.as_ptr(), status.inner);
 //         tf::TFE_OpAddInput(op, filename.to_handle()?.inner, status.inner);
-// 
+//
 //         let mut num_output = 1;
 //         let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
 //         tf::TFE_Execute(
@@ -366,7 +366,7 @@ impl ToHandle for TensorHandle {
 //         Ok(TensorHandle { inner: res[0] })
 //     }
 // }
-// 
+//
 // ///
 // pub fn decode_png<T>(
 //     ctx: &Context,
@@ -382,13 +382,13 @@ impl ToHandle for TensorHandle {
 //         let status = Status::new();
 //         let op = tf::TFE_NewOp(ctx.inner, add.as_ptr(), status.inner);
 //         tf::TFE_OpAddInput(op, contents.to_handle()?.inner, status.inner);
-// 
+//
 //         // Attributes
 //         let attr_name = CString::new("channels").unwrap();
 //         tf::TFE_OpSetAttrInt(op, attr_name.as_ptr(), channels);
 //         let attr_name = CString::new("dtype").unwrap();
 //         tf::TFE_OpSetAttrType(op, attr_name.as_ptr(), dtype.to_c());
-// 
+//
 //         let mut num_output = 1;
 //         let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
 //         tf::TFE_Execute(
@@ -400,7 +400,7 @@ impl ToHandle for TensorHandle {
 //         Ok(TensorHandle { inner: res[0] })
 //     }
 // }
-// 
+//
 // ///
 // pub fn decode_base64<T>(ctx: &Context, contents: T) -> Result<TensorHandle>
 // where
@@ -411,9 +411,9 @@ impl ToHandle for TensorHandle {
 //         let add = CString::new("DecodeBase64").unwrap();
 //         let op = tf::TFE_NewOp(ctx.inner, add.as_ptr(), status.inner);
 //         tf::TFE_OpAddInput(op, contents.to_handle()?.inner, status.inner);
-// 
+//
 //         // Attributes
-// 
+//
 //         let mut num_output = 1;
 //         let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
 //         tf::TFE_Execute(
@@ -425,7 +425,7 @@ impl ToHandle for TensorHandle {
 //         Ok(TensorHandle { inner: res[0] })
 //     }
 // }
-// 
+//
 // ///
 // pub fn resize_blinear<T1, T2>(
 //     ctx: &Context,
@@ -444,12 +444,12 @@ impl ToHandle for TensorHandle {
 //         let op = tf::TFE_NewOp(ctx.inner, op_name.as_ptr(), status.inner);
 //         tf::TFE_OpAddInput(op, images.to_handle()?.inner, status.inner);
 //         tf::TFE_OpAddInput(op, size.to_handle()?.inner, status.inner);
-// 
+//
 //         let attr = CString::new("align_corners").unwrap();
 //         tf::TFE_OpSetAttrBool(op, attr.as_ptr(), align_corners as u8);
 //         let attr = CString::new("half_pixel_centers").unwrap();
 //         tf::TFE_OpSetAttrBool(op, attr.as_ptr(), half_pixel_centers as u8);
-// 
+//
 //         let mut num_output = 1;
 //         let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
 //         tf::TFE_Execute(
@@ -461,7 +461,7 @@ impl ToHandle for TensorHandle {
 //         Ok(TensorHandle { inner: res[0] })
 //     }
 // }
-// 
+//
 // ///
 // pub fn expand_dims<T1, T2>(ctx: &Context, input: T1, dim: T2) -> Result<TensorHandle>
 // where
@@ -474,7 +474,7 @@ impl ToHandle for TensorHandle {
 //         let op = tf::TFE_NewOp(ctx.inner, op_name.as_ptr(), status.inner);
 //         tf::TFE_OpAddInput(op, input.to_handle()?.inner, status.inner);
 //         tf::TFE_OpAddInput(op, dim.to_handle()?.inner, status.inner);
-// 
+//
 //         let mut num_output = 1;
 //         let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
 //         tf::TFE_Execute(
