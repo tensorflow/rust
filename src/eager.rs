@@ -8,6 +8,9 @@ use tensorflow_sys as tf;
 
 use crate::{AnyTensor, DataType, Device, Result, Status, Tensor, TensorType};
 
+mod raw_ops;
+pub use raw_ops::*;
+
 /// Options that can be passed during context creation.
 #[derive(Debug)]
 pub struct ContextOptions {
@@ -312,177 +315,177 @@ impl ToHandle for TensorHandle {
     }
 }
 
-/// add
-pub fn add<T1, T2>(ctx: &Context, x: T1, y: T2) -> Result<TensorHandle>
-where
-    T1: ToHandle,
-    T2: ToHandle,
-{
-    let status = Status::new();
-    unsafe {
-        let add = CString::new("Add").unwrap();
-        let op = tf::TFE_NewOp(ctx.inner, add.as_ptr(), status.inner);
-        tf::TFE_OpAddInput(op, x.to_handle()?.inner, status.inner);
-        tf::TFE_OpAddInput(op, y.to_handle()?.inner, status.inner);
-
-        let mut num_output = 1;
-        let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
-        tf::TFE_Execute(
-            op,
-            res.as_mut_ptr(),
-            (&mut num_output) as *mut i32,
-            status.inner,
-        );
-        if status.is_ok() {
-            Ok(TensorHandle { inner: res[0] })
-        } else {
-            return Err(status);
-        }
-    }
-}
-
-///
-pub fn read_file<T>(ctx: &Context, filename: T) -> Result<TensorHandle>
-where
-    T: ToHandle,
-{
-    unsafe {
-        let add = CString::new("ReadFile").unwrap();
-        let status = Status::new();
-        let op = tf::TFE_NewOp(ctx.inner, add.as_ptr(), status.inner);
-        tf::TFE_OpAddInput(op, filename.to_handle()?.inner, status.inner);
-
-        let mut num_output = 1;
-        let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
-        tf::TFE_Execute(
-            op,
-            res.as_mut_ptr(),
-            (&mut num_output) as *mut i32,
-            status.inner,
-        );
-        Ok(TensorHandle { inner: res[0] })
-    }
-}
-
-///
-pub fn decode_png<T>(
-    ctx: &Context,
-    contents: T,
-    channels: i64,
-    dtype: DataType,
-) -> Result<TensorHandle>
-where
-    T: ToHandle,
-{
-    unsafe {
-        let add = CString::new("DecodePng").unwrap();
-        let status = Status::new();
-        let op = tf::TFE_NewOp(ctx.inner, add.as_ptr(), status.inner);
-        tf::TFE_OpAddInput(op, contents.to_handle()?.inner, status.inner);
-
-        // Attributes
-        let attr_name = CString::new("channels").unwrap();
-        tf::TFE_OpSetAttrInt(op, attr_name.as_ptr(), channels);
-        let attr_name = CString::new("dtype").unwrap();
-        tf::TFE_OpSetAttrType(op, attr_name.as_ptr(), dtype.to_c());
-
-        let mut num_output = 1;
-        let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
-        tf::TFE_Execute(
-            op,
-            res.as_mut_ptr(),
-            (&mut num_output) as *mut i32,
-            status.inner,
-        );
-        Ok(TensorHandle { inner: res[0] })
-    }
-}
-
-///
-pub fn decode_base64<T>(ctx: &Context, contents: T) -> Result<TensorHandle>
-where
-    T: ToHandle,
-{
-    let status = Status::new();
-    unsafe {
-        let add = CString::new("DecodeBase64").unwrap();
-        let op = tf::TFE_NewOp(ctx.inner, add.as_ptr(), status.inner);
-        tf::TFE_OpAddInput(op, contents.to_handle()?.inner, status.inner);
-
-        // Attributes
-
-        let mut num_output = 1;
-        let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
-        tf::TFE_Execute(
-            op,
-            res.as_mut_ptr(),
-            (&mut num_output) as *mut i32,
-            status.inner,
-        );
-        Ok(TensorHandle { inner: res[0] })
-    }
-}
-
-///
-pub fn resize_blinear<T1, T2>(
-    ctx: &Context,
-    images: T1,
-    size: T2,
-    align_corners: bool,
-    half_pixel_centers: bool,
-) -> Result<TensorHandle>
-where
-    T1: ToHandle,
-    T2: ToHandle,
-{
-    unsafe {
-        let op_name = CString::new("ResizeBilinear").unwrap();
-        let status = Status::new();
-        let op = tf::TFE_NewOp(ctx.inner, op_name.as_ptr(), status.inner);
-        tf::TFE_OpAddInput(op, images.to_handle()?.inner, status.inner);
-        tf::TFE_OpAddInput(op, size.to_handle()?.inner, status.inner);
-
-        let attr = CString::new("align_corners").unwrap();
-        tf::TFE_OpSetAttrBool(op, attr.as_ptr(), align_corners as u8);
-        let attr = CString::new("half_pixel_centers").unwrap();
-        tf::TFE_OpSetAttrBool(op, attr.as_ptr(), half_pixel_centers as u8);
-
-        let mut num_output = 1;
-        let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
-        tf::TFE_Execute(
-            op,
-            res.as_mut_ptr(),
-            (&mut num_output) as *mut i32,
-            status.inner,
-        );
-        Ok(TensorHandle { inner: res[0] })
-    }
-}
-
-///
-pub fn expand_dims<T1, T2>(ctx: &Context, input: T1, dim: T2) -> Result<TensorHandle>
-where
-    T1: ToHandle,
-    T2: ToHandle,
-{
-    unsafe {
-        let op_name = CString::new("ExpandDims").unwrap();
-        let status = Status::new();
-        let op = tf::TFE_NewOp(ctx.inner, op_name.as_ptr(), status.inner);
-        tf::TFE_OpAddInput(op, input.to_handle()?.inner, status.inner);
-        tf::TFE_OpAddInput(op, dim.to_handle()?.inner, status.inner);
-
-        let mut num_output = 1;
-        let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
-        tf::TFE_Execute(
-            op,
-            res.as_mut_ptr(),
-            (&mut num_output) as *mut i32,
-            status.inner,
-        );
-        Ok(TensorHandle { inner: res[0] })
-    }
-}
+// /// add
+// pub fn add<T1, T2>(ctx: &Context, x: T1, y: T2) -> Result<TensorHandle>
+// where
+//     T1: ToHandle,
+//     T2: ToHandle,
+// {
+//     let status = Status::new();
+//     unsafe {
+//         let add = CString::new("Add").unwrap();
+//         let op = tf::TFE_NewOp(ctx.inner, add.as_ptr(), status.inner);
+//         tf::TFE_OpAddInput(op, x.to_handle()?.inner, status.inner);
+//         tf::TFE_OpAddInput(op, y.to_handle()?.inner, status.inner);
+// 
+//         let mut num_output = 1;
+//         let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
+//         tf::TFE_Execute(
+//             op,
+//             res.as_mut_ptr(),
+//             (&mut num_output) as *mut i32,
+//             status.inner,
+//         );
+//         if status.is_ok() {
+//             Ok(TensorHandle { inner: res[0] })
+//         } else {
+//             return Err(status);
+//         }
+//     }
+// }
+// 
+// ///
+// pub fn read_file<T>(ctx: &Context, filename: T) -> Result<TensorHandle>
+// where
+//     T: ToHandle,
+// {
+//     unsafe {
+//         let add = CString::new("ReadFile").unwrap();
+//         let status = Status::new();
+//         let op = tf::TFE_NewOp(ctx.inner, add.as_ptr(), status.inner);
+//         tf::TFE_OpAddInput(op, filename.to_handle()?.inner, status.inner);
+// 
+//         let mut num_output = 1;
+//         let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
+//         tf::TFE_Execute(
+//             op,
+//             res.as_mut_ptr(),
+//             (&mut num_output) as *mut i32,
+//             status.inner,
+//         );
+//         Ok(TensorHandle { inner: res[0] })
+//     }
+// }
+// 
+// ///
+// pub fn decode_png<T>(
+//     ctx: &Context,
+//     contents: T,
+//     channels: i64,
+//     dtype: DataType,
+// ) -> Result<TensorHandle>
+// where
+//     T: ToHandle,
+// {
+//     unsafe {
+//         let add = CString::new("DecodePng").unwrap();
+//         let status = Status::new();
+//         let op = tf::TFE_NewOp(ctx.inner, add.as_ptr(), status.inner);
+//         tf::TFE_OpAddInput(op, contents.to_handle()?.inner, status.inner);
+// 
+//         // Attributes
+//         let attr_name = CString::new("channels").unwrap();
+//         tf::TFE_OpSetAttrInt(op, attr_name.as_ptr(), channels);
+//         let attr_name = CString::new("dtype").unwrap();
+//         tf::TFE_OpSetAttrType(op, attr_name.as_ptr(), dtype.to_c());
+// 
+//         let mut num_output = 1;
+//         let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
+//         tf::TFE_Execute(
+//             op,
+//             res.as_mut_ptr(),
+//             (&mut num_output) as *mut i32,
+//             status.inner,
+//         );
+//         Ok(TensorHandle { inner: res[0] })
+//     }
+// }
+// 
+// ///
+// pub fn decode_base64<T>(ctx: &Context, contents: T) -> Result<TensorHandle>
+// where
+//     T: ToHandle,
+// {
+//     let status = Status::new();
+//     unsafe {
+//         let add = CString::new("DecodeBase64").unwrap();
+//         let op = tf::TFE_NewOp(ctx.inner, add.as_ptr(), status.inner);
+//         tf::TFE_OpAddInput(op, contents.to_handle()?.inner, status.inner);
+// 
+//         // Attributes
+// 
+//         let mut num_output = 1;
+//         let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
+//         tf::TFE_Execute(
+//             op,
+//             res.as_mut_ptr(),
+//             (&mut num_output) as *mut i32,
+//             status.inner,
+//         );
+//         Ok(TensorHandle { inner: res[0] })
+//     }
+// }
+// 
+// ///
+// pub fn resize_blinear<T1, T2>(
+//     ctx: &Context,
+//     images: T1,
+//     size: T2,
+//     align_corners: bool,
+//     half_pixel_centers: bool,
+// ) -> Result<TensorHandle>
+// where
+//     T1: ToHandle,
+//     T2: ToHandle,
+// {
+//     unsafe {
+//         let op_name = CString::new("ResizeBilinear").unwrap();
+//         let status = Status::new();
+//         let op = tf::TFE_NewOp(ctx.inner, op_name.as_ptr(), status.inner);
+//         tf::TFE_OpAddInput(op, images.to_handle()?.inner, status.inner);
+//         tf::TFE_OpAddInput(op, size.to_handle()?.inner, status.inner);
+// 
+//         let attr = CString::new("align_corners").unwrap();
+//         tf::TFE_OpSetAttrBool(op, attr.as_ptr(), align_corners as u8);
+//         let attr = CString::new("half_pixel_centers").unwrap();
+//         tf::TFE_OpSetAttrBool(op, attr.as_ptr(), half_pixel_centers as u8);
+// 
+//         let mut num_output = 1;
+//         let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
+//         tf::TFE_Execute(
+//             op,
+//             res.as_mut_ptr(),
+//             (&mut num_output) as *mut i32,
+//             status.inner,
+//         );
+//         Ok(TensorHandle { inner: res[0] })
+//     }
+// }
+// 
+// ///
+// pub fn expand_dims<T1, T2>(ctx: &Context, input: T1, dim: T2) -> Result<TensorHandle>
+// where
+//     T1: ToHandle,
+//     T2: ToHandle,
+// {
+//     unsafe {
+//         let op_name = CString::new("ExpandDims").unwrap();
+//         let status = Status::new();
+//         let op = tf::TFE_NewOp(ctx.inner, op_name.as_ptr(), status.inner);
+//         tf::TFE_OpAddInput(op, input.to_handle()?.inner, status.inner);
+//         tf::TFE_OpAddInput(op, dim.to_handle()?.inner, status.inner);
+// 
+//         let mut num_output = 1;
+//         let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
+//         tf::TFE_Execute(
+//             op,
+//             res.as_mut_ptr(),
+//             (&mut num_output) as *mut i32,
+//             status.inner,
+//         );
+//         Ok(TensorHandle { inner: res[0] })
+//     }
+// }
 
 #[cfg(test)]
 mod test {
