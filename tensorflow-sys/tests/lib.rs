@@ -9,6 +9,7 @@ fn linkage() {
     }
 }
 
+#[cfg(feature = "eager")]
 #[test]
 fn tfe_tensor_handle() {
     let data = vec![0.0f32; 100];

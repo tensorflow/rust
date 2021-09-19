@@ -196,6 +196,7 @@ pub mod io;
 
 pub mod ops;
 
+#[cfg(feature = "eager")]
 pub mod eager;
 
 mod variable;
