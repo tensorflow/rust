@@ -19,39 +19,39 @@ struct Attr {
     c_name: String,
 }
 
-fn write_set_attr<W: Write>(w: &mut W, attr: &Attr, node_var: &str) -> Result<(), io::Error> {
+fn write_set_attr<W: Write>(w: &mut W, attr: &Attr) -> Result<(), io::Error> {
     let c_name = &attr.c_name;
     let rust_name = &attr.rust_name;
     let setter = match attr.attr_type.as_str() {
-        "::std::string::String" => format!("{}.set_attr_string(\"{}\", value)?", node_var, c_name),
-        "crate::DataType" => format!("{}.set_attr_type(\"{}\", *value)?", node_var, c_name),
-        "bool" => format!("{}.set_attr_bool(\"{}\", *value)?", node_var, c_name),
-        "f32" => format!("{}.set_attr_float(\"{}\", *value)?", node_var, c_name),
-        "i64" => format!("{}.set_attr_int(\"{}\", *value)?", node_var, c_name),
-        "crate::Shape" => format!("{}.set_attr_shape(\"{}\", value)?", node_var, c_name),
-        "crate::Tensor" => format!("{}.set_attr_any_tensor(\"{}\", value)?", node_var, c_name),
+        "::std::string::String" => format!("op.set_attr_string(\"{}\", value)", c_name),
+        "crate::DataType" => format!("op.set_attr_type(\"{}\", *value)", c_name),
+        "bool" => format!("op.set_attr_bool(\"{}\", *value)", c_name),
+        "f32" => format!("op.set_attr_float(\"{}\", *value)", c_name),
+        "i64" => format!("op.set_attr_int(\"{}\", *value)", c_name),
+        "crate::Shape" => format!("op.set_attr_shape(\"{}\", value)", c_name),
+        "crate::Tensor" => format!("op.set_attr_any_tensor(\"{}\", value)", c_name),
         "::std::vec::Vec<::std::string::String>" => {
-            format!("{}.set_attr_string_list(\"{}\", value)?", node_var, c_name)
+            format!("op.set_attr_string_list(\"{}\", value)", c_name)
         }
         "::std::vec::Vec<f32>" => {
-            format!("{}.set_attr_float_list(\"{}\", value)?", node_var, c_name)
+            format!("op.set_attr_float_list(\"{}\", value)", c_name)
         }
-        "::std::vec::Vec<i64>" => format!("{}.set_attr_int_list(\"{}\", value)?", node_var, c_name),
+        "::std::vec::Vec<i64>" => format!("op.set_attr_int_list(\"{}\", value)", c_name),
         "::std::vec::Vec<crate::DataType>" => {
-            format!("{}.set_attr_type_list(\"{}\", value)?", node_var, c_name)
+            format!("op.set_attr_type_list(\"{}\", value)", c_name)
         }
         "::std::vec::Vec<crate::Shape>" => {
-            format!("{}.set_attr_shape_list(\"{}\", value)?", node_var, c_name)
+            format!("op.set_attr_shape_list(\"{}\", value)?", c_name)
         }
         ty => panic!("Unrecognized attribute type for {}: {}", attr.rust_name, ty),
     };
     write!(
         w,
-        "        if let ::std::option::Option::Some(value) = &self.{} {{\n",
+        "    if let ::std::option::Option::Some(value) = &__args.{} {{\n",
         rust_name
     )?;
-    write!(w, "            {};\n", setter)?;
-    write!(w, "        }}\n")?;
+    write!(w, "        {};\n", setter)?;
+    write!(w, "    }}\n")?;
     Ok(())
 }
 
@@ -59,148 +59,113 @@ fn write_short_fn<W: Write>(
     w: &mut W,
     name: &str,
     fn_name: &str,
-    args: &[String],
+    input_args: &[String],
+    output_args: &[String],
     keywords: &HashSet<String>,
 ) -> Result<(), io::Error> {
     let mut escaper = Escaper::new(keywords);
-    let escaped_args: Vec<_> = args.iter().map(|arg| escaper.escape(&arg)).collect();
-    write!(w, "/// Shorthand for `{}::new().build(", name)?;
-    for arg in &escaped_args {
-        write!(w, "{}, ", &arg)?;
-    }
-    let scope_var = escaper.escape("scope");
-    write!(w, "{})`.\n", scope_var)?;
+    let escaped_args: Vec<_> = input_args.iter().map(|arg| escaper.escape(&arg)).collect();
+    let context_var = escaper.escape("ctx");
     write!(w, "pub fn {}<", fn_name)?;
-    for i in 0..args.len() {
+    for i in 0..input_args.len() {
         if i > 0 {
             write!(w, ", ")?;
         }
-        write!(w, "O{}: ::std::convert::Into<crate::Output>", i)?;
+        write!(w, "T{}: crate::eager::ToHandle", i)?;
     }
     write!(w, ">(")?;
+    write!(w, "{}: &mut crate::eager::Context", context_var)?;
     for (i, arg) in escaped_args.iter().enumerate() {
-        write!(w, "{}: O{}, ", arg, i)?;
+        write!(w, ", {}: T{}", arg, i)?;
     }
-    write!(
-        w,
-        "{}: &mut crate::Scope) -> crate::Result<crate::Operation> {{\n",
-        scope_var
-    )?;
-    write!(w, "    {}::new().build(", name)?;
+    write!(w, ") -> Result<")?;
+    write!(w, "[crate::eager::TensorHandle; {}]", output_args.len())?;
+    write!(w, ">\n")?;
+    write!(w, "{{\n")?;
+    write!(w, "    let __args = {}::new();\n", name)?;
+    write!(w, "    {}_with_args({}", fn_name, context_var)?;
     for arg in escaped_args {
-        write!(w, "{}, ", arg)?;
+        write!(w, ", {}", arg)?;
     }
-    write!(w, "{})\n", scope_var)?;
-    write!(w, "}}\n")?;
+    write!(w, ", __args")?;
+    write!(w, ")\n")?;
+    write!(w, "}}\n\n")?;
     Ok(())
 }
 
-fn write_attr_setter<W: Write>(w: &mut W, attr: &Attr) -> Result<(), io::Error> {
-    write!(w, "\n")?;
-    write!(w, "    /// Sets the `{}` attribute.\n", &attr.c_name)?;
-    let rust_name = &attr.rust_name;
-    let attr_type = &attr.attr_type;
-    let mut value = "value.into()".to_string();
-    if attr_type == "crate::Tensor" {
-        value = format!(
-            "(::std::boxed::Box::new({}) as ::std::boxed::Box<dyn crate::AnyTensor>)",
-            value
-        );
-        write!(
-            w,
-            "    pub fn {}<T: crate::TensorType, ArgType: ::std::convert::Into<crate::Tensor<T>>>(mut self, value: ArgType) -> Self {{\n",
-            rust_name
-        )?;
-    } else {
-        write!(
-            w,
-            "    pub fn {}<ArgType: ::std::convert::Into<{}>>(mut self, value: ArgType) -> Self {{\n",
-            rust_name, attr_type
-        )?;
-    }
-    write!(
-        w,
-        "        self.{} = ::std::option::Option::Some({});\n",
-        rust_name, value
-    )?;
-    write!(w, "        self\n")?;
-    write!(w, "    }}\n")?;
-    Ok(())
-}
-
-fn write_build_fn<W: Write>(
+fn write_fn_with_args<W: Write>(
     w: &mut W,
-    op_name: &str,
-    args: &[String],
-    keywords: &HashSet<String>,
-) -> Result<(), io::Error> {
-    let mut escaper = Escaper::new(keywords);
-    let escaped_args: Vec<_> = args.iter().map(|arg| escaper.escape(&arg)).collect();
-
-    write!(w, "    /// Builds the `{}` operation.\n", op_name)?;
-    write!(w, "    pub fn build<")?;
-    for i in 0..args.len() {
-        if i > 0 {
-            write!(w, ", ")?;
-        }
-        write!(w, "O{}: ::std::convert::Into<crate::Output>", i)?;
-    }
-    write!(w, ">(&self, ")?;
-    for (i, arg) in escaped_args.iter().enumerate() {
-        write!(w, "{}: O{}, ", arg, i)?;
-    }
-    let scope_var = escaper.escape("scope");
-    write!(
-        w,
-        r#"{scope}: &mut crate::Scope) -> crate::Result<crate::Operation> {{
-"#,
-        scope = scope_var,
-    )?;
-    write!(w, "        self.build_impl(")?;
-    for arg in &escaped_args {
-        write!(w, "{}.into(), ", arg)?;
-    }
-    write!(w, "{})\n", scope_var)?;
-    write!(w, "    }}\n")?;
-    Ok(())
-}
-
-fn write_build_impl_fn<W: Write>(
-    w: &mut W,
-    op_name: &str,
-    args: &[String],
+    name: &str,
+    fn_name: &str,
+    input_args: &[String],
+    output_args: &[String],
     attrs: &[Attr],
     keywords: &HashSet<String>,
 ) -> Result<(), io::Error> {
     let mut escaper = Escaper::new(keywords);
-    let escaped_args: Vec<_> = args.iter().map(|arg| escaper.escape(&arg)).collect();
-    write!(w, "    fn build_impl(&self, ")?;
-    for arg in &escaped_args {
-        write!(w, "{}: crate::Output, ", arg)?;
+    let escaped_args: Vec<_> = input_args.iter().map(|arg| escaper.escape(&arg)).collect();
+    let context_var = escaper.escape("ctx");
+    write!(w, "pub fn {}_with_args<", fn_name)?;
+    for i in 0..input_args.len() {
+        if i > 0 {
+            write!(w, ", ")?;
+        }
+        write!(w, "T{}: crate::eager::ToHandle", i)?;
     }
-    let scope_var = escaper.escape("scope");
-    let node_var = escaper.escape("nd");
+    write!(w, ">(")?;
+    write!(w, "{}: &mut crate::eager::Context", context_var)?;
+    for (i, arg) in escaped_args.iter().enumerate() {
+        write!(w, ", {}: T{}", arg, i)?;
+    }
+    write!(w, ", __args: {}", name)?;
+    write!(w, ") -> Result<")?;
+    write!(w, "[crate::eager::TensorHandle; {}]", output_args.len())?;
+    write!(w, ">\n")?;
+    write!(w, "{{\n")?;
+    write!(w, "    let status = Status::new();\n")?;
+    write!(w, "\n")?;
+    write!(w, "    // Define Op\n")?;
     write!(
         w,
-        r#"{scope}: &mut crate::Scope) -> crate::Result<crate::Operation> {{
-        {scope}.new_operation({op_name:?}, |{node}| {{
-"#,
-        scope = scope_var,
-        op_name = op_name,
-        node = node_var,
+        "    let mut op = crate::eager::Op::new(ctx, \"{}\")?;\n",
+        name
     )?;
+    write!(w, "\n")?;
+    write!(w, "    // Required input arguments\n")?;
     for arg in escaped_args {
-        write!(w, "            {}.add_input({});\n", node_var, arg)?;
+        write!(w, "    op.add_input(&{}.to_handle()?)?;\n", arg)?;
     }
-    write!(w, "            for op in &self.control_inputs {{\n")?;
-    write!(w, "                {}.add_control_input(op);\n", node_var)?;
-    write!(w, "            }}\n")?;
+    write!(w, "\n")?;
+    write!(w, "    // Attributes\n")?;
     for attr in attrs {
-        write_set_attr(w, attr, &node_var)?;
+        write_set_attr(w, attr)?;
     }
-    write!(w, "            ::std::result::Result::Ok(())\n")?;
-    write!(w, "        }})\n")?;
+    write!(w, "\n")?;
+    write!(w, "    // Execute Op\n")?;
+    write!(w, "    let mut num_output = {};\n", output_args.len())?;
+    write!(
+        w,
+        "    let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>(); {}];\n",
+        output_args.len()
+    )?;
+    write!(w, "    unsafe {{\n")?;
+    write!(w, "        tf::TFE_Execute(op.inner, res.as_mut_ptr(), (&mut num_output) as *mut i32, status.inner,);\n")?;
+    write!(w, "    }};\n")?;
+    write!(w, "    if status.is_ok() {{\n")?;
+    write!(w, "        let ret = unsafe {{ [\n")?;
+    for i in 0..output_args.len() {
+        write!(
+            w,
+            "            crate::eager::TensorHandle::from_tensor_handle(res[{}]),\n",
+            i
+        )?;
+    }
+    write!(w, "        ] }};\n")?;
+    write!(w, "        return Ok(ret);\n")?;
     write!(w, "    }}\n")?;
+    write!(w, "    Err(status)\n")?;
+    write!(w, "}}\n\n")?;
+
     Ok(())
 }
 
@@ -214,7 +179,7 @@ fn write_attr<W: Write>(w: &mut W, attr: &Attr) -> Result<(), io::Error> {
     } else {
         write!(
             w,
-            "    {}: ::std::option::Option<{}>,\n",
+            "    pub {}: ::std::option::Option<{}>,\n",
             attr.rust_name, attr.attr_type
         )?;
     }
@@ -231,7 +196,8 @@ fn define_op<W: Write>(
     let fn_name = fn_escaper.escape(&snake_name(&op.name));
     let name = struct_escaper.escape(&op.name);
     let op_name = op.name.clone();
-    let args: Vec<_> = op.input_arg.iter().map(|arg| arg.name.clone()).collect();
+    let input_args: Vec<_> = op.input_arg.iter().map(|arg| arg.name.clone()).collect();
+    let output_args: Vec<_> = op.output_arg.iter().map(|arg| arg.name.clone()).collect();
     let mut attrs = Vec::new();
     let mut attr_escaper = Escaper::new(keywords);
     for attr in op.attr.iter() {
@@ -270,7 +236,6 @@ fn define_op<W: Write>(
             c_name: attr.name.clone(),
         });
     }
-    write!(w, "/// Builder for the `{}` operation.\n", op_name)?;
     write!(w, "#[derive(::std::fmt::Debug, ::std::default::Default)]\n")?;
     write!(w, "pub struct {} {{\n", name)?;
     for attr in &attrs {
@@ -278,8 +243,7 @@ fn define_op<W: Write>(
     }
     write!(
         w,
-        r#"    control_inputs: ::std::vec::Vec<crate::Operation>,
-}}
+        r#"}}
 
 impl {name} {{
     /// Creates a new `{name}`.
@@ -289,26 +253,18 @@ impl {name} {{
 "#,
         name = name
     )?;
-    for attr in &attrs {
-        write_attr_setter(w, attr)?;
-    }
-    write!(
-        w,
-        r#"
-    /// Adds a control input.
-    pub fn add_control_input(mut self, op: crate::Operation) -> Self {{
-        self.control_inputs.push(op);
-        self
-    }}
-
-"#
-    )?;
-    write_build_fn(w, &op_name, &args, &keywords)?;
-    write!(w, "\n")?;
-    write_build_impl_fn(w, &op_name, &args, &attrs, &keywords)?;
     write!(w, "}}\n")?;
     write!(w, "\n")?;
-    write_short_fn(w, &name, &fn_name, &args, &keywords)?;
+    write_short_fn(w, &name, &fn_name, &input_args, &output_args, &keywords)?;
+    write_fn_with_args(
+        w,
+        &name,
+        &fn_name,
+        &input_args,
+        &output_args,
+        &attrs,
+        &keywords,
+    )?;
     Ok(())
 }
 
@@ -381,87 +337,24 @@ fn main() -> Result<(), Box<dyn Error>> {
         e
     })?;
     let keywords: HashSet<String> = [
-        "abstract",
-        "as",
-        "async",
-        "await",
-        "become",
-        "box",
-        "break",
-        "const",
-        "continue",
-        "crate",
-        "do",
-        "dyn",
-        "else",
-        "enum",
-        "extern",
-        "false",
-        "final",
-        "fn",
-        "for",
-        "if",
-        "impl",
-        "in",
-        "let",
-        "loop",
-        "macro",
-        "match",
-        "mod",
-        "move",
-        "mut",
-        "override",
-        "priv",
-        "pub",
-        "ref",
-        "return",
-        "self",
-        "Self",
-        "static",
-        "struct",
-        "super",
-        "trait",
-        "true",
-        "try",
-        "type",
-        "typeof",
-        "unsafe",
-        "unsized",
-        "use",
-        "virtual",
-        "where",
-        "while",
-        "yield",
+        "abstract", "as", "async", "await", "become", "box", "break", "const", "continue", "crate",
+        "do", "dyn", "else", "enum", "extern", "false", "final", "fn", "for", "if", "impl", "in",
+        "let", "loop", "macro", "match", "mod", "move", "mut", "override", "priv", "pub", "ref",
+        "return", "self", "Self", "static", "struct", "super", "trait", "true", "try", "type",
+        "typeof", "unsafe", "unsized", "use", "virtual", "where", "while", "yield",
         // These aren't technically keywords, but there doesn't appear to be a
         // way to refer to these types (e.g. qualified type names) if the name
         // has been shadowed by something else, so we treat them as keywords.
-        "bool",
-        "char",
-        "f32",
-        "f64",
-        "i8",
-        "i16",
-        "i32",
-        "i64",
-        "i128",
-        "isize",
-        "str",
-        "u8",
-        "u16",
-        "u32",
-        "u64",
-        "u128",
-        "usize",
-        // build, new, and add_control_input aren't keywords, but they still
+        "bool", "char", "f32", "f64", "i8", "i16", "i32", "i64", "i128", "isize", "str", "u8",
+        "u16", "u32", "u64", "u128", "usize",
+        // new is not keywords, but it still
         // can't be used because they would clash with methods we're providing.
-        "build",
-        "new",
-        "add_control_input",
+        "new", "__args"
     ]
     .iter()
     .map(|s| s.to_string())
     .collect();
-    let mut out = BufWriter::new(File::create(output_folder.join("src/ops/ops_impl.rs"))?);
+    let mut out = BufWriter::new(File::create(output_folder.join("src/eager/raw_ops.rs"))?);
     write!(
         &mut out,
         "{}",
@@ -472,6 +365,13 @@ fn main() -> Result<(), Box<dyn Error>> {
     unused_parens,
     unused_qualifications
 )]
+
+use std::ffi::CString;
+use std::os::raw::c_void;
+use tensorflow_sys as tf;
+
+use crate::Status;
+use crate::Result;
 
 "#
     )?;
