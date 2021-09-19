@@ -1,4 +1,5 @@
 pub mod attr_value;
+pub mod full_type;
 pub mod function;
 pub mod graph;
 pub mod meta_graph;
