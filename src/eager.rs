@@ -5,11 +5,9 @@ use std::ffi::{CStr, CString};
 use std::ptr;
 
 use crate::Shape;
-use libc::c_char;
 use libc::c_float;
 use libc::c_int;
 use libc::c_uchar;
-use libc::c_uint;
 use libc::c_void;
 use libc::size_t;
 use std::os::raw::c_void as std_c_void;
@@ -20,7 +18,6 @@ use crate::{AnyTensor, DataType, Device, Result, Status, Tensor, TensorType};
 
 mod raw_ops;
 pub use raw_ops::*;
-// mod raw_ops2;
 
 /// Options that can be passed during context creation.
 #[derive(Debug)]
@@ -269,6 +266,11 @@ impl TensorHandle {
             Ok(DebugInfo { inner })
         }
     }
+
+    ///
+    pub(crate) unsafe fn from_tensor_handle(h: *mut tf::TFE_TensorHandle) -> Self {
+        Self { inner: h }
+    }
 }
 
 /// Debugging/Profiling information for TFE_TensorHandle
@@ -306,14 +308,13 @@ impl DebugInfo {
 }
 
 ///
-pub(crate) struct Op<'a> {
+pub(crate) struct Op {
     inner: *mut tf::TFE_Op,
-    ctx: &'a Context,
 }
 
-impl<'a> Op<'a> {
+impl Op {
     ///
-    pub fn new(ctx: &'a Context, op_or_function_name: &str) -> Result<Op<'a>> {
+    pub fn new(ctx: &Context, op_or_function_name: &str) -> Result<Op> {
         let status = Status::new();
 
         let op_or_function_name = CString::new(op_or_function_name).unwrap();
@@ -321,11 +322,11 @@ impl<'a> Op<'a> {
         if inner.is_null() {
             return Err(status);
         }
-        Ok(Self { inner, ctx })
+        Ok(Self { inner })
     }
 
     ///
-    pub fn get_name(&self) -> Result<&'a str> {
+    pub fn get_name(&self) -> Result<&str> {
         let status = Status::new();
 
         let name = unsafe {
@@ -339,11 +340,12 @@ impl<'a> Op<'a> {
     }
 
     /// Context may not be outlive over the lifetime of `op'
-    pub unsafe fn get_context(&self) -> &'a Context {
-        self.ctx
+    pub fn get_context(&self) -> &Context {
+        unimplemented!()
     }
 
-    pub fn add_input(&self, input: &TensorHandle) -> Result<()> {
+    /// Adds an input to this operation.
+    pub fn add_input(&mut self, input: &TensorHandle) -> Result<()> {
         let status = Status::new();
         unsafe {
             tf::TFE_OpAddInput(self.inner, input.inner, status.inner);
@@ -354,7 +356,8 @@ impl<'a> Op<'a> {
         Err(status)
     }
 
-    pub fn add_input_list(&self, inputs: &[TensorHandle]) -> Result<()> {
+    /// Adds multiple inputs to this operation.
+    pub fn add_input_list(&mut self, inputs: &[TensorHandle]) -> Result<()> {
         let status = Status::new();
         unsafe {
             let mut inputs: Vec<*mut tf::TFE_TensorHandle> =
@@ -373,7 +376,7 @@ impl<'a> Op<'a> {
     }
 
     /// Sets the value of a string attribute.
-    pub fn set_attr_string(&self, attr_name: &str, value: &str) {
+    pub fn set_attr_string(&mut self, attr_name: &str, value: &str) {
         let attr_name = CString::new(attr_name).unwrap();
         let c_value = value.as_bytes();
         unsafe {
@@ -387,7 +390,7 @@ impl<'a> Op<'a> {
     }
 
     /// Sets the value of an attribute which holds a list of strings.
-    pub fn set_attr_string_list<S: AsRef<str>>(&self, attr_name: &str, values: &[S]) {
+    pub fn set_attr_string_list<S: AsRef<str>>(&mut self, attr_name: &str, values: &[S]) {
         let c_attr_name = CString::new(attr_name).unwrap();
         let bytes: Vec<&[u8]> = values.iter().map(|x| x.as_ref().as_bytes()).collect();
         let ptrs: Vec<*const c_void> = bytes.iter().map(|x| x.as_ptr() as *const c_void).collect();
@@ -567,36 +570,28 @@ impl<'a> Op<'a> {
         }
         Err(status)
     }
-    // pub fn set_attr_int(&self, attr_name: &str, value: i64) {
-    //     let attr_name = CString::new(attr_name).unwrap();
-    //     unsafe {
-    //         tf::TFE_OpSetAttrInt(self.inner, attr_name.as_ptr(), value);
-    //     }
-    // }
 
-    // pub fn set_attr_float(&self, attr_name: &str, value: f32) {
-    //     let attr_name = CString::new(attr_name).unwrap();
-    //     unsafe {
-    //         tf::TFE_OpSetAttrFloat(self.inner, attr_name.as_ptr(), value);
-    //     }
-    // }
-
-    // pub fn set_attr_bool(&self, attr_name: &str, value: bool) {
-    //     let attr_name = CString::new(attr_name).unwrap();
-    //     unsafe {
-    //         tf::TFE_OpSetAttrBool(self.inner, attr_name.as_ptr(), value as u8);
-    //     }
-    // }
-
-    // pub fn set_attr_type(&self, attr_name: &str, value: DataType) {
-    //     let attr_name = CString::new(attr_name).unwrap();
-    //     unsafe {
-    //         tf::TFE_OpSetAttrType(self.inner, attr_name.as_ptr(), value.to_c());
-    //     }
-    // }
+    /// Sets a tensor-valued attribute.
+    pub(crate) fn set_attr_any_tensor(
+        &mut self,
+        attr_name: &str,
+        value: &dyn AnyTensor,
+    ) -> Result<()> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        unsafe {
+            tf::TFE_OpSetAttrTensor(
+                self.inner,
+                c_attr_name.as_ptr(),
+                value.inner()?,
+                status.inner(),
+            );
+        }
+        status.into_result()
+    }
 }
 
-impl<'a> Drop for Op<'a> {
+impl Drop for Op {
     fn drop(&mut self) {
         unsafe { tf::TFE_DeleteOp(self.inner) };
     }
@@ -652,30 +647,30 @@ mod test {
         let opts = ContextOptions::new();
         let ctx = &Context::new(opts).unwrap();
         let h = add(ctx, x, y).unwrap();
-        let z: Result<Option<Tensor<i32>>> = h.resolve();
+        let z: Result<Option<Tensor<i32>>> = h[0].resolve();
         assert!(z.is_ok());
         let z = z.unwrap().unwrap();
         assert_eq!(z[0], 4i32);
 
         let h = add(ctx, z.clone(), z.clone()).unwrap();
-        let z: Option<Tensor<i32>> = h.resolve().unwrap();
+        let z: Option<Tensor<i32>> = h[0].resolve().unwrap();
         let z = z.unwrap();
         assert_eq!(z[0], 8i32);
 
         let h1 = z.clone().to_handle().unwrap();
         let h2 = z.clone().to_handle().unwrap();
         let h = add(ctx, h1, h2).unwrap();
-        let z: Option<Tensor<i32>> = h.resolve().unwrap();
+        let z: Option<Tensor<i32>> = h[0].resolve().unwrap();
         let z = z.unwrap();
         assert_eq!(z[0], 16i32);
 
         let h1 = z.clone().to_handle().unwrap();
         let h2 = z.clone().to_handle().unwrap();
-        let h = add(ctx, h1, h2).unwrap();
+        let [h] = add(ctx, h1, h2).unwrap();
 
         let h1 = z.clone().to_handle().unwrap();
         let h = add(ctx, h1, h).unwrap();
-        let z: Option<Tensor<i32>> = h.resolve().unwrap();
+        let z: Option<Tensor<i32>> = h[0].resolve().unwrap();
         let z = z.unwrap();
 
         assert_eq!(z[0], 48i32);
@@ -688,7 +683,7 @@ mod test {
         let opts = ContextOptions::new();
         let ctx = &Context::new(opts).unwrap();
 
-        let h = read_file(ctx, filename).unwrap();
+        let [h] = read_file(ctx, filename).unwrap();
         let z: Option<Tensor<String>> = h.resolve().unwrap();
         assert!(z.is_some());
         let z = z.unwrap();
@@ -703,8 +698,12 @@ mod test {
 
         let opts = ContextOptions::new();
         let ctx = &Context::new(opts).unwrap();
-        let h = read_file(ctx, filename).unwrap();
-        let h = decode_png(ctx, h, 3, DataType::UInt8).unwrap();
+        let [h] = read_file(ctx, filename).unwrap();
+        let args = DecodePng {
+            channels: Some(3),
+            dtype: Some(DataType::UInt8),
+        };
+        let [h] = decode_png_with_args(ctx, h, &args).unwrap();
         let z: Option<Tensor<u8>> = h.resolve().unwrap();
         assert!(z.is_some());
         let z = z.unwrap();

@@ -33,13 +33,22 @@ fn main() -> Result<(), Box<dyn Error>> {
     let filename: Tensor<String> = Tensor::from(String::from("examples/mobilenetv3/sample.png"));
     let opts = ContextOptions::new();
     let ctx = &Context::new(opts).unwrap();
-    let buf = read_file(ctx, filename).unwrap();
-    let img = decode_png(ctx, buf, 3, DataType::UInt8).unwrap();
+    let [buf] = read_file(ctx, filename).unwrap();
+    let args = DecodePng {
+        channels: Some(3),
+        dtype: Some(DataType::UInt8),
+    };
+    let [img] = decode_png_with_args(ctx, buf, &args).unwrap();
     let dim = Tensor::from([0]);
-    let images = expand_dims(ctx, img, dim.to_handle().unwrap(), DataType::Int8).unwrap();
+    let [images] = expand_dims(ctx, img, dim).unwrap();
     let size = Tensor::from(&[224, 224]);
-    let handle = resize_bilinear(ctx, images, size.to_handle().unwrap(), false, false).unwrap();
-    let x: Tensor<f32> = handle.resolve().unwrap().unwrap();
+    let args = ResizeBilinear {
+        T: None,
+        align_corners: Some(false),
+        half_pixel_centers: Some(false),
+    };
+    let [h] = resize_bilinear_with_args(ctx, images, size, &args).unwrap();
+    let x: Tensor<f32> = h.resolve().unwrap().unwrap();
 
     // Load the saved model exported by zenn_savedmodel.py.
     let mut graph = Graph::new();
