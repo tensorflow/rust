@@ -68,7 +68,7 @@ fn write_short_fn<W: Write>(
     let context_var = escaper.escape("ctx");
     write!(w, "/// {} with default options.\n", fn_name)?;
     write!(w, "pub fn {}<", fn_name)?;
-    for i in 0..input_args.len() {
+    for i in 0..escaped_args.len() {
         if i > 0 {
             write!(w, ", ")?;
         }
@@ -80,7 +80,11 @@ fn write_short_fn<W: Write>(
         write!(w, ", {}: T{}", arg, i)?;
     }
     write!(w, ") -> Result<")?;
-    write!(w, "[crate::eager::TensorHandle; {}]", output_args.len())?;
+    match output_args.len() {
+        0 => write!(w, "()")?,
+        1 => write!(w, "crate::eager::TensorHandle")?,
+        n => write!(w, "[crate::eager::TensorHandle; {}]", n)?,
+    };
     write!(w, ">\n")?;
     write!(w, "{{\n")?;
     write!(w, "    let __args = {}::new();\n", name)?;
@@ -121,7 +125,11 @@ fn write_fn_with_args<W: Write>(
     }
     write!(w, ", __args: &{}", name)?;
     write!(w, ") -> Result<")?;
-    write!(w, "[crate::eager::TensorHandle; {}]", output_args.len())?;
+    match output_args.len() {
+        0 => write!(w, "()")?,
+        1 => write!(w, "crate::eager::TensorHandle")?,
+        n => write!(w, "[crate::eager::TensorHandle; {}]", n)?,
+    };
     write!(w, ">\n")?;
     write!(w, "{{\n")?;
     write!(w, "    let status = Status::new();\n")?;
@@ -154,20 +162,33 @@ fn write_fn_with_args<W: Write>(
     write!(w, "        tf::TFE_Execute(op.inner, res.as_mut_ptr(), (&mut num_output) as *mut i32, status.inner,);\n")?;
     write!(w, "    }};\n")?;
     write!(w, "    if status.is_ok() {{\n")?;
-    if output_args.len() > 0 {
-        write!(w, "        let ret = unsafe {{ [\n")?;
-        for i in 0..output_args.len() {
+    match output_args.len() {
+        0 => {
+            write!(w, "        return Ok(());\n")?;
+        }
+        1 => {
+            write!(w, "        let ret = unsafe {{ \n")?;
             write!(
                 w,
-                "            crate::eager::TensorHandle::from_tensor_handle(res[{}]),\n",
-                i
+                "            crate::eager::TensorHandle::from_tensor_handle(res[0])\n",
             )?;
+            write!(w, "        }};\n")?;
+            write!(w, "        return Ok(ret);\n")?;
         }
-        write!(w, "        ] }};\n")?;
-        write!(w, "        return Ok(ret);\n")?;
-    } else {
-        write!(w, "        return Ok([]);\n")?;
-    }
+        n => {
+            write!(w, "        let ret = unsafe {{ [\n")?;
+            for i in 0..n {
+                write!(
+                    w,
+                    "            crate::eager::TensorHandle::from_tensor_handle(res[{}]),\n",
+                    i
+                )?;
+            }
+            write!(w, "        ] }};\n")?;
+            write!(w, "        return Ok(ret);\n")?;
+        }
+    };
+
     write!(w, "    }}\n")?;
     write!(w, "    Err(status)\n")?;
     write!(w, "}}\n\n")?;
