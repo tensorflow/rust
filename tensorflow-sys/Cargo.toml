@@ -30,6 +30,7 @@ tar = "0.4.35"
 zip = "0.5.13"
 
 [features]
+eager = []
 tensorflow_gpu = []
 # This is for testing purposes; users should not use this.
 examples_system_alloc = []

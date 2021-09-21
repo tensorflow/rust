@@ -2,7 +2,9 @@
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
 
+#[cfg(feature = "eager")]
 mod eager;
+#[cfg(feature = "eager")]
 pub use eager::*;
 
 include!("c_api.rs");

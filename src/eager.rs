@@ -1,12 +1,23 @@
 //! C API extensions to experiment with eager execution of kernels.
 //! WARNING: Unlike tensorflow/c/c_api.h, the API here is not guaranteed to be
 //! stable and can change without notice.
-#![cfg(feature = "eager")]
 use std::ffi::{CStr, CString};
+use std::ptr;
+
+use crate::Shape;
+use libc::c_float;
+use libc::c_int;
+use libc::c_uchar;
+use libc::c_void;
+use libc::size_t;
+use std::os::raw::c_void as std_c_void;
 
 use tensorflow_sys as tf;
 
 use crate::{AnyTensor, DataType, Device, Result, Status, Tensor, TensorType};
+
+mod raw_ops;
+pub use raw_ops::*;
 
 /// Options that can be passed during context creation.
 #[derive(Debug)]
@@ -255,6 +266,11 @@ impl TensorHandle {
             Ok(DebugInfo { inner })
         }
     }
+
+    ///
+    pub(crate) unsafe fn from_tensor_handle(h: *mut tf::TFE_TensorHandle) -> Self {
+        Self { inner: h }
+    }
 }
 
 /// Debugging/Profiling information for TFE_TensorHandle
@@ -292,6 +308,295 @@ impl DebugInfo {
 }
 
 ///
+pub(crate) struct Op {
+    inner: *mut tf::TFE_Op,
+}
+
+impl Op {
+    ///
+    pub fn new(ctx: &Context, op_or_function_name: &str) -> Result<Op> {
+        let status = Status::new();
+
+        let op_or_function_name = CString::new(op_or_function_name).unwrap();
+        let inner = unsafe { tf::TFE_NewOp(ctx.inner, op_or_function_name.as_ptr(), status.inner) };
+        if inner.is_null() {
+            return Err(status);
+        }
+        Ok(Self { inner })
+    }
+
+    ///
+    pub fn get_name(&self) -> Result<&str> {
+        let status = Status::new();
+
+        let name = unsafe {
+            let name = tf::TFE_OpGetName(self.inner, status.inner);
+            CStr::from_ptr(name)
+        };
+        if status.is_ok() {
+            return Ok(name.to_str().unwrap());
+        }
+        Err(status)
+    }
+
+    /// Context may not be outlive over the lifetime of `op'
+    pub fn get_context(&self) -> &Context {
+        unimplemented!()
+    }
+
+    /// Adds an input to this operation.
+    pub fn add_input(&mut self, input: &TensorHandle) -> Result<()> {
+        let status = Status::new();
+        unsafe {
+            tf::TFE_OpAddInput(self.inner, input.inner, status.inner);
+        };
+        if status.is_ok() {
+            return Ok(());
+        }
+        Err(status)
+    }
+
+    /// Adds multiple inputs to this operation.
+    pub fn add_input_list(&mut self, inputs: &[TensorHandle]) -> Result<()> {
+        let status = Status::new();
+        unsafe {
+            let mut inputs: Vec<*mut tf::TFE_TensorHandle> =
+                inputs.iter().map(|v| v.inner).collect();
+            tf::TFE_OpAddInputList(
+                self.inner,
+                inputs.as_mut_ptr(),
+                inputs.len() as c_int,
+                status.inner,
+            );
+        };
+        if status.is_ok() {
+            return Ok(());
+        }
+        Err(status)
+    }
+
+    /// Sets the value of a string attribute.
+    pub fn set_attr_string(&mut self, attr_name: &str, value: &str) {
+        let attr_name = CString::new(attr_name).unwrap();
+        let c_value = value.as_bytes();
+        unsafe {
+            tf::TFE_OpSetAttrString(
+                self.inner,
+                attr_name.as_ptr(),
+                c_value.as_ptr() as *const std_c_void,
+                c_value.len() as size_t,
+            );
+        }
+    }
+
+    /// Sets the value of an attribute which holds a list of strings.
+    pub fn set_attr_string_list<S: AsRef<str>>(&mut self, attr_name: &str, values: &[S]) {
+        let c_attr_name = CString::new(attr_name).unwrap();
+        let bytes: Vec<&[u8]> = values.iter().map(|x| x.as_ref().as_bytes()).collect();
+        let ptrs: Vec<*const c_void> = bytes.iter().map(|x| x.as_ptr() as *const c_void).collect();
+        let lens: Vec<size_t> = bytes.iter().map(|x| x.len() as size_t).collect();
+        unsafe {
+            tf::TFE_OpSetAttrStringList(
+                self.inner,
+                c_attr_name.as_ptr(),
+                ptrs.as_ptr() as *const *const std_c_void,
+                lens.as_ptr(),
+                ptrs.len() as c_int,
+            );
+        }
+    }
+
+    /// Sets an int-valued attribute.
+    pub fn set_attr_int(&mut self, attr_name: &str, value: i64) {
+        let c_attr_name = CString::new(attr_name).unwrap();
+        unsafe {
+            tf::TFE_OpSetAttrInt(self.inner, c_attr_name.as_ptr(), value);
+        }
+    }
+
+    /// Sets an attribute which holds an array of ints.
+    pub fn set_attr_int_list(&mut self, attr_name: &str, value: &[i64]) {
+        let c_attr_name = CString::new(attr_name).unwrap();
+        unsafe {
+            tf::TFE_OpSetAttrIntList(
+                self.inner,
+                c_attr_name.as_ptr(),
+                value.as_ptr(),
+                value.len() as i32,
+            );
+        }
+    }
+
+    /// Sets a float-valued attribute.
+    pub fn set_attr_float(&mut self, attr_name: &str, value: f32) {
+        let c_attr_name = CString::new(attr_name).unwrap();
+        unsafe {
+            tf::TFE_OpSetAttrFloat(self.inner, c_attr_name.as_ptr(), value);
+        }
+    }
+
+    /// Sets an attribute which holds an array of floats.
+    #[allow(trivial_numeric_casts)]
+    pub fn set_attr_float_list(&mut self, attr_name: &str, value: &[f32]) {
+        let c_attr_name = CString::new(attr_name).unwrap();
+        // Allow trivial_numeric_casts here because f32 is not necessarily equal to c_float.
+        let c_value: Vec<c_float> = value.iter().map(|x| *x as c_float).collect();
+        unsafe {
+            tf::TFE_OpSetAttrFloatList(
+                self.inner,
+                c_attr_name.as_ptr(),
+                c_value.as_ptr(),
+                c_value.len() as i32,
+            );
+        }
+    }
+
+    /// Sets a boolean-valued attribute.
+    pub fn set_attr_bool(&mut self, attr_name: &str, value: bool) {
+        let c_attr_name = CString::new(attr_name).unwrap();
+        unsafe {
+            tf::TFE_OpSetAttrBool(self.inner, c_attr_name.as_ptr(), if value { 1 } else { 0 });
+        }
+    }
+
+    /// Sets an attribute which holds an array of booleans.
+    pub fn set_attr_bool_list(&mut self, attr_name: &str, value: &[bool]) {
+        let c_attr_name = CString::new(attr_name).unwrap();
+        let c_value: Vec<c_uchar> = value.iter().map(|x| if *x { 1 } else { 0 }).collect();
+        unsafe {
+            tf::TFE_OpSetAttrBoolList(
+                self.inner,
+                c_attr_name.as_ptr(),
+                c_value.as_ptr(),
+                c_value.len() as c_int,
+            );
+        }
+    }
+
+    /// Sets a type-valued attribute.
+    pub fn set_attr_type(&mut self, attr_name: &str, value: DataType) {
+        let c_attr_name = CString::new(attr_name).unwrap();
+        unsafe {
+            tf::TFE_OpSetAttrType(self.inner, c_attr_name.as_ptr(), value.to_c());
+        }
+    }
+
+    /// Sets an attribute which holds an array of types.
+    pub fn set_attr_type_list(&mut self, attr_name: &str, value: &[DataType]) {
+        let c_attr_name = CString::new(attr_name).unwrap();
+        let c_value: Vec<tf::TF_DataType> = value.iter().map(|x| x.to_c()).collect();
+        unsafe {
+            tf::TFE_OpSetAttrTypeList(
+                self.inner,
+                c_attr_name.as_ptr(),
+                c_value.as_ptr(),
+                c_value.len() as i32,
+            );
+        }
+    }
+
+    /// Sets a shape-valued attribute.
+    pub fn set_attr_shape(&mut self, attr_name: &str, value: &Shape) -> Result<()> {
+        let status = Status::new();
+
+        let c_attr_name = CString::new(attr_name).unwrap();
+        unsafe {
+            match value.0 {
+                None => tf::TFE_OpSetAttrShape(
+                    self.inner,
+                    c_attr_name.as_ptr(),
+                    ptr::null(),
+                    -1,
+                    status.inner,
+                ),
+                Some(ref dims) => {
+                    let c_dims: Vec<i64> = dims.iter().map(|x| (*x).unwrap_or(-1)).collect();
+                    tf::TFE_OpSetAttrShape(
+                        self.inner,
+                        c_attr_name.as_ptr(),
+                        c_dims.as_ptr(),
+                        c_dims.len() as i32,
+                        status.inner,
+                    );
+                }
+            }
+        }
+        if status.is_ok() {
+            return Ok(());
+        }
+        Err(status)
+    }
+
+    /// Sets an attribute which holds an array of shapes.
+    pub fn set_attr_shape_list(&mut self, attr_name: &str, value: &[Shape]) -> Result<()> {
+        let status = Status::new();
+
+        let c_attr_name = CString::new(attr_name).unwrap();
+        // Convert Option<i64> in each shape to i64 with None becoming -1.
+        let c_dims: Vec<Option<Vec<i64>>> = value
+            .iter()
+            .map(|x| {
+                x.0.as_ref()
+                    .map(|dims| dims.iter().map(|x| (*x).unwrap_or(-1)).collect())
+            })
+            .collect();
+        let mut ptrs: Vec<*const i64> = c_dims
+            .iter()
+            .map(|x| match *x {
+                None => ptr::null(),
+                Some(ref dims) => dims.as_ptr(),
+            })
+            .collect();
+        let lens: Vec<c_int> = value
+            .iter()
+            .map(|x| match x.0 {
+                None => -1,
+                Some(ref dims) => dims.len() as c_int,
+            })
+            .collect();
+        unsafe {
+            tf::TFE_OpSetAttrShapeList(
+                self.inner,
+                c_attr_name.as_ptr(),
+                ptrs.as_mut_ptr(),
+                lens.as_ptr(),
+                ptrs.len() as c_int,
+                status.inner,
+            );
+        }
+
+        if status.is_ok() {
+            return Ok(());
+        }
+        Err(status)
+    }
+
+    /// Sets a tensor-valued attribute.
+    pub(crate) fn set_attr_any_tensor(
+        &mut self,
+        attr_name: &str,
+        value: &dyn AnyTensor,
+    ) -> Result<()> {
+        let c_attr_name = CString::new(attr_name)?;
+        let mut status = Status::new();
+        unsafe {
+            tf::TFE_OpSetAttrTensor(
+                self.inner,
+                c_attr_name.as_ptr(),
+                value.inner()?,
+                status.inner(),
+            );
+        }
+        status.into_result()
+    }
+}
+
+impl Drop for Op {
+    fn drop(&mut self) {
+        unsafe { tf::TFE_DeleteOp(self.inner) };
+    }
+}
+///
 pub trait ToHandle {
     ///
     fn to_handle(&self) -> Result<TensorHandle>;
@@ -311,179 +616,6 @@ impl ToHandle for TensorHandle {
         self.copy_sharing_tensor()
     }
 }
-
-/// add
-pub fn add<T1, T2>(ctx: &Context, x: T1, y: T2) -> Result<TensorHandle>
-where
-    T1: ToHandle,
-    T2: ToHandle,
-{
-    let status = Status::new();
-    unsafe {
-        let add = CString::new("Add").unwrap();
-        let op = tf::TFE_NewOp(ctx.inner, add.as_ptr(), status.inner);
-        tf::TFE_OpAddInput(op, x.to_handle()?.inner, status.inner);
-        tf::TFE_OpAddInput(op, y.to_handle()?.inner, status.inner);
-
-        let mut num_output = 1;
-        let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
-        tf::TFE_Execute(
-            op,
-            res.as_mut_ptr(),
-            (&mut num_output) as *mut i32,
-            status.inner,
-        );
-        if status.is_ok() {
-            Ok(TensorHandle { inner: res[0] })
-        } else {
-            return Err(status);
-        }
-    }
-}
-
-///
-pub fn read_file<T>(ctx: &Context, filename: T) -> Result<TensorHandle>
-where
-    T: ToHandle,
-{
-    unsafe {
-        let add = CString::new("ReadFile").unwrap();
-        let status = Status::new();
-        let op = tf::TFE_NewOp(ctx.inner, add.as_ptr(), status.inner);
-        tf::TFE_OpAddInput(op, filename.to_handle()?.inner, status.inner);
-
-        let mut num_output = 1;
-        let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
-        tf::TFE_Execute(
-            op,
-            res.as_mut_ptr(),
-            (&mut num_output) as *mut i32,
-            status.inner,
-        );
-        Ok(TensorHandle { inner: res[0] })
-    }
-}
-
-///
-pub fn decode_png<T>(
-    ctx: &Context,
-    contents: T,
-    channels: i64,
-    dtype: DataType,
-) -> Result<TensorHandle>
-where
-    T: ToHandle,
-{
-    unsafe {
-        let add = CString::new("DecodePng").unwrap();
-        let status = Status::new();
-        let op = tf::TFE_NewOp(ctx.inner, add.as_ptr(), status.inner);
-        tf::TFE_OpAddInput(op, contents.to_handle()?.inner, status.inner);
-
-        // Attributes
-        let attr_name = CString::new("channels").unwrap();
-        tf::TFE_OpSetAttrInt(op, attr_name.as_ptr(), channels);
-        let attr_name = CString::new("dtype").unwrap();
-        tf::TFE_OpSetAttrType(op, attr_name.as_ptr(), dtype.to_c());
-
-        let mut num_output = 1;
-        let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
-        tf::TFE_Execute(
-            op,
-            res.as_mut_ptr(),
-            (&mut num_output) as *mut i32,
-            status.inner,
-        );
-        Ok(TensorHandle { inner: res[0] })
-    }
-}
-
-///
-pub fn decode_base64<T>(ctx: &Context, contents: T) -> Result<TensorHandle>
-where
-    T: ToHandle,
-{
-    let status = Status::new();
-    unsafe {
-        let add = CString::new("DecodeBase64").unwrap();
-        let op = tf::TFE_NewOp(ctx.inner, add.as_ptr(), status.inner);
-        tf::TFE_OpAddInput(op, contents.to_handle()?.inner, status.inner);
-
-        // Attributes
-
-        let mut num_output = 1;
-        let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
-        tf::TFE_Execute(
-            op,
-            res.as_mut_ptr(),
-            (&mut num_output) as *mut i32,
-            status.inner,
-        );
-        Ok(TensorHandle { inner: res[0] })
-    }
-}
-
-///
-pub fn resize_blinear<T1, T2>(
-    ctx: &Context,
-    images: T1,
-    size: T2,
-    align_corners: bool,
-    half_pixel_centers: bool,
-) -> Result<TensorHandle>
-where
-    T1: ToHandle,
-    T2: ToHandle,
-{
-    unsafe {
-        let op_name = CString::new("ResizeBilinear").unwrap();
-        let status = Status::new();
-        let op = tf::TFE_NewOp(ctx.inner, op_name.as_ptr(), status.inner);
-        tf::TFE_OpAddInput(op, images.to_handle()?.inner, status.inner);
-        tf::TFE_OpAddInput(op, size.to_handle()?.inner, status.inner);
-
-        let attr = CString::new("align_corners").unwrap();
-        tf::TFE_OpSetAttrBool(op, attr.as_ptr(), align_corners as u8);
-        let attr = CString::new("half_pixel_centers").unwrap();
-        tf::TFE_OpSetAttrBool(op, attr.as_ptr(), half_pixel_centers as u8);
-
-        let mut num_output = 1;
-        let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
-        tf::TFE_Execute(
-            op,
-            res.as_mut_ptr(),
-            (&mut num_output) as *mut i32,
-            status.inner,
-        );
-        Ok(TensorHandle { inner: res[0] })
-    }
-}
-
-///
-pub fn expand_dims<T1, T2>(ctx: &Context, input: T1, dim: T2) -> Result<TensorHandle>
-where
-    T1: ToHandle,
-    T2: ToHandle,
-{
-    unsafe {
-        let op_name = CString::new("ExpandDims").unwrap();
-        let status = Status::new();
-        let op = tf::TFE_NewOp(ctx.inner, op_name.as_ptr(), status.inner);
-        tf::TFE_OpAddInput(op, input.to_handle()?.inner, status.inner);
-        tf::TFE_OpAddInput(op, dim.to_handle()?.inner, status.inner);
-
-        let mut num_output = 1;
-        let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>()];
-        tf::TFE_Execute(
-            op,
-            res.as_mut_ptr(),
-            (&mut num_output) as *mut i32,
-            status.inner,
-        );
-        Ok(TensorHandle { inner: res[0] })
-    }
-}
-
 #[cfg(test)]
 mod test {
 
@@ -567,7 +699,11 @@ mod test {
         let opts = ContextOptions::new();
         let ctx = &Context::new(opts).unwrap();
         let h = read_file(ctx, filename).unwrap();
-        let h = decode_png(ctx, h, 3, DataType::UInt8).unwrap();
+        let args = DecodePng {
+            channels: Some(3),
+            dtype: Some(DataType::UInt8),
+        };
+        let h = decode_png_with_args(ctx, h, &args).unwrap();
         let z: Option<Tensor<u8>> = h.resolve().unwrap();
         assert!(z.is_some());
         let z = z.unwrap();
