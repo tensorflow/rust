@@ -647,30 +647,30 @@ mod test {
         let opts = ContextOptions::new();
         let ctx = &Context::new(opts).unwrap();
         let h = add(ctx, x, y).unwrap();
-        let z: Result<Option<Tensor<i32>>> = h[0].resolve();
+        let z: Result<Option<Tensor<i32>>> = h.resolve();
         assert!(z.is_ok());
         let z = z.unwrap().unwrap();
         assert_eq!(z[0], 4i32);
 
         let h = add(ctx, z.clone(), z.clone()).unwrap();
-        let z: Option<Tensor<i32>> = h[0].resolve().unwrap();
+        let z: Option<Tensor<i32>> = h.resolve().unwrap();
         let z = z.unwrap();
         assert_eq!(z[0], 8i32);
 
         let h1 = z.clone().to_handle().unwrap();
         let h2 = z.clone().to_handle().unwrap();
         let h = add(ctx, h1, h2).unwrap();
-        let z: Option<Tensor<i32>> = h[0].resolve().unwrap();
+        let z: Option<Tensor<i32>> = h.resolve().unwrap();
         let z = z.unwrap();
         assert_eq!(z[0], 16i32);
 
         let h1 = z.clone().to_handle().unwrap();
         let h2 = z.clone().to_handle().unwrap();
-        let [h] = add(ctx, h1, h2).unwrap();
+        let h = add(ctx, h1, h2).unwrap();
 
         let h1 = z.clone().to_handle().unwrap();
         let h = add(ctx, h1, h).unwrap();
-        let z: Option<Tensor<i32>> = h[0].resolve().unwrap();
+        let z: Option<Tensor<i32>> = h.resolve().unwrap();
         let z = z.unwrap();
 
         assert_eq!(z[0], 48i32);
@@ -683,7 +683,7 @@ mod test {
         let opts = ContextOptions::new();
         let ctx = &Context::new(opts).unwrap();
 
-        let [h] = read_file(ctx, filename).unwrap();
+        let h = read_file(ctx, filename).unwrap();
         let z: Option<Tensor<String>> = h.resolve().unwrap();
         assert!(z.is_some());
         let z = z.unwrap();
@@ -698,12 +698,12 @@ mod test {
 
         let opts = ContextOptions::new();
         let ctx = &Context::new(opts).unwrap();
-        let [h] = read_file(ctx, filename).unwrap();
+        let h = read_file(ctx, filename).unwrap();
         let args = DecodePng {
             channels: Some(3),
             dtype: Some(DataType::UInt8),
         };
-        let [h] = decode_png_with_args(ctx, h, &args).unwrap();
+        let h = decode_png_with_args(ctx, h, &args).unwrap();
         let z: Option<Tensor<u8>> = h.resolve().unwrap();
         assert!(z.is_some());
         let z = z.unwrap();
