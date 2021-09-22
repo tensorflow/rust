@@ -1,6 +1,9 @@
 mod attr_value;
 pub use attr_value::*;
 
+mod full_type;
+pub use full_type::*;
+
 mod op_def;
 pub use op_def::*;
 
