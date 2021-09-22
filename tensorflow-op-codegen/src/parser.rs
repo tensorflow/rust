@@ -390,21 +390,15 @@ fn attr<'a>(input: &'a [u8]) -> ParseResult<'a, OpDef_AttrDef> {
     )))(input)
 }
 
-fn experimental_full_type_args<'a>(input: &'a [u8]) -> ParseResult<'a, FullTypeDef> {
-    message(alt((
-        type_id_field("type_id", FullTypeDef::set_type_id),
-        string_field("s", FullTypeDef::set_s),
-    )))(input)
-}
-
 fn experimental_full_type<'a>(input: &'a [u8]) -> ParseResult<'a, FullTypeDef> {
     message(alt((
         type_id_field("type_id", FullTypeDef::set_type_id),
         message_field(
             "args",
-            || experimental_full_type_args,
+            || experimental_full_type,
             |m: &mut FullTypeDef, v| m.mut_args().push(v),
         ),
+        string_field("s", FullTypeDef::set_s),
     )))(input)
 }
 
