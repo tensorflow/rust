@@ -1,8 +1,8 @@
 on:
   push:
-    branches: [master]
+    branches: [ master ]
   pull_request:
-    branches: [master]
+    branches: [ master ]
 
 name: Continuous integration
 
@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         os:
-          - ubunte-latest
+          - ubuntu-latest
           - macos-latest
           - windows-latest
     steps:
