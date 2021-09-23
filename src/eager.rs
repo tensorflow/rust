@@ -254,16 +254,22 @@ impl TensorHandle {
     /// TensorFlow. Hence, callers should not mutate this memory (for example by
     /// modifying the memory region pointed to by TF_TensorData() on the returned
     /// TF_Tensor).
-    pub fn resolve<T: TensorType>(&self) -> Result<Option<Tensor<T>>> {
-        let status = Status::new();
+    pub fn resolve<T: TensorType>(&self) -> Result<Tensor<T>> {
+        let mut status = Status::new();
         let tf_tensor = unsafe { tf::TFE_TensorHandleResolve(self.inner, status.inner) };
         if !status.is_ok() {
             return Err(status);
         }
         if self.data_type() != T::data_type() {
-            return Ok(None);
+            status.set_lossy(
+                crate::Code::InvalidArgument,
+                "The expected data type and underlying data type did not match.",
+            );
+            return Err(status);
         }
-        unsafe { Ok(Tensor::from_tf_tensor(tf_tensor)) }
+
+        // Safely unwrap since data_type was checked beforehand
+        unsafe { Ok(Tensor::from_tf_tensor(tf_tensor).unwrap()) }
     }
 
     ///
@@ -650,21 +656,19 @@ mod test {
         let y = x.clone();
 
         let h = add(x, y).unwrap();
-        let z: Result<Option<Tensor<i32>>> = h.resolve();
+        let z: Result<Tensor<i32>> = h.resolve();
         assert!(z.is_ok());
-        let z = z.unwrap().unwrap();
+        let z = z.unwrap();
         assert_eq!(z[0], 4i32);
 
         let h = add(z.clone(), z.clone()).unwrap();
-        let z: Option<Tensor<i32>> = h.resolve().unwrap();
-        let z = z.unwrap();
+        let z: Tensor<i32> = h.resolve().unwrap();
         assert_eq!(z[0], 8i32);
 
         let h1 = z.clone().to_handle().unwrap();
         let h2 = z.clone().to_handle().unwrap();
         let h = add(h1, h2).unwrap();
-        let z: Option<Tensor<i32>> = h.resolve().unwrap();
-        let z = z.unwrap();
+        let z: Tensor<i32> = h.resolve().unwrap();
         assert_eq!(z[0], 16i32);
 
         let h1 = z.clone().to_handle().unwrap();
@@ -673,8 +677,7 @@ mod test {
 
         let h1 = z.clone().to_handle().unwrap();
         let h = add(h1, h).unwrap();
-        let z: Option<Tensor<i32>> = h.resolve().unwrap();
-        let z = z.unwrap();
+        let z: Tensor<i32> = h.resolve().unwrap();
 
         assert_eq!(z[0], 48i32);
     }
@@ -685,9 +688,7 @@ mod test {
             Tensor::from(String::from("test_resources/io/sample_text.txt"));
 
         let h = read_file(filename).unwrap();
-        let z: Option<Tensor<String>> = h.resolve().unwrap();
-        assert!(z.is_some());
-        let z = z.unwrap();
+        let z: Tensor<String> = h.resolve().unwrap();
         assert_eq!(z.len(), 1);
         assert_eq!(z[0].len(), 32);
         assert_eq!(z[0], "This a sample text for unittest.")
@@ -703,9 +704,7 @@ mod test {
             dtype: Some(DataType::UInt8),
         };
         let h = decode_png_with_args(h, &args).unwrap();
-        let z: Option<Tensor<u8>> = h.resolve().unwrap();
-        assert!(z.is_some());
-        let z = z.unwrap();
+        let z: Tensor<u8> = h.resolve().unwrap();
         assert_eq!(z.len(), 224 * 224 * 3);
     }
 
