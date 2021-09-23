@@ -65,7 +65,6 @@ fn write_short_fn<W: Write>(
 ) -> Result<(), io::Error> {
     let mut escaper = Escaper::new(keywords);
     let escaped_args: Vec<_> = input_args.iter().map(|arg| escaper.escape(&arg)).collect();
-    let context_var = escaper.escape("ctx");
     write!(w, "/// {} with default options.\n", fn_name)?;
     write!(w, "pub fn {}<", fn_name)?;
     for i in 0..escaped_args.len() {
@@ -75,10 +74,13 @@ fn write_short_fn<W: Write>(
         write!(w, "T{}: crate::eager::ToHandle", i)?;
     }
     write!(w, ">(")?;
-    write!(w, "{}: &crate::eager::Context", context_var)?;
-    for (i, arg) in escaped_args.iter().enumerate() {
-        write!(w, ", {}: T{}", arg, i)?;
-    }
+    let args_list: Vec<_> = escaped_args
+        .iter()
+        .enumerate()
+        .map(|(i, arg)| format!("{}: T{}", arg, i))
+        .collect();
+    let joined = args_list.join(", ");
+    write!(w, "{}", joined)?;
     write!(w, ") -> Result<")?;
     match output_args.len() {
         0 => write!(w, "()")?,
@@ -88,11 +90,11 @@ fn write_short_fn<W: Write>(
     write!(w, ">\n")?;
     write!(w, "{{\n")?;
     write!(w, "    let __args = {}::new();\n", name)?;
-    write!(w, "    {}_with_args({}", fn_name, context_var)?;
+    write!(w, "    {}_with_args(", fn_name)?;
     for arg in escaped_args {
-        write!(w, ", {}", arg)?;
+        write!(w, "{}, ", arg)?;
     }
-    write!(w, ", &__args")?;
+    write!(w, "&__args")?;
     write!(w, ")\n")?;
     write!(w, "}}\n\n")?;
     Ok(())
@@ -109,7 +111,6 @@ fn write_fn_with_args<W: Write>(
 ) -> Result<(), io::Error> {
     let mut escaper = Escaper::new(keywords);
     let escaped_args: Vec<_> = input_args.iter().map(|arg| escaper.escape(&arg)).collect();
-    let context_var = escaper.escape("ctx");
     write!(w, "/// {} with options.\n", fn_name)?;
     write!(w, "pub fn {}_with_args<", fn_name)?;
     for i in 0..input_args.len() {
@@ -119,11 +120,17 @@ fn write_fn_with_args<W: Write>(
         write!(w, "T{}: crate::eager::ToHandle", i)?;
     }
     write!(w, ">(")?;
-    write!(w, "{}: &crate::eager::Context", context_var)?;
-    for (i, arg) in escaped_args.iter().enumerate() {
-        write!(w, ", {}: T{}", arg, i)?;
+    let args_list: Vec<_> = escaped_args
+        .iter()
+        .enumerate()
+        .map(|(i, arg)| format!("{}: T{}", arg, i))
+        .collect();
+    let joined = args_list.join(", ");
+    write!(w, "{}", joined)?;
+    if args_list.len() > 0 {
+        write!(w, ", ")?;
     }
-    write!(w, ", __args: &{}", name)?;
+    write!(w, "__args: &{}", name)?;
     write!(w, ") -> Result<")?;
     match output_args.len() {
         0 => write!(w, "()")?,
@@ -135,10 +142,15 @@ fn write_fn_with_args<W: Write>(
     write!(w, "    let status = Status::new();\n")?;
     write!(w, "\n")?;
     write!(w, "    // Define Op\n")?;
+    let op_mut = if escaped_args.len() + attrs.len() > 0 {
+        "mut"
+    } else {
+        ""
+    };
     write!(
         w,
-        "    let mut op = crate::eager::Op::new(ctx, \"{}\")?;\n",
-        name
+        "    let {} op = crate::eager::Op::new(&crate::eager::CONTEXT, \"{}\")?;\n",
+        op_mut, name
     )?;
     write!(w, "\n")?;
     write!(w, "    // Required input arguments\n")?;

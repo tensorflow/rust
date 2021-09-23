@@ -19,6 +19,13 @@ use crate::{AnyTensor, DataType, Device, Result, Status, Tensor, TensorType};
 mod raw_ops;
 pub use raw_ops::*;
 
+use once_cell::sync::Lazy;
+
+static CONTEXT: Lazy<Context> = Lazy::new(|| {
+    let opts = ContextOptions::new();
+    Context::new(opts).unwrap()
+});
+
 /// Options that can be passed during context creation.
 #[derive(Debug)]
 pub struct ContextOptions {
@@ -130,6 +137,9 @@ impl Context {
         }
     }
 }
+
+unsafe impl std::marker::Send for Context {}
+unsafe impl std::marker::Sync for Context {}
 
 /// A handle to a tensor on a device.
 #[derive(Debug)]
@@ -308,13 +318,13 @@ impl DebugInfo {
 }
 
 ///
-pub(crate) struct Op {
+struct Op {
     inner: *mut tf::TFE_Op,
 }
 
 impl Op {
     ///
-    pub fn new(ctx: &Context, op_or_function_name: &str) -> Result<Op> {
+    fn new(ctx: &Context, op_or_function_name: &str) -> Result<Op> {
         let status = Status::new();
 
         let op_or_function_name = CString::new(op_or_function_name).unwrap();
@@ -326,7 +336,7 @@ impl Op {
     }
 
     ///
-    pub fn get_name(&self) -> Result<&str> {
+    fn get_name(&self) -> Result<&str> {
         let status = Status::new();
 
         let name = unsafe {
@@ -340,12 +350,12 @@ impl Op {
     }
 
     /// Context may not be outlive over the lifetime of `op'
-    pub fn get_context(&self) -> &Context {
+    fn get_context(&self) -> &Context {
         unimplemented!()
     }
 
     /// Adds an input to this operation.
-    pub fn add_input(&mut self, input: &TensorHandle) -> Result<()> {
+    fn add_input(&mut self, input: &TensorHandle) -> Result<()> {
         let status = Status::new();
         unsafe {
             tf::TFE_OpAddInput(self.inner, input.inner, status.inner);
@@ -357,7 +367,7 @@ impl Op {
     }
 
     /// Adds multiple inputs to this operation.
-    pub fn add_input_list(&mut self, inputs: &[TensorHandle]) -> Result<()> {
+    fn add_input_list(&mut self, inputs: &[TensorHandle]) -> Result<()> {
         let status = Status::new();
         unsafe {
             let mut inputs: Vec<*mut tf::TFE_TensorHandle> =
@@ -376,7 +386,7 @@ impl Op {
     }
 
     /// Sets the value of a string attribute.
-    pub fn set_attr_string(&mut self, attr_name: &str, value: &str) {
+    fn set_attr_string(&mut self, attr_name: &str, value: &str) {
         let attr_name = CString::new(attr_name).unwrap();
         let c_value = value.as_bytes();
         unsafe {
@@ -390,7 +400,7 @@ impl Op {
     }
 
     /// Sets the value of an attribute which holds a list of strings.
-    pub fn set_attr_string_list<S: AsRef<str>>(&mut self, attr_name: &str, values: &[S]) {
+    fn set_attr_string_list<S: AsRef<str>>(&mut self, attr_name: &str, values: &[S]) {
         let c_attr_name = CString::new(attr_name).unwrap();
         let bytes: Vec<&[u8]> = values.iter().map(|x| x.as_ref().as_bytes()).collect();
         let ptrs: Vec<*const c_void> = bytes.iter().map(|x| x.as_ptr() as *const c_void).collect();
@@ -407,7 +417,7 @@ impl Op {
     }
 
     /// Sets an int-valued attribute.
-    pub fn set_attr_int(&mut self, attr_name: &str, value: i64) {
+    fn set_attr_int(&mut self, attr_name: &str, value: i64) {
         let c_attr_name = CString::new(attr_name).unwrap();
         unsafe {
             tf::TFE_OpSetAttrInt(self.inner, c_attr_name.as_ptr(), value);
@@ -415,7 +425,7 @@ impl Op {
     }
 
     /// Sets an attribute which holds an array of ints.
-    pub fn set_attr_int_list(&mut self, attr_name: &str, value: &[i64]) {
+    fn set_attr_int_list(&mut self, attr_name: &str, value: &[i64]) {
         let c_attr_name = CString::new(attr_name).unwrap();
         unsafe {
             tf::TFE_OpSetAttrIntList(
@@ -428,7 +438,7 @@ impl Op {
     }
 
     /// Sets a float-valued attribute.
-    pub fn set_attr_float(&mut self, attr_name: &str, value: f32) {
+    fn set_attr_float(&mut self, attr_name: &str, value: f32) {
         let c_attr_name = CString::new(attr_name).unwrap();
         unsafe {
             tf::TFE_OpSetAttrFloat(self.inner, c_attr_name.as_ptr(), value);
@@ -436,8 +446,7 @@ impl Op {
     }
 
     /// Sets an attribute which holds an array of floats.
-    #[allow(trivial_numeric_casts)]
-    pub fn set_attr_float_list(&mut self, attr_name: &str, value: &[f32]) {
+    fn set_attr_float_list(&mut self, attr_name: &str, value: &[f32]) {
         let c_attr_name = CString::new(attr_name).unwrap();
         // Allow trivial_numeric_casts here because f32 is not necessarily equal to c_float.
         let c_value: Vec<c_float> = value.iter().map(|x| *x as c_float).collect();
@@ -452,7 +461,7 @@ impl Op {
     }
 
     /// Sets a boolean-valued attribute.
-    pub fn set_attr_bool(&mut self, attr_name: &str, value: bool) {
+    fn set_attr_bool(&mut self, attr_name: &str, value: bool) {
         let c_attr_name = CString::new(attr_name).unwrap();
         unsafe {
             tf::TFE_OpSetAttrBool(self.inner, c_attr_name.as_ptr(), if value { 1 } else { 0 });
@@ -460,7 +469,7 @@ impl Op {
     }
 
     /// Sets an attribute which holds an array of booleans.
-    pub fn set_attr_bool_list(&mut self, attr_name: &str, value: &[bool]) {
+    fn set_attr_bool_list(&mut self, attr_name: &str, value: &[bool]) {
         let c_attr_name = CString::new(attr_name).unwrap();
         let c_value: Vec<c_uchar> = value.iter().map(|x| if *x { 1 } else { 0 }).collect();
         unsafe {
@@ -474,7 +483,7 @@ impl Op {
     }
 
     /// Sets a type-valued attribute.
-    pub fn set_attr_type(&mut self, attr_name: &str, value: DataType) {
+    fn set_attr_type(&mut self, attr_name: &str, value: DataType) {
         let c_attr_name = CString::new(attr_name).unwrap();
         unsafe {
             tf::TFE_OpSetAttrType(self.inner, c_attr_name.as_ptr(), value.to_c());
@@ -482,7 +491,7 @@ impl Op {
     }
 
     /// Sets an attribute which holds an array of types.
-    pub fn set_attr_type_list(&mut self, attr_name: &str, value: &[DataType]) {
+    fn set_attr_type_list(&mut self, attr_name: &str, value: &[DataType]) {
         let c_attr_name = CString::new(attr_name).unwrap();
         let c_value: Vec<tf::TF_DataType> = value.iter().map(|x| x.to_c()).collect();
         unsafe {
@@ -496,7 +505,7 @@ impl Op {
     }
 
     /// Sets a shape-valued attribute.
-    pub fn set_attr_shape(&mut self, attr_name: &str, value: &Shape) -> Result<()> {
+    fn set_attr_shape(&mut self, attr_name: &str, value: &Shape) -> Result<()> {
         let status = Status::new();
 
         let c_attr_name = CString::new(attr_name).unwrap();
@@ -528,7 +537,7 @@ impl Op {
     }
 
     /// Sets an attribute which holds an array of shapes.
-    pub fn set_attr_shape_list(&mut self, attr_name: &str, value: &[Shape]) -> Result<()> {
+    fn set_attr_shape_list(&mut self, attr_name: &str, value: &[Shape]) -> Result<()> {
         let status = Status::new();
 
         let c_attr_name = CString::new(attr_name).unwrap();
@@ -572,11 +581,7 @@ impl Op {
     }
 
     /// Sets a tensor-valued attribute.
-    pub(crate) fn set_attr_any_tensor(
-        &mut self,
-        attr_name: &str,
-        value: &dyn AnyTensor,
-    ) -> Result<()> {
+    fn set_attr_any_tensor(&mut self, attr_name: &str, value: &dyn AnyTensor) -> Result<()> {
         let c_attr_name = CString::new(attr_name)?;
         let mut status = Status::new();
         unsafe {
@@ -644,32 +649,30 @@ mod test {
         x[0] = 2i32;
         let y = x.clone();
 
-        let opts = ContextOptions::new();
-        let ctx = &Context::new(opts).unwrap();
-        let h = add(ctx, x, y).unwrap();
+        let h = add(x, y).unwrap();
         let z: Result<Option<Tensor<i32>>> = h.resolve();
         assert!(z.is_ok());
         let z = z.unwrap().unwrap();
         assert_eq!(z[0], 4i32);
 
-        let h = add(ctx, z.clone(), z.clone()).unwrap();
+        let h = add(z.clone(), z.clone()).unwrap();
         let z: Option<Tensor<i32>> = h.resolve().unwrap();
         let z = z.unwrap();
         assert_eq!(z[0], 8i32);
 
         let h1 = z.clone().to_handle().unwrap();
         let h2 = z.clone().to_handle().unwrap();
-        let h = add(ctx, h1, h2).unwrap();
+        let h = add(h1, h2).unwrap();
         let z: Option<Tensor<i32>> = h.resolve().unwrap();
         let z = z.unwrap();
         assert_eq!(z[0], 16i32);
 
         let h1 = z.clone().to_handle().unwrap();
         let h2 = z.clone().to_handle().unwrap();
-        let h = add(ctx, h1, h2).unwrap();
+        let h = add(h1, h2).unwrap();
 
         let h1 = z.clone().to_handle().unwrap();
-        let h = add(ctx, h1, h).unwrap();
+        let h = add(h1, h).unwrap();
         let z: Option<Tensor<i32>> = h.resolve().unwrap();
         let z = z.unwrap();
 
@@ -680,10 +683,8 @@ mod test {
     fn read_file_test() {
         let filename: Tensor<String> =
             Tensor::from(String::from("test_resources/io/sample_text.txt"));
-        let opts = ContextOptions::new();
-        let ctx = &Context::new(opts).unwrap();
 
-        let h = read_file(ctx, filename).unwrap();
+        let h = read_file(filename).unwrap();
         let z: Option<Tensor<String>> = h.resolve().unwrap();
         assert!(z.is_some());
         let z = z.unwrap();
@@ -696,14 +697,12 @@ mod test {
     fn decode_png_test() {
         let filename: Tensor<String> = Tensor::from(String::from("test_resources/sample.png"));
 
-        let opts = ContextOptions::new();
-        let ctx = &Context::new(opts).unwrap();
-        let h = read_file(ctx, filename).unwrap();
+        let h = read_file(filename).unwrap();
         let args = DecodePng {
             channels: Some(3),
             dtype: Some(DataType::UInt8),
         };
-        let h = decode_png_with_args(ctx, h, &args).unwrap();
+        let h = decode_png_with_args(h, &args).unwrap();
         let z: Option<Tensor<u8>> = h.resolve().unwrap();
         assert!(z.is_some());
         let z = z.unwrap();

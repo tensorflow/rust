@@ -3,7 +3,6 @@ use std::path::PathBuf;
 use std::result::Result;
 use tensorflow::eager::*;
 use tensorflow::Code;
-use tensorflow::DataType;
 use tensorflow::Graph;
 use tensorflow::SavedModelBundle;
 use tensorflow::SessionOptions;
@@ -31,23 +30,21 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // Create input variables for our addition
     let filename: Tensor<String> = Tensor::from(String::from("examples/mobilenetv3/sample.png"));
-    let opts = ContextOptions::new();
-    let ctx = &Context::new(opts).unwrap();
-    let buf = read_file(ctx, filename).unwrap();
+    let buf = read_file(filename).unwrap();
     let args = DecodePng {
         channels: Some(3),
-        dtype: Some(DataType::UInt8),
+        ..Default::default()
     };
-    let img = decode_png_with_args(ctx, buf, &args).unwrap();
+    let img = decode_png_with_args(buf, &args).unwrap();
     let dim = Tensor::from([0]);
-    let images = expand_dims(ctx, img, dim).unwrap();
+    let images = expand_dims(img, dim).unwrap();
     let size = Tensor::from(&[224, 224]);
     let args = ResizeBilinear {
-        T: None,
         align_corners: Some(false),
         half_pixel_centers: Some(false),
+        ..Default::default()
     };
-    let h = resize_bilinear_with_args(ctx, images, size, &args).unwrap();
+    let h = resize_bilinear_with_args(images, size, &args).unwrap();
     let x: Tensor<f32> = h.resolve().unwrap().unwrap();
 
     // Load the saved model exported by zenn_savedmodel.py.
