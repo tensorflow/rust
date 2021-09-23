@@ -45,7 +45,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         ..Default::default()
     };
     let h = resize_bilinear_with_args(images, size, &args).unwrap();
-    let x: Tensor<f32> = h.resolve().unwrap().unwrap();
+    let x: Tensor<f32> = h.resolve().unwrap();
 
     // Load the saved model exported by zenn_savedmodel.py.
     let mut graph = Graph::new();
