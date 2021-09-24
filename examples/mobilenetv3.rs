@@ -3,7 +3,6 @@ use std::path::PathBuf;
 use std::result::Result;
 use tensorflow::eager as tf;
 use tensorflow::Code;
-use tensorflow::DataType;
 use tensorflow::Graph;
 use tensorflow::SavedModelBundle;
 use tensorflow::SessionOptions;
