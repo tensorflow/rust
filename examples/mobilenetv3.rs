@@ -1,8 +1,9 @@
 use std::error::Error;
 use std::path::PathBuf;
 use std::result::Result;
-use tensorflow::eager::*;
+use tensorflow::eager as tf;
 use tensorflow::Code;
+use tensorflow::DataType;
 use tensorflow::Graph;
 use tensorflow::SavedModelBundle;
 use tensorflow::SessionOptions;
@@ -29,22 +30,33 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     // Create input variables for our addition
+    // 1. load the image file
     let filename: Tensor<String> = Tensor::from(String::from("examples/mobilenetv3/sample.png"));
-    let buf = read_file(filename).unwrap();
-    let args = DecodePng {
+    let buf = tf::read_file(filename).unwrap();
+    let args = tf::DecodePng {
         channels: Some(3),
         ..Default::default()
     };
-    let img = decode_png_with_args(buf, &args).unwrap();
-    let dim = Tensor::from([0]);
-    let images = expand_dims(img, dim).unwrap();
-    let size = Tensor::from(&[224, 224]);
-    let args = ResizeBilinear {
-        align_corners: Some(false),
-        half_pixel_centers: Some(false),
+    let img = tf::decode_png_with_args(buf, &args).unwrap();
+
+    // 2. shrink the image with antialias, which requires ScaleAndTranslate op instead of Resize op.
+    let img_height = img.dim(0).unwrap();
+    let img_width = img.dim(1).unwrap();
+    let size = Tensor::from(&[224, 224]); // desired size
+    let scale = Tensor::from(&[
+        size[0] as f32 / img_height as f32,
+        size[1] as f32 / img_width as f32,
+    ]);
+    let translation = Tensor::from(&[0.0f32, 0.0f32]); // no translation
+    let args = tf::ScaleAndTranslate {
+        kernel_type: Some("triangle".into()),
         ..Default::default()
     };
-    let h = resize_bilinear_with_args(images, size, &args).unwrap();
+    let dim = Tensor::from([0]); // ScaleAndTranslate requires 4D Tensor (batch, height, width, channel)
+    let images = tf::expand_dims(img, dim).unwrap();
+    let h = tf::scale_and_translate_with_args(images, size, scale, translation, &args).unwrap();
+
+    // 3. get 224x224 image as usual Tensor
     let x: Tensor<f32> = h.resolve().unwrap();
 
     // Load the saved model exported by zenn_savedmodel.py.
