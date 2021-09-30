@@ -37,6 +37,7 @@ use nom::sequence::preceded;
 use nom::sequence::terminated;
 use nom::IResult;
 use protobuf::Message;
+use protobuf::ProtobufEnum;
 use protobuf::ProtobufError;
 use std::error::Error;
 use std::fmt;
@@ -158,36 +159,18 @@ fn data_type<'a>(input: &'a [u8]) -> ParseResult<'a, DataType> {
 }
 
 fn type_id<'a>(input: &'a [u8]) -> ParseResult<'a, FullTypeId> {
-    map_res(identifier, |s| match &s as &str {
-        "TFT_UNSET" => Ok(FullTypeId::TFT_UNSET),
-        "TFT_VAR" => Ok(FullTypeId::TFT_VAR),
-        "TFT_ANY" => Ok(FullTypeId::TFT_ANY),
-        "TFT_PRODUCT" => Ok(FullTypeId::TFT_PRODUCT),
-        "TFT_CALLABLE" => Ok(FullTypeId::TFT_CALLABLE),
-        "TFT_TENSOR" => Ok(FullTypeId::TFT_TENSOR),
-        "TFT_ARRAY" => Ok(FullTypeId::TFT_ARRAY),
-        "TFT_OPTIONAL" => Ok(FullTypeId::TFT_OPTIONAL),
-        "TFT_DATASET2" => Ok(FullTypeId::TFT_OPTIONAL),
-        "TFT_BOOL" => Ok(FullTypeId::TFT_OPTIONAL),
-        "TFT_UINT8" => Ok(FullTypeId::TFT_OPTIONAL),
-        "TFT_UINT16" => Ok(FullTypeId::TFT_OPTIONAL),
-        "TFT_UINT32" => Ok(FullTypeId::TFT_OPTIONAL),
-        "TFT_UINT64" => Ok(FullTypeId::TFT_OPTIONAL),
-        "TFT_INT8" => Ok(FullTypeId::TFT_INT8),
-        "TFT_INT16" => Ok(FullTypeId::TFT_INT16),
-        "TFT_INT32" => Ok(FullTypeId::TFT_INT32),
-        "TFT_INT64" => Ok(FullTypeId::TFT_INT64),
-        "TFT_HALF" => Ok(FullTypeId::TFT_HALF),
-        "TFT_FLOAT" => Ok(FullTypeId::TFT_FLOAT),
-        "TFT_DOUBLE" => Ok(FullTypeId::TFT_DOUBLE),
-        "TFT_BFLOAT16" => Ok(FullTypeId::TFT_BFLOAT16),
-        "TFT_COMPLEX64" => Ok(FullTypeId::TFT_COMPLEX64),
-        "TFT_COMPLEX128" => Ok(FullTypeId::TFT_COMPLEX128),
-        "TFT_STRING" => Ok(FullTypeId::TFT_STRING),
-        _ => Err(nom::Err::<VerboseError<&'a [u8]>>::Error(make_error(
-            input,
-            ErrorKind::Alt,
-        ))),
+    map_res(identifier, |s| {
+        match FullTypeId::values()
+            .iter()
+            .filter(|d| d.descriptor().name() == s)
+            .next()
+        {
+            Some(d) => Ok(FullTypeId::from_i32(d.value()).unwrap()),
+            None => Err(nom::Err::<VerboseError<&'a [u8]>>::Error(make_error(
+                input,
+                ErrorKind::Alt,
+            ))),
+        }
     })(input)
 }
 
