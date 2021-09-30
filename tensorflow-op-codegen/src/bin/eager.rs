@@ -81,7 +81,7 @@ fn write_short_fn<W: Write>(
         .collect();
     let joined = args_list.join(", ");
     write!(w, "{}", joined)?;
-    write!(w, ") -> Result<")?;
+    write!(w, ") -> crate::Result<")?;
     match output_args.len() {
         0 => write!(w, "()")?,
         1 => write!(w, "crate::eager::TensorHandle")?,
@@ -131,7 +131,7 @@ fn write_fn_with_args<W: Write>(
         write!(w, ", ")?;
     }
     write!(w, "__args: &{}", name)?;
-    write!(w, ") -> Result<")?;
+    write!(w, ") -> crate::Result<")?;
     match output_args.len() {
         0 => write!(w, "()")?,
         1 => write!(w, "crate::eager::TensorHandle")?,
@@ -139,7 +139,7 @@ fn write_fn_with_args<W: Write>(
     };
     write!(w, ">\n")?;
     write!(w, "{{\n")?;
-    write!(w, "    let status = Status::new();\n")?;
+    write!(w, "    let status = crate::Status::new();\n")?;
     write!(w, "\n")?;
     write!(w, "    // Define Op\n")?;
     let op_mut = if escaped_args.len() + attrs.len() > 0 {
@@ -409,9 +409,6 @@ fn main() -> Result<(), Box<dyn Error>> {
 )]
 
 use tensorflow_sys as tf;
-
-use crate::Status;
-use crate::Result;
 
 "#
     )?;
