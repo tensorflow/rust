@@ -11,12 +11,19 @@
 use tensorflow_sys as tf;
 
 /// Abort
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Abort {
     pub error_msg: ::std::option::Option<::std::string::String>,
     pub exit_without_error: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for Abort {
+    fn default() -> Self {
+        Self {
+            error_msg: None,
+            exit_without_error: Some(false),
+        }
+    }
+}
 impl Abort {
     /// Creates a new `Abort`.
     pub fn new() -> Self {
@@ -65,11 +72,15 @@ pub fn abort_with_args(__args: &Abort) -> crate::Result<()> {
 }
 
 /// Abs
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Abs {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Abs {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Abs {
     /// Creates a new `Abs`.
     pub fn new() -> Self {
@@ -120,13 +131,21 @@ pub fn abs_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// AccumulateNV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AccumulateNV2 {
     pub N: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
     pub shape: ::std::option::Option<crate::Shape>,
 }
-
+impl ::std::default::Default for AccumulateNV2 {
+    fn default() -> Self {
+        Self {
+            N: None,
+            T: None,
+            shape: None,
+        }
+    }
+}
 impl AccumulateNV2 {
     /// Creates a new `AccumulateNV2`.
     pub fn new() -> Self {
@@ -185,11 +204,15 @@ pub fn accumulate_nv2_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// AccumulatorApplyGradient
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AccumulatorApplyGradient {
     pub dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for AccumulatorApplyGradient {
+    fn default() -> Self {
+        Self { dtype: None }
+    }
+}
 impl AccumulatorApplyGradient {
     /// Creates a new `AccumulatorApplyGradient`.
     pub fn new() -> Self {
@@ -255,9 +278,13 @@ pub fn accumulator_apply_gradient_with_args<
 }
 
 /// AccumulatorNumAccumulated
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AccumulatorNumAccumulated {}
-
+impl ::std::default::Default for AccumulatorNumAccumulated {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl AccumulatorNumAccumulated {
     /// Creates a new `AccumulatorNumAccumulated`.
     pub fn new() -> Self {
@@ -307,9 +334,13 @@ pub fn accumulator_num_accumulated_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// AccumulatorSetGlobalStep
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AccumulatorSetGlobalStep {}
-
+impl ::std::default::Default for AccumulatorSetGlobalStep {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl AccumulatorSetGlobalStep {
     /// Creates a new `AccumulatorSetGlobalStep`.
     pub fn new() -> Self {
@@ -364,11 +395,15 @@ pub fn accumulator_set_global_step_with_args<
 }
 
 /// AccumulatorTakeGradient
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AccumulatorTakeGradient {
     pub dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for AccumulatorTakeGradient {
+    fn default() -> Self {
+        Self { dtype: None }
+    }
+}
 impl AccumulatorTakeGradient {
     /// Creates a new `AccumulatorTakeGradient`.
     pub fn new() -> Self {
@@ -427,11 +462,15 @@ pub fn accumulator_take_gradient_with_args<
 }
 
 /// Acos
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Acos {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Acos {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Acos {
     /// Creates a new `Acos`.
     pub fn new() -> Self {
@@ -482,11 +521,15 @@ pub fn acos_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Acosh
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Acosh {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Acosh {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Acosh {
     /// Creates a new `Acosh`.
     pub fn new() -> Self {
@@ -537,11 +580,15 @@ pub fn acosh_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Add
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Add {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Add {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Add {
     /// Creates a new `Add`.
     pub fn new() -> Self {
@@ -597,13 +644,21 @@ pub fn add_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// AddManySparseToTensorsMap
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AddManySparseToTensorsMap {
     pub T: ::std::option::Option<crate::DataType>,
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for AddManySparseToTensorsMap {
+    fn default() -> Self {
+        Self {
+            T: None,
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl AddManySparseToTensorsMap {
     /// Creates a new `AddManySparseToTensorsMap`.
     pub fn new() -> Self {
@@ -676,12 +731,16 @@ pub fn add_many_sparse_to_tensors_map_with_args<
 }
 
 /// AddN
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AddN {
     pub N: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for AddN {
+    fn default() -> Self {
+        Self { N: None, T: None }
+    }
+}
 impl AddN {
     /// Creates a new `AddN`.
     pub fn new() -> Self {
@@ -735,13 +794,21 @@ pub fn add_n_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// AddSparseToTensorsMap
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AddSparseToTensorsMap {
     pub T: ::std::option::Option<crate::DataType>,
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for AddSparseToTensorsMap {
+    fn default() -> Self {
+        Self {
+            T: None,
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl AddSparseToTensorsMap {
     /// Creates a new `AddSparseToTensorsMap`.
     pub fn new() -> Self {
@@ -814,11 +881,15 @@ pub fn add_sparse_to_tensors_map_with_args<
 }
 
 /// AddV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AddV2 {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for AddV2 {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl AddV2 {
     /// Creates a new `AddV2`.
     pub fn new() -> Self {
@@ -874,11 +945,15 @@ pub fn add_v2_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// AdjustContrast
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AdjustContrast {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for AdjustContrast {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl AdjustContrast {
     /// Creates a new `AdjustContrast`.
     pub fn new() -> Self {
@@ -950,11 +1025,17 @@ pub fn adjust_contrast_with_args<
 }
 
 /// AdjustContrastv2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AdjustContrastv2 {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for AdjustContrastv2 {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Float),
+        }
+    }
+}
 impl AdjustContrastv2 {
     /// Creates a new `AdjustContrastv2`.
     pub fn new() -> Self {
@@ -1010,11 +1091,17 @@ pub fn adjust_contrastv2_with_args<T0: crate::eager::ToHandle, T1: crate::eager:
 }
 
 /// AdjustHue
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AdjustHue {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for AdjustHue {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Float),
+        }
+    }
+}
 impl AdjustHue {
     /// Creates a new `AdjustHue`.
     pub fn new() -> Self {
@@ -1070,11 +1157,17 @@ pub fn adjust_hue_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHand
 }
 
 /// AdjustSaturation
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AdjustSaturation {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for AdjustSaturation {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Float),
+        }
+    }
+}
 impl AdjustSaturation {
     /// Creates a new `AdjustSaturation`.
     pub fn new() -> Self {
@@ -1130,12 +1223,19 @@ pub fn adjust_saturation_with_args<T0: crate::eager::ToHandle, T1: crate::eager:
 }
 
 /// All
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct All {
     pub keep_dims: ::std::option::Option<bool>,
     pub Tidx: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for All {
+    fn default() -> Self {
+        Self {
+            keep_dims: Some(false),
+            Tidx: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl All {
     /// Creates a new `All`.
     pub fn new() -> Self {
@@ -1194,7 +1294,7 @@ pub fn all_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// AllCandidateSampler
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AllCandidateSampler {
     pub num_true: ::std::option::Option<i64>,
     pub num_sampled: ::std::option::Option<i64>,
@@ -1202,7 +1302,17 @@ pub struct AllCandidateSampler {
     pub seed: ::std::option::Option<i64>,
     pub seed2: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for AllCandidateSampler {
+    fn default() -> Self {
+        Self {
+            num_true: None,
+            num_sampled: None,
+            unique: None,
+            seed: Some(0i64),
+            seed2: Some(0i64),
+        }
+    }
+}
 impl AllCandidateSampler {
     /// Creates a new `AllCandidateSampler`.
     pub fn new() -> Self {
@@ -1273,14 +1383,23 @@ pub fn all_candidate_sampler_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// AllToAll
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AllToAll {
     pub T: ::std::option::Option<crate::DataType>,
     pub concat_dimension: ::std::option::Option<i64>,
     pub split_dimension: ::std::option::Option<i64>,
     pub split_count: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for AllToAll {
+    fn default() -> Self {
+        Self {
+            T: None,
+            concat_dimension: None,
+            split_dimension: None,
+            split_count: None,
+        }
+    }
+}
 impl AllToAll {
     /// Creates a new `AllToAll`.
     pub fn new() -> Self {
@@ -1345,12 +1464,19 @@ pub fn all_to_all_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHand
 }
 
 /// Angle
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Angle {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tout: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Angle {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Complex64),
+            Tout: Some(crate::DataType::Float),
+        }
+    }
+}
 impl Angle {
     /// Creates a new `Angle`.
     pub fn new() -> Self {
@@ -1404,12 +1530,19 @@ pub fn angle_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// AnonymousIterator
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AnonymousIterator {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for AnonymousIterator {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl AnonymousIterator {
     /// Creates a new `AnonymousIterator`.
     pub fn new() -> Self {
@@ -1461,12 +1594,19 @@ pub fn anonymous_iterator_with_args(
 }
 
 /// AnonymousIteratorV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AnonymousIteratorV2 {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for AnonymousIteratorV2 {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl AnonymousIteratorV2 {
     /// Creates a new `AnonymousIteratorV2`.
     pub fn new() -> Self {
@@ -1523,9 +1663,13 @@ pub fn anonymous_iterator_v2_with_args(
 }
 
 /// AnonymousMemoryCache
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AnonymousMemoryCache {}
-
+impl ::std::default::Default for AnonymousMemoryCache {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl AnonymousMemoryCache {
     /// Creates a new `AnonymousMemoryCache`.
     pub fn new() -> Self {
@@ -1576,13 +1720,21 @@ pub fn anonymous_memory_cache_with_args(
 }
 
 /// AnonymousMultiDeviceIterator
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AnonymousMultiDeviceIterator {
     pub devices: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for AnonymousMultiDeviceIterator {
+    fn default() -> Self {
+        Self {
+            devices: None,
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl AnonymousMultiDeviceIterator {
     /// Creates a new `AnonymousMultiDeviceIterator`.
     pub fn new() -> Self {
@@ -1642,9 +1794,13 @@ pub fn anonymous_multi_device_iterator_with_args(
 }
 
 /// AnonymousRandomSeedGenerator
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AnonymousRandomSeedGenerator {}
-
+impl ::std::default::Default for AnonymousRandomSeedGenerator {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl AnonymousRandomSeedGenerator {
     /// Creates a new `AnonymousRandomSeedGenerator`.
     pub fn new() -> Self {
@@ -1705,9 +1861,13 @@ pub fn anonymous_random_seed_generator_with_args<
 }
 
 /// AnonymousSeedGenerator
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AnonymousSeedGenerator {}
-
+impl ::std::default::Default for AnonymousSeedGenerator {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl AnonymousSeedGenerator {
     /// Creates a new `AnonymousSeedGenerator`.
     pub fn new() -> Self {
@@ -1776,12 +1936,19 @@ pub fn anonymous_seed_generator_with_args<
 }
 
 /// Any
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Any {
     pub keep_dims: ::std::option::Option<bool>,
     pub Tidx: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Any {
+    fn default() -> Self {
+        Self {
+            keep_dims: Some(false),
+            Tidx: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl Any {
     /// Creates a new `Any`.
     pub fn new() -> Self {
@@ -1840,12 +2007,19 @@ pub fn any_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// ApplyAdaMax
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ApplyAdaMax {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ApplyAdaMax {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ApplyAdaMax {
     /// Creates a new `ApplyAdaMax`.
     pub fn new() -> Self {
@@ -1956,12 +2130,19 @@ pub fn apply_ada_max_with_args<
 }
 
 /// ApplyAdadelta
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ApplyAdadelta {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ApplyAdadelta {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ApplyAdadelta {
     /// Creates a new `ApplyAdadelta`.
     pub fn new() -> Self {
@@ -2051,13 +2232,21 @@ pub fn apply_adadelta_with_args<
 }
 
 /// ApplyAdagrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ApplyAdagrad {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
     pub update_slots: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ApplyAdagrad {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+            update_slots: Some(true),
+        }
+    }
+}
 impl ApplyAdagrad {
     /// Creates a new `ApplyAdagrad`.
     pub fn new() -> Self {
@@ -2135,12 +2324,19 @@ pub fn apply_adagrad_with_args<
 }
 
 /// ApplyAdagradDA
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ApplyAdagradDA {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ApplyAdagradDA {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ApplyAdagradDA {
     /// Creates a new `ApplyAdagradDA`.
     pub fn new() -> Self {
@@ -2245,13 +2441,21 @@ pub fn apply_adagrad_da_with_args<
 }
 
 /// ApplyAdagradV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ApplyAdagradV2 {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
     pub update_slots: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ApplyAdagradV2 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+            update_slots: Some(true),
+        }
+    }
+}
 impl ApplyAdagradV2 {
     /// Creates a new `ApplyAdagradV2`.
     pub fn new() -> Self {
@@ -2334,13 +2538,21 @@ pub fn apply_adagrad_v2_with_args<
 }
 
 /// ApplyAdam
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ApplyAdam {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
     pub use_nesterov: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ApplyAdam {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+            use_nesterov: Some(false),
+        }
+    }
+}
 impl ApplyAdam {
     /// Creates a new `ApplyAdam`.
     pub fn new() -> Self {
@@ -2460,12 +2672,19 @@ pub fn apply_adam_with_args<
 }
 
 /// ApplyAddSign
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ApplyAddSign {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ApplyAddSign {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ApplyAddSign {
     /// Creates a new `ApplyAddSign`.
     pub fn new() -> Self {
@@ -2555,12 +2774,19 @@ pub fn apply_add_sign_with_args<
 }
 
 /// ApplyCenteredRMSProp
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ApplyCenteredRMSProp {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ApplyCenteredRMSProp {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ApplyCenteredRMSProp {
     /// Creates a new `ApplyCenteredRMSProp`.
     pub fn new() -> Self {
@@ -2660,13 +2886,21 @@ pub fn apply_centered_rmsprop_with_args<
 }
 
 /// ApplyFtrl
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ApplyFtrl {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
     pub multiply_linear_by_lr: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ApplyFtrl {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+            multiply_linear_by_lr: Some(false),
+        }
+    }
+}
 impl ApplyFtrl {
     /// Creates a new `ApplyFtrl`.
     pub fn new() -> Self {
@@ -2764,13 +2998,21 @@ pub fn apply_ftrl_with_args<
 }
 
 /// ApplyFtrlV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ApplyFtrlV2 {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
     pub multiply_linear_by_lr: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ApplyFtrlV2 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+            multiply_linear_by_lr: Some(false),
+        }
+    }
+}
 impl ApplyFtrlV2 {
     /// Creates a new `ApplyFtrlV2`.
     pub fn new() -> Self {
@@ -2884,12 +3126,19 @@ pub fn apply_ftrl_v2_with_args<
 }
 
 /// ApplyGradientDescent
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ApplyGradientDescent {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ApplyGradientDescent {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ApplyGradientDescent {
     /// Creates a new `ApplyGradientDescent`.
     pub fn new() -> Self {
@@ -2959,13 +3208,21 @@ pub fn apply_gradient_descent_with_args<
 }
 
 /// ApplyMomentum
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ApplyMomentum {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
     pub use_nesterov: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ApplyMomentum {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+            use_nesterov: Some(false),
+        }
+    }
+}
 impl ApplyMomentum {
     /// Creates a new `ApplyMomentum`.
     pub fn new() -> Self {
@@ -3048,12 +3305,19 @@ pub fn apply_momentum_with_args<
 }
 
 /// ApplyPowerSign
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ApplyPowerSign {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ApplyPowerSign {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ApplyPowerSign {
     /// Creates a new `ApplyPowerSign`.
     pub fn new() -> Self {
@@ -3143,12 +3407,19 @@ pub fn apply_power_sign_with_args<
 }
 
 /// ApplyProximalAdagrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ApplyProximalAdagrad {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ApplyProximalAdagrad {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ApplyProximalAdagrad {
     /// Creates a new `ApplyProximalAdagrad`.
     pub fn new() -> Self {
@@ -3233,12 +3504,19 @@ pub fn apply_proximal_adagrad_with_args<
 }
 
 /// ApplyProximalGradientDescent
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ApplyProximalGradientDescent {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ApplyProximalGradientDescent {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ApplyProximalGradientDescent {
     /// Creates a new `ApplyProximalGradientDescent`.
     pub fn new() -> Self {
@@ -3318,12 +3596,19 @@ pub fn apply_proximal_gradient_descent_with_args<
 }
 
 /// ApplyRMSProp
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ApplyRMSProp {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ApplyRMSProp {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ApplyRMSProp {
     /// Creates a new `ApplyRMSProp`.
     pub fn new() -> Self {
@@ -3418,12 +3703,19 @@ pub fn apply_rmsprop_with_args<
 }
 
 /// ApproximateEqual
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ApproximateEqual {
     pub T: ::std::option::Option<crate::DataType>,
     pub tolerance: ::std::option::Option<f32>,
 }
-
+impl ::std::default::Default for ApproximateEqual {
+    fn default() -> Self {
+        Self {
+            T: None,
+            tolerance: Some(0.00001f32),
+        }
+    }
+}
 impl ApproximateEqual {
     /// Creates a new `ApproximateEqual`.
     pub fn new() -> Self {
@@ -3482,13 +3774,21 @@ pub fn approximate_equal_with_args<T0: crate::eager::ToHandle, T1: crate::eager:
 }
 
 /// ArgMax
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ArgMax {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tidx: ::std::option::Option<crate::DataType>,
     pub output_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ArgMax {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tidx: Some(crate::DataType::Int32),
+            output_type: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl ArgMax {
     /// Creates a new `ArgMax`.
     pub fn new() -> Self {
@@ -3550,13 +3850,21 @@ pub fn arg_max_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>
 }
 
 /// ArgMin
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ArgMin {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tidx: ::std::option::Option<crate::DataType>,
     pub output_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ArgMin {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tidx: Some(crate::DataType::Int32),
+            output_type: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl ArgMin {
     /// Creates a new `ArgMin`.
     pub fn new() -> Self {
@@ -3618,7 +3926,7 @@ pub fn arg_min_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>
 }
 
 /// AsString
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AsString {
     pub T: ::std::option::Option<crate::DataType>,
     pub precision: ::std::option::Option<i64>,
@@ -3627,7 +3935,18 @@ pub struct AsString {
     pub width: ::std::option::Option<i64>,
     pub fill: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for AsString {
+    fn default() -> Self {
+        Self {
+            T: None,
+            precision: Some(-1i64),
+            scientific: Some(false),
+            shortest: Some(false),
+            width: Some(-1i64),
+            fill: None,
+        }
+    }
+}
 impl AsString {
     /// Creates a new `AsString`.
     pub fn new() -> Self {
@@ -3695,11 +4014,15 @@ pub fn as_string_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Asin
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Asin {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Asin {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Asin {
     /// Creates a new `Asin`.
     pub fn new() -> Self {
@@ -3750,11 +4073,15 @@ pub fn asin_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Asinh
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Asinh {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Asinh {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Asinh {
     /// Creates a new `Asinh`.
     pub fn new() -> Self {
@@ -3805,12 +4132,19 @@ pub fn asinh_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Assert
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Assert {
     pub T: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub summarize: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for Assert {
+    fn default() -> Self {
+        Self {
+            T: None,
+            summarize: Some(3i64),
+        }
+    }
+}
 impl Assert {
     /// Creates a new `Assert`.
     pub fn new() -> Self {
@@ -3868,12 +4202,19 @@ pub fn assert_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// AssertCardinalityDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AssertCardinalityDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for AssertCardinalityDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl AssertCardinalityDataset {
     /// Creates a new `AssertCardinalityDataset`.
     pub fn new() -> Self {
@@ -3935,12 +4276,19 @@ pub fn assert_cardinality_dataset_with_args<
 }
 
 /// AssertNextDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AssertNextDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for AssertNextDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl AssertNextDataset {
     /// Creates a new `AssertNextDataset`.
     pub fn new() -> Self {
@@ -3999,13 +4347,21 @@ pub fn assert_next_dataset_with_args<T0: crate::eager::ToHandle, T1: crate::eage
 }
 
 /// Assign
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Assign {
     pub T: ::std::option::Option<crate::DataType>,
     pub validate_shape: ::std::option::Option<bool>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for Assign {
+    fn default() -> Self {
+        Self {
+            T: None,
+            validate_shape: Some(true),
+            use_locking: Some(true),
+        }
+    }
+}
 impl Assign {
     /// Creates a new `Assign`.
     pub fn new() -> Self {
@@ -4067,12 +4423,19 @@ pub fn assign_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// AssignAdd
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AssignAdd {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for AssignAdd {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl AssignAdd {
     /// Creates a new `AssignAdd`.
     pub fn new() -> Self {
@@ -4131,11 +4494,15 @@ pub fn assign_add_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHand
 }
 
 /// AssignAddVariableOp
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AssignAddVariableOp {
     pub dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for AssignAddVariableOp {
+    fn default() -> Self {
+        Self { dtype: None }
+    }
+}
 impl AssignAddVariableOp {
     /// Creates a new `AssignAddVariableOp`.
     pub fn new() -> Self {
@@ -4190,12 +4557,19 @@ pub fn assign_add_variable_op_with_args<T0: crate::eager::ToHandle, T1: crate::e
 }
 
 /// AssignSub
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AssignSub {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for AssignSub {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl AssignSub {
     /// Creates a new `AssignSub`.
     pub fn new() -> Self {
@@ -4254,11 +4628,15 @@ pub fn assign_sub_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHand
 }
 
 /// AssignSubVariableOp
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AssignSubVariableOp {
     pub dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for AssignSubVariableOp {
+    fn default() -> Self {
+        Self { dtype: None }
+    }
+}
 impl AssignSubVariableOp {
     /// Creates a new `AssignSubVariableOp`.
     pub fn new() -> Self {
@@ -4313,11 +4691,15 @@ pub fn assign_sub_variable_op_with_args<T0: crate::eager::ToHandle, T1: crate::e
 }
 
 /// AssignVariableOp
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AssignVariableOp {
     pub dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for AssignVariableOp {
+    fn default() -> Self {
+        Self { dtype: None }
+    }
+}
 impl AssignVariableOp {
     /// Creates a new `AssignVariableOp`.
     pub fn new() -> Self {
@@ -4372,11 +4754,15 @@ pub fn assign_variable_op_with_args<T0: crate::eager::ToHandle, T1: crate::eager
 }
 
 /// Atan
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Atan {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Atan {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Atan {
     /// Creates a new `Atan`.
     pub fn new() -> Self {
@@ -4427,11 +4813,15 @@ pub fn atan_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Atan2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Atan2 {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Atan2 {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Atan2 {
     /// Creates a new `Atan2`.
     pub fn new() -> Self {
@@ -4487,11 +4877,15 @@ pub fn atan2_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// Atanh
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Atanh {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Atanh {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Atanh {
     /// Creates a new `Atanh`.
     pub fn new() -> Self {
@@ -4542,13 +4936,21 @@ pub fn atanh_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// AudioSpectrogram
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AudioSpectrogram {
     pub window_size: ::std::option::Option<i64>,
     pub stride: ::std::option::Option<i64>,
     pub magnitude_squared: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for AudioSpectrogram {
+    fn default() -> Self {
+        Self {
+            window_size: None,
+            stride: None,
+            magnitude_squared: Some(false),
+        }
+    }
+}
 impl AudioSpectrogram {
     /// Creates a new `AudioSpectrogram`.
     pub fn new() -> Self {
@@ -4607,12 +5009,19 @@ pub fn audio_spectrogram_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// AudioSummary
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AudioSummary {
     pub sample_rate: ::std::option::Option<f32>,
     pub max_outputs: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for AudioSummary {
+    fn default() -> Self {
+        Self {
+            sample_rate: None,
+            max_outputs: Some(3i64),
+        }
+    }
+}
 impl AudioSummary {
     /// Creates a new `AudioSummary`.
     pub fn new() -> Self {
@@ -4671,11 +5080,17 @@ pub fn audio_summary_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToH
 }
 
 /// AudioSummaryV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AudioSummaryV2 {
     pub max_outputs: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for AudioSummaryV2 {
+    fn default() -> Self {
+        Self {
+            max_outputs: Some(3i64),
+        }
+    }
+}
 impl AudioSummaryV2 {
     /// Creates a new `AudioSummaryV2`.
     pub fn new() -> Self {
@@ -4742,14 +5157,23 @@ pub fn audio_summary_v2_with_args<
 }
 
 /// AutoShardDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AutoShardDataset {
     pub auto_shard_policy: ::std::option::Option<i64>,
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     pub num_replicas: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for AutoShardDataset {
+    fn default() -> Self {
+        Self {
+            auto_shard_policy: Some(0i64),
+            output_types: None,
+            output_shapes: None,
+            num_replicas: Some(0i64),
+        }
+    }
+}
 impl AutoShardDataset {
     /// Creates a new `AutoShardDataset`.
     pub fn new() -> Self {
@@ -4825,7 +5249,7 @@ pub fn auto_shard_dataset_with_args<
 }
 
 /// AvgPool
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AvgPool {
     pub ksize: ::std::option::Option<::std::vec::Vec<i64>>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
@@ -4833,7 +5257,17 @@ pub struct AvgPool {
     pub data_format: ::std::option::Option<::std::string::String>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for AvgPool {
+    fn default() -> Self {
+        Self {
+            ksize: None,
+            strides: None,
+            padding: None,
+            data_format: Some(::std::string::String::from("NHWC")),
+            T: None,
+        }
+    }
+}
 impl AvgPool {
     /// Creates a new `AvgPool`.
     pub fn new() -> Self {
@@ -4898,7 +5332,7 @@ pub fn avg_pool_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// AvgPool3D
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AvgPool3D {
     pub ksize: ::std::option::Option<::std::vec::Vec<i64>>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
@@ -4906,7 +5340,17 @@ pub struct AvgPool3D {
     pub data_format: ::std::option::Option<::std::string::String>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for AvgPool3D {
+    fn default() -> Self {
+        Self {
+            ksize: None,
+            strides: None,
+            padding: None,
+            data_format: Some(::std::string::String::from("NDHWC")),
+            T: None,
+        }
+    }
+}
 impl AvgPool3D {
     /// Creates a new `AvgPool3D`.
     pub fn new() -> Self {
@@ -4971,7 +5415,7 @@ pub fn avg_pool3_d_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// AvgPool3DGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AvgPool3DGrad {
     pub ksize: ::std::option::Option<::std::vec::Vec<i64>>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
@@ -4979,7 +5423,17 @@ pub struct AvgPool3DGrad {
     pub data_format: ::std::option::Option<::std::string::String>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for AvgPool3DGrad {
+    fn default() -> Self {
+        Self {
+            ksize: None,
+            strides: None,
+            padding: None,
+            data_format: Some(::std::string::String::from("NDHWC")),
+            T: None,
+        }
+    }
+}
 impl AvgPool3DGrad {
     /// Creates a new `AvgPool3DGrad`.
     pub fn new() -> Self {
@@ -5047,7 +5501,7 @@ pub fn avg_pool3_dgrad_with_args<T0: crate::eager::ToHandle, T1: crate::eager::T
 }
 
 /// AvgPoolGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct AvgPoolGrad {
     pub ksize: ::std::option::Option<::std::vec::Vec<i64>>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
@@ -5055,7 +5509,17 @@ pub struct AvgPoolGrad {
     pub data_format: ::std::option::Option<::std::string::String>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for AvgPoolGrad {
+    fn default() -> Self {
+        Self {
+            ksize: None,
+            strides: None,
+            padding: None,
+            data_format: Some(::std::string::String::from("NHWC")),
+            T: None,
+        }
+    }
+}
 impl AvgPoolGrad {
     /// Creates a new `AvgPoolGrad`.
     pub fn new() -> Self {
@@ -5123,13 +5587,21 @@ pub fn avg_pool_grad_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToH
 }
 
 /// BandedTriangularSolve
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BandedTriangularSolve {
     pub lower: ::std::option::Option<bool>,
     pub adjoint: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BandedTriangularSolve {
+    fn default() -> Self {
+        Self {
+            lower: Some(true),
+            adjoint: Some(false),
+            T: None,
+        }
+    }
+}
 impl BandedTriangularSolve {
     /// Creates a new `BandedTriangularSolve`.
     pub fn new() -> Self {
@@ -5191,7 +5663,7 @@ pub fn banded_triangular_solve_with_args<T0: crate::eager::ToHandle, T1: crate::
 }
 
 /// Barrier
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Barrier {
     pub component_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
@@ -5199,7 +5671,17 @@ pub struct Barrier {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for Barrier {
+    fn default() -> Self {
+        Self {
+            component_types: None,
+            shapes: None,
+            capacity: Some(-1i64),
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl Barrier {
     /// Creates a new `Barrier`.
     pub fn new() -> Self {
@@ -5258,11 +5740,17 @@ pub fn barrier_with_args(__args: &Barrier) -> crate::Result<crate::eager::Tensor
 }
 
 /// BarrierClose
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BarrierClose {
     pub cancel_pending_enqueues: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for BarrierClose {
+    fn default() -> Self {
+        Self {
+            cancel_pending_enqueues: Some(false),
+        }
+    }
+}
 impl BarrierClose {
     /// Creates a new `BarrierClose`.
     pub fn new() -> Self {
@@ -5312,9 +5800,13 @@ pub fn barrier_close_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BarrierIncompleteSize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BarrierIncompleteSize {}
-
+impl ::std::default::Default for BarrierIncompleteSize {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl BarrierIncompleteSize {
     /// Creates a new `BarrierIncompleteSize`.
     pub fn new() -> Self {
@@ -5364,12 +5856,19 @@ pub fn barrier_incomplete_size_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BarrierInsertMany
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BarrierInsertMany {
     pub T: ::std::option::Option<crate::DataType>,
     pub component_index: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for BarrierInsertMany {
+    fn default() -> Self {
+        Self {
+            T: None,
+            component_index: None,
+        }
+    }
+}
 impl BarrierInsertMany {
     /// Creates a new `BarrierInsertMany`.
     pub fn new() -> Self {
@@ -5438,9 +5937,13 @@ pub fn barrier_insert_many_with_args<
 }
 
 /// BarrierReadySize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BarrierReadySize {}
-
+impl ::std::default::Default for BarrierReadySize {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl BarrierReadySize {
     /// Creates a new `BarrierReadySize`.
     pub fn new() -> Self {
@@ -5490,14 +5993,23 @@ pub fn barrier_ready_size_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BarrierTakeMany
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BarrierTakeMany {
     pub component_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub allow_small_batch: ::std::option::Option<bool>,
     pub wait_for_incomplete: ::std::option::Option<bool>,
     pub timeout_ms: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for BarrierTakeMany {
+    fn default() -> Self {
+        Self {
+            component_types: None,
+            allow_small_batch: Some(false),
+            wait_for_incomplete: Some(false),
+            timeout_ms: Some(-1i64),
+        }
+    }
+}
 impl BarrierTakeMany {
     /// Creates a new `BarrierTakeMany`.
     pub fn new() -> Self {
@@ -5568,7 +6080,7 @@ pub fn barrier_take_many_with_args<T0: crate::eager::ToHandle, T1: crate::eager:
 }
 
 /// Batch
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Batch {
     pub num_batch_threads: ::std::option::Option<i64>,
     pub max_batch_size: ::std::option::Option<i64>,
@@ -5581,7 +6093,22 @@ pub struct Batch {
     pub batching_queue: ::std::option::Option<::std::string::String>,
     pub T: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
 }
-
+impl ::std::default::Default for Batch {
+    fn default() -> Self {
+        Self {
+            num_batch_threads: None,
+            max_batch_size: None,
+            max_enqueued_batches: Some(10i64),
+            batch_timeout_micros: None,
+            allowed_batch_sizes: Some(vec![]),
+            grad_timeout_micros: None,
+            container: None,
+            shared_name: None,
+            batching_queue: None,
+            T: None,
+        }
+    }
+}
 impl Batch {
     /// Creates a new `Batch`.
     pub fn new() -> Self {
@@ -5667,11 +6194,15 @@ pub fn batch_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BatchCholesky
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BatchCholesky {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BatchCholesky {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl BatchCholesky {
     /// Creates a new `BatchCholesky`.
     pub fn new() -> Self {
@@ -5724,11 +6255,15 @@ pub fn batch_cholesky_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BatchCholeskyGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BatchCholeskyGrad {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BatchCholeskyGrad {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl BatchCholeskyGrad {
     /// Creates a new `BatchCholeskyGrad`.
     pub fn new() -> Self {
@@ -5784,12 +6319,19 @@ pub fn batch_cholesky_grad_with_args<T0: crate::eager::ToHandle, T1: crate::eage
 }
 
 /// BatchDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BatchDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for BatchDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl BatchDataset {
     /// Creates a new `BatchDataset`.
     pub fn new() -> Self {
@@ -5848,13 +6390,21 @@ pub fn batch_dataset_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToH
 }
 
 /// BatchDatasetV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BatchDatasetV2 {
     pub parallel_copy: ::std::option::Option<bool>,
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for BatchDatasetV2 {
+    fn default() -> Self {
+        Self {
+            parallel_copy: Some(false),
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl BatchDatasetV2 {
     /// Creates a new `BatchDatasetV2`.
     pub fn new() -> Self {
@@ -5927,9 +6477,13 @@ pub fn batch_dataset_v2_with_args<
 }
 
 /// BatchFFT
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BatchFFT {}
-
+impl ::std::default::Default for BatchFFT {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl BatchFFT {
     /// Creates a new `BatchFFT`.
     pub fn new() -> Self {
@@ -5979,9 +6533,13 @@ pub fn batch_fft_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BatchFFT2D
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BatchFFT2D {}
-
+impl ::std::default::Default for BatchFFT2D {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl BatchFFT2D {
     /// Creates a new `BatchFFT2D`.
     pub fn new() -> Self {
@@ -6031,9 +6589,13 @@ pub fn batch_fft2_d_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BatchFFT3D
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BatchFFT3D {}
-
+impl ::std::default::Default for BatchFFT3D {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl BatchFFT3D {
     /// Creates a new `BatchFFT3D`.
     pub fn new() -> Self {
@@ -6083,7 +6645,7 @@ pub fn batch_fft3_d_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BatchFunction
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BatchFunction {
     pub f: ::std::option::Option<::std::string::String>,
     pub num_batch_threads: ::std::option::Option<i64>,
@@ -6099,7 +6661,25 @@ pub struct BatchFunction {
     pub Tout: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub enable_large_batch_splitting: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for BatchFunction {
+    fn default() -> Self {
+        Self {
+            f: None,
+            num_batch_threads: None,
+            max_batch_size: None,
+            batch_timeout_micros: None,
+            max_enqueued_batches: Some(10i64),
+            allowed_batch_sizes: Some(vec![]),
+            container: None,
+            shared_name: None,
+            batching_queue: None,
+            Tin: None,
+            Tcaptured: None,
+            Tout: None,
+            enable_large_batch_splitting: Some(false),
+        }
+    }
+}
 impl BatchFunction {
     /// Creates a new `BatchFunction`.
     pub fn new() -> Self {
@@ -6191,9 +6771,13 @@ pub fn batch_function_with_args<T0: crate::eager::ToHandle, T1: crate::eager::To
 }
 
 /// BatchIFFT
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BatchIFFT {}
-
+impl ::std::default::Default for BatchIFFT {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl BatchIFFT {
     /// Creates a new `BatchIFFT`.
     pub fn new() -> Self {
@@ -6243,9 +6827,13 @@ pub fn batch_ifft_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BatchIFFT2D
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BatchIFFT2D {}
-
+impl ::std::default::Default for BatchIFFT2D {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl BatchIFFT2D {
     /// Creates a new `BatchIFFT2D`.
     pub fn new() -> Self {
@@ -6295,9 +6883,13 @@ pub fn batch_ifft2_d_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BatchIFFT3D
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BatchIFFT3D {}
-
+impl ::std::default::Default for BatchIFFT3D {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl BatchIFFT3D {
     /// Creates a new `BatchIFFT3D`.
     pub fn new() -> Self {
@@ -6347,13 +6939,21 @@ pub fn batch_ifft3_d_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BatchMatMul
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BatchMatMul {
     pub T: ::std::option::Option<crate::DataType>,
     pub adj_x: ::std::option::Option<bool>,
     pub adj_y: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for BatchMatMul {
+    fn default() -> Self {
+        Self {
+            T: None,
+            adj_x: Some(false),
+            adj_y: Some(false),
+        }
+    }
+}
 impl BatchMatMul {
     /// Creates a new `BatchMatMul`.
     pub fn new() -> Self {
@@ -6415,13 +7015,21 @@ pub fn batch_mat_mul_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToH
 }
 
 /// BatchMatMulV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BatchMatMulV2 {
     pub T: ::std::option::Option<crate::DataType>,
     pub adj_x: ::std::option::Option<bool>,
     pub adj_y: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for BatchMatMulV2 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            adj_x: Some(false),
+            adj_y: Some(false),
+        }
+    }
+}
 impl BatchMatMulV2 {
     /// Creates a new `BatchMatMulV2`.
     pub fn new() -> Self {
@@ -6483,7 +7091,7 @@ pub fn batch_mat_mul_v2_with_args<T0: crate::eager::ToHandle, T1: crate::eager::
 }
 
 /// BatchMatMulV3
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BatchMatMulV3 {
     pub Ta: ::std::option::Option<crate::DataType>,
     pub Tb: ::std::option::Option<crate::DataType>,
@@ -6491,7 +7099,17 @@ pub struct BatchMatMulV3 {
     pub adj_x: ::std::option::Option<bool>,
     pub adj_y: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for BatchMatMulV3 {
+    fn default() -> Self {
+        Self {
+            Ta: None,
+            Tb: None,
+            Tout: None,
+            adj_x: Some(false),
+            adj_y: Some(false),
+        }
+    }
+}
 impl BatchMatMulV3 {
     /// Creates a new `BatchMatMulV3`.
     pub fn new() -> Self {
@@ -6559,11 +7177,15 @@ pub fn batch_mat_mul_v3_with_args<T0: crate::eager::ToHandle, T1: crate::eager::
 }
 
 /// BatchMatrixBandPart
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BatchMatrixBandPart {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BatchMatrixBandPart {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl BatchMatrixBandPart {
     /// Creates a new `BatchMatrixBandPart`.
     pub fn new() -> Self {
@@ -6630,11 +7252,15 @@ pub fn batch_matrix_band_part_with_args<
 }
 
 /// BatchMatrixDeterminant
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BatchMatrixDeterminant {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BatchMatrixDeterminant {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl BatchMatrixDeterminant {
     /// Creates a new `BatchMatrixDeterminant`.
     pub fn new() -> Self {
@@ -6687,11 +7313,15 @@ pub fn batch_matrix_determinant_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BatchMatrixDiag
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BatchMatrixDiag {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BatchMatrixDiag {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl BatchMatrixDiag {
     /// Creates a new `BatchMatrixDiag`.
     pub fn new() -> Self {
@@ -6744,11 +7374,15 @@ pub fn batch_matrix_diag_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BatchMatrixDiagPart
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BatchMatrixDiagPart {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BatchMatrixDiagPart {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl BatchMatrixDiagPart {
     /// Creates a new `BatchMatrixDiagPart`.
     pub fn new() -> Self {
@@ -6801,12 +7435,19 @@ pub fn batch_matrix_diag_part_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BatchMatrixInverse
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BatchMatrixInverse {
     pub adjoint: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BatchMatrixInverse {
+    fn default() -> Self {
+        Self {
+            adjoint: Some(false),
+            T: None,
+        }
+    }
+}
 impl BatchMatrixInverse {
     /// Creates a new `BatchMatrixInverse`.
     pub fn new() -> Self {
@@ -6862,11 +7503,15 @@ pub fn batch_matrix_inverse_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BatchMatrixSetDiag
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BatchMatrixSetDiag {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BatchMatrixSetDiag {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl BatchMatrixSetDiag {
     /// Creates a new `BatchMatrixSetDiag`.
     pub fn new() -> Self {
@@ -6922,12 +7567,19 @@ pub fn batch_matrix_set_diag_with_args<T0: crate::eager::ToHandle, T1: crate::ea
 }
 
 /// BatchMatrixSolve
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BatchMatrixSolve {
     pub adjoint: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BatchMatrixSolve {
+    fn default() -> Self {
+        Self {
+            adjoint: Some(false),
+            T: None,
+        }
+    }
+}
 impl BatchMatrixSolve {
     /// Creates a new `BatchMatrixSolve`.
     pub fn new() -> Self {
@@ -6986,12 +7638,19 @@ pub fn batch_matrix_solve_with_args<T0: crate::eager::ToHandle, T1: crate::eager
 }
 
 /// BatchMatrixSolveLs
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BatchMatrixSolveLs {
     pub T: ::std::option::Option<crate::DataType>,
     pub fast: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for BatchMatrixSolveLs {
+    fn default() -> Self {
+        Self {
+            T: None,
+            fast: Some(true),
+        }
+    }
+}
 impl BatchMatrixSolveLs {
     /// Creates a new `BatchMatrixSolveLs`.
     pub fn new() -> Self {
@@ -7061,13 +7720,21 @@ pub fn batch_matrix_solve_ls_with_args<
 }
 
 /// BatchMatrixTriangularSolve
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BatchMatrixTriangularSolve {
     pub lower: ::std::option::Option<bool>,
     pub adjoint: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BatchMatrixTriangularSolve {
+    fn default() -> Self {
+        Self {
+            lower: Some(true),
+            adjoint: Some(false),
+            T: None,
+        }
+    }
+}
 impl BatchMatrixTriangularSolve {
     /// Creates a new `BatchMatrixTriangularSolve`.
     pub fn new() -> Self {
@@ -7132,13 +7799,21 @@ pub fn batch_matrix_triangular_solve_with_args<
 }
 
 /// BatchNormWithGlobalNormalization
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BatchNormWithGlobalNormalization {
     pub T: ::std::option::Option<crate::DataType>,
     pub variance_epsilon: ::std::option::Option<f32>,
     pub scale_after_normalization: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for BatchNormWithGlobalNormalization {
+    fn default() -> Self {
+        Self {
+            T: None,
+            variance_epsilon: None,
+            scale_after_normalization: None,
+        }
+    }
+}
 impl BatchNormWithGlobalNormalization {
     /// Creates a new `BatchNormWithGlobalNormalization`.
     pub fn new() -> Self {
@@ -7221,13 +7896,21 @@ pub fn batch_norm_with_global_normalization_with_args<
 }
 
 /// BatchNormWithGlobalNormalizationGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BatchNormWithGlobalNormalizationGrad {
     pub T: ::std::option::Option<crate::DataType>,
     pub variance_epsilon: ::std::option::Option<f32>,
     pub scale_after_normalization: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for BatchNormWithGlobalNormalizationGrad {
+    fn default() -> Self {
+        Self {
+            T: None,
+            variance_epsilon: None,
+            scale_after_normalization: None,
+        }
+    }
+}
 impl BatchNormWithGlobalNormalizationGrad {
     /// Creates a new `BatchNormWithGlobalNormalizationGrad`.
     pub fn new() -> Self {
@@ -7321,11 +8004,15 @@ pub fn batch_norm_with_global_normalization_grad_with_args<
 }
 
 /// BatchSelfAdjointEig
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BatchSelfAdjointEig {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BatchSelfAdjointEig {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl BatchSelfAdjointEig {
     /// Creates a new `BatchSelfAdjointEig`.
     pub fn new() -> Self {
@@ -7378,12 +8065,19 @@ pub fn batch_self_adjoint_eig_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BatchSelfAdjointEigV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BatchSelfAdjointEigV2 {
     pub compute_v: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BatchSelfAdjointEigV2 {
+    fn default() -> Self {
+        Self {
+            compute_v: Some(true),
+            T: None,
+        }
+    }
+}
 impl BatchSelfAdjointEigV2 {
     /// Creates a new `BatchSelfAdjointEigV2`.
     pub fn new() -> Self {
@@ -7444,13 +8138,21 @@ pub fn batch_self_adjoint_eig_v2_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BatchSvd
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BatchSvd {
     pub compute_uv: ::std::option::Option<bool>,
     pub full_matrices: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BatchSvd {
+    fn default() -> Self {
+        Self {
+            compute_uv: Some(true),
+            full_matrices: Some(false),
+            T: None,
+        }
+    }
+}
 impl BatchSvd {
     /// Creates a new `BatchSvd`.
     pub fn new() -> Self {
@@ -7515,13 +8217,21 @@ pub fn batch_svd_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BatchToSpace
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BatchToSpace {
     pub T: ::std::option::Option<crate::DataType>,
     pub block_size: ::std::option::Option<i64>,
     pub Tidx: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BatchToSpace {
+    fn default() -> Self {
+        Self {
+            T: None,
+            block_size: None,
+            Tidx: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl BatchToSpace {
     /// Creates a new `BatchToSpace`.
     pub fn new() -> Self {
@@ -7583,13 +8293,21 @@ pub fn batch_to_space_with_args<T0: crate::eager::ToHandle, T1: crate::eager::To
 }
 
 /// BatchToSpaceND
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BatchToSpaceND {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tblock_shape: ::std::option::Option<crate::DataType>,
     pub Tcrops: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BatchToSpaceND {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tblock_shape: Some(crate::DataType::Int32),
+            Tcrops: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl BatchToSpaceND {
     /// Creates a new `BatchToSpaceND`.
     pub fn new() -> Self {
@@ -7662,11 +8380,15 @@ pub fn batch_to_space_nd_with_args<
 }
 
 /// BesselI0
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BesselI0 {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BesselI0 {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl BesselI0 {
     /// Creates a new `BesselI0`.
     pub fn new() -> Self {
@@ -7717,11 +8439,15 @@ pub fn bessel_i0_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BesselI0e
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BesselI0e {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BesselI0e {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl BesselI0e {
     /// Creates a new `BesselI0e`.
     pub fn new() -> Self {
@@ -7772,11 +8498,15 @@ pub fn bessel_i0e_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BesselI1
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BesselI1 {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BesselI1 {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl BesselI1 {
     /// Creates a new `BesselI1`.
     pub fn new() -> Self {
@@ -7827,11 +8557,15 @@ pub fn bessel_i1_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BesselI1e
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BesselI1e {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BesselI1e {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl BesselI1e {
     /// Creates a new `BesselI1e`.
     pub fn new() -> Self {
@@ -7882,11 +8616,15 @@ pub fn bessel_i1e_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BesselJ0
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BesselJ0 {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BesselJ0 {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl BesselJ0 {
     /// Creates a new `BesselJ0`.
     pub fn new() -> Self {
@@ -7937,11 +8675,15 @@ pub fn bessel_j0_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BesselJ1
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BesselJ1 {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BesselJ1 {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl BesselJ1 {
     /// Creates a new `BesselJ1`.
     pub fn new() -> Self {
@@ -7992,11 +8734,15 @@ pub fn bessel_j1_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BesselK0
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BesselK0 {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BesselK0 {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl BesselK0 {
     /// Creates a new `BesselK0`.
     pub fn new() -> Self {
@@ -8047,11 +8793,15 @@ pub fn bessel_k0_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BesselK0e
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BesselK0e {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BesselK0e {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl BesselK0e {
     /// Creates a new `BesselK0e`.
     pub fn new() -> Self {
@@ -8102,11 +8852,15 @@ pub fn bessel_k0e_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BesselK1
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BesselK1 {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BesselK1 {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl BesselK1 {
     /// Creates a new `BesselK1`.
     pub fn new() -> Self {
@@ -8157,11 +8911,15 @@ pub fn bessel_k1_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BesselK1e
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BesselK1e {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BesselK1e {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl BesselK1e {
     /// Creates a new `BesselK1e`.
     pub fn new() -> Self {
@@ -8212,11 +8970,15 @@ pub fn bessel_k1e_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BesselY0
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BesselY0 {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BesselY0 {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl BesselY0 {
     /// Creates a new `BesselY0`.
     pub fn new() -> Self {
@@ -8267,11 +9029,15 @@ pub fn bessel_y0_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BesselY1
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BesselY1 {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BesselY1 {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl BesselY1 {
     /// Creates a new `BesselY1`.
     pub fn new() -> Self {
@@ -8322,11 +9088,15 @@ pub fn bessel_y1_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Betainc
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Betainc {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Betainc {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Betainc {
     /// Creates a new `Betainc`.
     pub fn new() -> Self {
@@ -8393,12 +9163,19 @@ pub fn betainc_with_args<
 }
 
 /// BiasAdd
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BiasAdd {
     pub T: ::std::option::Option<crate::DataType>,
     pub data_format: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for BiasAdd {
+    fn default() -> Self {
+        Self {
+            T: None,
+            data_format: Some(::std::string::String::from("NHWC")),
+        }
+    }
+}
 impl BiasAdd {
     /// Creates a new `BiasAdd`.
     pub fn new() -> Self {
@@ -8457,12 +9234,19 @@ pub fn bias_add_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle
 }
 
 /// BiasAddGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BiasAddGrad {
     pub T: ::std::option::Option<crate::DataType>,
     pub data_format: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for BiasAddGrad {
+    fn default() -> Self {
+        Self {
+            T: None,
+            data_format: Some(::std::string::String::from("NHWC")),
+        }
+    }
+}
 impl BiasAddGrad {
     /// Creates a new `BiasAddGrad`.
     pub fn new() -> Self {
@@ -8518,11 +9302,15 @@ pub fn bias_add_grad_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BiasAddV1
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BiasAddV1 {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BiasAddV1 {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl BiasAddV1 {
     /// Creates a new `BiasAddV1`.
     pub fn new() -> Self {
@@ -8578,11 +9366,15 @@ pub fn bias_add_v1_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHan
 }
 
 /// Bincount
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Bincount {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Bincount {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Bincount {
     /// Creates a new `Bincount`.
     pub fn new() -> Self {
@@ -8649,12 +9441,19 @@ pub fn bincount_with_args<
 }
 
 /// Bitcast
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Bitcast {
     pub T: ::std::option::Option<crate::DataType>,
     pub type_: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Bitcast {
+    fn default() -> Self {
+        Self {
+            T: None,
+            type_: None,
+        }
+    }
+}
 impl Bitcast {
     /// Creates a new `Bitcast`.
     pub fn new() -> Self {
@@ -8708,11 +9507,15 @@ pub fn bitcast_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BitwiseAnd
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BitwiseAnd {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BitwiseAnd {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl BitwiseAnd {
     /// Creates a new `BitwiseAnd`.
     pub fn new() -> Self {
@@ -8768,11 +9571,15 @@ pub fn bitwise_and_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHan
 }
 
 /// BitwiseOr
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BitwiseOr {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BitwiseOr {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl BitwiseOr {
     /// Creates a new `BitwiseOr`.
     pub fn new() -> Self {
@@ -8828,11 +9635,15 @@ pub fn bitwise_or_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHand
 }
 
 /// BitwiseXor
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BitwiseXor {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BitwiseXor {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl BitwiseXor {
     /// Creates a new `BitwiseXor`.
     pub fn new() -> Self {
@@ -8888,14 +9699,23 @@ pub fn bitwise_xor_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHan
 }
 
 /// BlockLSTM
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BlockLSTM {
     pub forget_bias: ::std::option::Option<f32>,
     pub cell_clip: ::std::option::Option<f32>,
     pub use_peephole: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BlockLSTM {
+    fn default() -> Self {
+        Self {
+            forget_bias: Some(1f32),
+            cell_clip: Some(3f32),
+            use_peephole: Some(false),
+            T: None,
+        }
+    }
+}
 impl BlockLSTM {
     /// Creates a new `BlockLSTM`.
     pub fn new() -> Self {
@@ -9022,12 +9842,19 @@ pub fn block_lstm_with_args<
 }
 
 /// BlockLSTMGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BlockLSTMGrad {
     pub use_peephole: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BlockLSTMGrad {
+    fn default() -> Self {
+        Self {
+            use_peephole: None,
+            T: None,
+        }
+    }
+}
 impl BlockLSTMGrad {
     /// Creates a new `BlockLSTMGrad`.
     pub fn new() -> Self {
@@ -9203,12 +10030,19 @@ pub fn block_lstmgrad_with_args<
 }
 
 /// BlockLSTMGradV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BlockLSTMGradV2 {
     pub use_peephole: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BlockLSTMGradV2 {
+    fn default() -> Self {
+        Self {
+            use_peephole: None,
+            T: None,
+        }
+    }
+}
 impl BlockLSTMGradV2 {
     /// Creates a new `BlockLSTMGradV2`.
     pub fn new() -> Self {
@@ -9384,13 +10218,21 @@ pub fn block_lstmgrad_v2_with_args<
 }
 
 /// BlockLSTMV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BlockLSTMV2 {
     pub cell_clip: ::std::option::Option<f32>,
     pub use_peephole: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BlockLSTMV2 {
+    fn default() -> Self {
+        Self {
+            cell_clip: Some(0f32),
+            use_peephole: Some(false),
+            T: None,
+        }
+    }
+}
 impl BlockLSTMV2 {
     /// Creates a new `BlockLSTMV2`.
     pub fn new() -> Self {
@@ -9514,12 +10356,19 @@ pub fn block_lstmv2_with_args<
 }
 
 /// BoostedTreesAggregateStats
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BoostedTreesAggregateStats {
     pub max_splits: ::std::option::Option<i64>,
     pub num_buckets: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for BoostedTreesAggregateStats {
+    fn default() -> Self {
+        Self {
+            max_splits: None,
+            num_buckets: None,
+        }
+    }
+}
 impl BoostedTreesAggregateStats {
     /// Creates a new `BoostedTreesAggregateStats`.
     pub fn new() -> Self {
@@ -9594,11 +10443,15 @@ pub fn boosted_trees_aggregate_stats_with_args<
 }
 
 /// BoostedTreesBucketize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BoostedTreesBucketize {
     pub num_features: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for BoostedTreesBucketize {
+    fn default() -> Self {
+        Self { num_features: None }
+    }
+}
 impl BoostedTreesBucketize {
     /// Creates a new `BoostedTreesBucketize`.
     pub fn new() -> Self {
@@ -9654,12 +10507,19 @@ pub fn boosted_trees_bucketize_with_args<T0: crate::eager::ToHandle, T1: crate::
 }
 
 /// BoostedTreesCalculateBestFeatureSplit
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BoostedTreesCalculateBestFeatureSplit {
     pub logits_dimension: ::std::option::Option<i64>,
     pub split_type: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for BoostedTreesCalculateBestFeatureSplit {
+    fn default() -> Self {
+        Self {
+            logits_dimension: None,
+            split_type: Some(::std::string::String::from("inequality")),
+        }
+    }
+}
 impl BoostedTreesCalculateBestFeatureSplit {
     /// Creates a new `BoostedTreesCalculateBestFeatureSplit`.
     pub fn new() -> Self {
@@ -9765,12 +10625,19 @@ pub fn boosted_trees_calculate_best_feature_split_with_args<
 }
 
 /// BoostedTreesCalculateBestFeatureSplitV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BoostedTreesCalculateBestFeatureSplitV2 {
     pub num_features: ::std::option::Option<i64>,
     pub logits_dimension: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for BoostedTreesCalculateBestFeatureSplitV2 {
+    fn default() -> Self {
+        Self {
+            num_features: None,
+            logits_dimension: None,
+        }
+    }
+}
 impl BoostedTreesCalculateBestFeatureSplitV2 {
     /// Creates a new `BoostedTreesCalculateBestFeatureSplitV2`.
     pub fn new() -> Self {
@@ -9889,12 +10756,19 @@ pub fn boosted_trees_calculate_best_feature_split_v2_with_args<
 }
 
 /// BoostedTreesCalculateBestGainsPerFeature
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BoostedTreesCalculateBestGainsPerFeature {
     pub max_splits: ::std::option::Option<i64>,
     pub num_features: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for BoostedTreesCalculateBestGainsPerFeature {
+    fn default() -> Self {
+        Self {
+            max_splits: None,
+            num_features: None,
+        }
+    }
+}
 impl BoostedTreesCalculateBestGainsPerFeature {
     /// Creates a new `BoostedTreesCalculateBestGainsPerFeature`.
     pub fn new() -> Self {
@@ -9998,9 +10872,13 @@ pub fn boosted_trees_calculate_best_gains_per_feature_with_args<
 }
 
 /// BoostedTreesCenterBias
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BoostedTreesCenterBias {}
-
+impl ::std::default::Default for BoostedTreesCenterBias {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl BoostedTreesCenterBias {
     /// Creates a new `BoostedTreesCenterBias`.
     pub fn new() -> Self {
@@ -10081,9 +10959,13 @@ pub fn boosted_trees_center_bias_with_args<
 }
 
 /// BoostedTreesCreateEnsemble
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BoostedTreesCreateEnsemble {}
-
+impl ::std::default::Default for BoostedTreesCreateEnsemble {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl BoostedTreesCreateEnsemble {
     /// Creates a new `BoostedTreesCreateEnsemble`.
     pub fn new() -> Self {
@@ -10151,11 +11033,17 @@ pub fn boosted_trees_create_ensemble_with_args<
 }
 
 /// BoostedTreesCreateQuantileStreamResource
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BoostedTreesCreateQuantileStreamResource {
     pub max_elements: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for BoostedTreesCreateQuantileStreamResource {
+    fn default() -> Self {
+        Self {
+            max_elements: Some(1099511627776i64),
+        }
+    }
+}
 impl BoostedTreesCreateQuantileStreamResource {
     /// Creates a new `BoostedTreesCreateQuantileStreamResource`.
     pub fn new() -> Self {
@@ -10229,9 +11117,13 @@ pub fn boosted_trees_create_quantile_stream_resource_with_args<
 }
 
 /// BoostedTreesDeserializeEnsemble
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BoostedTreesDeserializeEnsemble {}
-
+impl ::std::default::Default for BoostedTreesDeserializeEnsemble {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl BoostedTreesDeserializeEnsemble {
     /// Creates a new `BoostedTreesDeserializeEnsemble`.
     pub fn new() -> Self {
@@ -10299,12 +11191,19 @@ pub fn boosted_trees_deserialize_ensemble_with_args<
 }
 
 /// BoostedTreesEnsembleResourceHandleOp
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BoostedTreesEnsembleResourceHandleOp {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for BoostedTreesEnsembleResourceHandleOp {
+    fn default() -> Self {
+        Self {
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl BoostedTreesEnsembleResourceHandleOp {
     /// Creates a new `BoostedTreesEnsembleResourceHandleOp`.
     pub fn new() -> Self {
@@ -10359,12 +11258,19 @@ pub fn boosted_trees_ensemble_resource_handle_op_with_args(
 }
 
 /// BoostedTreesExampleDebugOutputs
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BoostedTreesExampleDebugOutputs {
     pub num_bucketized_features: ::std::option::Option<i64>,
     pub logits_dimension: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for BoostedTreesExampleDebugOutputs {
+    fn default() -> Self {
+        Self {
+            num_bucketized_features: None,
+            logits_dimension: None,
+        }
+    }
+}
 impl BoostedTreesExampleDebugOutputs {
     /// Creates a new `BoostedTreesExampleDebugOutputs`.
     pub fn new() -> Self {
@@ -10433,11 +11339,15 @@ pub fn boosted_trees_example_debug_outputs_with_args<
 }
 
 /// BoostedTreesFlushQuantileSummaries
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BoostedTreesFlushQuantileSummaries {
     pub num_features: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for BoostedTreesFlushQuantileSummaries {
+    fn default() -> Self {
+        Self { num_features: None }
+    }
+}
 impl BoostedTreesFlushQuantileSummaries {
     /// Creates a new `BoostedTreesFlushQuantileSummaries`.
     pub fn new() -> Self {
@@ -10491,9 +11401,13 @@ pub fn boosted_trees_flush_quantile_summaries_with_args<T0: crate::eager::ToHand
 }
 
 /// BoostedTreesGetEnsembleStates
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BoostedTreesGetEnsembleStates {}
-
+impl ::std::default::Default for BoostedTreesGetEnsembleStates {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl BoostedTreesGetEnsembleStates {
     /// Creates a new `BoostedTreesGetEnsembleStates`.
     pub fn new() -> Self {
@@ -10551,11 +11465,15 @@ pub fn boosted_trees_get_ensemble_states_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BoostedTreesMakeQuantileSummaries
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BoostedTreesMakeQuantileSummaries {
     pub num_features: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for BoostedTreesMakeQuantileSummaries {
+    fn default() -> Self {
+        Self { num_features: None }
+    }
+}
 impl BoostedTreesMakeQuantileSummaries {
     /// Creates a new `BoostedTreesMakeQuantileSummaries`.
     pub fn new() -> Self {
@@ -10623,13 +11541,21 @@ pub fn boosted_trees_make_quantile_summaries_with_args<
 }
 
 /// BoostedTreesMakeStatsSummary
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BoostedTreesMakeStatsSummary {
     pub max_splits: ::std::option::Option<i64>,
     pub num_buckets: ::std::option::Option<i64>,
     pub num_features: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for BoostedTreesMakeStatsSummary {
+    fn default() -> Self {
+        Self {
+            max_splits: None,
+            num_buckets: None,
+            num_features: None,
+        }
+    }
+}
 impl BoostedTreesMakeStatsSummary {
     /// Creates a new `BoostedTreesMakeStatsSummary`.
     pub fn new() -> Self {
@@ -10713,12 +11639,19 @@ pub fn boosted_trees_make_stats_summary_with_args<
 }
 
 /// BoostedTreesPredict
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BoostedTreesPredict {
     pub num_bucketized_features: ::std::option::Option<i64>,
     pub logits_dimension: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for BoostedTreesPredict {
+    fn default() -> Self {
+        Self {
+            num_bucketized_features: None,
+            logits_dimension: None,
+        }
+    }
+}
 impl BoostedTreesPredict {
     /// Creates a new `BoostedTreesPredict`.
     pub fn new() -> Self {
@@ -10777,11 +11710,15 @@ pub fn boosted_trees_predict_with_args<T0: crate::eager::ToHandle, T1: crate::ea
 }
 
 /// BoostedTreesQuantileStreamResourceAddSummaries
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BoostedTreesQuantileStreamResourceAddSummaries {
     pub num_features: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for BoostedTreesQuantileStreamResourceAddSummaries {
+    fn default() -> Self {
+        Self { num_features: None }
+    }
+}
 impl BoostedTreesQuantileStreamResourceAddSummaries {
     /// Creates a new `BoostedTreesQuantileStreamResourceAddSummaries`.
     pub fn new() -> Self {
@@ -10849,11 +11786,15 @@ pub fn boosted_trees_quantile_stream_resource_add_summaries_with_args<
 }
 
 /// BoostedTreesQuantileStreamResourceDeserialize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BoostedTreesQuantileStreamResourceDeserialize {
     pub num_streams: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for BoostedTreesQuantileStreamResourceDeserialize {
+    fn default() -> Self {
+        Self { num_streams: None }
+    }
+}
 impl BoostedTreesQuantileStreamResourceDeserialize {
     /// Creates a new `BoostedTreesQuantileStreamResourceDeserialize`.
     pub fn new() -> Self {
@@ -10921,11 +11862,17 @@ pub fn boosted_trees_quantile_stream_resource_deserialize_with_args<
 }
 
 /// BoostedTreesQuantileStreamResourceFlush
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BoostedTreesQuantileStreamResourceFlush {
     pub generate_quantiles: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for BoostedTreesQuantileStreamResourceFlush {
+    fn default() -> Self {
+        Self {
+            generate_quantiles: Some(false),
+        }
+    }
+}
 impl BoostedTreesQuantileStreamResourceFlush {
     /// Creates a new `BoostedTreesQuantileStreamResourceFlush`.
     pub fn new() -> Self {
@@ -10993,11 +11940,15 @@ pub fn boosted_trees_quantile_stream_resource_flush_with_args<
 }
 
 /// BoostedTreesQuantileStreamResourceGetBucketBoundaries
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BoostedTreesQuantileStreamResourceGetBucketBoundaries {
     pub num_features: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for BoostedTreesQuantileStreamResourceGetBucketBoundaries {
+    fn default() -> Self {
+        Self { num_features: None }
+    }
+}
 impl BoostedTreesQuantileStreamResourceGetBucketBoundaries {
     /// Creates a new `BoostedTreesQuantileStreamResourceGetBucketBoundaries`.
     pub fn new() -> Self {
@@ -11058,12 +12009,19 @@ pub fn boosted_trees_quantile_stream_resource_get_bucket_boundaries_with_args<
 }
 
 /// BoostedTreesQuantileStreamResourceHandleOp
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BoostedTreesQuantileStreamResourceHandleOp {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for BoostedTreesQuantileStreamResourceHandleOp {
+    fn default() -> Self {
+        Self {
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl BoostedTreesQuantileStreamResourceHandleOp {
     /// Creates a new `BoostedTreesQuantileStreamResourceHandleOp`.
     pub fn new() -> Self {
@@ -11119,9 +12077,13 @@ pub fn boosted_trees_quantile_stream_resource_handle_op_with_args(
 }
 
 /// BoostedTreesSerializeEnsemble
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BoostedTreesSerializeEnsemble {}
-
+impl ::std::default::Default for BoostedTreesSerializeEnsemble {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl BoostedTreesSerializeEnsemble {
     /// Creates a new `BoostedTreesSerializeEnsemble`.
     pub fn new() -> Self {
@@ -11176,12 +12138,19 @@ pub fn boosted_trees_serialize_ensemble_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BoostedTreesSparseAggregateStats
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BoostedTreesSparseAggregateStats {
     pub max_splits: ::std::option::Option<i64>,
     pub num_buckets: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for BoostedTreesSparseAggregateStats {
+    fn default() -> Self {
+        Self {
+            max_splits: None,
+            num_buckets: None,
+        }
+    }
+}
 impl BoostedTreesSparseAggregateStats {
     /// Creates a new `BoostedTreesSparseAggregateStats`.
     pub fn new() -> Self {
@@ -11280,12 +12249,19 @@ pub fn boosted_trees_sparse_aggregate_stats_with_args<
 }
 
 /// BoostedTreesSparseCalculateBestFeatureSplit
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BoostedTreesSparseCalculateBestFeatureSplit {
     pub logits_dimension: ::std::option::Option<i64>,
     pub split_type: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for BoostedTreesSparseCalculateBestFeatureSplit {
+    fn default() -> Self {
+        Self {
+            logits_dimension: None,
+            split_type: Some(::std::string::String::from("inequality")),
+        }
+    }
+}
 impl BoostedTreesSparseCalculateBestFeatureSplit {
     /// Creates a new `BoostedTreesSparseCalculateBestFeatureSplit`.
     pub fn new() -> Self {
@@ -11403,12 +12379,19 @@ pub fn boosted_trees_sparse_calculate_best_feature_split_with_args<
 }
 
 /// BoostedTreesTrainingPredict
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BoostedTreesTrainingPredict {
     pub num_bucketized_features: ::std::option::Option<i64>,
     pub logits_dimension: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for BoostedTreesTrainingPredict {
+    fn default() -> Self {
+        Self {
+            num_bucketized_features: None,
+            logits_dimension: None,
+        }
+    }
+}
 impl BoostedTreesTrainingPredict {
     /// Creates a new `BoostedTreesTrainingPredict`.
     pub fn new() -> Self {
@@ -11495,12 +12478,19 @@ pub fn boosted_trees_training_predict_with_args<
 }
 
 /// BoostedTreesUpdateEnsemble
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BoostedTreesUpdateEnsemble {
     pub pruning_mode: ::std::option::Option<i64>,
     pub num_features: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for BoostedTreesUpdateEnsemble {
+    fn default() -> Self {
+        Self {
+            pruning_mode: None,
+            num_features: None,
+        }
+    }
+}
 impl BoostedTreesUpdateEnsemble {
     /// Creates a new `BoostedTreesUpdateEnsemble`.
     pub fn new() -> Self {
@@ -11610,13 +12600,21 @@ pub fn boosted_trees_update_ensemble_with_args<
 }
 
 /// BoostedTreesUpdateEnsembleV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BoostedTreesUpdateEnsembleV2 {
     pub num_features: ::std::option::Option<i64>,
     pub logits_dimension: ::std::option::Option<i64>,
     pub num_groups: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for BoostedTreesUpdateEnsembleV2 {
+    fn default() -> Self {
+        Self {
+            num_features: None,
+            logits_dimension: Some(1i64),
+            num_groups: Some(1i64),
+        }
+    }
+}
 impl BoostedTreesUpdateEnsembleV2 {
     /// Creates a new `BoostedTreesUpdateEnsembleV2`.
     pub fn new() -> Self {
@@ -11747,11 +12745,17 @@ pub fn boosted_trees_update_ensemble_v2_with_args<
 }
 
 /// BroadcastArgs
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BroadcastArgs {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BroadcastArgs {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl BroadcastArgs {
     /// Creates a new `BroadcastArgs`.
     pub fn new() -> Self {
@@ -11807,11 +12811,17 @@ pub fn broadcast_args_with_args<T0: crate::eager::ToHandle, T1: crate::eager::To
 }
 
 /// BroadcastGradientArgs
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BroadcastGradientArgs {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BroadcastGradientArgs {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl BroadcastGradientArgs {
     /// Creates a new `BroadcastGradientArgs`.
     pub fn new() -> Self {
@@ -11872,12 +12882,19 @@ pub fn broadcast_gradient_args_with_args<T0: crate::eager::ToHandle, T1: crate::
 }
 
 /// BroadcastTo
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BroadcastTo {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tidx: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for BroadcastTo {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tidx: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl BroadcastTo {
     /// Creates a new `BroadcastTo`.
     pub fn new() -> Self {
@@ -11936,12 +12953,19 @@ pub fn broadcast_to_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHa
 }
 
 /// Bucketize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Bucketize {
     pub T: ::std::option::Option<crate::DataType>,
     pub boundaries: ::std::option::Option<::std::vec::Vec<f32>>,
 }
-
+impl ::std::default::Default for Bucketize {
+    fn default() -> Self {
+        Self {
+            T: None,
+            boundaries: None,
+        }
+    }
+}
 impl Bucketize {
     /// Creates a new `Bucketize`.
     pub fn new() -> Self {
@@ -11997,12 +13021,19 @@ pub fn bucketize_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// BytesProducedStatsDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct BytesProducedStatsDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for BytesProducedStatsDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl BytesProducedStatsDataset {
     /// Creates a new `BytesProducedStatsDataset`.
     pub fn new() -> Self {
@@ -12064,11 +13095,15 @@ pub fn bytes_produced_stats_dataset_with_args<
 }
 
 /// CSRSparseMatrixComponents
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CSRSparseMatrixComponents {
     pub type_: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for CSRSparseMatrixComponents {
+    fn default() -> Self {
+        Self { type_: None }
+    }
+}
 impl CSRSparseMatrixComponents {
     /// Creates a new `CSRSparseMatrixComponents`.
     pub fn new() -> Self {
@@ -12133,11 +13168,15 @@ pub fn csrsparse_matrix_components_with_args<
 }
 
 /// CSRSparseMatrixToDense
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CSRSparseMatrixToDense {
     pub type_: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for CSRSparseMatrixToDense {
+    fn default() -> Self {
+        Self { type_: None }
+    }
+}
 impl CSRSparseMatrixToDense {
     /// Creates a new `CSRSparseMatrixToDense`.
     pub fn new() -> Self {
@@ -12190,11 +13229,15 @@ pub fn csrsparse_matrix_to_dense_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// CSRSparseMatrixToSparseTensor
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CSRSparseMatrixToSparseTensor {
     pub type_: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for CSRSparseMatrixToSparseTensor {
+    fn default() -> Self {
+        Self { type_: None }
+    }
+}
 impl CSRSparseMatrixToSparseTensor {
     /// Creates a new `CSRSparseMatrixToSparseTensor`.
     pub fn new() -> Self {
@@ -12253,12 +13296,19 @@ pub fn csrsparse_matrix_to_sparse_tensor_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// CSVDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CSVDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for CSVDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl CSVDataset {
     /// Creates a new `CSVDataset`.
     pub fn new() -> Self {
@@ -12369,12 +13419,19 @@ pub fn csvdataset_with_args<
 }
 
 /// CSVDatasetV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CSVDatasetV2 {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for CSVDatasetV2 {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl CSVDatasetV2 {
     /// Creates a new `CSVDatasetV2`.
     pub fn new() -> Self {
@@ -12491,14 +13548,23 @@ pub fn csvdataset_v2_with_args<
 }
 
 /// CTCBeamSearchDecoder
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CTCBeamSearchDecoder {
     pub beam_width: ::std::option::Option<i64>,
     pub top_paths: ::std::option::Option<i64>,
     pub merge_repeated: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for CTCBeamSearchDecoder {
+    fn default() -> Self {
+        Self {
+            beam_width: None,
+            top_paths: None,
+            merge_repeated: Some(true),
+            T: Some(crate::DataType::Float),
+        }
+    }
+}
 impl CTCBeamSearchDecoder {
     /// Creates a new `CTCBeamSearchDecoder`.
     pub fn new() -> Self {
@@ -12570,13 +13636,21 @@ pub fn ctcbeam_search_decoder_with_args<T0: crate::eager::ToHandle, T1: crate::e
 }
 
 /// CTCGreedyDecoder
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CTCGreedyDecoder {
     pub merge_repeated: ::std::option::Option<bool>,
     pub blank_index: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for CTCGreedyDecoder {
+    fn default() -> Self {
+        Self {
+            merge_repeated: Some(false),
+            blank_index: Some(-1i64),
+            T: Some(crate::DataType::Float),
+        }
+    }
+}
 impl CTCGreedyDecoder {
     /// Creates a new `CTCGreedyDecoder`.
     pub fn new() -> Self {
@@ -12645,14 +13719,23 @@ pub fn ctcgreedy_decoder_with_args<T0: crate::eager::ToHandle, T1: crate::eager:
 }
 
 /// CTCLoss
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CTCLoss {
     pub preprocess_collapse_repeated: ::std::option::Option<bool>,
     pub ctc_merge_repeated: ::std::option::Option<bool>,
     pub ignore_longer_outputs_than_inputs: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for CTCLoss {
+    fn default() -> Self {
+        Self {
+            preprocess_collapse_repeated: Some(false),
+            ctc_merge_repeated: Some(true),
+            ignore_longer_outputs_than_inputs: Some(false),
+            T: Some(crate::DataType::Float),
+        }
+    }
+}
 impl CTCLoss {
     /// Creates a new `CTCLoss`.
     pub fn new() -> Self {
@@ -12744,13 +13827,21 @@ pub fn ctcloss_with_args<
 }
 
 /// CTCLossV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CTCLossV2 {
     pub preprocess_collapse_repeated: ::std::option::Option<bool>,
     pub ctc_merge_repeated: ::std::option::Option<bool>,
     pub ignore_longer_outputs_than_inputs: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for CTCLossV2 {
+    fn default() -> Self {
+        Self {
+            preprocess_collapse_repeated: Some(false),
+            ctc_merge_repeated: Some(true),
+            ignore_longer_outputs_than_inputs: Some(false),
+        }
+    }
+}
 impl CTCLossV2 {
     /// Creates a new `CTCLossV2`.
     pub fn new() -> Self {
@@ -12839,12 +13930,19 @@ pub fn ctcloss_v2_with_args<
 }
 
 /// CacheDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CacheDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for CacheDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl CacheDataset {
     /// Creates a new `CacheDataset`.
     pub fn new() -> Self {
@@ -12903,12 +14001,19 @@ pub fn cache_dataset_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToH
 }
 
 /// CacheDatasetV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CacheDatasetV2 {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for CacheDatasetV2 {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl CacheDatasetV2 {
     /// Creates a new `CacheDatasetV2`.
     pub fn new() -> Self {
@@ -12978,14 +14083,23 @@ pub fn cache_dataset_v2_with_args<
 }
 
 /// Case
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Case {
     pub Tin: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub Tout: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub branches: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for Case {
+    fn default() -> Self {
+        Self {
+            Tin: None,
+            Tout: None,
+            branches: None,
+            output_shapes: None,
+        }
+    }
+}
 impl Case {
     /// Creates a new `Case`.
     pub fn new() -> Self {
@@ -13050,13 +14164,21 @@ pub fn case_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// Cast
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Cast {
     pub SrcT: ::std::option::Option<crate::DataType>,
     pub DstT: ::std::option::Option<crate::DataType>,
     pub Truncate: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for Cast {
+    fn default() -> Self {
+        Self {
+            SrcT: None,
+            DstT: None,
+            Truncate: Some(false),
+        }
+    }
+}
 impl Cast {
     /// Creates a new `Cast`.
     pub fn new() -> Self {
@@ -13113,11 +14235,15 @@ pub fn cast_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Ceil
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Ceil {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Ceil {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Ceil {
     /// Creates a new `Ceil`.
     pub fn new() -> Self {
@@ -13168,12 +14294,19 @@ pub fn ceil_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// CheckNumerics
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CheckNumerics {
     pub T: ::std::option::Option<crate::DataType>,
     pub message: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for CheckNumerics {
+    fn default() -> Self {
+        Self {
+            T: None,
+            message: None,
+        }
+    }
+}
 impl CheckNumerics {
     /// Creates a new `CheckNumerics`.
     pub fn new() -> Self {
@@ -13229,12 +14362,19 @@ pub fn check_numerics_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// CheckNumericsV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CheckNumericsV2 {
     pub T: ::std::option::Option<crate::DataType>,
     pub message: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for CheckNumericsV2 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            message: None,
+        }
+    }
+}
 impl CheckNumericsV2 {
     /// Creates a new `CheckNumericsV2`.
     pub fn new() -> Self {
@@ -13290,11 +14430,15 @@ pub fn check_numerics_v2_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Cholesky
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Cholesky {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Cholesky {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Cholesky {
     /// Creates a new `Cholesky`.
     pub fn new() -> Self {
@@ -13347,11 +14491,15 @@ pub fn cholesky_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// CholeskyGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CholeskyGrad {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for CholeskyGrad {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl CholeskyGrad {
     /// Creates a new `CholeskyGrad`.
     pub fn new() -> Self {
@@ -13407,7 +14555,7 @@ pub fn cholesky_grad_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToH
 }
 
 /// ChooseFastestBranchDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ChooseFastestBranchDataset {
     pub Targuments: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub num_elements_per_branch: ::std::option::Option<i64>,
@@ -13416,7 +14564,18 @@ pub struct ChooseFastestBranchDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ChooseFastestBranchDataset {
+    fn default() -> Self {
+        Self {
+            Targuments: None,
+            num_elements_per_branch: None,
+            branches: None,
+            other_arguments_lengths: None,
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ChooseFastestBranchDataset {
     /// Creates a new `ChooseFastestBranchDataset`.
     pub fn new() -> Self {
@@ -13509,14 +14668,23 @@ pub fn choose_fastest_branch_dataset_with_args<
 }
 
 /// ChooseFastestDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ChooseFastestDataset {
     pub N: ::std::option::Option<i64>,
     pub num_experiments: ::std::option::Option<i64>,
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ChooseFastestDataset {
+    fn default() -> Self {
+        Self {
+            N: None,
+            num_experiments: None,
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ChooseFastestDataset {
     /// Creates a new `ChooseFastestDataset`.
     pub fn new() -> Self {
@@ -13578,11 +14746,15 @@ pub fn choose_fastest_dataset_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// ClipByValue
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ClipByValue {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ClipByValue {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl ClipByValue {
     /// Creates a new `ClipByValue`.
     pub fn new() -> Self {
@@ -13649,9 +14821,13 @@ pub fn clip_by_value_with_args<
 }
 
 /// CloseSummaryWriter
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CloseSummaryWriter {}
-
+impl ::std::default::Default for CloseSummaryWriter {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl CloseSummaryWriter {
     /// Creates a new `CloseSummaryWriter`.
     pub fn new() -> Self {
@@ -13698,7 +14874,7 @@ pub fn close_summary_writer_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// CollectiveBcastRecv
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CollectiveBcastRecv {
     pub T: ::std::option::Option<crate::DataType>,
     pub group_size: ::std::option::Option<i64>,
@@ -13708,7 +14884,19 @@ pub struct CollectiveBcastRecv {
     pub communication_hint: ::std::option::Option<::std::string::String>,
     pub timeout_seconds: ::std::option::Option<f32>,
 }
-
+impl ::std::default::Default for CollectiveBcastRecv {
+    fn default() -> Self {
+        Self {
+            T: None,
+            group_size: None,
+            group_key: None,
+            instance_key: None,
+            shape: None,
+            communication_hint: Some(::std::string::String::from("auto")),
+            timeout_seconds: Some(0f32),
+        }
+    }
+}
 impl CollectiveBcastRecv {
     /// Creates a new `CollectiveBcastRecv`.
     pub fn new() -> Self {
@@ -13775,14 +14963,23 @@ pub fn collective_bcast_recv_with_args(
 }
 
 /// CollectiveBcastRecvV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CollectiveBcastRecvV2 {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tshape: ::std::option::Option<crate::DataType>,
     pub communication_hint: ::std::option::Option<::std::string::String>,
     pub timeout_seconds: ::std::option::Option<f32>,
 }
-
+impl ::std::default::Default for CollectiveBcastRecvV2 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tshape: Some(crate::DataType::Int32),
+            communication_hint: Some(::std::string::String::from("auto")),
+            timeout_seconds: Some(0f32),
+        }
+    }
+}
 impl CollectiveBcastRecvV2 {
     /// Creates a new `CollectiveBcastRecvV2`.
     pub fn new() -> Self {
@@ -13863,7 +15060,7 @@ pub fn collective_bcast_recv_v2_with_args<
 }
 
 /// CollectiveBcastSend
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CollectiveBcastSend {
     pub T: ::std::option::Option<crate::DataType>,
     pub group_size: ::std::option::Option<i64>,
@@ -13873,7 +15070,19 @@ pub struct CollectiveBcastSend {
     pub communication_hint: ::std::option::Option<::std::string::String>,
     pub timeout_seconds: ::std::option::Option<f32>,
 }
-
+impl ::std::default::Default for CollectiveBcastSend {
+    fn default() -> Self {
+        Self {
+            T: None,
+            group_size: None,
+            group_key: None,
+            instance_key: None,
+            shape: None,
+            communication_hint: Some(::std::string::String::from("auto")),
+            timeout_seconds: Some(0f32),
+        }
+    }
+}
 impl CollectiveBcastSend {
     /// Creates a new `CollectiveBcastSend`.
     pub fn new() -> Self {
@@ -13944,13 +15153,21 @@ pub fn collective_bcast_send_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// CollectiveBcastSendV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CollectiveBcastSendV2 {
     pub T: ::std::option::Option<crate::DataType>,
     pub communication_hint: ::std::option::Option<::std::string::String>,
     pub timeout_seconds: ::std::option::Option<f32>,
 }
-
+impl ::std::default::Default for CollectiveBcastSendV2 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            communication_hint: Some(::std::string::String::from("auto")),
+            timeout_seconds: Some(0f32),
+        }
+    }
+}
 impl CollectiveBcastSendV2 {
     /// Creates a new `CollectiveBcastSendV2`.
     pub fn new() -> Self {
@@ -14028,7 +15245,7 @@ pub fn collective_bcast_send_v2_with_args<
 }
 
 /// CollectiveGather
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CollectiveGather {
     pub T: ::std::option::Option<crate::DataType>,
     pub group_size: ::std::option::Option<i64>,
@@ -14038,7 +15255,19 @@ pub struct CollectiveGather {
     pub communication_hint: ::std::option::Option<::std::string::String>,
     pub timeout_seconds: ::std::option::Option<f32>,
 }
-
+impl ::std::default::Default for CollectiveGather {
+    fn default() -> Self {
+        Self {
+            T: None,
+            group_size: None,
+            group_key: None,
+            instance_key: None,
+            shape: None,
+            communication_hint: Some(::std::string::String::from("auto")),
+            timeout_seconds: Some(0f32),
+        }
+    }
+}
 impl CollectiveGather {
     /// Creates a new `CollectiveGather`.
     pub fn new() -> Self {
@@ -14109,14 +15338,23 @@ pub fn collective_gather_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// CollectiveGatherV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CollectiveGatherV2 {
     pub T: ::std::option::Option<crate::DataType>,
     pub communication_hint: ::std::option::Option<::std::string::String>,
     pub timeout_seconds: ::std::option::Option<f32>,
     pub Nordering_token: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for CollectiveGatherV2 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            communication_hint: Some(::std::string::String::from("auto")),
+            timeout_seconds: Some(0f32),
+            Nordering_token: Some(0i64),
+        }
+    }
+}
 impl CollectiveGatherV2 {
     /// Creates a new `CollectiveGatherV2`.
     pub fn new() -> Self {
@@ -14209,11 +15447,15 @@ pub fn collective_gather_v2_with_args<
 }
 
 /// CollectivePermute
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CollectivePermute {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for CollectivePermute {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl CollectivePermute {
     /// Creates a new `CollectivePermute`.
     pub fn new() -> Self {
@@ -14269,7 +15511,7 @@ pub fn collective_permute_with_args<T0: crate::eager::ToHandle, T1: crate::eager
 }
 
 /// CollectiveReduce
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CollectiveReduce {
     pub T: ::std::option::Option<crate::DataType>,
     pub group_size: ::std::option::Option<i64>,
@@ -14282,7 +15524,22 @@ pub struct CollectiveReduce {
     pub communication_hint: ::std::option::Option<::std::string::String>,
     pub timeout_seconds: ::std::option::Option<f32>,
 }
-
+impl ::std::default::Default for CollectiveReduce {
+    fn default() -> Self {
+        Self {
+            T: None,
+            group_size: None,
+            group_key: None,
+            instance_key: None,
+            merge_op: None,
+            final_op: None,
+            subdiv_offsets: None,
+            wait_for: Some(vec![]),
+            communication_hint: Some(::std::string::String::from("auto")),
+            timeout_seconds: Some(0f32),
+        }
+    }
+}
 impl CollectiveReduce {
     /// Creates a new `CollectiveReduce`.
     pub fn new() -> Self {
@@ -14362,7 +15619,7 @@ pub fn collective_reduce_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// CollectiveReduceV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CollectiveReduceV2 {
     pub T: ::std::option::Option<crate::DataType>,
     pub merge_op: ::std::option::Option<::std::string::String>,
@@ -14372,7 +15629,19 @@ pub struct CollectiveReduceV2 {
     pub Nordering_token: ::std::option::Option<i64>,
     pub max_subdivs_per_device: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for CollectiveReduceV2 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            merge_op: None,
+            final_op: None,
+            communication_hint: Some(::std::string::String::from("auto")),
+            timeout_seconds: Some(0f32),
+            Nordering_token: Some(0i64),
+            max_subdivs_per_device: Some(-1i64),
+        }
+    }
+}
 impl CollectiveReduceV2 {
     /// Creates a new `CollectiveReduceV2`.
     pub fn new() -> Self {
@@ -14474,12 +15743,19 @@ pub fn collective_reduce_v2_with_args<
 }
 
 /// CombinedNonMaxSuppression
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CombinedNonMaxSuppression {
     pub pad_per_class: ::std::option::Option<bool>,
     pub clip_boxes: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for CombinedNonMaxSuppression {
+    fn default() -> Self {
+        Self {
+            pad_per_class: Some(false),
+            clip_boxes: Some(true),
+        }
+    }
+}
 impl CombinedNonMaxSuppression {
     /// Creates a new `CombinedNonMaxSuppression`.
     pub fn new() -> Self {
@@ -14579,12 +15855,19 @@ pub fn combined_non_max_suppression_with_args<
 }
 
 /// Complex
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Complex {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tout: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Complex {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Float),
+            Tout: Some(crate::DataType::Complex64),
+        }
+    }
+}
 impl Complex {
     /// Creates a new `Complex`.
     pub fn new() -> Self {
@@ -14643,12 +15926,19 @@ pub fn complex_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>
 }
 
 /// ComplexAbs
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ComplexAbs {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tout: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ComplexAbs {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Complex64),
+            Tout: Some(crate::DataType::Float),
+        }
+    }
+}
 impl ComplexAbs {
     /// Creates a new `ComplexAbs`.
     pub fn new() -> Self {
@@ -14702,12 +15992,19 @@ pub fn complex_abs_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// CompositeTensorVariantFromComponents
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CompositeTensorVariantFromComponents {
     pub metadata: ::std::option::Option<::std::string::String>,
     pub Tcomponents: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
 }
-
+impl ::std::default::Default for CompositeTensorVariantFromComponents {
+    fn default() -> Self {
+        Self {
+            metadata: None,
+            Tcomponents: None,
+        }
+    }
+}
 impl CompositeTensorVariantFromComponents {
     /// Creates a new `CompositeTensorVariantFromComponents`.
     pub fn new() -> Self {
@@ -14766,12 +16063,19 @@ pub fn composite_tensor_variant_from_components_with_args<T0: crate::eager::ToHa
 }
 
 /// CompositeTensorVariantToComponents
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CompositeTensorVariantToComponents {
     pub metadata: ::std::option::Option<::std::string::String>,
     pub Tcomponents: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
 }
-
+impl ::std::default::Default for CompositeTensorVariantToComponents {
+    fn default() -> Self {
+        Self {
+            metadata: None,
+            Tcomponents: None,
+        }
+    }
+}
 impl CompositeTensorVariantToComponents {
     /// Creates a new `CompositeTensorVariantToComponents`.
     pub fn new() -> Self {
@@ -14828,11 +16132,15 @@ pub fn composite_tensor_variant_to_components_with_args<T0: crate::eager::ToHand
 }
 
 /// CompressElement
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CompressElement {
     pub input_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
 }
-
+impl ::std::default::Default for CompressElement {
+    fn default() -> Self {
+        Self { input_types: None }
+    }
+}
 impl CompressElement {
     /// Creates a new `CompressElement`.
     pub fn new() -> Self {
@@ -14885,13 +16193,21 @@ pub fn compress_element_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// ComputeAccidentalHits
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ComputeAccidentalHits {
     pub num_true: ::std::option::Option<i64>,
     pub seed: ::std::option::Option<i64>,
     pub seed2: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for ComputeAccidentalHits {
+    fn default() -> Self {
+        Self {
+            num_true: None,
+            seed: Some(0i64),
+            seed2: Some(0i64),
+        }
+    }
+}
 impl ComputeAccidentalHits {
     /// Creates a new `ComputeAccidentalHits`.
     pub fn new() -> Self {
@@ -14959,9 +16275,13 @@ pub fn compute_accidental_hits_with_args<T0: crate::eager::ToHandle, T1: crate::
 }
 
 /// ComputeBatchSize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ComputeBatchSize {}
-
+impl ::std::default::Default for ComputeBatchSize {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl ComputeBatchSize {
     /// Creates a new `ComputeBatchSize`.
     pub fn new() -> Self {
@@ -15011,12 +16331,16 @@ pub fn compute_batch_size_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Concat
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Concat {
     pub N: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Concat {
+    fn default() -> Self {
+        Self { N: None, T: None }
+    }
+}
 impl Concat {
     /// Creates a new `Concat`.
     pub fn new() -> Self {
@@ -15075,11 +16399,15 @@ pub fn concat_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// ConcatOffset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ConcatOffset {
     pub N: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for ConcatOffset {
+    fn default() -> Self {
+        Self { N: None }
+    }
+}
 impl ConcatOffset {
     /// Creates a new `ConcatOffset`.
     pub fn new() -> Self {
@@ -15135,13 +16463,21 @@ pub fn concat_offset_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToH
 }
 
 /// ConcatV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ConcatV2 {
     pub N: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
     pub Tidx: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ConcatV2 {
+    fn default() -> Self {
+        Self {
+            N: None,
+            T: None,
+            Tidx: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl ConcatV2 {
     /// Creates a new `ConcatV2`.
     pub fn new() -> Self {
@@ -15203,12 +16539,19 @@ pub fn concat_v2_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandl
 }
 
 /// ConcatenateDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ConcatenateDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ConcatenateDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ConcatenateDataset {
     /// Creates a new `ConcatenateDataset`.
     pub fn new() -> Self {
@@ -15267,7 +16610,7 @@ pub fn concatenate_dataset_with_args<T0: crate::eager::ToHandle, T1: crate::eage
 }
 
 /// ConditionalAccumulator
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ConditionalAccumulator {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub shape: ::std::option::Option<crate::Shape>,
@@ -15275,7 +16618,17 @@ pub struct ConditionalAccumulator {
     pub shared_name: ::std::option::Option<::std::string::String>,
     pub reduction_type: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for ConditionalAccumulator {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            shape: None,
+            container: None,
+            shared_name: None,
+            reduction_type: Some(::std::string::String::from("MEAN")),
+        }
+    }
+}
 impl ConditionalAccumulator {
     /// Creates a new `ConditionalAccumulator`.
     pub fn new() -> Self {
@@ -15336,7 +16689,7 @@ pub fn conditional_accumulator_with_args(
 }
 
 /// ConfigureDistributedTPU
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ConfigureDistributedTPU {
     pub embedding_config: ::std::option::Option<::std::string::String>,
     pub tpu_embedding_config: ::std::option::Option<::std::string::String>,
@@ -15344,7 +16697,17 @@ pub struct ConfigureDistributedTPU {
     pub enable_whole_mesh_compilations: ::std::option::Option<bool>,
     pub compilation_failure_closes_chips: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ConfigureDistributedTPU {
+    fn default() -> Self {
+        Self {
+            embedding_config: None,
+            tpu_embedding_config: None,
+            is_global_init: Some(false),
+            enable_whole_mesh_compilations: Some(false),
+            compilation_failure_closes_chips: Some(true),
+        }
+    }
+}
 impl ConfigureDistributedTPU {
     /// Creates a new `ConfigureDistributedTPU`.
     pub fn new() -> Self {
@@ -15405,11 +16768,15 @@ pub fn configure_distributed_tpu_with_args(
 }
 
 /// ConfigureTPUEmbedding
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ConfigureTPUEmbedding {
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for ConfigureTPUEmbedding {
+    fn default() -> Self {
+        Self { config: None }
+    }
+}
 impl ConfigureTPUEmbedding {
     /// Creates a new `ConfigureTPUEmbedding`.
     pub fn new() -> Self {
@@ -15455,11 +16822,17 @@ pub fn configure_tpuembedding_with_args(__args: &ConfigureTPUEmbedding) -> crate
 }
 
 /// Conj
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Conj {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Conj {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Complex64),
+        }
+    }
+}
 impl Conj {
     /// Creates a new `Conj`.
     pub fn new() -> Self {
@@ -15510,12 +16883,19 @@ pub fn conj_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// ConjugateTranspose
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ConjugateTranspose {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tperm: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ConjugateTranspose {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tperm: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl ConjugateTranspose {
     /// Creates a new `ConjugateTranspose`.
     pub fn new() -> Self {
@@ -15574,12 +16954,19 @@ pub fn conjugate_transpose_with_args<T0: crate::eager::ToHandle, T1: crate::eage
 }
 
 /// Const
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Const {
     value: ::std::option::Option<::std::boxed::Box<dyn crate::AnyTensor>>,
     pub dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Const {
+    fn default() -> Self {
+        Self {
+            value: None,
+            dtype: None,
+        }
+    }
+}
 impl Const {
     /// Creates a new `Const`.
     pub fn new() -> Self {
@@ -15629,9 +17016,13 @@ pub fn const__with_args(__args: &Const) -> crate::Result<crate::eager::TensorHan
 }
 
 /// ConsumeMutexLock
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ConsumeMutexLock {}
-
+impl ::std::default::Default for ConsumeMutexLock {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl ConsumeMutexLock {
     /// Creates a new `ConsumeMutexLock`.
     pub fn new() -> Self {
@@ -15678,9 +17069,13 @@ pub fn consume_mutex_lock_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// ControlTrigger
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ControlTrigger {}
-
+impl ::std::default::Default for ControlTrigger {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl ControlTrigger {
     /// Creates a new `ControlTrigger`.
     pub fn new() -> Self {
@@ -15723,7 +17118,7 @@ pub fn control_trigger_with_args(__args: &ControlTrigger) -> crate::Result<()> {
 }
 
 /// Conv2D
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Conv2D {
     pub T: ::std::option::Option<crate::DataType>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
@@ -15733,7 +17128,19 @@ pub struct Conv2D {
     pub data_format: ::std::option::Option<::std::string::String>,
     pub dilations: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for Conv2D {
+    fn default() -> Self {
+        Self {
+            T: None,
+            strides: None,
+            use_cudnn_on_gpu: Some(true),
+            padding: None,
+            explicit_paddings: Some(vec![]),
+            data_format: Some(::std::string::String::from("NHWC")),
+            dilations: Some(vec![1, 1, 1, 1]),
+        }
+    }
+}
 impl Conv2D {
     /// Creates a new `Conv2D`.
     pub fn new() -> Self {
@@ -15807,7 +17214,7 @@ pub fn conv2_d_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>
 }
 
 /// Conv2DBackpropFilter
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Conv2DBackpropFilter {
     pub T: ::std::option::Option<crate::DataType>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
@@ -15817,7 +17224,19 @@ pub struct Conv2DBackpropFilter {
     pub data_format: ::std::option::Option<::std::string::String>,
     pub dilations: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for Conv2DBackpropFilter {
+    fn default() -> Self {
+        Self {
+            T: None,
+            strides: None,
+            use_cudnn_on_gpu: Some(true),
+            padding: None,
+            explicit_paddings: Some(vec![]),
+            data_format: Some(::std::string::String::from("NHWC")),
+            dilations: Some(vec![1, 1, 1, 1]),
+        }
+    }
+}
 impl Conv2DBackpropFilter {
     /// Creates a new `Conv2DBackpropFilter`.
     pub fn new() -> Self {
@@ -15902,7 +17321,7 @@ pub fn conv2_dbackprop_filter_with_args<
 }
 
 /// Conv2DBackpropInput
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Conv2DBackpropInput {
     pub T: ::std::option::Option<crate::DataType>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
@@ -15912,7 +17331,19 @@ pub struct Conv2DBackpropInput {
     pub data_format: ::std::option::Option<::std::string::String>,
     pub dilations: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for Conv2DBackpropInput {
+    fn default() -> Self {
+        Self {
+            T: None,
+            strides: None,
+            use_cudnn_on_gpu: Some(true),
+            padding: None,
+            explicit_paddings: Some(vec![]),
+            data_format: Some(::std::string::String::from("NHWC")),
+            dilations: Some(vec![1, 1, 1, 1]),
+        }
+    }
+}
 impl Conv2DBackpropInput {
     /// Creates a new `Conv2DBackpropInput`.
     pub fn new() -> Self {
@@ -15997,7 +17428,7 @@ pub fn conv2_dbackprop_input_with_args<
 }
 
 /// Conv3D
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Conv3D {
     pub T: ::std::option::Option<crate::DataType>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
@@ -16005,7 +17436,17 @@ pub struct Conv3D {
     pub data_format: ::std::option::Option<::std::string::String>,
     pub dilations: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for Conv3D {
+    fn default() -> Self {
+        Self {
+            T: None,
+            strides: None,
+            padding: None,
+            data_format: Some(::std::string::String::from("NDHWC")),
+            dilations: Some(vec![1, 1, 1, 1, 1]),
+        }
+    }
+}
 impl Conv3D {
     /// Creates a new `Conv3D`.
     pub fn new() -> Self {
@@ -16073,14 +17514,23 @@ pub fn conv3_d_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>
 }
 
 /// Conv3DBackpropFilter
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Conv3DBackpropFilter {
     pub T: ::std::option::Option<crate::DataType>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
     pub padding: ::std::option::Option<::std::string::String>,
     pub dilations: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for Conv3DBackpropFilter {
+    fn default() -> Self {
+        Self {
+            T: None,
+            strides: None,
+            padding: None,
+            dilations: Some(vec![1, 1, 1, 1, 1]),
+        }
+    }
+}
 impl Conv3DBackpropFilter {
     /// Creates a new `Conv3DBackpropFilter`.
     pub fn new() -> Self {
@@ -16156,7 +17606,7 @@ pub fn conv3_dbackprop_filter_with_args<
 }
 
 /// Conv3DBackpropFilterV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Conv3DBackpropFilterV2 {
     pub T: ::std::option::Option<crate::DataType>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
@@ -16164,7 +17614,17 @@ pub struct Conv3DBackpropFilterV2 {
     pub data_format: ::std::option::Option<::std::string::String>,
     pub dilations: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for Conv3DBackpropFilterV2 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            strides: None,
+            padding: None,
+            data_format: Some(::std::string::String::from("NDHWC")),
+            dilations: Some(vec![1, 1, 1, 1, 1]),
+        }
+    }
+}
 impl Conv3DBackpropFilterV2 {
     /// Creates a new `Conv3DBackpropFilterV2`.
     pub fn new() -> Self {
@@ -16243,14 +17703,23 @@ pub fn conv3_dbackprop_filter_v2_with_args<
 }
 
 /// Conv3DBackpropInput
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Conv3DBackpropInput {
     pub T: ::std::option::Option<crate::DataType>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
     pub padding: ::std::option::Option<::std::string::String>,
     pub dilations: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for Conv3DBackpropInput {
+    fn default() -> Self {
+        Self {
+            T: None,
+            strides: None,
+            padding: None,
+            dilations: Some(vec![1, 1, 1, 1, 1]),
+        }
+    }
+}
 impl Conv3DBackpropInput {
     /// Creates a new `Conv3DBackpropInput`.
     pub fn new() -> Self {
@@ -16326,7 +17795,7 @@ pub fn conv3_dbackprop_input_with_args<
 }
 
 /// Conv3DBackpropInputV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Conv3DBackpropInputV2 {
     pub T: ::std::option::Option<crate::DataType>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
@@ -16335,7 +17804,18 @@ pub struct Conv3DBackpropInputV2 {
     pub dilations: ::std::option::Option<::std::vec::Vec<i64>>,
     pub Tshape: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Conv3DBackpropInputV2 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            strides: None,
+            padding: None,
+            data_format: Some(::std::string::String::from("NDHWC")),
+            dilations: Some(vec![1, 1, 1, 1, 1]),
+            Tshape: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl Conv3DBackpropInputV2 {
     /// Creates a new `Conv3DBackpropInputV2`.
     pub fn new() -> Self {
@@ -16417,13 +17897,21 @@ pub fn conv3_dbackprop_input_v2_with_args<
 }
 
 /// Copy
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Copy {
     pub T: ::std::option::Option<crate::DataType>,
     pub tensor_name: ::std::option::Option<::std::string::String>,
     pub debug_ops_spec: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
 }
-
+impl ::std::default::Default for Copy {
+    fn default() -> Self {
+        Self {
+            T: None,
+            tensor_name: None,
+            debug_ops_spec: Some(vec![]),
+        }
+    }
+}
 impl Copy {
     /// Creates a new `Copy`.
     pub fn new() -> Self {
@@ -16480,13 +17968,21 @@ pub fn copy_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// CopyHost
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CopyHost {
     pub T: ::std::option::Option<crate::DataType>,
     pub tensor_name: ::std::option::Option<::std::string::String>,
     pub debug_ops_spec: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
 }
-
+impl ::std::default::Default for CopyHost {
+    fn default() -> Self {
+        Self {
+            T: None,
+            tensor_name: None,
+            debug_ops_spec: Some(vec![]),
+        }
+    }
+}
 impl CopyHost {
     /// Creates a new `CopyHost`.
     pub fn new() -> Self {
@@ -16545,11 +18041,15 @@ pub fn copy_host_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Cos
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Cos {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Cos {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Cos {
     /// Creates a new `Cos`.
     pub fn new() -> Self {
@@ -16600,11 +18100,15 @@ pub fn cos_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Cosh
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Cosh {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Cosh {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Cosh {
     /// Creates a new `Cosh`.
     pub fn new() -> Self {
@@ -16655,12 +18159,19 @@ pub fn cosh_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// CountUpTo
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CountUpTo {
     pub limit: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for CountUpTo {
+    fn default() -> Self {
+        Self {
+            limit: None,
+            T: None,
+        }
+    }
+}
 impl CountUpTo {
     /// Creates a new `CountUpTo`.
     pub fn new() -> Self {
@@ -16716,9 +18227,13 @@ pub fn count_up_to_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// CreateSummaryDbWriter
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CreateSummaryDbWriter {}
-
+impl ::std::default::Default for CreateSummaryDbWriter {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl CreateSummaryDbWriter {
     /// Creates a new `CreateSummaryDbWriter`.
     pub fn new() -> Self {
@@ -16798,9 +18313,13 @@ pub fn create_summary_db_writer_with_args<
 }
 
 /// CreateSummaryFileWriter
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CreateSummaryFileWriter {}
-
+impl ::std::default::Default for CreateSummaryFileWriter {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl CreateSummaryFileWriter {
     /// Creates a new `CreateSummaryFileWriter`.
     pub fn new() -> Self {
@@ -16880,13 +18399,21 @@ pub fn create_summary_file_writer_with_args<
 }
 
 /// CropAndResize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CropAndResize {
     pub T: ::std::option::Option<crate::DataType>,
     pub method: ::std::option::Option<::std::string::String>,
     pub extrapolation_value: ::std::option::Option<f32>,
 }
-
+impl ::std::default::Default for CropAndResize {
+    fn default() -> Self {
+        Self {
+            T: None,
+            method: Some(::std::string::String::from("bilinear")),
+            extrapolation_value: Some(0f32),
+        }
+    }
+}
 impl CropAndResize {
     /// Creates a new `CropAndResize`.
     pub fn new() -> Self {
@@ -16964,12 +18491,19 @@ pub fn crop_and_resize_with_args<
 }
 
 /// CropAndResizeGradBoxes
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CropAndResizeGradBoxes {
     pub T: ::std::option::Option<crate::DataType>,
     pub method: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for CropAndResizeGradBoxes {
+    fn default() -> Self {
+        Self {
+            T: None,
+            method: Some(::std::string::String::from("bilinear")),
+        }
+    }
+}
 impl CropAndResizeGradBoxes {
     /// Creates a new `CropAndResizeGradBoxes`.
     pub fn new() -> Self {
@@ -17044,12 +18578,19 @@ pub fn crop_and_resize_grad_boxes_with_args<
 }
 
 /// CropAndResizeGradImage
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CropAndResizeGradImage {
     pub T: ::std::option::Option<crate::DataType>,
     pub method: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for CropAndResizeGradImage {
+    fn default() -> Self {
+        Self {
+            T: None,
+            method: Some(::std::string::String::from("bilinear")),
+        }
+    }
+}
 impl CropAndResizeGradImage {
     /// Creates a new `CropAndResizeGradImage`.
     pub fn new() -> Self {
@@ -17124,11 +18665,15 @@ pub fn crop_and_resize_grad_image_with_args<
 }
 
 /// Cross
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Cross {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Cross {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Cross {
     /// Creates a new `Cross`.
     pub fn new() -> Self {
@@ -17184,11 +18729,15 @@ pub fn cross_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// CrossReplicaSum
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CrossReplicaSum {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for CrossReplicaSum {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl CrossReplicaSum {
     /// Creates a new `CrossReplicaSum`.
     pub fn new() -> Self {
@@ -17244,7 +18793,7 @@ pub fn cross_replica_sum_with_args<T0: crate::eager::ToHandle, T1: crate::eager:
 }
 
 /// CudnnRNN
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CudnnRNN {
     pub T: ::std::option::Option<crate::DataType>,
     pub rnn_mode: ::std::option::Option<::std::string::String>,
@@ -17255,7 +18804,20 @@ pub struct CudnnRNN {
     pub seed2: ::std::option::Option<i64>,
     pub is_training: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for CudnnRNN {
+    fn default() -> Self {
+        Self {
+            T: None,
+            rnn_mode: Some(::std::string::String::from("lstm")),
+            input_mode: Some(::std::string::String::from("linear_input")),
+            direction: Some(::std::string::String::from("unidirectional")),
+            dropout: Some(0f32),
+            seed: Some(0i64),
+            seed2: Some(0i64),
+            is_training: Some(true),
+        }
+    }
+}
 impl CudnnRNN {
     /// Creates a new `CudnnRNN`.
     pub fn new() -> Self {
@@ -17355,7 +18917,7 @@ pub fn cudnn_rnn_with_args<
 }
 
 /// CudnnRNNBackprop
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CudnnRNNBackprop {
     pub T: ::std::option::Option<crate::DataType>,
     pub rnn_mode: ::std::option::Option<::std::string::String>,
@@ -17365,7 +18927,19 @@ pub struct CudnnRNNBackprop {
     pub seed: ::std::option::Option<i64>,
     pub seed2: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for CudnnRNNBackprop {
+    fn default() -> Self {
+        Self {
+            T: None,
+            rnn_mode: Some(::std::string::String::from("lstm")),
+            input_mode: Some(::std::string::String::from("linear_input")),
+            direction: Some(::std::string::String::from("unidirectional")),
+            dropout: Some(0f32),
+            seed: Some(0i64),
+            seed2: Some(0i64),
+        }
+    }
+}
 impl CudnnRNNBackprop {
     /// Creates a new `CudnnRNNBackprop`.
     pub fn new() -> Self {
@@ -17510,7 +19084,7 @@ pub fn cudnn_rnnbackprop_with_args<
 }
 
 /// CudnnRNNBackpropV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CudnnRNNBackpropV2 {
     pub T: ::std::option::Option<crate::DataType>,
     pub rnn_mode: ::std::option::Option<::std::string::String>,
@@ -17520,7 +19094,19 @@ pub struct CudnnRNNBackpropV2 {
     pub seed: ::std::option::Option<i64>,
     pub seed2: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for CudnnRNNBackpropV2 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            rnn_mode: Some(::std::string::String::from("lstm")),
+            input_mode: Some(::std::string::String::from("linear_input")),
+            direction: Some(::std::string::String::from("unidirectional")),
+            dropout: Some(0f32),
+            seed: Some(0i64),
+            seed2: Some(0i64),
+        }
+    }
+}
 impl CudnnRNNBackpropV2 {
     /// Creates a new `CudnnRNNBackpropV2`.
     pub fn new() -> Self {
@@ -17671,7 +19257,7 @@ pub fn cudnn_rnnbackprop_v2_with_args<
 }
 
 /// CudnnRNNBackpropV3
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CudnnRNNBackpropV3 {
     pub T: ::std::option::Option<crate::DataType>,
     pub rnn_mode: ::std::option::Option<::std::string::String>,
@@ -17683,7 +19269,21 @@ pub struct CudnnRNNBackpropV3 {
     pub num_proj: ::std::option::Option<i64>,
     pub time_major: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for CudnnRNNBackpropV3 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            rnn_mode: Some(::std::string::String::from("lstm")),
+            input_mode: Some(::std::string::String::from("linear_input")),
+            direction: Some(::std::string::String::from("unidirectional")),
+            dropout: Some(0f32),
+            seed: Some(0i64),
+            seed2: Some(0i64),
+            num_proj: Some(0i64),
+            time_major: Some(true),
+        }
+    }
+}
 impl CudnnRNNBackpropV3 {
     /// Creates a new `CudnnRNNBackpropV3`.
     pub fn new() -> Self {
@@ -17846,7 +19446,7 @@ pub fn cudnn_rnnbackprop_v3_with_args<
 }
 
 /// CudnnRNNCanonicalToParams
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CudnnRNNCanonicalToParams {
     pub T: ::std::option::Option<crate::DataType>,
     pub num_params: ::std::option::Option<i64>,
@@ -17857,7 +19457,20 @@ pub struct CudnnRNNCanonicalToParams {
     pub seed: ::std::option::Option<i64>,
     pub seed2: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for CudnnRNNCanonicalToParams {
+    fn default() -> Self {
+        Self {
+            T: None,
+            num_params: None,
+            rnn_mode: Some(::std::string::String::from("lstm")),
+            input_mode: Some(::std::string::String::from("linear_input")),
+            direction: Some(::std::string::String::from("unidirectional")),
+            dropout: Some(0f32),
+            seed: Some(0i64),
+            seed2: Some(0i64),
+        }
+    }
+}
 impl CudnnRNNCanonicalToParams {
     /// Creates a new `CudnnRNNCanonicalToParams`.
     pub fn new() -> Self {
@@ -17957,7 +19570,7 @@ pub fn cudnn_rnncanonical_to_params_with_args<
 }
 
 /// CudnnRNNCanonicalToParamsV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CudnnRNNCanonicalToParamsV2 {
     pub T: ::std::option::Option<crate::DataType>,
     pub num_params_weights: ::std::option::Option<i64>,
@@ -17970,7 +19583,22 @@ pub struct CudnnRNNCanonicalToParamsV2 {
     pub seed2: ::std::option::Option<i64>,
     pub num_proj: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for CudnnRNNCanonicalToParamsV2 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            num_params_weights: None,
+            num_params_biases: None,
+            rnn_mode: Some(::std::string::String::from("lstm")),
+            input_mode: Some(::std::string::String::from("linear_input")),
+            direction: Some(::std::string::String::from("unidirectional")),
+            dropout: Some(0f32),
+            seed: Some(0i64),
+            seed2: Some(0i64),
+            num_proj: Some(0i64),
+        }
+    }
+}
 impl CudnnRNNCanonicalToParamsV2 {
     /// Creates a new `CudnnRNNCanonicalToParamsV2`.
     pub fn new() -> Self {
@@ -18076,7 +19704,7 @@ pub fn cudnn_rnncanonical_to_params_v2_with_args<
 }
 
 /// CudnnRNNParamsSize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CudnnRNNParamsSize {
     pub T: ::std::option::Option<crate::DataType>,
     pub S: ::std::option::Option<crate::DataType>,
@@ -18088,7 +19716,21 @@ pub struct CudnnRNNParamsSize {
     pub seed2: ::std::option::Option<i64>,
     pub num_proj: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for CudnnRNNParamsSize {
+    fn default() -> Self {
+        Self {
+            T: None,
+            S: None,
+            rnn_mode: Some(::std::string::String::from("lstm")),
+            input_mode: Some(::std::string::String::from("linear_input")),
+            direction: Some(::std::string::String::from("unidirectional")),
+            dropout: Some(0f32),
+            seed: Some(0i64),
+            seed2: Some(0i64),
+            num_proj: Some(0i64),
+        }
+    }
+}
 impl CudnnRNNParamsSize {
     /// Creates a new `CudnnRNNParamsSize`.
     pub fn new() -> Self {
@@ -18179,7 +19821,7 @@ pub fn cudnn_rnnparams_size_with_args<
 }
 
 /// CudnnRNNParamsToCanonical
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CudnnRNNParamsToCanonical {
     pub T: ::std::option::Option<crate::DataType>,
     pub num_params: ::std::option::Option<i64>,
@@ -18190,7 +19832,20 @@ pub struct CudnnRNNParamsToCanonical {
     pub seed: ::std::option::Option<i64>,
     pub seed2: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for CudnnRNNParamsToCanonical {
+    fn default() -> Self {
+        Self {
+            T: None,
+            num_params: None,
+            rnn_mode: Some(::std::string::String::from("lstm")),
+            input_mode: Some(::std::string::String::from("linear_input")),
+            direction: Some(::std::string::String::from("unidirectional")),
+            dropout: Some(0f32),
+            seed: Some(0i64),
+            seed2: Some(0i64),
+        }
+    }
+}
 impl CudnnRNNParamsToCanonical {
     /// Creates a new `CudnnRNNParamsToCanonical`.
     pub fn new() -> Self {
@@ -18288,7 +19943,7 @@ pub fn cudnn_rnnparams_to_canonical_with_args<
 }
 
 /// CudnnRNNParamsToCanonicalV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CudnnRNNParamsToCanonicalV2 {
     pub T: ::std::option::Option<crate::DataType>,
     pub num_params_weights: ::std::option::Option<i64>,
@@ -18301,7 +19956,22 @@ pub struct CudnnRNNParamsToCanonicalV2 {
     pub seed2: ::std::option::Option<i64>,
     pub num_proj: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for CudnnRNNParamsToCanonicalV2 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            num_params_weights: None,
+            num_params_biases: None,
+            rnn_mode: Some(::std::string::String::from("lstm")),
+            input_mode: Some(::std::string::String::from("linear_input")),
+            direction: Some(::std::string::String::from("unidirectional")),
+            dropout: Some(0f32),
+            seed: Some(0i64),
+            seed2: Some(0i64),
+            num_proj: Some(0i64),
+        }
+    }
+}
 impl CudnnRNNParamsToCanonicalV2 {
     /// Creates a new `CudnnRNNParamsToCanonicalV2`.
     pub fn new() -> Self {
@@ -18405,7 +20075,7 @@ pub fn cudnn_rnnparams_to_canonical_v2_with_args<
 }
 
 /// CudnnRNNV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CudnnRNNV2 {
     pub T: ::std::option::Option<crate::DataType>,
     pub rnn_mode: ::std::option::Option<::std::string::String>,
@@ -18416,7 +20086,20 @@ pub struct CudnnRNNV2 {
     pub seed2: ::std::option::Option<i64>,
     pub is_training: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for CudnnRNNV2 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            rnn_mode: Some(::std::string::String::from("lstm")),
+            input_mode: Some(::std::string::String::from("linear_input")),
+            direction: Some(::std::string::String::from("unidirectional")),
+            dropout: Some(0f32),
+            seed: Some(0i64),
+            seed2: Some(0i64),
+            is_training: Some(true),
+        }
+    }
+}
 impl CudnnRNNV2 {
     /// Creates a new `CudnnRNNV2`.
     pub fn new() -> Self {
@@ -18517,7 +20200,7 @@ pub fn cudnn_rnnv2_with_args<
 }
 
 /// CudnnRNNV3
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CudnnRNNV3 {
     pub T: ::std::option::Option<crate::DataType>,
     pub rnn_mode: ::std::option::Option<::std::string::String>,
@@ -18530,7 +20213,22 @@ pub struct CudnnRNNV3 {
     pub is_training: ::std::option::Option<bool>,
     pub time_major: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for CudnnRNNV3 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            rnn_mode: Some(::std::string::String::from("lstm")),
+            input_mode: Some(::std::string::String::from("linear_input")),
+            direction: Some(::std::string::String::from("unidirectional")),
+            dropout: Some(0f32),
+            seed: Some(0i64),
+            seed2: Some(0i64),
+            num_proj: Some(0i64),
+            is_training: Some(true),
+            time_major: Some(true),
+        }
+    }
+}
 impl CudnnRNNV3 {
     /// Creates a new `CudnnRNNV3`.
     pub fn new() -> Self {
@@ -18642,14 +20340,23 @@ pub fn cudnn_rnnv3_with_args<
 }
 
 /// Cumprod
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Cumprod {
     pub exclusive: ::std::option::Option<bool>,
     pub reverse: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
     pub Tidx: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Cumprod {
+    fn default() -> Self {
+        Self {
+            exclusive: Some(false),
+            reverse: Some(false),
+            T: None,
+            Tidx: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl Cumprod {
     /// Creates a new `Cumprod`.
     pub fn new() -> Self {
@@ -18714,14 +20421,23 @@ pub fn cumprod_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>
 }
 
 /// Cumsum
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Cumsum {
     pub exclusive: ::std::option::Option<bool>,
     pub reverse: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
     pub Tidx: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Cumsum {
+    fn default() -> Self {
+        Self {
+            exclusive: Some(false),
+            reverse: Some(false),
+            T: None,
+            Tidx: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl Cumsum {
     /// Creates a new `Cumsum`.
     pub fn new() -> Self {
@@ -18786,14 +20502,23 @@ pub fn cumsum_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// CumulativeLogsumexp
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct CumulativeLogsumexp {
     pub exclusive: ::std::option::Option<bool>,
     pub reverse: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
     pub Tidx: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for CumulativeLogsumexp {
+    fn default() -> Self {
+        Self {
+            exclusive: Some(false),
+            reverse: Some(false),
+            T: None,
+            Tidx: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl CumulativeLogsumexp {
     /// Creates a new `CumulativeLogsumexp`.
     pub fn new() -> Self {
@@ -18858,13 +20583,21 @@ pub fn cumulative_logsumexp_with_args<T0: crate::eager::ToHandle, T1: crate::eag
 }
 
 /// DataFormatDimMap
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DataFormatDimMap {
     pub T: ::std::option::Option<crate::DataType>,
     pub src_format: ::std::option::Option<::std::string::String>,
     pub dst_format: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for DataFormatDimMap {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Int32),
+            src_format: Some(::std::string::String::from("NHWC")),
+            dst_format: Some(::std::string::String::from("NCHW")),
+        }
+    }
+}
 impl DataFormatDimMap {
     /// Creates a new `DataFormatDimMap`.
     pub fn new() -> Self {
@@ -18923,13 +20656,21 @@ pub fn data_format_dim_map_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DataFormatVecPermute
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DataFormatVecPermute {
     pub T: ::std::option::Option<crate::DataType>,
     pub src_format: ::std::option::Option<::std::string::String>,
     pub dst_format: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for DataFormatVecPermute {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Int32),
+            src_format: Some(::std::string::String::from("NHWC")),
+            dst_format: Some(::std::string::String::from("NCHW")),
+        }
+    }
+}
 impl DataFormatVecPermute {
     /// Creates a new `DataFormatVecPermute`.
     pub fn new() -> Self {
@@ -18988,7 +20729,7 @@ pub fn data_format_vec_permute_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DataServiceDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DataServiceDataset {
     pub task_refresh_interval_hint_ms: ::std::option::Option<i64>,
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
@@ -18996,7 +20737,17 @@ pub struct DataServiceDataset {
     pub data_transfer_protocol: ::std::option::Option<::std::string::String>,
     pub target_workers: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for DataServiceDataset {
+    fn default() -> Self {
+        Self {
+            task_refresh_interval_hint_ms: Some(-1i64),
+            output_types: None,
+            output_shapes: None,
+            data_transfer_protocol: None,
+            target_workers: Some(::std::string::String::from("AUTO")),
+        }
+    }
+}
 impl DataServiceDataset {
     /// Creates a new `DataServiceDataset`.
     pub fn new() -> Self {
@@ -19104,7 +20855,7 @@ pub fn data_service_dataset_with_args<
 }
 
 /// DataServiceDatasetV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DataServiceDatasetV2 {
     pub task_refresh_interval_hint_ms: ::std::option::Option<i64>,
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
@@ -19112,7 +20863,17 @@ pub struct DataServiceDatasetV2 {
     pub data_transfer_protocol: ::std::option::Option<::std::string::String>,
     pub target_workers: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for DataServiceDatasetV2 {
+    fn default() -> Self {
+        Self {
+            task_refresh_interval_hint_ms: Some(-1i64),
+            output_types: None,
+            output_shapes: None,
+            data_transfer_protocol: None,
+            target_workers: Some(::std::string::String::from("AUTO")),
+        }
+    }
+}
 impl DataServiceDatasetV2 {
     /// Creates a new `DataServiceDatasetV2`.
     pub fn new() -> Self {
@@ -19232,9 +20993,13 @@ pub fn data_service_dataset_v2_with_args<
 }
 
 /// DatasetCardinality
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DatasetCardinality {}
-
+impl ::std::default::Default for DatasetCardinality {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl DatasetCardinality {
     /// Creates a new `DatasetCardinality`.
     pub fn new() -> Self {
@@ -19284,9 +21049,13 @@ pub fn dataset_cardinality_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DatasetFromGraph
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DatasetFromGraph {}
-
+impl ::std::default::Default for DatasetFromGraph {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl DatasetFromGraph {
     /// Creates a new `DatasetFromGraph`.
     pub fn new() -> Self {
@@ -19336,13 +21105,21 @@ pub fn dataset_from_graph_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DatasetToGraph
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DatasetToGraph {
     pub stateful_whitelist: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
     pub allow_stateful: ::std::option::Option<bool>,
     pub strip_device_assignment: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for DatasetToGraph {
+    fn default() -> Self {
+        Self {
+            stateful_whitelist: Some(vec![]),
+            allow_stateful: Some(false),
+            strip_device_assignment: Some(false),
+        }
+    }
+}
 impl DatasetToGraph {
     /// Creates a new `DatasetToGraph`.
     pub fn new() -> Self {
@@ -19401,12 +21178,19 @@ pub fn dataset_to_graph_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DatasetToGraphV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DatasetToGraphV2 {
     pub external_state_policy: ::std::option::Option<i64>,
     pub strip_device_assignment: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for DatasetToGraphV2 {
+    fn default() -> Self {
+        Self {
+            external_state_policy: Some(0i64),
+            strip_device_assignment: Some(false),
+        }
+    }
+}
 impl DatasetToGraphV2 {
     /// Creates a new `DatasetToGraphV2`.
     pub fn new() -> Self {
@@ -19462,12 +21246,19 @@ pub fn dataset_to_graph_v2_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DatasetToSingleElement
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DatasetToSingleElement {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for DatasetToSingleElement {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl DatasetToSingleElement {
     /// Creates a new `DatasetToSingleElement`.
     pub fn new() -> Self {
@@ -19523,9 +21314,13 @@ pub fn dataset_to_single_element_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DatasetToTFRecord
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DatasetToTFRecord {}
-
+impl ::std::default::Default for DatasetToTFRecord {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl DatasetToTFRecord {
     /// Creates a new `DatasetToTFRecord`.
     pub fn new() -> Self {
@@ -19588,11 +21383,15 @@ pub fn dataset_to_tfrecord_with_args<
 }
 
 /// Dawsn
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Dawsn {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Dawsn {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Dawsn {
     /// Creates a new `Dawsn`.
     pub fn new() -> Self {
@@ -19643,11 +21442,15 @@ pub fn dawsn_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DebugGradientIdentity
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DebugGradientIdentity {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for DebugGradientIdentity {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl DebugGradientIdentity {
     /// Creates a new `DebugGradientIdentity`.
     pub fn new() -> Self {
@@ -19700,11 +21503,15 @@ pub fn debug_gradient_identity_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DebugGradientRefIdentity
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DebugGradientRefIdentity {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for DebugGradientRefIdentity {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl DebugGradientRefIdentity {
     /// Creates a new `DebugGradientRefIdentity`.
     pub fn new() -> Self {
@@ -19757,7 +21564,7 @@ pub fn debug_gradient_ref_identity_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DebugIdentity
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DebugIdentity {
     pub T: ::std::option::Option<crate::DataType>,
     pub device_name: ::std::option::Option<::std::string::String>,
@@ -19765,7 +21572,17 @@ pub struct DebugIdentity {
     pub debug_urls: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
     pub gated_grpc: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for DebugIdentity {
+    fn default() -> Self {
+        Self {
+            T: None,
+            device_name: None,
+            tensor_name: None,
+            debug_urls: Some(vec![]),
+            gated_grpc: Some(false),
+        }
+    }
+}
 impl DebugIdentity {
     /// Creates a new `DebugIdentity`.
     pub fn new() -> Self {
@@ -19830,7 +21647,7 @@ pub fn debug_identity_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DebugIdentityV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DebugIdentityV2 {
     pub T: ::std::option::Option<crate::DataType>,
     pub tfdbg_context_id: ::std::option::Option<::std::string::String>,
@@ -19841,7 +21658,20 @@ pub struct DebugIdentityV2 {
     pub circular_buffer_size: ::std::option::Option<i64>,
     pub tfdbg_run_id: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for DebugIdentityV2 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            tfdbg_context_id: None,
+            op_name: None,
+            output_slot: Some(-1i64),
+            tensor_debug_mode: Some(-1i64),
+            debug_urls: Some(vec![]),
+            circular_buffer_size: Some(1000i64),
+            tfdbg_run_id: None,
+        }
+    }
+}
 impl DebugIdentityV2 {
     /// Creates a new `DebugIdentityV2`.
     pub fn new() -> Self {
@@ -19915,7 +21745,7 @@ pub fn debug_identity_v2_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DebugNanCount
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DebugNanCount {
     pub T: ::std::option::Option<crate::DataType>,
     pub device_name: ::std::option::Option<::std::string::String>,
@@ -19923,7 +21753,17 @@ pub struct DebugNanCount {
     pub debug_urls: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
     pub gated_grpc: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for DebugNanCount {
+    fn default() -> Self {
+        Self {
+            T: None,
+            device_name: None,
+            tensor_name: None,
+            debug_urls: Some(vec![]),
+            gated_grpc: Some(false),
+        }
+    }
+}
 impl DebugNanCount {
     /// Creates a new `DebugNanCount`.
     pub fn new() -> Self {
@@ -19988,7 +21828,7 @@ pub fn debug_nan_count_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DebugNumericSummary
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DebugNumericSummary {
     pub T: ::std::option::Option<crate::DataType>,
     pub device_name: ::std::option::Option<::std::string::String>,
@@ -19999,7 +21839,20 @@ pub struct DebugNumericSummary {
     pub mute_if_healthy: ::std::option::Option<bool>,
     pub gated_grpc: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for DebugNumericSummary {
+    fn default() -> Self {
+        Self {
+            T: None,
+            device_name: None,
+            tensor_name: None,
+            debug_urls: Some(vec![]),
+            lower_bound: Some(f32::NEG_INFINITY),
+            upper_bound: Some(f32::INFINITY),
+            mute_if_healthy: Some(false),
+            gated_grpc: Some(false),
+        }
+    }
+}
 impl DebugNumericSummary {
     /// Creates a new `DebugNumericSummary`.
     pub fn new() -> Self {
@@ -20073,14 +21926,23 @@ pub fn debug_numeric_summary_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DebugNumericSummaryV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DebugNumericSummaryV2 {
     pub output_dtype: ::std::option::Option<crate::DataType>,
     pub T: ::std::option::Option<crate::DataType>,
     pub tensor_debug_mode: ::std::option::Option<i64>,
     pub tensor_id: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for DebugNumericSummaryV2 {
+    fn default() -> Self {
+        Self {
+            output_dtype: Some(crate::DataType::Float),
+            T: None,
+            tensor_debug_mode: Some(-1i64),
+            tensor_id: Some(-1i64),
+        }
+    }
+}
 impl DebugNumericSummaryV2 {
     /// Creates a new `DebugNumericSummaryV2`.
     pub fn new() -> Self {
@@ -20142,7 +22004,7 @@ pub fn debug_numeric_summary_v2_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DecodeAndCropJpeg
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DecodeAndCropJpeg {
     pub channels: ::std::option::Option<i64>,
     pub ratio: ::std::option::Option<i64>,
@@ -20151,7 +22013,18 @@ pub struct DecodeAndCropJpeg {
     pub acceptable_fraction: ::std::option::Option<f32>,
     pub dct_method: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for DecodeAndCropJpeg {
+    fn default() -> Self {
+        Self {
+            channels: Some(0i64),
+            ratio: Some(1i64),
+            fancy_upscaling: Some(true),
+            try_recover_truncated: Some(false),
+            acceptable_fraction: Some(1f32),
+            dct_method: None,
+        }
+    }
+}
 impl DecodeAndCropJpeg {
     /// Creates a new `DecodeAndCropJpeg`.
     pub fn new() -> Self {
@@ -20222,9 +22095,13 @@ pub fn decode_and_crop_jpeg_with_args<T0: crate::eager::ToHandle, T1: crate::eag
 }
 
 /// DecodeBase64
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DecodeBase64 {}
-
+impl ::std::default::Default for DecodeBase64 {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl DecodeBase64 {
     /// Creates a new `DecodeBase64`.
     pub fn new() -> Self {
@@ -20274,11 +22151,17 @@ pub fn decode_base64_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DecodeBmp
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DecodeBmp {
     pub channels: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for DecodeBmp {
+    fn default() -> Self {
+        Self {
+            channels: Some(0i64),
+        }
+    }
+}
 impl DecodeBmp {
     /// Creates a new `DecodeBmp`.
     pub fn new() -> Self {
@@ -20331,7 +22214,7 @@ pub fn decode_bmp_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DecodeCSV
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DecodeCSV {
     pub OUT_TYPE: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub field_delim: ::std::option::Option<::std::string::String>,
@@ -20339,7 +22222,17 @@ pub struct DecodeCSV {
     pub na_value: ::std::option::Option<::std::string::String>,
     pub select_cols: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for DecodeCSV {
+    fn default() -> Self {
+        Self {
+            OUT_TYPE: None,
+            field_delim: Some(::std::string::String::from(",")),
+            use_quote_delim: Some(true),
+            na_value: None,
+            select_cols: Some(vec![]),
+        }
+    }
+}
 impl DecodeCSV {
     /// Creates a new `DecodeCSV`.
     pub fn new() -> Self {
@@ -20407,11 +22300,17 @@ pub fn decode_csv_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHand
 }
 
 /// DecodeCompressed
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DecodeCompressed {
     pub compression_type: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for DecodeCompressed {
+    fn default() -> Self {
+        Self {
+            compression_type: None,
+        }
+    }
+}
 impl DecodeCompressed {
     /// Creates a new `DecodeCompressed`.
     pub fn new() -> Self {
@@ -20464,9 +22363,13 @@ pub fn decode_compressed_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DecodeGif
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DecodeGif {}
-
+impl ::std::default::Default for DecodeGif {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl DecodeGif {
     /// Creates a new `DecodeGif`.
     pub fn new() -> Self {
@@ -20516,13 +22419,21 @@ pub fn decode_gif_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DecodeImage
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DecodeImage {
     pub channels: ::std::option::Option<i64>,
     pub dtype: ::std::option::Option<crate::DataType>,
     pub expand_animations: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for DecodeImage {
+    fn default() -> Self {
+        Self {
+            channels: Some(0i64),
+            dtype: Some(crate::DataType::UInt8),
+            expand_animations: Some(true),
+        }
+    }
+}
 impl DecodeImage {
     /// Creates a new `DecodeImage`.
     pub fn new() -> Self {
@@ -20581,9 +22492,13 @@ pub fn decode_image_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DecodeJSONExample
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DecodeJSONExample {}
-
+impl ::std::default::Default for DecodeJSONExample {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl DecodeJSONExample {
     /// Creates a new `DecodeJSONExample`.
     pub fn new() -> Self {
@@ -20633,7 +22548,7 @@ pub fn decode_jsonexample_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DecodeJpeg
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DecodeJpeg {
     pub channels: ::std::option::Option<i64>,
     pub ratio: ::std::option::Option<i64>,
@@ -20642,7 +22557,18 @@ pub struct DecodeJpeg {
     pub acceptable_fraction: ::std::option::Option<f32>,
     pub dct_method: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for DecodeJpeg {
+    fn default() -> Self {
+        Self {
+            channels: Some(0i64),
+            ratio: Some(1i64),
+            fancy_upscaling: Some(true),
+            try_recover_truncated: Some(false),
+            acceptable_fraction: Some(1f32),
+            dct_method: None,
+        }
+    }
+}
 impl DecodeJpeg {
     /// Creates a new `DecodeJpeg`.
     pub fn new() -> Self {
@@ -20710,12 +22636,19 @@ pub fn decode_jpeg_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DecodePaddedRaw
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DecodePaddedRaw {
     pub out_type: ::std::option::Option<crate::DataType>,
     pub little_endian: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for DecodePaddedRaw {
+    fn default() -> Self {
+        Self {
+            out_type: None,
+            little_endian: Some(true),
+        }
+    }
+}
 impl DecodePaddedRaw {
     /// Creates a new `DecodePaddedRaw`.
     pub fn new() -> Self {
@@ -20774,12 +22707,19 @@ pub fn decode_padded_raw_with_args<T0: crate::eager::ToHandle, T1: crate::eager:
 }
 
 /// DecodePng
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DecodePng {
     pub channels: ::std::option::Option<i64>,
     pub dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for DecodePng {
+    fn default() -> Self {
+        Self {
+            channels: Some(0i64),
+            dtype: Some(crate::DataType::UInt8),
+        }
+    }
+}
 impl DecodePng {
     /// Creates a new `DecodePng`.
     pub fn new() -> Self {
@@ -20835,7 +22775,7 @@ pub fn decode_png_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DecodeProtoV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DecodeProtoV2 {
     pub message_type: ::std::option::Option<::std::string::String>,
     pub field_names: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
@@ -20844,7 +22784,18 @@ pub struct DecodeProtoV2 {
     pub message_format: ::std::option::Option<::std::string::String>,
     pub sanitize: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for DecodeProtoV2 {
+    fn default() -> Self {
+        Self {
+            message_type: None,
+            field_names: None,
+            output_types: None,
+            descriptor_source: Some(::std::string::String::from("local://")),
+            message_format: Some(::std::string::String::from("binary")),
+            sanitize: Some(false),
+        }
+    }
+}
 impl DecodeProtoV2 {
     /// Creates a new `DecodeProtoV2`.
     pub fn new() -> Self {
@@ -20917,12 +22868,19 @@ pub fn decode_proto_v2_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DecodeRaw
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DecodeRaw {
     pub out_type: ::std::option::Option<crate::DataType>,
     pub little_endian: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for DecodeRaw {
+    fn default() -> Self {
+        Self {
+            out_type: None,
+            little_endian: Some(true),
+        }
+    }
+}
 impl DecodeRaw {
     /// Creates a new `DecodeRaw`.
     pub fn new() -> Self {
@@ -20978,12 +22936,19 @@ pub fn decode_raw_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DecodeWav
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DecodeWav {
     pub desired_channels: ::std::option::Option<i64>,
     pub desired_samples: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for DecodeWav {
+    fn default() -> Self {
+        Self {
+            desired_channels: Some(-1i64),
+            desired_samples: Some(-1i64),
+        }
+    }
+}
 impl DecodeWav {
     /// Creates a new `DecodeWav`.
     pub fn new() -> Self {
@@ -21044,11 +23009,15 @@ pub fn decode_wav_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DeepCopy
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DeepCopy {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for DeepCopy {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl DeepCopy {
     /// Creates a new `DeepCopy`.
     pub fn new() -> Self {
@@ -21099,9 +23068,13 @@ pub fn deep_copy_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DeleteIterator
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DeleteIterator {}
-
+impl ::std::default::Default for DeleteIterator {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl DeleteIterator {
     /// Creates a new `DeleteIterator`.
     pub fn new() -> Self {
@@ -21153,9 +23126,13 @@ pub fn delete_iterator_with_args<T0: crate::eager::ToHandle, T1: crate::eager::T
 }
 
 /// DeleteMemoryCache
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DeleteMemoryCache {}
-
+impl ::std::default::Default for DeleteMemoryCache {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl DeleteMemoryCache {
     /// Creates a new `DeleteMemoryCache`.
     pub fn new() -> Self {
@@ -21207,11 +23184,15 @@ pub fn delete_memory_cache_with_args<T0: crate::eager::ToHandle, T1: crate::eage
 }
 
 /// DeleteMultiDeviceIterator
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DeleteMultiDeviceIterator {
     pub N: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for DeleteMultiDeviceIterator {
+    fn default() -> Self {
+        Self { N: None }
+    }
+}
 impl DeleteMultiDeviceIterator {
     /// Creates a new `DeleteMultiDeviceIterator`.
     pub fn new() -> Self {
@@ -21277,9 +23258,13 @@ pub fn delete_multi_device_iterator_with_args<
 }
 
 /// DeleteRandomSeedGenerator
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DeleteRandomSeedGenerator {}
-
+impl ::std::default::Default for DeleteRandomSeedGenerator {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl DeleteRandomSeedGenerator {
     /// Creates a new `DeleteRandomSeedGenerator`.
     pub fn new() -> Self {
@@ -21334,9 +23319,13 @@ pub fn delete_random_seed_generator_with_args<
 }
 
 /// DeleteSeedGenerator
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DeleteSeedGenerator {}
-
+impl ::std::default::Default for DeleteSeedGenerator {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl DeleteSeedGenerator {
     /// Creates a new `DeleteSeedGenerator`.
     pub fn new() -> Self {
@@ -21388,9 +23377,13 @@ pub fn delete_seed_generator_with_args<T0: crate::eager::ToHandle, T1: crate::ea
 }
 
 /// DeleteSessionTensor
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DeleteSessionTensor {}
-
+impl ::std::default::Default for DeleteSessionTensor {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl DeleteSessionTensor {
     /// Creates a new `DeleteSessionTensor`.
     pub fn new() -> Self {
@@ -21437,13 +23430,21 @@ pub fn delete_session_tensor_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DenseBincount
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DenseBincount {
     pub Tidx: ::std::option::Option<crate::DataType>,
     pub T: ::std::option::Option<crate::DataType>,
     pub binary_output: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for DenseBincount {
+    fn default() -> Self {
+        Self {
+            Tidx: None,
+            T: None,
+            binary_output: Some(false),
+        }
+    }
+}
 impl DenseBincount {
     /// Creates a new `DenseBincount`.
     pub fn new() -> Self {
@@ -21516,7 +23517,7 @@ pub fn dense_bincount_with_args<
 }
 
 /// DenseCountSparseOutput
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DenseCountSparseOutput {
     pub T: ::std::option::Option<crate::DataType>,
     pub minlength: ::std::option::Option<i64>,
@@ -21524,7 +23525,17 @@ pub struct DenseCountSparseOutput {
     pub binary_output: ::std::option::Option<bool>,
     pub output_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for DenseCountSparseOutput {
+    fn default() -> Self {
+        Self {
+            T: None,
+            minlength: Some(-1i64),
+            maxlength: Some(-1i64),
+            binary_output: None,
+            output_type: None,
+        }
+    }
+}
 impl DenseCountSparseOutput {
     /// Creates a new `DenseCountSparseOutput`.
     pub fn new() -> Self {
@@ -21601,11 +23612,15 @@ pub fn dense_count_sparse_output_with_args<
 }
 
 /// DenseToCSRSparseMatrix
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DenseToCSRSparseMatrix {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for DenseToCSRSparseMatrix {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl DenseToCSRSparseMatrix {
     /// Creates a new `DenseToCSRSparseMatrix`.
     pub fn new() -> Self {
@@ -21664,13 +23679,21 @@ pub fn dense_to_csrsparse_matrix_with_args<
 }
 
 /// DenseToDenseSetOperation
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DenseToDenseSetOperation {
     pub set_operation: ::std::option::Option<::std::string::String>,
     pub validate_indices: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for DenseToDenseSetOperation {
+    fn default() -> Self {
+        Self {
+            set_operation: None,
+            validate_indices: Some(true),
+            T: None,
+        }
+    }
+}
 impl DenseToDenseSetOperation {
     /// Creates a new `DenseToDenseSetOperation`.
     pub fn new() -> Self {
@@ -21741,12 +23764,19 @@ pub fn dense_to_dense_set_operation_with_args<
 }
 
 /// DenseToSparseBatchDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DenseToSparseBatchDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for DenseToSparseBatchDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl DenseToSparseBatchDataset {
     /// Creates a new `DenseToSparseBatchDataset`.
     pub fn new() -> Self {
@@ -21816,13 +23846,21 @@ pub fn dense_to_sparse_batch_dataset_with_args<
 }
 
 /// DenseToSparseSetOperation
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DenseToSparseSetOperation {
     pub set_operation: ::std::option::Option<::std::string::String>,
     pub validate_indices: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for DenseToSparseSetOperation {
+    fn default() -> Self {
+        Self {
+            set_operation: None,
+            validate_indices: Some(true),
+            T: None,
+        }
+    }
+}
 impl DenseToSparseSetOperation {
     /// Creates a new `DenseToSparseSetOperation`.
     pub fn new() -> Self {
@@ -21906,13 +23944,21 @@ pub fn dense_to_sparse_set_operation_with_args<
 }
 
 /// DepthToSpace
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DepthToSpace {
     pub T: ::std::option::Option<crate::DataType>,
     pub block_size: ::std::option::Option<i64>,
     pub data_format: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for DepthToSpace {
+    fn default() -> Self {
+        Self {
+            T: None,
+            block_size: None,
+            data_format: Some(::std::string::String::from("NHWC")),
+        }
+    }
+}
 impl DepthToSpace {
     /// Creates a new `DepthToSpace`.
     pub fn new() -> Self {
@@ -21971,7 +24017,7 @@ pub fn depth_to_space_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DepthwiseConv2dNative
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DepthwiseConv2dNative {
     pub T: ::std::option::Option<crate::DataType>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
@@ -21980,7 +24026,18 @@ pub struct DepthwiseConv2dNative {
     pub data_format: ::std::option::Option<::std::string::String>,
     pub dilations: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for DepthwiseConv2dNative {
+    fn default() -> Self {
+        Self {
+            T: None,
+            strides: None,
+            padding: None,
+            explicit_paddings: Some(vec![]),
+            data_format: Some(::std::string::String::from("NHWC")),
+            dilations: Some(vec![1, 1, 1, 1]),
+        }
+    }
+}
 impl DepthwiseConv2dNative {
     /// Creates a new `DepthwiseConv2dNative`.
     pub fn new() -> Self {
@@ -22051,7 +24108,7 @@ pub fn depthwise_conv2d_native_with_args<T0: crate::eager::ToHandle, T1: crate::
 }
 
 /// DepthwiseConv2dNativeBackpropFilter
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DepthwiseConv2dNativeBackpropFilter {
     pub T: ::std::option::Option<crate::DataType>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
@@ -22060,7 +24117,18 @@ pub struct DepthwiseConv2dNativeBackpropFilter {
     pub data_format: ::std::option::Option<::std::string::String>,
     pub dilations: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for DepthwiseConv2dNativeBackpropFilter {
+    fn default() -> Self {
+        Self {
+            T: None,
+            strides: None,
+            padding: None,
+            explicit_paddings: Some(vec![]),
+            data_format: Some(::std::string::String::from("NHWC")),
+            dilations: Some(vec![1, 1, 1, 1]),
+        }
+    }
+}
 impl DepthwiseConv2dNativeBackpropFilter {
     /// Creates a new `DepthwiseConv2dNativeBackpropFilter`.
     pub fn new() -> Self {
@@ -22145,7 +24213,7 @@ pub fn depthwise_conv2d_native_backprop_filter_with_args<
 }
 
 /// DepthwiseConv2dNativeBackpropInput
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DepthwiseConv2dNativeBackpropInput {
     pub T: ::std::option::Option<crate::DataType>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
@@ -22154,7 +24222,18 @@ pub struct DepthwiseConv2dNativeBackpropInput {
     pub data_format: ::std::option::Option<::std::string::String>,
     pub dilations: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for DepthwiseConv2dNativeBackpropInput {
+    fn default() -> Self {
+        Self {
+            T: None,
+            strides: None,
+            padding: None,
+            explicit_paddings: Some(vec![]),
+            data_format: Some(::std::string::String::from("NHWC")),
+            dilations: Some(vec![1, 1, 1, 1]),
+        }
+    }
+}
 impl DepthwiseConv2dNativeBackpropInput {
     /// Creates a new `DepthwiseConv2dNativeBackpropInput`.
     pub fn new() -> Self {
@@ -22237,7 +24316,7 @@ pub fn depthwise_conv2d_native_backprop_input_with_args<
 }
 
 /// Dequantize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Dequantize {
     pub T: ::std::option::Option<crate::DataType>,
     pub mode: ::std::option::Option<::std::string::String>,
@@ -22245,7 +24324,17 @@ pub struct Dequantize {
     pub axis: ::std::option::Option<i64>,
     pub dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Dequantize {
+    fn default() -> Self {
+        Self {
+            T: None,
+            mode: Some(::std::string::String::from("MIN_COMBINED")),
+            narrow_range: Some(false),
+            axis: Some(-1i64),
+            dtype: Some(crate::DataType::Float),
+        }
+    }
+}
 impl Dequantize {
     /// Creates a new `Dequantize`.
     pub fn new() -> Self {
@@ -22324,9 +24413,13 @@ pub fn dequantize_with_args<
 }
 
 /// DeserializeIterator
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DeserializeIterator {}
-
+impl ::std::default::Default for DeserializeIterator {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl DeserializeIterator {
     /// Creates a new `DeserializeIterator`.
     pub fn new() -> Self {
@@ -22378,11 +24471,15 @@ pub fn deserialize_iterator_with_args<T0: crate::eager::ToHandle, T1: crate::eag
 }
 
 /// DeserializeManySparse
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DeserializeManySparse {
     pub dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for DeserializeManySparse {
+    fn default() -> Self {
+        Self { dtype: None }
+    }
+}
 impl DeserializeManySparse {
     /// Creates a new `DeserializeManySparse`.
     pub fn new() -> Self {
@@ -22441,12 +24538,19 @@ pub fn deserialize_many_sparse_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DeserializeSparse
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DeserializeSparse {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub Tserialized: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for DeserializeSparse {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            Tserialized: Some(crate::DataType::String),
+        }
+    }
+}
 impl DeserializeSparse {
     /// Creates a new `DeserializeSparse`.
     pub fn new() -> Self {
@@ -22508,11 +24612,17 @@ pub fn deserialize_sparse_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DestroyResourceOp
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DestroyResourceOp {
     pub ignore_lookup_error: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for DestroyResourceOp {
+    fn default() -> Self {
+        Self {
+            ignore_lookup_error: Some(true),
+        }
+    }
+}
 impl DestroyResourceOp {
     /// Creates a new `DestroyResourceOp`.
     pub fn new() -> Self {
@@ -22562,12 +24672,19 @@ pub fn destroy_resource_op_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DestroyTemporaryVariable
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DestroyTemporaryVariable {
     pub T: ::std::option::Option<crate::DataType>,
     pub var_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for DestroyTemporaryVariable {
+    fn default() -> Self {
+        Self {
+            T: None,
+            var_name: None,
+        }
+    }
+}
 impl DestroyTemporaryVariable {
     /// Creates a new `DestroyTemporaryVariable`.
     pub fn new() -> Self {
@@ -22623,11 +24740,15 @@ pub fn destroy_temporary_variable_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DeviceIndex
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DeviceIndex {
     pub device_names: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
 }
-
+impl ::std::default::Default for DeviceIndex {
+    fn default() -> Self {
+        Self { device_names: None }
+    }
+}
 impl DeviceIndex {
     /// Creates a new `DeviceIndex`.
     pub fn new() -> Self {
@@ -22674,11 +24795,15 @@ pub fn device_index_with_args(__args: &DeviceIndex) -> crate::Result<crate::eage
 }
 
 /// Diag
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Diag {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Diag {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Diag {
     /// Creates a new `Diag`.
     pub fn new() -> Self {
@@ -22729,11 +24854,15 @@ pub fn diag_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// DiagPart
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DiagPart {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for DiagPart {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl DiagPart {
     /// Creates a new `DiagPart`.
     pub fn new() -> Self {
@@ -22786,11 +24915,15 @@ pub fn diag_part_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Digamma
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Digamma {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Digamma {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Digamma {
     /// Creates a new `Digamma`.
     pub fn new() -> Self {
@@ -22841,14 +24974,23 @@ pub fn digamma_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Dilation2D
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Dilation2D {
     pub T: ::std::option::Option<crate::DataType>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
     pub rates: ::std::option::Option<::std::vec::Vec<i64>>,
     pub padding: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for Dilation2D {
+    fn default() -> Self {
+        Self {
+            T: None,
+            strides: None,
+            rates: None,
+            padding: None,
+        }
+    }
+}
 impl Dilation2D {
     /// Creates a new `Dilation2D`.
     pub fn new() -> Self {
@@ -22913,14 +25055,23 @@ pub fn dilation2_d_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHan
 }
 
 /// Dilation2DBackpropFilter
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Dilation2DBackpropFilter {
     pub T: ::std::option::Option<crate::DataType>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
     pub rates: ::std::option::Option<::std::vec::Vec<i64>>,
     pub padding: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for Dilation2DBackpropFilter {
+    fn default() -> Self {
+        Self {
+            T: None,
+            strides: None,
+            rates: None,
+            padding: None,
+        }
+    }
+}
 impl Dilation2DBackpropFilter {
     /// Creates a new `Dilation2DBackpropFilter`.
     pub fn new() -> Self {
@@ -22996,14 +25147,23 @@ pub fn dilation2_dbackprop_filter_with_args<
 }
 
 /// Dilation2DBackpropInput
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Dilation2DBackpropInput {
     pub T: ::std::option::Option<crate::DataType>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
     pub rates: ::std::option::Option<::std::vec::Vec<i64>>,
     pub padding: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for Dilation2DBackpropInput {
+    fn default() -> Self {
+        Self {
+            T: None,
+            strides: None,
+            rates: None,
+            padding: None,
+        }
+    }
+}
 impl Dilation2DBackpropInput {
     /// Creates a new `Dilation2DBackpropInput`.
     pub fn new() -> Self {
@@ -23079,14 +25239,23 @@ pub fn dilation2_dbackprop_input_with_args<
 }
 
 /// DirectedInterleaveDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DirectedInterleaveDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     pub N: ::std::option::Option<i64>,
     pub stop_on_empty_dataset: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for DirectedInterleaveDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+            N: None,
+            stop_on_empty_dataset: Some(false),
+        }
+    }
+}
 impl DirectedInterleaveDataset {
     /// Creates a new `DirectedInterleaveDataset`.
     pub fn new() -> Self {
@@ -23154,11 +25323,15 @@ pub fn directed_interleave_dataset_with_args<
 }
 
 /// Div
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Div {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Div {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Div {
     /// Creates a new `Div`.
     pub fn new() -> Self {
@@ -23214,11 +25387,15 @@ pub fn div_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// DivNoNan
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DivNoNan {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for DivNoNan {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl DivNoNan {
     /// Creates a new `DivNoNan`.
     pub fn new() -> Self {
@@ -23274,11 +25451,17 @@ pub fn div_no_nan_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHand
 }
 
 /// DrawBoundingBoxes
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DrawBoundingBoxes {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for DrawBoundingBoxes {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Float),
+        }
+    }
+}
 impl DrawBoundingBoxes {
     /// Creates a new `DrawBoundingBoxes`.
     pub fn new() -> Self {
@@ -23334,11 +25517,17 @@ pub fn draw_bounding_boxes_with_args<T0: crate::eager::ToHandle, T1: crate::eage
 }
 
 /// DrawBoundingBoxesV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DrawBoundingBoxesV2 {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for DrawBoundingBoxesV2 {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Float),
+        }
+    }
+}
 impl DrawBoundingBoxesV2 {
     /// Creates a new `DrawBoundingBoxesV2`.
     pub fn new() -> Self {
@@ -23405,9 +25594,13 @@ pub fn draw_bounding_boxes_v2_with_args<
 }
 
 /// DummyIterationCounter
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DummyIterationCounter {}
-
+impl ::std::default::Default for DummyIterationCounter {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl DummyIterationCounter {
     /// Creates a new `DummyIterationCounter`.
     pub fn new() -> Self {
@@ -23453,9 +25646,13 @@ pub fn dummy_iteration_counter_with_args(
 }
 
 /// DummyMemoryCache
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DummyMemoryCache {}
-
+impl ::std::default::Default for DummyMemoryCache {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl DummyMemoryCache {
     /// Creates a new `DummyMemoryCache`.
     pub fn new() -> Self {
@@ -23501,9 +25698,13 @@ pub fn dummy_memory_cache_with_args(
 }
 
 /// DummySeedGenerator
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DummySeedGenerator {}
-
+impl ::std::default::Default for DummySeedGenerator {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl DummySeedGenerator {
     /// Creates a new `DummySeedGenerator`.
     pub fn new() -> Self {
@@ -23549,12 +25750,19 @@ pub fn dummy_seed_generator_with_args(
 }
 
 /// DynamicPartition
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DynamicPartition {
     pub num_partitions: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for DynamicPartition {
+    fn default() -> Self {
+        Self {
+            num_partitions: None,
+            T: None,
+        }
+    }
+}
 impl DynamicPartition {
     /// Creates a new `DynamicPartition`.
     pub fn new() -> Self {
@@ -23613,12 +25821,16 @@ pub fn dynamic_partition_with_args<T0: crate::eager::ToHandle, T1: crate::eager:
 }
 
 /// DynamicStitch
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct DynamicStitch {
     pub N: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for DynamicStitch {
+    fn default() -> Self {
+        Self { N: None, T: None }
+    }
+}
 impl DynamicStitch {
     /// Creates a new `DynamicStitch`.
     pub fn new() -> Self {
@@ -23677,14 +25889,23 @@ pub fn dynamic_stitch_with_args<T0: crate::eager::ToHandle, T1: crate::eager::To
 }
 
 /// EagerPyFunc
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct EagerPyFunc {
     pub token: ::std::option::Option<::std::string::String>,
     pub is_async: ::std::option::Option<bool>,
     pub Tin: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub Tout: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
 }
-
+impl ::std::default::Default for EagerPyFunc {
+    fn default() -> Self {
+        Self {
+            token: None,
+            is_async: Some(false),
+            Tin: None,
+            Tout: None,
+        }
+    }
+}
 impl EagerPyFunc {
     /// Creates a new `EagerPyFunc`.
     pub fn new() -> Self {
@@ -23746,12 +25967,19 @@ pub fn eager_py_func_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// EditDistance
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct EditDistance {
     pub normalize: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for EditDistance {
+    fn default() -> Self {
+        Self {
+            normalize: Some(true),
+            T: None,
+        }
+    }
+}
 impl EditDistance {
     /// Creates a new `EditDistance`.
     pub fn new() -> Self {
@@ -23844,13 +26072,21 @@ pub fn edit_distance_with_args<
 }
 
 /// Eig
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Eig {
     pub compute_v: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
     pub Tout: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Eig {
+    fn default() -> Self {
+        Self {
+            compute_v: Some(true),
+            T: None,
+            Tout: None,
+        }
+    }
+}
 impl Eig {
     /// Creates a new `Eig`.
     pub fn new() -> Self {
@@ -23914,13 +26150,21 @@ pub fn eig_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Einsum
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Einsum {
     pub equation: ::std::option::Option<::std::string::String>,
     pub N: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Einsum {
+    fn default() -> Self {
+        Self {
+            equation: None,
+            N: None,
+            T: None,
+        }
+    }
+}
 impl Einsum {
     /// Creates a new `Einsum`.
     pub fn new() -> Self {
@@ -23977,11 +26221,15 @@ pub fn einsum_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Elu
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Elu {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Elu {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Elu {
     /// Creates a new `Elu`.
     pub fn new() -> Self {
@@ -24032,11 +26280,15 @@ pub fn elu_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// EluGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct EluGrad {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for EluGrad {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl EluGrad {
     /// Creates a new `EluGrad`.
     pub fn new() -> Self {
@@ -24092,12 +26344,19 @@ pub fn elu_grad_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle
 }
 
 /// Empty
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Empty {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub init: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for Empty {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            init: Some(false),
+        }
+    }
+}
 impl Empty {
     /// Creates a new `Empty`.
     pub fn new() -> Self {
@@ -24151,12 +26410,19 @@ pub fn empty_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// EmptyTensorList
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct EmptyTensorList {
     pub element_dtype: ::std::option::Option<crate::DataType>,
     pub shape_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for EmptyTensorList {
+    fn default() -> Self {
+        Self {
+            element_dtype: None,
+            shape_type: None,
+        }
+    }
+}
 impl EmptyTensorList {
     /// Creates a new `EmptyTensorList`.
     pub fn new() -> Self {
@@ -24215,9 +26481,13 @@ pub fn empty_tensor_list_with_args<T0: crate::eager::ToHandle, T1: crate::eager:
 }
 
 /// EmptyTensorMap
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct EmptyTensorMap {}
-
+impl ::std::default::Default for EmptyTensorMap {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl EmptyTensorMap {
     /// Creates a new `EmptyTensorMap`.
     pub fn new() -> Self {
@@ -24263,11 +26533,15 @@ pub fn empty_tensor_map_with_args(
 }
 
 /// EncodeBase64
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct EncodeBase64 {
     pub pad: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for EncodeBase64 {
+    fn default() -> Self {
+        Self { pad: Some(false) }
+    }
+}
 impl EncodeBase64 {
     /// Creates a new `EncodeBase64`.
     pub fn new() -> Self {
@@ -24320,7 +26594,7 @@ pub fn encode_base64_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// EncodeJpeg
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct EncodeJpeg {
     pub format: ::std::option::Option<::std::string::String>,
     pub quality: ::std::option::Option<i64>,
@@ -24332,7 +26606,21 @@ pub struct EncodeJpeg {
     pub y_density: ::std::option::Option<i64>,
     pub xmp_metadata: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for EncodeJpeg {
+    fn default() -> Self {
+        Self {
+            format: None,
+            quality: Some(95i64),
+            progressive: Some(false),
+            optimize_size: Some(false),
+            chroma_downsampling: Some(true),
+            density_unit: Some(::std::string::String::from("in")),
+            x_density: Some(300i64),
+            y_density: Some(300i64),
+            xmp_metadata: None,
+        }
+    }
+}
 impl EncodeJpeg {
     /// Creates a new `EncodeJpeg`.
     pub fn new() -> Self {
@@ -24409,9 +26697,13 @@ pub fn encode_jpeg_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// EncodeJpegVariableQuality
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct EncodeJpegVariableQuality {}
-
+impl ::std::default::Default for EncodeJpegVariableQuality {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl EncodeJpegVariableQuality {
     /// Creates a new `EncodeJpegVariableQuality`.
     pub fn new() -> Self {
@@ -24467,12 +26759,19 @@ pub fn encode_jpeg_variable_quality_with_args<
 }
 
 /// EncodePng
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct EncodePng {
     pub compression: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for EncodePng {
+    fn default() -> Self {
+        Self {
+            compression: Some(-1i64),
+            T: Some(crate::DataType::UInt8),
+        }
+    }
+}
 impl EncodePng {
     /// Creates a new `EncodePng`.
     pub fn new() -> Self {
@@ -24528,14 +26827,23 @@ pub fn encode_png_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// EncodeProto
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct EncodeProto {
     pub field_names: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
     pub message_type: ::std::option::Option<::std::string::String>,
     pub descriptor_source: ::std::option::Option<::std::string::String>,
     pub Tinput_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
 }
-
+impl ::std::default::Default for EncodeProto {
+    fn default() -> Self {
+        Self {
+            field_names: None,
+            message_type: None,
+            descriptor_source: Some(::std::string::String::from("local://")),
+            Tinput_types: None,
+        }
+    }
+}
 impl EncodeProto {
     /// Creates a new `EncodeProto`.
     pub fn new() -> Self {
@@ -24600,9 +26908,13 @@ pub fn encode_proto_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHa
 }
 
 /// EncodeWav
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct EncodeWav {}
-
+impl ::std::default::Default for EncodeWav {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl EncodeWav {
     /// Creates a new `EncodeWav`.
     pub fn new() -> Self {
@@ -24655,12 +26967,19 @@ pub fn encode_wav_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHand
 }
 
 /// EnqueueTPUEmbeddingIntegerBatch
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct EnqueueTPUEmbeddingIntegerBatch {
     pub N: ::std::option::Option<i64>,
     pub device_ordinal: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for EnqueueTPUEmbeddingIntegerBatch {
+    fn default() -> Self {
+        Self {
+            N: None,
+            device_ordinal: Some(-1i64),
+        }
+    }
+}
 impl EnqueueTPUEmbeddingIntegerBatch {
     /// Creates a new `EnqueueTPUEmbeddingIntegerBatch`.
     pub fn new() -> Self {
@@ -24724,7 +27043,7 @@ pub fn enqueue_tpuembedding_integer_batch_with_args<
 }
 
 /// EnqueueTPUEmbeddingRaggedTensorBatch
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct EnqueueTPUEmbeddingRaggedTensorBatch {
     pub T1: ::std::option::Option<crate::DataType>,
     pub T2: ::std::option::Option<crate::DataType>,
@@ -24736,7 +27055,21 @@ pub struct EnqueueTPUEmbeddingRaggedTensorBatch {
     pub max_sequence_lengths: ::std::option::Option<::std::vec::Vec<i64>>,
     pub num_features: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for EnqueueTPUEmbeddingRaggedTensorBatch {
+    fn default() -> Self {
+        Self {
+            T1: Some(crate::DataType::Int32),
+            T2: Some(crate::DataType::Int32),
+            T3: Some(crate::DataType::Float),
+            N: None,
+            device_ordinal: Some(-1i64),
+            combiners: Some(vec![]),
+            table_ids: None,
+            max_sequence_lengths: Some(vec![]),
+            num_features: Some(vec![]),
+        }
+    }
+}
 impl EnqueueTPUEmbeddingRaggedTensorBatch {
     /// Creates a new `EnqueueTPUEmbeddingRaggedTensorBatch`.
     pub fn new() -> Self {
@@ -24840,7 +27173,7 @@ pub fn enqueue_tpuembedding_ragged_tensor_batch_with_args<
 }
 
 /// EnqueueTPUEmbeddingSparseBatch
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct EnqueueTPUEmbeddingSparseBatch {
     pub T1: ::std::option::Option<crate::DataType>,
     pub T2: ::std::option::Option<crate::DataType>,
@@ -24849,7 +27182,18 @@ pub struct EnqueueTPUEmbeddingSparseBatch {
     pub device_ordinal: ::std::option::Option<i64>,
     pub combiners: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
 }
-
+impl ::std::default::Default for EnqueueTPUEmbeddingSparseBatch {
+    fn default() -> Self {
+        Self {
+            T1: Some(crate::DataType::Int32),
+            T2: Some(crate::DataType::Int32),
+            T3: Some(crate::DataType::Float),
+            N: None,
+            device_ordinal: Some(-1i64),
+            combiners: Some(vec![]),
+        }
+    }
+}
 impl EnqueueTPUEmbeddingSparseBatch {
     /// Creates a new `EnqueueTPUEmbeddingSparseBatch`.
     pub fn new() -> Self {
@@ -24941,7 +27285,7 @@ pub fn enqueue_tpuembedding_sparse_batch_with_args<
 }
 
 /// EnqueueTPUEmbeddingSparseTensorBatch
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct EnqueueTPUEmbeddingSparseTensorBatch {
     pub T1: ::std::option::Option<crate::DataType>,
     pub T2: ::std::option::Option<crate::DataType>,
@@ -24953,7 +27297,21 @@ pub struct EnqueueTPUEmbeddingSparseTensorBatch {
     pub max_sequence_lengths: ::std::option::Option<::std::vec::Vec<i64>>,
     pub num_features: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for EnqueueTPUEmbeddingSparseTensorBatch {
+    fn default() -> Self {
+        Self {
+            T1: Some(crate::DataType::Int32),
+            T2: Some(crate::DataType::Int32),
+            T3: Some(crate::DataType::Float),
+            N: None,
+            device_ordinal: Some(-1i64),
+            combiners: Some(vec![]),
+            table_ids: None,
+            max_sequence_lengths: Some(vec![]),
+            num_features: Some(vec![]),
+        }
+    }
+}
 impl EnqueueTPUEmbeddingSparseTensorBatch {
     /// Creates a new `EnqueueTPUEmbeddingSparseTensorBatch`.
     pub fn new() -> Self {
@@ -25057,12 +27415,19 @@ pub fn enqueue_tpuembedding_sparse_tensor_batch_with_args<
 }
 
 /// EnsureShape
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct EnsureShape {
     pub shape: ::std::option::Option<crate::Shape>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for EnsureShape {
+    fn default() -> Self {
+        Self {
+            shape: None,
+            T: None,
+        }
+    }
+}
 impl EnsureShape {
     /// Creates a new `EnsureShape`.
     pub fn new() -> Self {
@@ -25118,14 +27483,23 @@ pub fn ensure_shape_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Enter
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Enter {
     pub T: ::std::option::Option<crate::DataType>,
     pub frame_name: ::std::option::Option<::std::string::String>,
     pub is_constant: ::std::option::Option<bool>,
     pub parallel_iterations: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for Enter {
+    fn default() -> Self {
+        Self {
+            T: None,
+            frame_name: None,
+            is_constant: Some(false),
+            parallel_iterations: Some(10i64),
+        }
+    }
+}
 impl Enter {
     /// Creates a new `Enter`.
     pub fn new() -> Self {
@@ -25185,12 +27559,19 @@ pub fn enter_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Equal
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Equal {
     pub T: ::std::option::Option<crate::DataType>,
     pub incompatible_shape_error: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for Equal {
+    fn default() -> Self {
+        Self {
+            T: None,
+            incompatible_shape_error: Some(true),
+        }
+    }
+}
 impl Equal {
     /// Creates a new `Equal`.
     pub fn new() -> Self {
@@ -25249,11 +27630,15 @@ pub fn equal_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// Erf
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Erf {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Erf {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Erf {
     /// Creates a new `Erf`.
     pub fn new() -> Self {
@@ -25304,11 +27689,15 @@ pub fn erf_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Erfc
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Erfc {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Erfc {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Erfc {
     /// Creates a new `Erfc`.
     pub fn new() -> Self {
@@ -25359,11 +27748,15 @@ pub fn erfc_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Erfinv
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Erfinv {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Erfinv {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Erfinv {
     /// Creates a new `Erfinv`.
     pub fn new() -> Self {
@@ -25414,13 +27807,21 @@ pub fn erfinv_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// EuclideanNorm
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct EuclideanNorm {
     pub keep_dims: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
     pub Tidx: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for EuclideanNorm {
+    fn default() -> Self {
+        Self {
+            keep_dims: Some(false),
+            T: None,
+            Tidx: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl EuclideanNorm {
     /// Creates a new `EuclideanNorm`.
     pub fn new() -> Self {
@@ -25482,11 +27883,15 @@ pub fn euclidean_norm_with_args<T0: crate::eager::ToHandle, T1: crate::eager::To
 }
 
 /// Exit
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Exit {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Exit {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Exit {
     /// Creates a new `Exit`.
     pub fn new() -> Self {
@@ -25537,11 +27942,15 @@ pub fn exit_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Exp
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Exp {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Exp {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Exp {
     /// Creates a new `Exp`.
     pub fn new() -> Self {
@@ -25592,12 +28001,19 @@ pub fn exp_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// ExpandDims
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExpandDims {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tdim: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ExpandDims {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tdim: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl ExpandDims {
     /// Creates a new `ExpandDims`.
     pub fn new() -> Self {
@@ -25656,12 +28072,19 @@ pub fn expand_dims_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHan
 }
 
 /// ExperimentalAssertNextDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalAssertNextDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ExperimentalAssertNextDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ExperimentalAssertNextDataset {
     /// Creates a new `ExperimentalAssertNextDataset`.
     pub fn new() -> Self {
@@ -25723,13 +28146,21 @@ pub fn experimental_assert_next_dataset_with_args<
 }
 
 /// ExperimentalAutoShardDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalAutoShardDataset {
     pub auto_shard_policy: ::std::option::Option<i64>,
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ExperimentalAutoShardDataset {
+    fn default() -> Self {
+        Self {
+            auto_shard_policy: Some(0i64),
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ExperimentalAutoShardDataset {
     /// Creates a new `ExperimentalAutoShardDataset`.
     pub fn new() -> Self {
@@ -25802,12 +28233,19 @@ pub fn experimental_auto_shard_dataset_with_args<
 }
 
 /// ExperimentalBytesProducedStatsDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalBytesProducedStatsDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ExperimentalBytesProducedStatsDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ExperimentalBytesProducedStatsDataset {
     /// Creates a new `ExperimentalBytesProducedStatsDataset`.
     pub fn new() -> Self {
@@ -25875,12 +28313,19 @@ pub fn experimental_bytes_produced_stats_dataset_with_args<
 }
 
 /// ExperimentalCSVDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalCSVDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ExperimentalCSVDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ExperimentalCSVDataset {
     /// Creates a new `ExperimentalCSVDataset`.
     pub fn new() -> Self {
@@ -25991,14 +28436,23 @@ pub fn experimental_csvdataset_with_args<
 }
 
 /// ExperimentalChooseFastestDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalChooseFastestDataset {
     pub N: ::std::option::Option<i64>,
     pub num_experiments: ::std::option::Option<i64>,
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ExperimentalChooseFastestDataset {
+    fn default() -> Self {
+        Self {
+            N: None,
+            num_experiments: None,
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ExperimentalChooseFastestDataset {
     /// Creates a new `ExperimentalChooseFastestDataset`.
     pub fn new() -> Self {
@@ -26060,9 +28514,13 @@ pub fn experimental_choose_fastest_dataset_with_args<T0: crate::eager::ToHandle>
 }
 
 /// ExperimentalDatasetCardinality
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalDatasetCardinality {}
-
+impl ::std::default::Default for ExperimentalDatasetCardinality {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl ExperimentalDatasetCardinality {
     /// Creates a new `ExperimentalDatasetCardinality`.
     pub fn new() -> Self {
@@ -26112,9 +28570,13 @@ pub fn experimental_dataset_cardinality_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// ExperimentalDatasetToTFRecord
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalDatasetToTFRecord {}
-
+impl ::std::default::Default for ExperimentalDatasetToTFRecord {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl ExperimentalDatasetToTFRecord {
     /// Creates a new `ExperimentalDatasetToTFRecord`.
     pub fn new() -> Self {
@@ -26177,12 +28639,19 @@ pub fn experimental_dataset_to_tfrecord_with_args<
 }
 
 /// ExperimentalDenseToSparseBatchDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalDenseToSparseBatchDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ExperimentalDenseToSparseBatchDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ExperimentalDenseToSparseBatchDataset {
     /// Creates a new `ExperimentalDenseToSparseBatchDataset`.
     pub fn new() -> Self {
@@ -26260,13 +28729,21 @@ pub fn experimental_dense_to_sparse_batch_dataset_with_args<
 }
 
 /// ExperimentalDirectedInterleaveDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalDirectedInterleaveDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     pub N: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for ExperimentalDirectedInterleaveDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+            N: None,
+        }
+    }
+}
 impl ExperimentalDirectedInterleaveDataset {
     /// Creates a new `ExperimentalDirectedInterleaveDataset`.
     pub fn new() -> Self {
@@ -26341,7 +28818,7 @@ pub fn experimental_directed_interleave_dataset_with_args<
 }
 
 /// ExperimentalGroupByReducerDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalGroupByReducerDataset {
     pub key_func: ::std::option::Option<::std::string::String>,
     pub init_func: ::std::option::Option<::std::string::String>,
@@ -26354,7 +28831,22 @@ pub struct ExperimentalGroupByReducerDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ExperimentalGroupByReducerDataset {
+    fn default() -> Self {
+        Self {
+            key_func: None,
+            init_func: None,
+            reduce_func: None,
+            finalize_func: None,
+            Tkey_func_other_arguments: None,
+            Tinit_func_other_arguments: None,
+            Treduce_func_other_arguments: None,
+            Tfinalize_func_other_arguments: None,
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ExperimentalGroupByReducerDataset {
     /// Creates a new `ExperimentalGroupByReducerDataset`.
     pub fn new() -> Self {
@@ -26466,7 +28958,7 @@ pub fn experimental_group_by_reducer_dataset_with_args<
 }
 
 /// ExperimentalGroupByWindowDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalGroupByWindowDataset {
     pub key_func: ::std::option::Option<::std::string::String>,
     pub reduce_func: ::std::option::Option<::std::string::String>,
@@ -26477,7 +28969,20 @@ pub struct ExperimentalGroupByWindowDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ExperimentalGroupByWindowDataset {
+    fn default() -> Self {
+        Self {
+            key_func: None,
+            reduce_func: None,
+            window_size_func: None,
+            Tkey_func_other_arguments: None,
+            Treduce_func_other_arguments: None,
+            Twindow_size_func_other_arguments: None,
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ExperimentalGroupByWindowDataset {
     /// Creates a new `ExperimentalGroupByWindowDataset`.
     pub fn new() -> Self {
@@ -26576,13 +29081,21 @@ pub fn experimental_group_by_window_dataset_with_args<
 }
 
 /// ExperimentalIgnoreErrorsDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalIgnoreErrorsDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     pub log_warning: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ExperimentalIgnoreErrorsDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+            log_warning: Some(false),
+        }
+    }
+}
 impl ExperimentalIgnoreErrorsDataset {
     /// Creates a new `ExperimentalIgnoreErrorsDataset`.
     pub fn new() -> Self {
@@ -26641,9 +29154,13 @@ pub fn experimental_ignore_errors_dataset_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// ExperimentalIteratorGetDevice
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalIteratorGetDevice {}
-
+impl ::std::default::Default for ExperimentalIteratorGetDevice {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl ExperimentalIteratorGetDevice {
     /// Creates a new `ExperimentalIteratorGetDevice`.
     pub fn new() -> Self {
@@ -26693,12 +29210,19 @@ pub fn experimental_iterator_get_device_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// ExperimentalLMDBDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalLMDBDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ExperimentalLMDBDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ExperimentalLMDBDataset {
     /// Creates a new `ExperimentalLMDBDataset`.
     pub fn new() -> Self {
@@ -26754,12 +29278,19 @@ pub fn experimental_lmdbdataset_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// ExperimentalLatencyStatsDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalLatencyStatsDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ExperimentalLatencyStatsDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ExperimentalLatencyStatsDataset {
     /// Creates a new `ExperimentalLatencyStatsDataset`.
     pub fn new() -> Self {
@@ -26824,7 +29355,7 @@ pub fn experimental_latency_stats_dataset_with_args<
 }
 
 /// ExperimentalMapAndBatchDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalMapAndBatchDataset {
     pub f: ::std::option::Option<::std::string::String>,
     pub Targuments: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
@@ -26832,7 +29363,17 @@ pub struct ExperimentalMapAndBatchDataset {
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     pub preserve_cardinality: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ExperimentalMapAndBatchDataset {
+    fn default() -> Self {
+        Self {
+            f: None,
+            Targuments: None,
+            output_types: None,
+            output_shapes: None,
+            preserve_cardinality: Some(false),
+        }
+    }
+}
 impl ExperimentalMapAndBatchDataset {
     /// Creates a new `ExperimentalMapAndBatchDataset`.
     pub fn new() -> Self {
@@ -26928,7 +29469,7 @@ pub fn experimental_map_and_batch_dataset_with_args<
 }
 
 /// ExperimentalMapDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalMapDataset {
     pub f: ::std::option::Option<::std::string::String>,
     pub Targuments: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
@@ -26937,7 +29478,18 @@ pub struct ExperimentalMapDataset {
     pub use_inter_op_parallelism: ::std::option::Option<bool>,
     pub preserve_cardinality: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ExperimentalMapDataset {
+    fn default() -> Self {
+        Self {
+            f: None,
+            Targuments: None,
+            output_types: None,
+            output_shapes: None,
+            use_inter_op_parallelism: Some(true),
+            preserve_cardinality: Some(false),
+        }
+    }
+}
 impl ExperimentalMapDataset {
     /// Creates a new `ExperimentalMapDataset`.
     pub fn new() -> Self {
@@ -27011,9 +29563,13 @@ pub fn experimental_map_dataset_with_args<
 }
 
 /// ExperimentalMatchingFilesDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalMatchingFilesDataset {}
-
+impl ::std::default::Default for ExperimentalMatchingFilesDataset {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl ExperimentalMatchingFilesDataset {
     /// Creates a new `ExperimentalMatchingFilesDataset`.
     pub fn new() -> Self {
@@ -27063,12 +29619,19 @@ pub fn experimental_matching_files_dataset_with_args<T0: crate::eager::ToHandle>
 }
 
 /// ExperimentalMaxIntraOpParallelismDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalMaxIntraOpParallelismDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ExperimentalMaxIntraOpParallelismDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ExperimentalMaxIntraOpParallelismDataset {
     /// Creates a new `ExperimentalMaxIntraOpParallelismDataset`.
     pub fn new() -> Self {
@@ -27140,12 +29703,19 @@ pub fn experimental_max_intra_op_parallelism_dataset_with_args<
 }
 
 /// ExperimentalNonSerializableDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalNonSerializableDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ExperimentalNonSerializableDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ExperimentalNonSerializableDataset {
     /// Creates a new `ExperimentalNonSerializableDataset`.
     pub fn new() -> Self {
@@ -27202,14 +29772,23 @@ pub fn experimental_non_serializable_dataset_with_args<T0: crate::eager::ToHandl
 }
 
 /// ExperimentalParallelInterleaveDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalParallelInterleaveDataset {
     pub f: ::std::option::Option<::std::string::String>,
     pub Targuments: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ExperimentalParallelInterleaveDataset {
+    fn default() -> Self {
+        Self {
+            f: None,
+            Targuments: None,
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ExperimentalParallelInterleaveDataset {
     /// Creates a new `ExperimentalParallelInterleaveDataset`.
     pub fn new() -> Self {
@@ -27317,7 +29896,7 @@ pub fn experimental_parallel_interleave_dataset_with_args<
 }
 
 /// ExperimentalParseExampleDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalParseExampleDataset {
     pub sparse_keys: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
     pub dense_keys: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
@@ -27328,7 +29907,20 @@ pub struct ExperimentalParseExampleDataset {
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     pub sloppy: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ExperimentalParseExampleDataset {
+    fn default() -> Self {
+        Self {
+            sparse_keys: None,
+            dense_keys: None,
+            sparse_types: None,
+            Tdense: None,
+            dense_shapes: None,
+            output_types: None,
+            output_shapes: None,
+            sloppy: Some(false),
+        }
+    }
+}
 impl ExperimentalParseExampleDataset {
     /// Creates a new `ExperimentalParseExampleDataset`.
     pub fn new() -> Self {
@@ -27421,12 +30013,19 @@ pub fn experimental_parse_example_dataset_with_args<
 }
 
 /// ExperimentalPrivateThreadPoolDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalPrivateThreadPoolDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ExperimentalPrivateThreadPoolDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ExperimentalPrivateThreadPoolDataset {
     /// Creates a new `ExperimentalPrivateThreadPoolDataset`.
     pub fn new() -> Self {
@@ -27494,12 +30093,19 @@ pub fn experimental_private_thread_pool_dataset_with_args<
 }
 
 /// ExperimentalRandomDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalRandomDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ExperimentalRandomDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ExperimentalRandomDataset {
     /// Creates a new `ExperimentalRandomDataset`.
     pub fn new() -> Self {
@@ -27561,13 +30167,21 @@ pub fn experimental_random_dataset_with_args<
 }
 
 /// ExperimentalRebatchDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalRebatchDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     pub use_fallback: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ExperimentalRebatchDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+            use_fallback: Some(true),
+        }
+    }
+}
 impl ExperimentalRebatchDataset {
     /// Creates a new `ExperimentalRebatchDataset`.
     pub fn new() -> Self {
@@ -27632,7 +30246,7 @@ pub fn experimental_rebatch_dataset_with_args<
 }
 
 /// ExperimentalScanDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalScanDataset {
     pub f: ::std::option::Option<::std::string::String>,
     pub Tstate: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
@@ -27641,7 +30255,18 @@ pub struct ExperimentalScanDataset {
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     pub preserve_cardinality: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ExperimentalScanDataset {
+    fn default() -> Self {
+        Self {
+            f: None,
+            Tstate: None,
+            Targuments: None,
+            output_types: None,
+            output_shapes: None,
+            preserve_cardinality: Some(false),
+        }
+    }
+}
 impl ExperimentalScanDataset {
     /// Creates a new `ExperimentalScanDataset`.
     pub fn new() -> Self {
@@ -27723,12 +30348,19 @@ pub fn experimental_scan_dataset_with_args<
 }
 
 /// ExperimentalSetStatsAggregatorDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalSetStatsAggregatorDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ExperimentalSetStatsAggregatorDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ExperimentalSetStatsAggregatorDataset {
     /// Creates a new `ExperimentalSetStatsAggregatorDataset`.
     pub fn new() -> Self {
@@ -27812,12 +30444,19 @@ pub fn experimental_set_stats_aggregator_dataset_with_args<
 }
 
 /// ExperimentalSleepDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalSleepDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ExperimentalSleepDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ExperimentalSleepDataset {
     /// Creates a new `ExperimentalSleepDataset`.
     pub fn new() -> Self {
@@ -27879,12 +30518,19 @@ pub fn experimental_sleep_dataset_with_args<
 }
 
 /// ExperimentalSlidingWindowDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalSlidingWindowDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ExperimentalSlidingWindowDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ExperimentalSlidingWindowDataset {
     /// Creates a new `ExperimentalSlidingWindowDataset`.
     pub fn new() -> Self {
@@ -27965,12 +30611,19 @@ pub fn experimental_sliding_window_dataset_with_args<
 }
 
 /// ExperimentalSqlDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalSqlDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ExperimentalSqlDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ExperimentalSqlDataset {
     /// Creates a new `ExperimentalSqlDataset`.
     pub fn new() -> Self {
@@ -28040,12 +30693,19 @@ pub fn experimental_sql_dataset_with_args<
 }
 
 /// ExperimentalStatsAggregatorHandle
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalStatsAggregatorHandle {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for ExperimentalStatsAggregatorHandle {
+    fn default() -> Self {
+        Self {
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl ExperimentalStatsAggregatorHandle {
     /// Creates a new `ExperimentalStatsAggregatorHandle`.
     pub fn new() -> Self {
@@ -28098,9 +30758,13 @@ pub fn experimental_stats_aggregator_handle_with_args(
 }
 
 /// ExperimentalStatsAggregatorSummary
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalStatsAggregatorSummary {}
-
+impl ::std::default::Default for ExperimentalStatsAggregatorSummary {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl ExperimentalStatsAggregatorSummary {
     /// Creates a new `ExperimentalStatsAggregatorSummary`.
     pub fn new() -> Self {
@@ -28151,14 +30815,23 @@ pub fn experimental_stats_aggregator_summary_with_args<T0: crate::eager::ToHandl
 }
 
 /// ExperimentalTakeWhileDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalTakeWhileDataset {
     pub predicate: ::std::option::Option<::std::string::String>,
     pub Targuments: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ExperimentalTakeWhileDataset {
+    fn default() -> Self {
+        Self {
+            predicate: None,
+            Targuments: None,
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ExperimentalTakeWhileDataset {
     /// Creates a new `ExperimentalTakeWhileDataset`.
     pub fn new() -> Self {
@@ -28226,12 +30899,19 @@ pub fn experimental_take_while_dataset_with_args<
 }
 
 /// ExperimentalThreadPoolDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalThreadPoolDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ExperimentalThreadPoolDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ExperimentalThreadPoolDataset {
     /// Creates a new `ExperimentalThreadPoolDataset`.
     pub fn new() -> Self {
@@ -28293,7 +30973,7 @@ pub fn experimental_thread_pool_dataset_with_args<
 }
 
 /// ExperimentalThreadPoolHandle
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalThreadPoolHandle {
     pub num_threads: ::std::option::Option<i64>,
     pub max_intra_op_parallelism: ::std::option::Option<i64>,
@@ -28301,7 +30981,17 @@ pub struct ExperimentalThreadPoolHandle {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for ExperimentalThreadPoolHandle {
+    fn default() -> Self {
+        Self {
+            num_threads: None,
+            max_intra_op_parallelism: Some(1i64),
+            display_name: None,
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl ExperimentalThreadPoolHandle {
     /// Creates a new `ExperimentalThreadPoolHandle`.
     pub fn new() -> Self {
@@ -28362,12 +31052,19 @@ pub fn experimental_thread_pool_handle_with_args(
 }
 
 /// ExperimentalUnbatchDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalUnbatchDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ExperimentalUnbatchDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ExperimentalUnbatchDataset {
     /// Creates a new `ExperimentalUnbatchDataset`.
     pub fn new() -> Self {
@@ -28423,12 +31120,19 @@ pub fn experimental_unbatch_dataset_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// ExperimentalUniqueDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExperimentalUniqueDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ExperimentalUniqueDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ExperimentalUniqueDataset {
     /// Creates a new `ExperimentalUniqueDataset`.
     pub fn new() -> Self {
@@ -28484,11 +31188,15 @@ pub fn experimental_unique_dataset_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Expint
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Expint {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Expint {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Expint {
     /// Creates a new `Expint`.
     pub fn new() -> Self {
@@ -28539,11 +31247,15 @@ pub fn expint_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Expm1
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Expm1 {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Expm1 {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Expm1 {
     /// Creates a new `Expm1`.
     pub fn new() -> Self {
@@ -28594,14 +31306,23 @@ pub fn expm1_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// ExtractGlimpse
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExtractGlimpse {
     pub centered: ::std::option::Option<bool>,
     pub normalized: ::std::option::Option<bool>,
     pub uniform_noise: ::std::option::Option<bool>,
     pub noise: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for ExtractGlimpse {
+    fn default() -> Self {
+        Self {
+            centered: Some(true),
+            normalized: Some(true),
+            uniform_noise: Some(true),
+            noise: Some(::std::string::String::from("uniform")),
+        }
+    }
+}
 impl ExtractGlimpse {
     /// Creates a new `ExtractGlimpse`.
     pub fn new() -> Self {
@@ -28677,14 +31398,23 @@ pub fn extract_glimpse_with_args<
 }
 
 /// ExtractGlimpseV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExtractGlimpseV2 {
     pub centered: ::std::option::Option<bool>,
     pub normalized: ::std::option::Option<bool>,
     pub uniform_noise: ::std::option::Option<bool>,
     pub noise: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for ExtractGlimpseV2 {
+    fn default() -> Self {
+        Self {
+            centered: Some(true),
+            normalized: Some(true),
+            uniform_noise: Some(true),
+            noise: Some(::std::string::String::from("uniform")),
+        }
+    }
+}
 impl ExtractGlimpseV2 {
     /// Creates a new `ExtractGlimpseV2`.
     pub fn new() -> Self {
@@ -28760,7 +31490,7 @@ pub fn extract_glimpse_v2_with_args<
 }
 
 /// ExtractImagePatches
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExtractImagePatches {
     pub ksizes: ::std::option::Option<::std::vec::Vec<i64>>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
@@ -28768,7 +31498,17 @@ pub struct ExtractImagePatches {
     pub T: ::std::option::Option<crate::DataType>,
     pub padding: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for ExtractImagePatches {
+    fn default() -> Self {
+        Self {
+            ksizes: None,
+            strides: None,
+            rates: None,
+            T: None,
+            padding: None,
+        }
+    }
+}
 impl ExtractImagePatches {
     /// Creates a new `ExtractImagePatches`.
     pub fn new() -> Self {
@@ -28833,11 +31573,17 @@ pub fn extract_image_patches_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// ExtractJpegShape
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExtractJpegShape {
     pub output_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ExtractJpegShape {
+    fn default() -> Self {
+        Self {
+            output_type: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl ExtractJpegShape {
     /// Creates a new `ExtractJpegShape`.
     pub fn new() -> Self {
@@ -28890,14 +31636,23 @@ pub fn extract_jpeg_shape_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// ExtractVolumePatches
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ExtractVolumePatches {
     pub ksizes: ::std::option::Option<::std::vec::Vec<i64>>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
     pub T: ::std::option::Option<crate::DataType>,
     pub padding: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for ExtractVolumePatches {
+    fn default() -> Self {
+        Self {
+            ksizes: None,
+            strides: None,
+            T: None,
+            padding: None,
+        }
+    }
+}
 impl ExtractVolumePatches {
     /// Creates a new `ExtractVolumePatches`.
     pub fn new() -> Self {
@@ -28959,11 +31714,17 @@ pub fn extract_volume_patches_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// FFT
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FFT {
     pub Tcomplex: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for FFT {
+    fn default() -> Self {
+        Self {
+            Tcomplex: Some(crate::DataType::Complex64),
+        }
+    }
+}
 impl FFT {
     /// Creates a new `FFT`.
     pub fn new() -> Self {
@@ -29014,11 +31775,17 @@ pub fn fft_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// FFT2D
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FFT2D {
     pub Tcomplex: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for FFT2D {
+    fn default() -> Self {
+        Self {
+            Tcomplex: Some(crate::DataType::Complex64),
+        }
+    }
+}
 impl FFT2D {
     /// Creates a new `FFT2D`.
     pub fn new() -> Self {
@@ -29069,11 +31836,17 @@ pub fn fft2_d_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// FFT3D
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FFT3D {
     pub Tcomplex: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for FFT3D {
+    fn default() -> Self {
+        Self {
+            Tcomplex: Some(crate::DataType::Complex64),
+        }
+    }
+}
 impl FFT3D {
     /// Creates a new `FFT3D`.
     pub fn new() -> Self {
@@ -29124,7 +31897,7 @@ pub fn fft3_d_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// FIFOQueue
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FIFOQueue {
     pub component_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
@@ -29132,7 +31905,17 @@ pub struct FIFOQueue {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for FIFOQueue {
+    fn default() -> Self {
+        Self {
+            component_types: None,
+            shapes: None,
+            capacity: Some(-1i64),
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl FIFOQueue {
     /// Creates a new `FIFOQueue`.
     pub fn new() -> Self {
@@ -29191,7 +31974,7 @@ pub fn fifoqueue_with_args(__args: &FIFOQueue) -> crate::Result<crate::eager::Te
 }
 
 /// FIFOQueueV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FIFOQueueV2 {
     pub component_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
@@ -29199,7 +31982,17 @@ pub struct FIFOQueueV2 {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for FIFOQueueV2 {
+    fn default() -> Self {
+        Self {
+            component_types: None,
+            shapes: None,
+            capacity: Some(-1i64),
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl FIFOQueueV2 {
     /// Creates a new `FIFOQueueV2`.
     pub fn new() -> Self {
@@ -29258,9 +32051,13 @@ pub fn fifoqueue_v2_with_args(__args: &FIFOQueueV2) -> crate::Result<crate::eage
 }
 
 /// Fact
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Fact {}
-
+impl ::std::default::Default for Fact {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl Fact {
     /// Creates a new `Fact`.
     pub fn new() -> Self {
@@ -29304,12 +32101,19 @@ pub fn fact_with_args(__args: &Fact) -> crate::Result<crate::eager::TensorHandle
 }
 
 /// FakeParam
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FakeParam {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub shape: ::std::option::Option<crate::Shape>,
 }
-
+impl ::std::default::Default for FakeParam {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            shape: None,
+        }
+    }
+}
 impl FakeParam {
     /// Creates a new `FakeParam`.
     pub fn new() -> Self {
@@ -29359,14 +32163,23 @@ pub fn fake_param_with_args(__args: &FakeParam) -> crate::Result<crate::eager::T
 }
 
 /// FakeQuantWithMinMaxArgs
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FakeQuantWithMinMaxArgs {
     pub min: ::std::option::Option<f32>,
     pub max: ::std::option::Option<f32>,
     pub num_bits: ::std::option::Option<i64>,
     pub narrow_range: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for FakeQuantWithMinMaxArgs {
+    fn default() -> Self {
+        Self {
+            min: Some(-6f32),
+            max: Some(6f32),
+            num_bits: Some(8i64),
+            narrow_range: Some(false),
+        }
+    }
+}
 impl FakeQuantWithMinMaxArgs {
     /// Creates a new `FakeQuantWithMinMaxArgs`.
     pub fn new() -> Self {
@@ -29428,14 +32241,23 @@ pub fn fake_quant_with_min_max_args_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// FakeQuantWithMinMaxArgsGradient
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FakeQuantWithMinMaxArgsGradient {
     pub min: ::std::option::Option<f32>,
     pub max: ::std::option::Option<f32>,
     pub num_bits: ::std::option::Option<i64>,
     pub narrow_range: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for FakeQuantWithMinMaxArgsGradient {
+    fn default() -> Self {
+        Self {
+            min: Some(-6f32),
+            max: Some(6f32),
+            num_bits: Some(8i64),
+            narrow_range: Some(false),
+        }
+    }
+}
 impl FakeQuantWithMinMaxArgsGradient {
     /// Creates a new `FakeQuantWithMinMaxArgsGradient`.
     pub fn new() -> Self {
@@ -29506,12 +32328,19 @@ pub fn fake_quant_with_min_max_args_gradient_with_args<
 }
 
 /// FakeQuantWithMinMaxVars
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FakeQuantWithMinMaxVars {
     pub num_bits: ::std::option::Option<i64>,
     pub narrow_range: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for FakeQuantWithMinMaxVars {
+    fn default() -> Self {
+        Self {
+            num_bits: Some(8i64),
+            narrow_range: Some(false),
+        }
+    }
+}
 impl FakeQuantWithMinMaxVars {
     /// Creates a new `FakeQuantWithMinMaxVars`.
     pub fn new() -> Self {
@@ -29581,12 +32410,19 @@ pub fn fake_quant_with_min_max_vars_with_args<
 }
 
 /// FakeQuantWithMinMaxVarsGradient
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FakeQuantWithMinMaxVarsGradient {
     pub num_bits: ::std::option::Option<i64>,
     pub narrow_range: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for FakeQuantWithMinMaxVarsGradient {
+    fn default() -> Self {
+        Self {
+            num_bits: Some(8i64),
+            narrow_range: Some(false),
+        }
+    }
+}
 impl FakeQuantWithMinMaxVarsGradient {
     /// Creates a new `FakeQuantWithMinMaxVarsGradient`.
     pub fn new() -> Self {
@@ -29667,12 +32503,19 @@ pub fn fake_quant_with_min_max_vars_gradient_with_args<
 }
 
 /// FakeQuantWithMinMaxVarsPerChannel
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FakeQuantWithMinMaxVarsPerChannel {
     pub num_bits: ::std::option::Option<i64>,
     pub narrow_range: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for FakeQuantWithMinMaxVarsPerChannel {
+    fn default() -> Self {
+        Self {
+            num_bits: Some(8i64),
+            narrow_range: Some(false),
+        }
+    }
+}
 impl FakeQuantWithMinMaxVarsPerChannel {
     /// Creates a new `FakeQuantWithMinMaxVarsPerChannel`.
     pub fn new() -> Self {
@@ -29743,12 +32586,19 @@ pub fn fake_quant_with_min_max_vars_per_channel_with_args<
 }
 
 /// FakeQuantWithMinMaxVarsPerChannelGradient
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FakeQuantWithMinMaxVarsPerChannelGradient {
     pub num_bits: ::std::option::Option<i64>,
     pub narrow_range: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for FakeQuantWithMinMaxVarsPerChannelGradient {
+    fn default() -> Self {
+        Self {
+            num_bits: Some(8i64),
+            narrow_range: Some(false),
+        }
+    }
+}
 impl FakeQuantWithMinMaxVarsPerChannelGradient {
     /// Creates a new `FakeQuantWithMinMaxVarsPerChannelGradient`.
     pub fn new() -> Self {
@@ -29834,9 +32684,13 @@ pub fn fake_quant_with_min_max_vars_per_channel_gradient_with_args<
 }
 
 /// FakeQueue
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FakeQueue {}
-
+impl ::std::default::Default for FakeQueue {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl FakeQueue {
     /// Creates a new `FakeQueue`.
     pub fn new() -> Self {
@@ -29886,12 +32740,19 @@ pub fn fake_queue_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Fill
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Fill {
     pub T: ::std::option::Option<crate::DataType>,
     pub index_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Fill {
+    fn default() -> Self {
+        Self {
+            T: None,
+            index_type: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl Fill {
     /// Creates a new `Fill`.
     pub fn new() -> Self {
@@ -29950,12 +32811,19 @@ pub fn fill_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// FilterByLastComponentDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FilterByLastComponentDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for FilterByLastComponentDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl FilterByLastComponentDataset {
     /// Creates a new `FilterByLastComponentDataset`.
     pub fn new() -> Self {
@@ -30011,14 +32879,23 @@ pub fn filter_by_last_component_dataset_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// FilterDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FilterDataset {
     pub predicate: ::std::option::Option<::std::string::String>,
     pub Targuments: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for FilterDataset {
+    fn default() -> Self {
+        Self {
+            predicate: None,
+            Targuments: None,
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl FilterDataset {
     /// Creates a new `FilterDataset`.
     pub fn new() -> Self {
@@ -30083,13 +32960,21 @@ pub fn filter_dataset_with_args<T0: crate::eager::ToHandle, T1: crate::eager::To
 }
 
 /// FinalizeDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FinalizeDataset {
     pub has_captured_ref: ::std::option::Option<bool>,
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for FinalizeDataset {
+    fn default() -> Self {
+        Self {
+            has_captured_ref: Some(false),
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl FinalizeDataset {
     /// Creates a new `FinalizeDataset`.
     pub fn new() -> Self {
@@ -30148,11 +33033,15 @@ pub fn finalize_dataset_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Fingerprint
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Fingerprint {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Fingerprint {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Fingerprint {
     /// Creates a new `Fingerprint`.
     pub fn new() -> Self {
@@ -30208,9 +33097,13 @@ pub fn fingerprint_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHan
 }
 
 /// FixedLengthRecordDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FixedLengthRecordDataset {}
-
+impl ::std::default::Default for FixedLengthRecordDataset {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl FixedLengthRecordDataset {
     /// Creates a new `FixedLengthRecordDataset`.
     pub fn new() -> Self {
@@ -30291,9 +33184,13 @@ pub fn fixed_length_record_dataset_with_args<
 }
 
 /// FixedLengthRecordDatasetV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FixedLengthRecordDatasetV2 {}
-
+impl ::std::default::Default for FixedLengthRecordDatasetV2 {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl FixedLengthRecordDatasetV2 {
     /// Creates a new `FixedLengthRecordDatasetV2`.
     pub fn new() -> Self {
@@ -30380,7 +33277,7 @@ pub fn fixed_length_record_dataset_v2_with_args<
 }
 
 /// FixedLengthRecordReader
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FixedLengthRecordReader {
     pub header_bytes: ::std::option::Option<i64>,
     pub record_bytes: ::std::option::Option<i64>,
@@ -30389,7 +33286,18 @@ pub struct FixedLengthRecordReader {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for FixedLengthRecordReader {
+    fn default() -> Self {
+        Self {
+            header_bytes: Some(0i64),
+            record_bytes: None,
+            footer_bytes: Some(0i64),
+            hop_bytes: Some(0i64),
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl FixedLengthRecordReader {
     /// Creates a new `FixedLengthRecordReader`.
     pub fn new() -> Self {
@@ -30453,7 +33361,7 @@ pub fn fixed_length_record_reader_with_args(
 }
 
 /// FixedLengthRecordReaderV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FixedLengthRecordReaderV2 {
     pub header_bytes: ::std::option::Option<i64>,
     pub record_bytes: ::std::option::Option<i64>,
@@ -30463,7 +33371,19 @@ pub struct FixedLengthRecordReaderV2 {
     pub shared_name: ::std::option::Option<::std::string::String>,
     pub encoding: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for FixedLengthRecordReaderV2 {
+    fn default() -> Self {
+        Self {
+            header_bytes: Some(0i64),
+            record_bytes: None,
+            footer_bytes: Some(0i64),
+            hop_bytes: Some(0i64),
+            container: None,
+            shared_name: None,
+            encoding: None,
+        }
+    }
+}
 impl FixedLengthRecordReaderV2 {
     /// Creates a new `FixedLengthRecordReaderV2`.
     pub fn new() -> Self {
@@ -30530,7 +33450,7 @@ pub fn fixed_length_record_reader_v2_with_args(
 }
 
 /// FixedUnigramCandidateSampler
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FixedUnigramCandidateSampler {
     pub num_true: ::std::option::Option<i64>,
     pub num_sampled: ::std::option::Option<i64>,
@@ -30545,7 +33465,24 @@ pub struct FixedUnigramCandidateSampler {
     pub seed: ::std::option::Option<i64>,
     pub seed2: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for FixedUnigramCandidateSampler {
+    fn default() -> Self {
+        Self {
+            num_true: None,
+            num_sampled: None,
+            unique: None,
+            range_max: None,
+            vocab_file: None,
+            distortion: Some(1f32),
+            num_reserved_ids: Some(0i64),
+            num_shards: Some(1i64),
+            shard: Some(0i64),
+            unigrams: Some(vec![]),
+            seed: Some(0i64),
+            seed2: Some(0i64),
+        }
+    }
+}
 impl FixedUnigramCandidateSampler {
     /// Creates a new `FixedUnigramCandidateSampler`.
     pub fn new() -> Self {
@@ -30637,14 +33574,23 @@ pub fn fixed_unigram_candidate_sampler_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// FlatMapDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FlatMapDataset {
     pub f: ::std::option::Option<::std::string::String>,
     pub Targuments: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for FlatMapDataset {
+    fn default() -> Self {
+        Self {
+            f: None,
+            Targuments: None,
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl FlatMapDataset {
     /// Creates a new `FlatMapDataset`.
     pub fn new() -> Self {
@@ -30709,11 +33655,15 @@ pub fn flat_map_dataset_with_args<T0: crate::eager::ToHandle, T1: crate::eager::
 }
 
 /// Floor
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Floor {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Floor {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Floor {
     /// Creates a new `Floor`.
     pub fn new() -> Self {
@@ -30764,11 +33714,15 @@ pub fn floor_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// FloorDiv
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FloorDiv {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for FloorDiv {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl FloorDiv {
     /// Creates a new `FloorDiv`.
     pub fn new() -> Self {
@@ -30824,11 +33778,15 @@ pub fn floor_div_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandl
 }
 
 /// FloorMod
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FloorMod {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for FloorMod {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl FloorMod {
     /// Creates a new `FloorMod`.
     pub fn new() -> Self {
@@ -30884,9 +33842,13 @@ pub fn floor_mod_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandl
 }
 
 /// FlushSummaryWriter
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FlushSummaryWriter {}
-
+impl ::std::default::Default for FlushSummaryWriter {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl FlushSummaryWriter {
     /// Creates a new `FlushSummaryWriter`.
     pub fn new() -> Self {
@@ -30933,12 +33895,19 @@ pub fn flush_summary_writer_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// For
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct For {
     pub T: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub body: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for For {
+    fn default() -> Self {
+        Self {
+            T: None,
+            body: None,
+        }
+    }
+}
 impl For {
     /// Creates a new `For`.
     pub fn new() -> Self {
@@ -31013,7 +33982,7 @@ pub fn for__with_args<
 }
 
 /// FractionalAvgPool
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FractionalAvgPool {
     pub pooling_ratio: ::std::option::Option<::std::vec::Vec<f32>>,
     pub pseudo_random: ::std::option::Option<bool>,
@@ -31023,7 +33992,19 @@ pub struct FractionalAvgPool {
     pub seed2: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for FractionalAvgPool {
+    fn default() -> Self {
+        Self {
+            pooling_ratio: None,
+            pseudo_random: Some(false),
+            overlapping: Some(false),
+            deterministic: Some(false),
+            seed: Some(0i64),
+            seed2: Some(0i64),
+            T: None,
+        }
+    }
+}
 impl FractionalAvgPool {
     /// Creates a new `FractionalAvgPool`.
     pub fn new() -> Self {
@@ -31100,12 +34081,19 @@ pub fn fractional_avg_pool_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// FractionalAvgPoolGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FractionalAvgPoolGrad {
     pub overlapping: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for FractionalAvgPoolGrad {
+    fn default() -> Self {
+        Self {
+            overlapping: Some(false),
+            T: None,
+        }
+    }
+}
 impl FractionalAvgPoolGrad {
     /// Creates a new `FractionalAvgPoolGrad`.
     pub fn new() -> Self {
@@ -31186,7 +34174,7 @@ pub fn fractional_avg_pool_grad_with_args<
 }
 
 /// FractionalMaxPool
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FractionalMaxPool {
     pub pooling_ratio: ::std::option::Option<::std::vec::Vec<f32>>,
     pub pseudo_random: ::std::option::Option<bool>,
@@ -31196,7 +34184,19 @@ pub struct FractionalMaxPool {
     pub seed2: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for FractionalMaxPool {
+    fn default() -> Self {
+        Self {
+            pooling_ratio: None,
+            pseudo_random: Some(false),
+            overlapping: Some(false),
+            deterministic: Some(false),
+            seed: Some(0i64),
+            seed2: Some(0i64),
+            T: None,
+        }
+    }
+}
 impl FractionalMaxPool {
     /// Creates a new `FractionalMaxPool`.
     pub fn new() -> Self {
@@ -31273,12 +34273,19 @@ pub fn fractional_max_pool_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// FractionalMaxPoolGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FractionalMaxPoolGrad {
     pub overlapping: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for FractionalMaxPoolGrad {
+    fn default() -> Self {
+        Self {
+            overlapping: Some(false),
+            T: None,
+        }
+    }
+}
 impl FractionalMaxPoolGrad {
     /// Creates a new `FractionalMaxPoolGrad`.
     pub fn new() -> Self {
@@ -31365,11 +34372,15 @@ pub fn fractional_max_pool_grad_with_args<
 }
 
 /// FresnelCos
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FresnelCos {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for FresnelCos {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl FresnelCos {
     /// Creates a new `FresnelCos`.
     pub fn new() -> Self {
@@ -31420,11 +34431,15 @@ pub fn fresnel_cos_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// FresnelSin
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FresnelSin {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for FresnelSin {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl FresnelSin {
     /// Creates a new `FresnelSin`.
     pub fn new() -> Self {
@@ -31475,7 +34490,7 @@ pub fn fresnel_sin_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// FusedBatchNorm
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FusedBatchNorm {
     pub T: ::std::option::Option<crate::DataType>,
     pub epsilon: ::std::option::Option<f32>,
@@ -31483,7 +34498,17 @@ pub struct FusedBatchNorm {
     pub data_format: ::std::option::Option<::std::string::String>,
     pub is_training: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for FusedBatchNorm {
+    fn default() -> Self {
+        Self {
+            T: None,
+            epsilon: Some(0.0001f32),
+            exponential_avg_factor: Some(1f32),
+            data_format: Some(::std::string::String::from("NHWC")),
+            is_training: Some(true),
+        }
+    }
+}
 impl FusedBatchNorm {
     /// Creates a new `FusedBatchNorm`.
     pub fn new() -> Self {
@@ -31580,14 +34605,23 @@ pub fn fused_batch_norm_with_args<
 }
 
 /// FusedBatchNormGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FusedBatchNormGrad {
     pub T: ::std::option::Option<crate::DataType>,
     pub epsilon: ::std::option::Option<f32>,
     pub data_format: ::std::option::Option<::std::string::String>,
     pub is_training: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for FusedBatchNormGrad {
+    fn default() -> Self {
+        Self {
+            T: None,
+            epsilon: Some(0.0001f32),
+            data_format: Some(::std::string::String::from("NHWC")),
+            is_training: Some(true),
+        }
+    }
+}
 impl FusedBatchNormGrad {
     /// Creates a new `FusedBatchNormGrad`.
     pub fn new() -> Self {
@@ -31688,7 +34722,7 @@ pub fn fused_batch_norm_grad_with_args<
 }
 
 /// FusedBatchNormGradV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FusedBatchNormGradV2 {
     pub T: ::std::option::Option<crate::DataType>,
     pub U: ::std::option::Option<crate::DataType>,
@@ -31696,7 +34730,17 @@ pub struct FusedBatchNormGradV2 {
     pub data_format: ::std::option::Option<::std::string::String>,
     pub is_training: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for FusedBatchNormGradV2 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            U: None,
+            epsilon: Some(0.0001f32),
+            data_format: Some(::std::string::String::from("NHWC")),
+            is_training: Some(true),
+        }
+    }
+}
 impl FusedBatchNormGradV2 {
     /// Creates a new `FusedBatchNormGradV2`.
     pub fn new() -> Self {
@@ -31800,7 +34844,7 @@ pub fn fused_batch_norm_grad_v2_with_args<
 }
 
 /// FusedBatchNormGradV3
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FusedBatchNormGradV3 {
     pub T: ::std::option::Option<crate::DataType>,
     pub U: ::std::option::Option<crate::DataType>,
@@ -31808,7 +34852,17 @@ pub struct FusedBatchNormGradV3 {
     pub data_format: ::std::option::Option<::std::string::String>,
     pub is_training: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for FusedBatchNormGradV3 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            U: None,
+            epsilon: Some(0.0001f32),
+            data_format: Some(::std::string::String::from("NHWC")),
+            is_training: Some(true),
+        }
+    }
+}
 impl FusedBatchNormGradV3 {
     /// Creates a new `FusedBatchNormGradV3`.
     pub fn new() -> Self {
@@ -31918,7 +34972,7 @@ pub fn fused_batch_norm_grad_v3_with_args<
 }
 
 /// FusedBatchNormV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FusedBatchNormV2 {
     pub T: ::std::option::Option<crate::DataType>,
     pub U: ::std::option::Option<crate::DataType>,
@@ -31927,7 +34981,18 @@ pub struct FusedBatchNormV2 {
     pub data_format: ::std::option::Option<::std::string::String>,
     pub is_training: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for FusedBatchNormV2 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            U: None,
+            epsilon: Some(0.0001f32),
+            exponential_avg_factor: Some(1f32),
+            data_format: Some(::std::string::String::from("NHWC")),
+            is_training: Some(true),
+        }
+    }
+}
 impl FusedBatchNormV2 {
     /// Creates a new `FusedBatchNormV2`.
     pub fn new() -> Self {
@@ -32027,7 +35092,7 @@ pub fn fused_batch_norm_v2_with_args<
 }
 
 /// FusedBatchNormV3
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FusedBatchNormV3 {
     pub T: ::std::option::Option<crate::DataType>,
     pub U: ::std::option::Option<crate::DataType>,
@@ -32036,7 +35101,18 @@ pub struct FusedBatchNormV3 {
     pub data_format: ::std::option::Option<::std::string::String>,
     pub is_training: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for FusedBatchNormV3 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            U: None,
+            epsilon: Some(0.0001f32),
+            exponential_avg_factor: Some(1f32),
+            data_format: Some(::std::string::String::from("NHWC")),
+            is_training: Some(true),
+        }
+    }
+}
 impl FusedBatchNormV3 {
     /// Creates a new `FusedBatchNormV3`.
     pub fn new() -> Self {
@@ -32137,14 +35213,23 @@ pub fn fused_batch_norm_v3_with_args<
 }
 
 /// FusedPadConv2D
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FusedPadConv2D {
     pub T: ::std::option::Option<crate::DataType>,
     pub mode: ::std::option::Option<::std::string::String>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
     pub padding: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for FusedPadConv2D {
+    fn default() -> Self {
+        Self {
+            T: None,
+            mode: None,
+            strides: None,
+            padding: None,
+        }
+    }
+}
 impl FusedPadConv2D {
     /// Creates a new `FusedPadConv2D`.
     pub fn new() -> Self {
@@ -32220,7 +35305,7 @@ pub fn fused_pad_conv2_d_with_args<
 }
 
 /// FusedResizeAndPadConv2D
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct FusedResizeAndPadConv2D {
     pub T: ::std::option::Option<crate::DataType>,
     pub resize_align_corners: ::std::option::Option<bool>,
@@ -32228,7 +35313,17 @@ pub struct FusedResizeAndPadConv2D {
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
     pub padding: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for FusedResizeAndPadConv2D {
+    fn default() -> Self {
+        Self {
+            T: None,
+            resize_align_corners: Some(false),
+            mode: None,
+            strides: None,
+            padding: None,
+        }
+    }
+}
 impl FusedResizeAndPadConv2D {
     /// Creates a new `FusedResizeAndPadConv2D`.
     pub fn new() -> Self {
@@ -32312,11 +35407,15 @@ pub fn fused_resize_and_pad_conv2_d_with_args<
 }
 
 /// GRUBlockCell
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct GRUBlockCell {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for GRUBlockCell {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl GRUBlockCell {
     /// Creates a new `GRUBlockCell`.
     pub fn new() -> Self {
@@ -32405,11 +35504,15 @@ pub fn grublock_cell_with_args<
 }
 
 /// GRUBlockCellGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct GRUBlockCellGrad {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for GRUBlockCellGrad {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl GRUBlockCellGrad {
     /// Creates a new `GRUBlockCellGrad`.
     pub fn new() -> Self {
@@ -32518,13 +35621,21 @@ pub fn grublock_cell_grad_with_args<
 }
 
 /// Gather
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Gather {
     pub validate_indices: ::std::option::Option<bool>,
     pub Tparams: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Gather {
+    fn default() -> Self {
+        Self {
+            validate_indices: Some(true),
+            Tparams: None,
+            Tindices: None,
+        }
+    }
+}
 impl Gather {
     /// Creates a new `Gather`.
     pub fn new() -> Self {
@@ -32586,12 +35697,19 @@ pub fn gather_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// GatherNd
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct GatherNd {
     pub Tparams: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for GatherNd {
+    fn default() -> Self {
+        Self {
+            Tparams: None,
+            Tindices: None,
+        }
+    }
+}
 impl GatherNd {
     /// Creates a new `GatherNd`.
     pub fn new() -> Self {
@@ -32650,14 +35768,23 @@ pub fn gather_nd_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandl
 }
 
 /// GatherV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct GatherV2 {
     pub batch_dims: ::std::option::Option<i64>,
     pub Tparams: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub Taxis: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for GatherV2 {
+    fn default() -> Self {
+        Self {
+            batch_dims: Some(0i64),
+            Tparams: None,
+            Tindices: None,
+            Taxis: None,
+        }
+    }
+}
 impl GatherV2 {
     /// Creates a new `GatherV2`.
     pub fn new() -> Self {
@@ -32733,11 +35860,17 @@ pub fn gather_v2_with_args<
 }
 
 /// GenerateBoundingBoxProposals
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct GenerateBoundingBoxProposals {
     pub post_nms_topn: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for GenerateBoundingBoxProposals {
+    fn default() -> Self {
+        Self {
+            post_nms_topn: Some(300i64),
+        }
+    }
+}
 impl GenerateBoundingBoxProposals {
     /// Creates a new `GenerateBoundingBoxProposals`.
     pub fn new() -> Self {
@@ -32838,13 +35971,21 @@ pub fn generate_bounding_box_proposals_with_args<
 }
 
 /// GenerateVocabRemapping
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct GenerateVocabRemapping {
     pub new_vocab_offset: ::std::option::Option<i64>,
     pub num_new_vocab: ::std::option::Option<i64>,
     pub old_vocab_size: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for GenerateVocabRemapping {
+    fn default() -> Self {
+        Self {
+            new_vocab_offset: None,
+            num_new_vocab: None,
+            old_vocab_size: Some(-1i64),
+        }
+    }
+}
 impl GenerateVocabRemapping {
     /// Creates a new `GenerateVocabRemapping`.
     pub fn new() -> Self {
@@ -32914,7 +36055,7 @@ pub fn generate_vocab_remapping_with_args<
 }
 
 /// GeneratorDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct GeneratorDataset {
     pub init_func: ::std::option::Option<::std::string::String>,
     pub next_func: ::std::option::Option<::std::string::String>,
@@ -32925,7 +36066,20 @@ pub struct GeneratorDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for GeneratorDataset {
+    fn default() -> Self {
+        Self {
+            init_func: None,
+            next_func: None,
+            finalize_func: None,
+            Tinit_func_args: None,
+            Tnext_func_args: None,
+            Tfinalize_func_args: None,
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl GeneratorDataset {
     /// Creates a new `GeneratorDataset`.
     pub fn new() -> Self {
@@ -33018,9 +36172,13 @@ pub fn generator_dataset_with_args<
 }
 
 /// GetOptions
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct GetOptions {}
-
+impl ::std::default::Default for GetOptions {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl GetOptions {
     /// Creates a new `GetOptions`.
     pub fn new() -> Self {
@@ -33070,11 +36228,15 @@ pub fn get_options_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// GetSessionHandle
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct GetSessionHandle {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for GetSessionHandle {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl GetSessionHandle {
     /// Creates a new `GetSessionHandle`.
     pub fn new() -> Self {
@@ -33127,11 +36289,15 @@ pub fn get_session_handle_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// GetSessionHandleV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct GetSessionHandleV2 {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for GetSessionHandleV2 {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl GetSessionHandleV2 {
     /// Creates a new `GetSessionHandleV2`.
     pub fn new() -> Self {
@@ -33184,11 +36350,15 @@ pub fn get_session_handle_v2_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// GetSessionTensor
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct GetSessionTensor {
     pub dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for GetSessionTensor {
+    fn default() -> Self {
+        Self { dtype: None }
+    }
+}
 impl GetSessionTensor {
     /// Creates a new `GetSessionTensor`.
     pub fn new() -> Self {
@@ -33241,11 +36411,15 @@ pub fn get_session_tensor_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Greater
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Greater {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Greater {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Greater {
     /// Creates a new `Greater`.
     pub fn new() -> Self {
@@ -33301,11 +36475,15 @@ pub fn greater_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>
 }
 
 /// GreaterEqual
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct GreaterEqual {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for GreaterEqual {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl GreaterEqual {
     /// Creates a new `GreaterEqual`.
     pub fn new() -> Self {
@@ -33361,7 +36539,7 @@ pub fn greater_equal_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToH
 }
 
 /// GroupByReducerDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct GroupByReducerDataset {
     pub key_func: ::std::option::Option<::std::string::String>,
     pub init_func: ::std::option::Option<::std::string::String>,
@@ -33374,7 +36552,22 @@ pub struct GroupByReducerDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for GroupByReducerDataset {
+    fn default() -> Self {
+        Self {
+            key_func: None,
+            init_func: None,
+            reduce_func: None,
+            finalize_func: None,
+            Tkey_func_other_arguments: None,
+            Tinit_func_other_arguments: None,
+            Treduce_func_other_arguments: None,
+            Tfinalize_func_other_arguments: None,
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl GroupByReducerDataset {
     /// Creates a new `GroupByReducerDataset`.
     pub fn new() -> Self {
@@ -33485,7 +36678,7 @@ pub fn group_by_reducer_dataset_with_args<
 }
 
 /// GroupByWindowDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct GroupByWindowDataset {
     pub key_func: ::std::option::Option<::std::string::String>,
     pub reduce_func: ::std::option::Option<::std::string::String>,
@@ -33496,7 +36689,20 @@ pub struct GroupByWindowDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for GroupByWindowDataset {
+    fn default() -> Self {
+        Self {
+            key_func: None,
+            reduce_func: None,
+            window_size_func: None,
+            Tkey_func_other_arguments: None,
+            Treduce_func_other_arguments: None,
+            Twindow_size_func_other_arguments: None,
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl GroupByWindowDataset {
     /// Creates a new `GroupByWindowDataset`.
     pub fn new() -> Self {
@@ -33595,11 +36801,15 @@ pub fn group_by_window_dataset_with_args<
 }
 
 /// GuaranteeConst
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct GuaranteeConst {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for GuaranteeConst {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl GuaranteeConst {
     /// Creates a new `GuaranteeConst`.
     pub fn new() -> Self {
@@ -33652,11 +36862,17 @@ pub fn guarantee_const_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// HSVToRGB
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct HSVToRGB {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for HSVToRGB {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Float),
+        }
+    }
+}
 impl HSVToRGB {
     /// Creates a new `HSVToRGB`.
     pub fn new() -> Self {
@@ -33709,7 +36925,7 @@ pub fn hsvto_rgb_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// HashTable
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct HashTable {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
@@ -33717,7 +36933,17 @@ pub struct HashTable {
     pub key_dtype: ::std::option::Option<crate::DataType>,
     pub value_dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for HashTable {
+    fn default() -> Self {
+        Self {
+            container: None,
+            shared_name: None,
+            use_node_name_sharing: Some(false),
+            key_dtype: None,
+            value_dtype: None,
+        }
+    }
+}
 impl HashTable {
     /// Creates a new `HashTable`.
     pub fn new() -> Self {
@@ -33776,7 +37002,7 @@ pub fn hash_table_with_args(__args: &HashTable) -> crate::Result<crate::eager::T
 }
 
 /// HashTableV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct HashTableV2 {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
@@ -33784,7 +37010,17 @@ pub struct HashTableV2 {
     pub key_dtype: ::std::option::Option<crate::DataType>,
     pub value_dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for HashTableV2 {
+    fn default() -> Self {
+        Self {
+            container: None,
+            shared_name: None,
+            use_node_name_sharing: Some(false),
+            key_dtype: None,
+            value_dtype: None,
+        }
+    }
+}
 impl HashTableV2 {
     /// Creates a new `HashTableV2`.
     pub fn new() -> Self {
@@ -33843,12 +37079,19 @@ pub fn hash_table_v2_with_args(__args: &HashTableV2) -> crate::Result<crate::eag
 }
 
 /// HistogramFixedWidth
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct HistogramFixedWidth {
     pub T: ::std::option::Option<crate::DataType>,
     pub dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for HistogramFixedWidth {
+    fn default() -> Self {
+        Self {
+            T: None,
+            dtype: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl HistogramFixedWidth {
     /// Creates a new `HistogramFixedWidth`.
     pub fn new() -> Self {
@@ -33918,11 +37161,17 @@ pub fn histogram_fixed_width_with_args<
 }
 
 /// HistogramSummary
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct HistogramSummary {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for HistogramSummary {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Float),
+        }
+    }
+}
 impl HistogramSummary {
     /// Creates a new `HistogramSummary`.
     pub fn new() -> Self {
@@ -33978,12 +37227,19 @@ pub fn histogram_summary_with_args<T0: crate::eager::ToHandle, T1: crate::eager:
 }
 
 /// HostConst
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct HostConst {
     value: ::std::option::Option<::std::boxed::Box<dyn crate::AnyTensor>>,
     pub dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for HostConst {
+    fn default() -> Self {
+        Self {
+            value: None,
+            dtype: None,
+        }
+    }
+}
 impl HostConst {
     /// Creates a new `HostConst`.
     pub fn new() -> Self {
@@ -34033,11 +37289,17 @@ pub fn host_const_with_args(__args: &HostConst) -> crate::Result<crate::eager::T
 }
 
 /// IFFT
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct IFFT {
     pub Tcomplex: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for IFFT {
+    fn default() -> Self {
+        Self {
+            Tcomplex: Some(crate::DataType::Complex64),
+        }
+    }
+}
 impl IFFT {
     /// Creates a new `IFFT`.
     pub fn new() -> Self {
@@ -34088,11 +37350,17 @@ pub fn ifft_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// IFFT2D
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct IFFT2D {
     pub Tcomplex: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for IFFT2D {
+    fn default() -> Self {
+        Self {
+            Tcomplex: Some(crate::DataType::Complex64),
+        }
+    }
+}
 impl IFFT2D {
     /// Creates a new `IFFT2D`.
     pub fn new() -> Self {
@@ -34143,11 +37411,17 @@ pub fn ifft2_d_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// IFFT3D
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct IFFT3D {
     pub Tcomplex: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for IFFT3D {
+    fn default() -> Self {
+        Self {
+            Tcomplex: Some(crate::DataType::Complex64),
+        }
+    }
+}
 impl IFFT3D {
     /// Creates a new `IFFT3D`.
     pub fn new() -> Self {
@@ -34198,12 +37472,19 @@ pub fn ifft3_d_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// IRFFT
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct IRFFT {
     pub Treal: ::std::option::Option<crate::DataType>,
     pub Tcomplex: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for IRFFT {
+    fn default() -> Self {
+        Self {
+            Treal: Some(crate::DataType::Float),
+            Tcomplex: Some(crate::DataType::Complex64),
+        }
+    }
+}
 impl IRFFT {
     /// Creates a new `IRFFT`.
     pub fn new() -> Self {
@@ -34262,12 +37543,19 @@ pub fn irfft_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// IRFFT2D
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct IRFFT2D {
     pub Treal: ::std::option::Option<crate::DataType>,
     pub Tcomplex: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for IRFFT2D {
+    fn default() -> Self {
+        Self {
+            Treal: Some(crate::DataType::Float),
+            Tcomplex: Some(crate::DataType::Complex64),
+        }
+    }
+}
 impl IRFFT2D {
     /// Creates a new `IRFFT2D`.
     pub fn new() -> Self {
@@ -34326,12 +37614,19 @@ pub fn irfft2_d_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle
 }
 
 /// IRFFT3D
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct IRFFT3D {
     pub Treal: ::std::option::Option<crate::DataType>,
     pub Tcomplex: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for IRFFT3D {
+    fn default() -> Self {
+        Self {
+            Treal: Some(crate::DataType::Float),
+            Tcomplex: Some(crate::DataType::Complex64),
+        }
+    }
+}
 impl IRFFT3D {
     /// Creates a new `IRFFT3D`.
     pub fn new() -> Self {
@@ -34390,11 +37685,15 @@ pub fn irfft3_d_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle
 }
 
 /// Identity
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Identity {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Identity {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Identity {
     /// Creates a new `Identity`.
     pub fn new() -> Self {
@@ -34447,11 +37746,15 @@ pub fn identity_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// IdentityN
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct IdentityN {
     pub T: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
 }
-
+impl ::std::default::Default for IdentityN {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl IdentityN {
     /// Creates a new `IdentityN`.
     pub fn new() -> Self {
@@ -34504,12 +37807,19 @@ pub fn identity_n_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// IdentityReader
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct IdentityReader {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for IdentityReader {
+    fn default() -> Self {
+        Self {
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl IdentityReader {
     /// Creates a new `IdentityReader`.
     pub fn new() -> Self {
@@ -34561,12 +37871,19 @@ pub fn identity_reader_with_args(
 }
 
 /// IdentityReaderV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct IdentityReaderV2 {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for IdentityReaderV2 {
+    fn default() -> Self {
+        Self {
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl IdentityReaderV2 {
     /// Creates a new `IdentityReaderV2`.
     pub fn new() -> Self {
@@ -34618,7 +37935,7 @@ pub fn identity_reader_v2_with_args(
 }
 
 /// If
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct If {
     pub Tcond: ::std::option::Option<crate::DataType>,
     pub Tin: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
@@ -34627,7 +37944,18 @@ pub struct If {
     pub else_branch: ::std::option::Option<::std::string::String>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for If {
+    fn default() -> Self {
+        Self {
+            Tcond: None,
+            Tin: None,
+            Tout: None,
+            then_branch: None,
+            else_branch: None,
+            output_shapes: None,
+        }
+    }
+}
 impl If {
     /// Creates a new `If`.
     pub fn new() -> Self {
@@ -34698,11 +38026,15 @@ pub fn if__with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// Igamma
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Igamma {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Igamma {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Igamma {
     /// Creates a new `Igamma`.
     pub fn new() -> Self {
@@ -34758,11 +38090,15 @@ pub fn igamma_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// IgammaGradA
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct IgammaGradA {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for IgammaGradA {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl IgammaGradA {
     /// Creates a new `IgammaGradA`.
     pub fn new() -> Self {
@@ -34818,11 +38154,15 @@ pub fn igamma_grad_a_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToH
 }
 
 /// Igammac
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Igammac {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Igammac {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Igammac {
     /// Creates a new `Igammac`.
     pub fn new() -> Self {
@@ -34878,13 +38218,21 @@ pub fn igammac_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>
 }
 
 /// IgnoreErrorsDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct IgnoreErrorsDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     pub log_warning: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for IgnoreErrorsDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+            log_warning: Some(false),
+        }
+    }
+}
 impl IgnoreErrorsDataset {
     /// Creates a new `IgnoreErrorsDataset`.
     pub fn new() -> Self {
@@ -34943,12 +38291,19 @@ pub fn ignore_errors_dataset_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Imag
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Imag {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tout: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Imag {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Complex64),
+            Tout: Some(crate::DataType::Float),
+        }
+    }
+}
 impl Imag {
     /// Creates a new `Imag`.
     pub fn new() -> Self {
@@ -35002,13 +38357,21 @@ pub fn imag_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// ImageProjectiveTransformV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ImageProjectiveTransformV2 {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub interpolation: ::std::option::Option<::std::string::String>,
     pub fill_mode: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for ImageProjectiveTransformV2 {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            interpolation: None,
+            fill_mode: Some(::std::string::String::from("CONSTANT")),
+        }
+    }
+}
 impl ImageProjectiveTransformV2 {
     /// Creates a new `ImageProjectiveTransformV2`.
     pub fn new() -> Self {
@@ -35081,13 +38444,21 @@ pub fn image_projective_transform_v2_with_args<
 }
 
 /// ImageProjectiveTransformV3
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ImageProjectiveTransformV3 {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub interpolation: ::std::option::Option<::std::string::String>,
     pub fill_mode: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for ImageProjectiveTransformV3 {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            interpolation: None,
+            fill_mode: Some(::std::string::String::from("CONSTANT")),
+        }
+    }
+}
 impl ImageProjectiveTransformV3 {
     /// Creates a new `ImageProjectiveTransformV3`.
     pub fn new() -> Self {
@@ -35165,13 +38536,21 @@ pub fn image_projective_transform_v3_with_args<
 }
 
 /// ImageSummary
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ImageSummary {
     pub max_images: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
     bad_color: ::std::option::Option<::std::boxed::Box<dyn crate::AnyTensor>>,
 }
-
+impl ::std::default::Default for ImageSummary {
+    fn default() -> Self {
+        Self {
+            max_images: Some(3i64),
+            T: Some(crate::DataType::Float),
+            bad_color: None,
+        }
+    }
+}
 impl ImageSummary {
     /// Creates a new `ImageSummary`.
     pub fn new() -> Self {
@@ -35233,13 +38612,21 @@ pub fn image_summary_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToH
 }
 
 /// ImmutableConst
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ImmutableConst {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub shape: ::std::option::Option<crate::Shape>,
     pub memory_region_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for ImmutableConst {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            shape: None,
+            memory_region_name: None,
+        }
+    }
+}
 impl ImmutableConst {
     /// Creates a new `ImmutableConst`.
     pub fn new() -> Self {
@@ -35294,9 +38681,13 @@ pub fn immutable_const_with_args(
 }
 
 /// ImportEvent
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ImportEvent {}
-
+impl ::std::default::Default for ImportEvent {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl ImportEvent {
     /// Creates a new `ImportEvent`.
     pub fn new() -> Self {
@@ -35348,12 +38739,19 @@ pub fn import_event_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHa
 }
 
 /// InTopK
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct InTopK {
     pub k: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for InTopK {
+    fn default() -> Self {
+        Self {
+            k: None,
+            T: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl InTopK {
     /// Creates a new `InTopK`.
     pub fn new() -> Self {
@@ -35412,11 +38810,17 @@ pub fn in_top_k_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle
 }
 
 /// InTopKV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct InTopKV2 {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for InTopKV2 {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl InTopKV2 {
     /// Creates a new `InTopKV2`.
     pub fn new() -> Self {
@@ -35483,12 +38887,19 @@ pub fn in_top_kv2_with_args<
 }
 
 /// InfeedDequeue
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct InfeedDequeue {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub shape: ::std::option::Option<crate::Shape>,
 }
-
+impl ::std::default::Default for InfeedDequeue {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            shape: None,
+        }
+    }
+}
 impl InfeedDequeue {
     /// Creates a new `InfeedDequeue`.
     pub fn new() -> Self {
@@ -35540,12 +38951,19 @@ pub fn infeed_dequeue_with_args(
 }
 
 /// InfeedDequeueTuple
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct InfeedDequeueTuple {
     pub dtypes: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for InfeedDequeueTuple {
+    fn default() -> Self {
+        Self {
+            dtypes: None,
+            shapes: None,
+        }
+    }
+}
 impl InfeedDequeueTuple {
     /// Creates a new `InfeedDequeueTuple`.
     pub fn new() -> Self {
@@ -35597,14 +39015,23 @@ pub fn infeed_dequeue_tuple_with_args(
 }
 
 /// InfeedEnqueue
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct InfeedEnqueue {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub shape: ::std::option::Option<crate::Shape>,
     pub layout: ::std::option::Option<::std::vec::Vec<i64>>,
     pub device_ordinal: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for InfeedEnqueue {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            shape: None,
+            layout: Some(vec![]),
+            device_ordinal: Some(-1i64),
+        }
+    }
+}
 impl InfeedEnqueue {
     /// Creates a new `InfeedEnqueue`.
     pub fn new() -> Self {
@@ -35663,11 +39090,17 @@ pub fn infeed_enqueue_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// InfeedEnqueuePrelinearizedBuffer
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct InfeedEnqueuePrelinearizedBuffer {
     pub device_ordinal: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for InfeedEnqueuePrelinearizedBuffer {
+    fn default() -> Self {
+        Self {
+            device_ordinal: Some(-1i64),
+        }
+    }
+}
 impl InfeedEnqueuePrelinearizedBuffer {
     /// Creates a new `InfeedEnqueuePrelinearizedBuffer`.
     pub fn new() -> Self {
@@ -35719,14 +39152,23 @@ pub fn infeed_enqueue_prelinearized_buffer_with_args<T0: crate::eager::ToHandle>
 }
 
 /// InfeedEnqueueTuple
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct InfeedEnqueueTuple {
     pub dtypes: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     pub layouts: ::std::option::Option<::std::vec::Vec<i64>>,
     pub device_ordinal: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for InfeedEnqueueTuple {
+    fn default() -> Self {
+        Self {
+            dtypes: None,
+            shapes: None,
+            layouts: Some(vec![]),
+            device_ordinal: Some(-1i64),
+        }
+    }
+}
 impl InfeedEnqueueTuple {
     /// Creates a new `InfeedEnqueueTuple`.
     pub fn new() -> Self {
@@ -35785,12 +39227,19 @@ pub fn infeed_enqueue_tuple_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// InitializeTable
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct InitializeTable {
     pub Tkey: ::std::option::Option<crate::DataType>,
     pub Tval: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for InitializeTable {
+    fn default() -> Self {
+        Self {
+            Tkey: None,
+            Tval: None,
+        }
+    }
+}
 impl InitializeTable {
     /// Creates a new `InitializeTable`.
     pub fn new() -> Self {
@@ -35859,9 +39308,13 @@ pub fn initialize_table_with_args<
 }
 
 /// InitializeTableFromDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct InitializeTableFromDataset {}
-
+impl ::std::default::Default for InitializeTableFromDataset {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl InitializeTableFromDataset {
     /// Creates a new `InitializeTableFromDataset`.
     pub fn new() -> Self {
@@ -35916,7 +39369,7 @@ pub fn initialize_table_from_dataset_with_args<
 }
 
 /// InitializeTableFromTextFile
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct InitializeTableFromTextFile {
     pub key_index: ::std::option::Option<i64>,
     pub value_index: ::std::option::Option<i64>,
@@ -35924,7 +39377,17 @@ pub struct InitializeTableFromTextFile {
     pub delimiter: ::std::option::Option<::std::string::String>,
     pub offset: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for InitializeTableFromTextFile {
+    fn default() -> Self {
+        Self {
+            key_index: None,
+            value_index: None,
+            vocab_size: Some(-1i64),
+            delimiter: Some(::std::string::String::from("	")),
+            offset: Some(0i64),
+        }
+    }
+}
 impl InitializeTableFromTextFile {
     /// Creates a new `InitializeTableFromTextFile`.
     pub fn new() -> Self {
@@ -35994,7 +39457,7 @@ pub fn initialize_table_from_text_file_with_args<
 }
 
 /// InitializeTableFromTextFileV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct InitializeTableFromTextFileV2 {
     pub key_index: ::std::option::Option<i64>,
     pub value_index: ::std::option::Option<i64>,
@@ -36002,7 +39465,17 @@ pub struct InitializeTableFromTextFileV2 {
     pub delimiter: ::std::option::Option<::std::string::String>,
     pub offset: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for InitializeTableFromTextFileV2 {
+    fn default() -> Self {
+        Self {
+            key_index: None,
+            value_index: None,
+            vocab_size: Some(-1i64),
+            delimiter: Some(::std::string::String::from("	")),
+            offset: Some(0i64),
+        }
+    }
+}
 impl InitializeTableFromTextFileV2 {
     /// Creates a new `InitializeTableFromTextFileV2`.
     pub fn new() -> Self {
@@ -36075,12 +39548,19 @@ pub fn initialize_table_from_text_file_v2_with_args<
 }
 
 /// InitializeTableV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct InitializeTableV2 {
     pub Tkey: ::std::option::Option<crate::DataType>,
     pub Tval: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for InitializeTableV2 {
+    fn default() -> Self {
+        Self {
+            Tkey: None,
+            Tval: None,
+        }
+    }
+}
 impl InitializeTableV2 {
     /// Creates a new `InitializeTableV2`.
     pub fn new() -> Self {
@@ -36149,11 +39629,15 @@ pub fn initialize_table_v2_with_args<
 }
 
 /// InplaceAdd
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct InplaceAdd {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for InplaceAdd {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl InplaceAdd {
     /// Creates a new `InplaceAdd`.
     pub fn new() -> Self {
@@ -36220,11 +39704,15 @@ pub fn inplace_add_with_args<
 }
 
 /// InplaceSub
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct InplaceSub {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for InplaceSub {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl InplaceSub {
     /// Creates a new `InplaceSub`.
     pub fn new() -> Self {
@@ -36291,11 +39779,15 @@ pub fn inplace_sub_with_args<
 }
 
 /// InplaceUpdate
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct InplaceUpdate {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for InplaceUpdate {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl InplaceUpdate {
     /// Creates a new `InplaceUpdate`.
     pub fn new() -> Self {
@@ -36362,14 +39854,23 @@ pub fn inplace_update_with_args<
 }
 
 /// InterleaveDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct InterleaveDataset {
     pub f: ::std::option::Option<::std::string::String>,
     pub Targuments: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for InterleaveDataset {
+    fn default() -> Self {
+        Self {
+            f: None,
+            Targuments: None,
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl InterleaveDataset {
     /// Creates a new `InterleaveDataset`.
     pub fn new() -> Self {
@@ -36456,11 +39957,15 @@ pub fn interleave_dataset_with_args<
 }
 
 /// Inv
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Inv {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Inv {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Inv {
     /// Creates a new `Inv`.
     pub fn new() -> Self {
@@ -36511,11 +40016,15 @@ pub fn inv_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// InvGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct InvGrad {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for InvGrad {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl InvGrad {
     /// Creates a new `InvGrad`.
     pub fn new() -> Self {
@@ -36571,11 +40080,15 @@ pub fn inv_grad_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle
 }
 
 /// Invert
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Invert {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Invert {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Invert {
     /// Creates a new `Invert`.
     pub fn new() -> Self {
@@ -36626,11 +40139,17 @@ pub fn invert_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// InvertPermutation
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct InvertPermutation {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for InvertPermutation {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl InvertPermutation {
     /// Creates a new `InvertPermutation`.
     pub fn new() -> Self {
@@ -36683,9 +40202,13 @@ pub fn invert_permutation_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// IsBoostedTreesEnsembleInitialized
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct IsBoostedTreesEnsembleInitialized {}
-
+impl ::std::default::Default for IsBoostedTreesEnsembleInitialized {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl IsBoostedTreesEnsembleInitialized {
     /// Creates a new `IsBoostedTreesEnsembleInitialized`.
     pub fn new() -> Self {
@@ -36736,9 +40259,13 @@ pub fn is_boosted_trees_ensemble_initialized_with_args<T0: crate::eager::ToHandl
 }
 
 /// IsBoostedTreesQuantileStreamResourceInitialized
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct IsBoostedTreesQuantileStreamResourceInitialized {}
-
+impl ::std::default::Default for IsBoostedTreesQuantileStreamResourceInitialized {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl IsBoostedTreesQuantileStreamResourceInitialized {
     /// Creates a new `IsBoostedTreesQuantileStreamResourceInitialized`.
     pub fn new() -> Self {
@@ -36796,11 +40323,15 @@ pub fn is_boosted_trees_quantile_stream_resource_initialized_with_args<
 }
 
 /// IsFinite
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct IsFinite {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for IsFinite {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl IsFinite {
     /// Creates a new `IsFinite`.
     pub fn new() -> Self {
@@ -36851,11 +40382,15 @@ pub fn is_finite_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// IsInf
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct IsInf {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for IsInf {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl IsInf {
     /// Creates a new `IsInf`.
     pub fn new() -> Self {
@@ -36906,11 +40441,15 @@ pub fn is_inf_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// IsNan
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct IsNan {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for IsNan {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl IsNan {
     /// Creates a new `IsNan`.
     pub fn new() -> Self {
@@ -36961,11 +40500,15 @@ pub fn is_nan_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// IsVariableInitialized
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct IsVariableInitialized {
     pub dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for IsVariableInitialized {
+    fn default() -> Self {
+        Self { dtype: None }
+    }
+}
 impl IsVariableInitialized {
     /// Creates a new `IsVariableInitialized`.
     pub fn new() -> Self {
@@ -37018,12 +40561,19 @@ pub fn is_variable_initialized_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// IsotonicRegression
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct IsotonicRegression {
     pub T: ::std::option::Option<crate::DataType>,
     pub output_dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for IsotonicRegression {
+    fn default() -> Self {
+        Self {
+            T: None,
+            output_dtype: Some(crate::DataType::Float),
+        }
+    }
+}
 impl IsotonicRegression {
     /// Creates a new `IsotonicRegression`.
     pub fn new() -> Self {
@@ -37084,14 +40634,23 @@ pub fn isotonic_regression_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Iterator
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Iterator {
     pub shared_name: ::std::option::Option<::std::string::String>,
     pub container: ::std::option::Option<::std::string::String>,
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for Iterator {
+    fn default() -> Self {
+        Self {
+            shared_name: None,
+            container: None,
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl Iterator {
     /// Creates a new `Iterator`.
     pub fn new() -> Self {
@@ -37147,12 +40706,19 @@ pub fn iterator_with_args(__args: &Iterator) -> crate::Result<crate::eager::Tens
 }
 
 /// IteratorFromStringHandle
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct IteratorFromStringHandle {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for IteratorFromStringHandle {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl IteratorFromStringHandle {
     /// Creates a new `IteratorFromStringHandle`.
     pub fn new() -> Self {
@@ -37208,12 +40774,19 @@ pub fn iterator_from_string_handle_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// IteratorFromStringHandleV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct IteratorFromStringHandleV2 {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for IteratorFromStringHandleV2 {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl IteratorFromStringHandleV2 {
     /// Creates a new `IteratorFromStringHandleV2`.
     pub fn new() -> Self {
@@ -37269,9 +40842,13 @@ pub fn iterator_from_string_handle_v2_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// IteratorGetDevice
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct IteratorGetDevice {}
-
+impl ::std::default::Default for IteratorGetDevice {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl IteratorGetDevice {
     /// Creates a new `IteratorGetDevice`.
     pub fn new() -> Self {
@@ -37321,12 +40898,19 @@ pub fn iterator_get_device_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// IteratorGetNext
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct IteratorGetNext {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for IteratorGetNext {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl IteratorGetNext {
     /// Creates a new `IteratorGetNext`.
     pub fn new() -> Self {
@@ -37382,12 +40966,19 @@ pub fn iterator_get_next_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// IteratorGetNextAsOptional
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct IteratorGetNextAsOptional {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for IteratorGetNextAsOptional {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl IteratorGetNextAsOptional {
     /// Creates a new `IteratorGetNextAsOptional`.
     pub fn new() -> Self {
@@ -37443,12 +41034,19 @@ pub fn iterator_get_next_as_optional_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// IteratorGetNextSync
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct IteratorGetNextSync {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for IteratorGetNextSync {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl IteratorGetNextSync {
     /// Creates a new `IteratorGetNextSync`.
     pub fn new() -> Self {
@@ -37504,9 +41102,13 @@ pub fn iterator_get_next_sync_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// IteratorToStringHandle
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct IteratorToStringHandle {}
-
+impl ::std::default::Default for IteratorToStringHandle {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl IteratorToStringHandle {
     /// Creates a new `IteratorToStringHandle`.
     pub fn new() -> Self {
@@ -37556,14 +41158,23 @@ pub fn iterator_to_string_handle_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// IteratorV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct IteratorV2 {
     pub shared_name: ::std::option::Option<::std::string::String>,
     pub container: ::std::option::Option<::std::string::String>,
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for IteratorV2 {
+    fn default() -> Self {
+        Self {
+            shared_name: None,
+            container: None,
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl IteratorV2 {
     /// Creates a new `IteratorV2`.
     pub fn new() -> Self {
@@ -37619,9 +41230,13 @@ pub fn iterator_v2_with_args(__args: &IteratorV2) -> crate::Result<crate::eager:
 }
 
 /// KMC2ChainInitialization
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct KMC2ChainInitialization {}
-
+impl ::std::default::Default for KMC2ChainInitialization {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl KMC2ChainInitialization {
     /// Creates a new `KMC2ChainInitialization`.
     pub fn new() -> Self {
@@ -37677,9 +41292,13 @@ pub fn kmc2_chain_initialization_with_args<
 }
 
 /// KmeansPlusPlusInitialization
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct KmeansPlusPlusInitialization {}
-
+impl ::std::default::Default for KmeansPlusPlusInitialization {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl KmeansPlusPlusInitialization {
     /// Creates a new `KmeansPlusPlusInitialization`.
     pub fn new() -> Self {
@@ -37754,11 +41373,15 @@ pub fn kmeans_plus_plus_initialization_with_args<
 }
 
 /// KthOrderStatistic
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct KthOrderStatistic {
     pub k: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for KthOrderStatistic {
+    fn default() -> Self {
+        Self { k: None }
+    }
+}
 impl KthOrderStatistic {
     /// Creates a new `KthOrderStatistic`.
     pub fn new() -> Self {
@@ -37811,11 +41434,15 @@ pub fn kth_order_statistic_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// L2Loss
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct L2Loss {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for L2Loss {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl L2Loss {
     /// Creates a new `L2Loss`.
     pub fn new() -> Self {
@@ -37866,12 +41493,19 @@ pub fn l2_loss_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// LMDBDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LMDBDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for LMDBDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl LMDBDataset {
     /// Creates a new `LMDBDataset`.
     pub fn new() -> Self {
@@ -37927,12 +41561,19 @@ pub fn lmdbdataset_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// LMDBReader
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LMDBReader {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for LMDBReader {
+    fn default() -> Self {
+        Self {
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl LMDBReader {
     /// Creates a new `LMDBReader`.
     pub fn new() -> Self {
@@ -37982,7 +41623,7 @@ pub fn lmdbreader_with_args(__args: &LMDBReader) -> crate::Result<crate::eager::
 }
 
 /// LRN
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LRN {
     pub depth_radius: ::std::option::Option<i64>,
     pub bias: ::std::option::Option<f32>,
@@ -37990,7 +41631,17 @@ pub struct LRN {
     pub beta: ::std::option::Option<f32>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for LRN {
+    fn default() -> Self {
+        Self {
+            depth_radius: Some(5i64),
+            bias: Some(1f32),
+            alpha: Some(1f32),
+            beta: Some(0.5f32),
+            T: Some(crate::DataType::Float),
+        }
+    }
+}
 impl LRN {
     /// Creates a new `LRN`.
     pub fn new() -> Self {
@@ -38053,7 +41704,7 @@ pub fn lrn_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// LRNGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LRNGrad {
     pub depth_radius: ::std::option::Option<i64>,
     pub bias: ::std::option::Option<f32>,
@@ -38061,7 +41712,17 @@ pub struct LRNGrad {
     pub beta: ::std::option::Option<f32>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for LRNGrad {
+    fn default() -> Self {
+        Self {
+            depth_radius: Some(5i64),
+            bias: Some(1f32),
+            alpha: Some(1f32),
+            beta: Some(0.5f32),
+            T: Some(crate::DataType::Float),
+        }
+    }
+}
 impl LRNGrad {
     /// Creates a new `LRNGrad`.
     pub fn new() -> Self {
@@ -38140,14 +41801,23 @@ pub fn lrngrad_with_args<
 }
 
 /// LSTMBlockCell
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LSTMBlockCell {
     pub forget_bias: ::std::option::Option<f32>,
     pub cell_clip: ::std::option::Option<f32>,
     pub use_peephole: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for LSTMBlockCell {
+    fn default() -> Self {
+        Self {
+            forget_bias: Some(1f32),
+            cell_clip: Some(3f32),
+            use_peephole: Some(false),
+            T: None,
+        }
+    }
+}
 impl LSTMBlockCell {
     /// Creates a new `LSTMBlockCell`.
     pub fn new() -> Self {
@@ -38258,12 +41928,19 @@ pub fn lstmblock_cell_with_args<
 }
 
 /// LSTMBlockCellGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LSTMBlockCellGrad {
     pub use_peephole: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for LSTMBlockCellGrad {
+    fn default() -> Self {
+        Self {
+            use_peephole: None,
+            T: None,
+        }
+    }
+}
 impl LSTMBlockCellGrad {
     /// Creates a new `LSTMBlockCellGrad`.
     pub fn new() -> Self {
@@ -38408,12 +42085,19 @@ pub fn lstmblock_cell_grad_with_args<
 }
 
 /// LatencyStatsDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LatencyStatsDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for LatencyStatsDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl LatencyStatsDataset {
     /// Creates a new `LatencyStatsDataset`.
     pub fn new() -> Self {
@@ -38472,12 +42156,19 @@ pub fn latency_stats_dataset_with_args<T0: crate::eager::ToHandle, T1: crate::ea
 }
 
 /// LeakyRelu
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LeakyRelu {
     pub alpha: ::std::option::Option<f32>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for LeakyRelu {
+    fn default() -> Self {
+        Self {
+            alpha: Some(0.2f32),
+            T: Some(crate::DataType::Float),
+        }
+    }
+}
 impl LeakyRelu {
     /// Creates a new `LeakyRelu`.
     pub fn new() -> Self {
@@ -38533,12 +42224,19 @@ pub fn leaky_relu_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// LeakyReluGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LeakyReluGrad {
     pub alpha: ::std::option::Option<f32>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for LeakyReluGrad {
+    fn default() -> Self {
+        Self {
+            alpha: Some(0.2f32),
+            T: Some(crate::DataType::Float),
+        }
+    }
+}
 impl LeakyReluGrad {
     /// Creates a new `LeakyReluGrad`.
     pub fn new() -> Self {
@@ -38597,7 +42295,7 @@ pub fn leaky_relu_grad_with_args<T0: crate::eager::ToHandle, T1: crate::eager::T
 }
 
 /// LearnedUnigramCandidateSampler
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LearnedUnigramCandidateSampler {
     pub num_true: ::std::option::Option<i64>,
     pub num_sampled: ::std::option::Option<i64>,
@@ -38606,7 +42304,18 @@ pub struct LearnedUnigramCandidateSampler {
     pub seed: ::std::option::Option<i64>,
     pub seed2: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for LearnedUnigramCandidateSampler {
+    fn default() -> Self {
+        Self {
+            num_true: None,
+            num_sampled: None,
+            unique: None,
+            range_max: None,
+            seed: Some(0i64),
+            seed2: Some(0i64),
+        }
+    }
+}
 impl LearnedUnigramCandidateSampler {
     /// Creates a new `LearnedUnigramCandidateSampler`.
     pub fn new() -> Self {
@@ -38680,11 +42389,15 @@ pub fn learned_unigram_candidate_sampler_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// LeftShift
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LeftShift {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for LeftShift {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl LeftShift {
     /// Creates a new `LeftShift`.
     pub fn new() -> Self {
@@ -38740,7 +42453,7 @@ pub fn left_shift_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHand
 }
 
 /// LegacyParallelInterleaveDatasetV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LegacyParallelInterleaveDatasetV2 {
     pub f: ::std::option::Option<::std::string::String>,
     pub deterministic: ::std::option::Option<::std::string::String>,
@@ -38748,7 +42461,17 @@ pub struct LegacyParallelInterleaveDatasetV2 {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for LegacyParallelInterleaveDatasetV2 {
+    fn default() -> Self {
+        Self {
+            f: None,
+            deterministic: Some(::std::string::String::from("default")),
+            Targuments: None,
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl LegacyParallelInterleaveDatasetV2 {
     /// Creates a new `LegacyParallelInterleaveDatasetV2`.
     pub fn new() -> Self {
@@ -38851,11 +42574,15 @@ pub fn legacy_parallel_interleave_dataset_v2_with_args<
 }
 
 /// Less
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Less {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Less {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Less {
     /// Creates a new `Less`.
     pub fn new() -> Self {
@@ -38911,11 +42638,15 @@ pub fn less_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// LessEqual
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LessEqual {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for LessEqual {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl LessEqual {
     /// Creates a new `LessEqual`.
     pub fn new() -> Self {
@@ -38971,11 +42702,15 @@ pub fn less_equal_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHand
 }
 
 /// Lgamma
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Lgamma {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Lgamma {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Lgamma {
     /// Creates a new `Lgamma`.
     pub fn new() -> Self {
@@ -39026,12 +42761,19 @@ pub fn lgamma_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// LinSpace
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LinSpace {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tidx: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for LinSpace {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tidx: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl LinSpace {
     /// Creates a new `LinSpace`.
     pub fn new() -> Self {
@@ -39101,12 +42843,19 @@ pub fn lin_space_with_args<
 }
 
 /// ListDiff
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ListDiff {
     pub T: ::std::option::Option<crate::DataType>,
     pub out_idx: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ListDiff {
+    fn default() -> Self {
+        Self {
+            T: None,
+            out_idx: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl ListDiff {
     /// Creates a new `ListDiff`.
     pub fn new() -> Self {
@@ -39170,13 +42919,21 @@ pub fn list_diff_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandl
 }
 
 /// LoadAndRemapMatrix
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LoadAndRemapMatrix {
     pub num_rows: ::std::option::Option<i64>,
     pub num_cols: ::std::option::Option<i64>,
     pub max_rows_in_memory: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for LoadAndRemapMatrix {
+    fn default() -> Self {
+        Self {
+            num_rows: None,
+            num_cols: None,
+            max_rows_in_memory: Some(-1i64),
+        }
+    }
+}
 impl LoadAndRemapMatrix {
     /// Creates a new `LoadAndRemapMatrix`.
     pub fn new() -> Self {
@@ -39266,7 +43023,7 @@ pub fn load_and_remap_matrix_with_args<
 }
 
 /// LoadDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LoadDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
@@ -39274,7 +43031,17 @@ pub struct LoadDataset {
     pub reader_func: ::std::option::Option<::std::string::String>,
     pub Treader_func_args: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
 }
-
+impl ::std::default::Default for LoadDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+            compression: None,
+            reader_func: None,
+            Treader_func_args: None,
+        }
+    }
+}
 impl LoadDataset {
     /// Creates a new `LoadDataset`.
     pub fn new() -> Self {
@@ -39342,7 +43109,7 @@ pub fn load_dataset_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHa
 }
 
 /// LoadTPUEmbeddingADAMParameters
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LoadTPUEmbeddingADAMParameters {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -39350,7 +43117,17 @@ pub struct LoadTPUEmbeddingADAMParameters {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for LoadTPUEmbeddingADAMParameters {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl LoadTPUEmbeddingADAMParameters {
     /// Creates a new `LoadTPUEmbeddingADAMParameters`.
     pub fn new() -> Self {
@@ -39428,7 +43205,7 @@ pub fn load_tpuembedding_adamparameters_with_args<
 }
 
 /// LoadTPUEmbeddingADAMParametersGradAccumDebug
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LoadTPUEmbeddingADAMParametersGradAccumDebug {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -39436,7 +43213,17 @@ pub struct LoadTPUEmbeddingADAMParametersGradAccumDebug {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for LoadTPUEmbeddingADAMParametersGradAccumDebug {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl LoadTPUEmbeddingADAMParametersGradAccumDebug {
     /// Creates a new `LoadTPUEmbeddingADAMParametersGradAccumDebug`.
     pub fn new() -> Self {
@@ -39528,7 +43315,7 @@ pub fn load_tpuembedding_adamparameters_grad_accum_debug_with_args<
 }
 
 /// LoadTPUEmbeddingAdadeltaParameters
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LoadTPUEmbeddingAdadeltaParameters {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -39536,7 +43323,17 @@ pub struct LoadTPUEmbeddingAdadeltaParameters {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for LoadTPUEmbeddingAdadeltaParameters {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl LoadTPUEmbeddingAdadeltaParameters {
     /// Creates a new `LoadTPUEmbeddingAdadeltaParameters`.
     pub fn new() -> Self {
@@ -39615,7 +43412,7 @@ pub fn load_tpuembedding_adadelta_parameters_with_args<
 }
 
 /// LoadTPUEmbeddingAdadeltaParametersGradAccumDebug
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LoadTPUEmbeddingAdadeltaParametersGradAccumDebug {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -39623,7 +43420,17 @@ pub struct LoadTPUEmbeddingAdadeltaParametersGradAccumDebug {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for LoadTPUEmbeddingAdadeltaParametersGradAccumDebug {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl LoadTPUEmbeddingAdadeltaParametersGradAccumDebug {
     /// Creates a new `LoadTPUEmbeddingAdadeltaParametersGradAccumDebug`.
     pub fn new() -> Self {
@@ -39715,7 +43522,7 @@ pub fn load_tpuembedding_adadelta_parameters_grad_accum_debug_with_args<
 }
 
 /// LoadTPUEmbeddingAdagradParameters
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LoadTPUEmbeddingAdagradParameters {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -39723,7 +43530,17 @@ pub struct LoadTPUEmbeddingAdagradParameters {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for LoadTPUEmbeddingAdagradParameters {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl LoadTPUEmbeddingAdagradParameters {
     /// Creates a new `LoadTPUEmbeddingAdagradParameters`.
     pub fn new() -> Self {
@@ -39797,7 +43614,7 @@ pub fn load_tpuembedding_adagrad_parameters_with_args<
 }
 
 /// LoadTPUEmbeddingAdagradParametersGradAccumDebug
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LoadTPUEmbeddingAdagradParametersGradAccumDebug {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -39805,7 +43622,17 @@ pub struct LoadTPUEmbeddingAdagradParametersGradAccumDebug {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for LoadTPUEmbeddingAdagradParametersGradAccumDebug {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl LoadTPUEmbeddingAdagradParametersGradAccumDebug {
     /// Creates a new `LoadTPUEmbeddingAdagradParametersGradAccumDebug`.
     pub fn new() -> Self {
@@ -39891,7 +43718,7 @@ pub fn load_tpuembedding_adagrad_parameters_grad_accum_debug_with_args<
 }
 
 /// LoadTPUEmbeddingCenteredRMSPropParameters
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LoadTPUEmbeddingCenteredRMSPropParameters {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -39899,7 +43726,17 @@ pub struct LoadTPUEmbeddingCenteredRMSPropParameters {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for LoadTPUEmbeddingCenteredRMSPropParameters {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl LoadTPUEmbeddingCenteredRMSPropParameters {
     /// Creates a new `LoadTPUEmbeddingCenteredRMSPropParameters`.
     pub fn new() -> Self {
@@ -39985,7 +43822,7 @@ pub fn load_tpuembedding_centered_rmsprop_parameters_with_args<
 }
 
 /// LoadTPUEmbeddingFTRLParameters
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LoadTPUEmbeddingFTRLParameters {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -39993,7 +43830,17 @@ pub struct LoadTPUEmbeddingFTRLParameters {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for LoadTPUEmbeddingFTRLParameters {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl LoadTPUEmbeddingFTRLParameters {
     /// Creates a new `LoadTPUEmbeddingFTRLParameters`.
     pub fn new() -> Self {
@@ -40071,7 +43918,7 @@ pub fn load_tpuembedding_ftrlparameters_with_args<
 }
 
 /// LoadTPUEmbeddingFTRLParametersGradAccumDebug
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LoadTPUEmbeddingFTRLParametersGradAccumDebug {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -40079,7 +43926,17 @@ pub struct LoadTPUEmbeddingFTRLParametersGradAccumDebug {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for LoadTPUEmbeddingFTRLParametersGradAccumDebug {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl LoadTPUEmbeddingFTRLParametersGradAccumDebug {
     /// Creates a new `LoadTPUEmbeddingFTRLParametersGradAccumDebug`.
     pub fn new() -> Self {
@@ -40171,7 +44028,7 @@ pub fn load_tpuembedding_ftrlparameters_grad_accum_debug_with_args<
 }
 
 /// LoadTPUEmbeddingFrequencyEstimatorParameters
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LoadTPUEmbeddingFrequencyEstimatorParameters {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -40179,7 +44036,17 @@ pub struct LoadTPUEmbeddingFrequencyEstimatorParameters {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for LoadTPUEmbeddingFrequencyEstimatorParameters {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl LoadTPUEmbeddingFrequencyEstimatorParameters {
     /// Creates a new `LoadTPUEmbeddingFrequencyEstimatorParameters`.
     pub fn new() -> Self {
@@ -40255,7 +44122,7 @@ pub fn load_tpuembedding_frequency_estimator_parameters_with_args<
 }
 
 /// LoadTPUEmbeddingFrequencyEstimatorParametersGradAccumDebug
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LoadTPUEmbeddingFrequencyEstimatorParametersGradAccumDebug {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -40263,7 +44130,17 @@ pub struct LoadTPUEmbeddingFrequencyEstimatorParametersGradAccumDebug {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for LoadTPUEmbeddingFrequencyEstimatorParametersGradAccumDebug {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl LoadTPUEmbeddingFrequencyEstimatorParametersGradAccumDebug {
     /// Creates a new `LoadTPUEmbeddingFrequencyEstimatorParametersGradAccumDebug`.
     pub fn new() -> Self {
@@ -40349,7 +44226,7 @@ pub fn load_tpuembedding_frequency_estimator_parameters_grad_accum_debug_with_ar
 }
 
 /// LoadTPUEmbeddingMDLAdagradLightParameters
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LoadTPUEmbeddingMDLAdagradLightParameters {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -40357,7 +44234,17 @@ pub struct LoadTPUEmbeddingMDLAdagradLightParameters {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for LoadTPUEmbeddingMDLAdagradLightParameters {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl LoadTPUEmbeddingMDLAdagradLightParameters {
     /// Creates a new `LoadTPUEmbeddingMDLAdagradLightParameters`.
     pub fn new() -> Self {
@@ -40449,7 +44336,7 @@ pub fn load_tpuembedding_mdladagrad_light_parameters_with_args<
 }
 
 /// LoadTPUEmbeddingMomentumParameters
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LoadTPUEmbeddingMomentumParameters {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -40457,7 +44344,17 @@ pub struct LoadTPUEmbeddingMomentumParameters {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for LoadTPUEmbeddingMomentumParameters {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl LoadTPUEmbeddingMomentumParameters {
     /// Creates a new `LoadTPUEmbeddingMomentumParameters`.
     pub fn new() -> Self {
@@ -40531,7 +44428,7 @@ pub fn load_tpuembedding_momentum_parameters_with_args<
 }
 
 /// LoadTPUEmbeddingMomentumParametersGradAccumDebug
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LoadTPUEmbeddingMomentumParametersGradAccumDebug {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -40539,7 +44436,17 @@ pub struct LoadTPUEmbeddingMomentumParametersGradAccumDebug {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for LoadTPUEmbeddingMomentumParametersGradAccumDebug {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl LoadTPUEmbeddingMomentumParametersGradAccumDebug {
     /// Creates a new `LoadTPUEmbeddingMomentumParametersGradAccumDebug`.
     pub fn new() -> Self {
@@ -40625,7 +44532,7 @@ pub fn load_tpuembedding_momentum_parameters_grad_accum_debug_with_args<
 }
 
 /// LoadTPUEmbeddingProximalAdagradParameters
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LoadTPUEmbeddingProximalAdagradParameters {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -40633,7 +44540,17 @@ pub struct LoadTPUEmbeddingProximalAdagradParameters {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for LoadTPUEmbeddingProximalAdagradParameters {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl LoadTPUEmbeddingProximalAdagradParameters {
     /// Creates a new `LoadTPUEmbeddingProximalAdagradParameters`.
     pub fn new() -> Self {
@@ -40709,7 +44626,7 @@ pub fn load_tpuembedding_proximal_adagrad_parameters_with_args<
 }
 
 /// LoadTPUEmbeddingProximalAdagradParametersGradAccumDebug
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LoadTPUEmbeddingProximalAdagradParametersGradAccumDebug {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -40717,7 +44634,17 @@ pub struct LoadTPUEmbeddingProximalAdagradParametersGradAccumDebug {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for LoadTPUEmbeddingProximalAdagradParametersGradAccumDebug {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl LoadTPUEmbeddingProximalAdagradParametersGradAccumDebug {
     /// Creates a new `LoadTPUEmbeddingProximalAdagradParametersGradAccumDebug`.
     pub fn new() -> Self {
@@ -40803,7 +44730,7 @@ pub fn load_tpuembedding_proximal_adagrad_parameters_grad_accum_debug_with_args<
 }
 
 /// LoadTPUEmbeddingProximalYogiParameters
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LoadTPUEmbeddingProximalYogiParameters {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -40811,7 +44738,17 @@ pub struct LoadTPUEmbeddingProximalYogiParameters {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for LoadTPUEmbeddingProximalYogiParameters {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl LoadTPUEmbeddingProximalYogiParameters {
     /// Creates a new `LoadTPUEmbeddingProximalYogiParameters`.
     pub fn new() -> Self {
@@ -40892,7 +44829,7 @@ pub fn load_tpuembedding_proximal_yogi_parameters_with_args<
 }
 
 /// LoadTPUEmbeddingProximalYogiParametersGradAccumDebug
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LoadTPUEmbeddingProximalYogiParametersGradAccumDebug {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -40900,7 +44837,17 @@ pub struct LoadTPUEmbeddingProximalYogiParametersGradAccumDebug {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for LoadTPUEmbeddingProximalYogiParametersGradAccumDebug {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl LoadTPUEmbeddingProximalYogiParametersGradAccumDebug {
     /// Creates a new `LoadTPUEmbeddingProximalYogiParametersGradAccumDebug`.
     pub fn new() -> Self {
@@ -40992,7 +44939,7 @@ pub fn load_tpuembedding_proximal_yogi_parameters_grad_accum_debug_with_args<
 }
 
 /// LoadTPUEmbeddingRMSPropParameters
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LoadTPUEmbeddingRMSPropParameters {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -41000,7 +44947,17 @@ pub struct LoadTPUEmbeddingRMSPropParameters {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for LoadTPUEmbeddingRMSPropParameters {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl LoadTPUEmbeddingRMSPropParameters {
     /// Creates a new `LoadTPUEmbeddingRMSPropParameters`.
     pub fn new() -> Self {
@@ -41079,7 +45036,7 @@ pub fn load_tpuembedding_rmsprop_parameters_with_args<
 }
 
 /// LoadTPUEmbeddingRMSPropParametersGradAccumDebug
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LoadTPUEmbeddingRMSPropParametersGradAccumDebug {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -41087,7 +45044,17 @@ pub struct LoadTPUEmbeddingRMSPropParametersGradAccumDebug {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for LoadTPUEmbeddingRMSPropParametersGradAccumDebug {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl LoadTPUEmbeddingRMSPropParametersGradAccumDebug {
     /// Creates a new `LoadTPUEmbeddingRMSPropParametersGradAccumDebug`.
     pub fn new() -> Self {
@@ -41179,7 +45146,7 @@ pub fn load_tpuembedding_rmsprop_parameters_grad_accum_debug_with_args<
 }
 
 /// LoadTPUEmbeddingStochasticGradientDescentParameters
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LoadTPUEmbeddingStochasticGradientDescentParameters {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -41187,7 +45154,17 @@ pub struct LoadTPUEmbeddingStochasticGradientDescentParameters {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for LoadTPUEmbeddingStochasticGradientDescentParameters {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl LoadTPUEmbeddingStochasticGradientDescentParameters {
     /// Creates a new `LoadTPUEmbeddingStochasticGradientDescentParameters`.
     pub fn new() -> Self {
@@ -41256,7 +45233,7 @@ pub fn load_tpuembedding_stochastic_gradient_descent_parameters_with_args<
 }
 
 /// LoadTPUEmbeddingStochasticGradientDescentParametersGradAccumDebug
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LoadTPUEmbeddingStochasticGradientDescentParametersGradAccumDebug {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -41264,7 +45241,17 @@ pub struct LoadTPUEmbeddingStochasticGradientDescentParametersGradAccumDebug {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for LoadTPUEmbeddingStochasticGradientDescentParametersGradAccumDebug {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl LoadTPUEmbeddingStochasticGradientDescentParametersGradAccumDebug {
     /// Creates a new `LoadTPUEmbeddingStochasticGradientDescentParametersGradAccumDebug`.
     pub fn new() -> Self {
@@ -41344,11 +45331,15 @@ pub fn load_tpuembedding_stochastic_gradient_descent_parameters_grad_accum_debug
 }
 
 /// Log
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Log {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Log {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Log {
     /// Creates a new `Log`.
     pub fn new() -> Self {
@@ -41399,11 +45390,15 @@ pub fn log_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Log1p
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Log1p {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Log1p {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Log1p {
     /// Creates a new `Log1p`.
     pub fn new() -> Self {
@@ -41454,11 +45449,15 @@ pub fn log1p_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// LogMatrixDeterminant
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LogMatrixDeterminant {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for LogMatrixDeterminant {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl LogMatrixDeterminant {
     /// Creates a new `LogMatrixDeterminant`.
     pub fn new() -> Self {
@@ -41516,11 +45515,15 @@ pub fn log_matrix_determinant_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// LogSoftmax
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LogSoftmax {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for LogSoftmax {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl LogSoftmax {
     /// Creates a new `LogSoftmax`.
     pub fn new() -> Self {
@@ -41573,7 +45576,7 @@ pub fn log_softmax_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// LogUniformCandidateSampler
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LogUniformCandidateSampler {
     pub num_true: ::std::option::Option<i64>,
     pub num_sampled: ::std::option::Option<i64>,
@@ -41582,7 +45585,18 @@ pub struct LogUniformCandidateSampler {
     pub seed: ::std::option::Option<i64>,
     pub seed2: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for LogUniformCandidateSampler {
+    fn default() -> Self {
+        Self {
+            num_true: None,
+            num_sampled: None,
+            unique: None,
+            range_max: None,
+            seed: Some(0i64),
+            seed2: Some(0i64),
+        }
+    }
+}
 impl LogUniformCandidateSampler {
     /// Creates a new `LogUniformCandidateSampler`.
     pub fn new() -> Self {
@@ -41656,9 +45670,13 @@ pub fn log_uniform_candidate_sampler_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// LogicalAnd
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LogicalAnd {}
-
+impl ::std::default::Default for LogicalAnd {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl LogicalAnd {
     /// Creates a new `LogicalAnd`.
     pub fn new() -> Self {
@@ -41711,9 +45729,13 @@ pub fn logical_and_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHan
 }
 
 /// LogicalNot
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LogicalNot {}
-
+impl ::std::default::Default for LogicalNot {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl LogicalNot {
     /// Creates a new `LogicalNot`.
     pub fn new() -> Self {
@@ -41761,9 +45783,13 @@ pub fn logical_not_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// LogicalOr
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LogicalOr {}
-
+impl ::std::default::Default for LogicalOr {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl LogicalOr {
     /// Creates a new `LogicalOr`.
     pub fn new() -> Self {
@@ -41816,12 +45842,19 @@ pub fn logical_or_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHand
 }
 
 /// LookupTableExport
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LookupTableExport {
     pub Tkeys: ::std::option::Option<crate::DataType>,
     pub Tvalues: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for LookupTableExport {
+    fn default() -> Self {
+        Self {
+            Tkeys: None,
+            Tvalues: None,
+        }
+    }
+}
 impl LookupTableExport {
     /// Creates a new `LookupTableExport`.
     pub fn new() -> Self {
@@ -41882,12 +45915,19 @@ pub fn lookup_table_export_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// LookupTableExportV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LookupTableExportV2 {
     pub Tkeys: ::std::option::Option<crate::DataType>,
     pub Tvalues: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for LookupTableExportV2 {
+    fn default() -> Self {
+        Self {
+            Tkeys: None,
+            Tvalues: None,
+        }
+    }
+}
 impl LookupTableExportV2 {
     /// Creates a new `LookupTableExportV2`.
     pub fn new() -> Self {
@@ -41948,12 +45988,19 @@ pub fn lookup_table_export_v2_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// LookupTableFind
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LookupTableFind {
     pub Tin: ::std::option::Option<crate::DataType>,
     pub Tout: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for LookupTableFind {
+    fn default() -> Self {
+        Self {
+            Tin: None,
+            Tout: None,
+        }
+    }
+}
 impl LookupTableFind {
     /// Creates a new `LookupTableFind`.
     pub fn new() -> Self {
@@ -42023,12 +46070,19 @@ pub fn lookup_table_find_with_args<
 }
 
 /// LookupTableFindV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LookupTableFindV2 {
     pub Tin: ::std::option::Option<crate::DataType>,
     pub Tout: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for LookupTableFindV2 {
+    fn default() -> Self {
+        Self {
+            Tin: None,
+            Tout: None,
+        }
+    }
+}
 impl LookupTableFindV2 {
     /// Creates a new `LookupTableFindV2`.
     pub fn new() -> Self {
@@ -42098,12 +46152,19 @@ pub fn lookup_table_find_v2_with_args<
 }
 
 /// LookupTableImport
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LookupTableImport {
     pub Tin: ::std::option::Option<crate::DataType>,
     pub Tout: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for LookupTableImport {
+    fn default() -> Self {
+        Self {
+            Tin: None,
+            Tout: None,
+        }
+    }
+}
 impl LookupTableImport {
     /// Creates a new `LookupTableImport`.
     pub fn new() -> Self {
@@ -42172,12 +46233,19 @@ pub fn lookup_table_import_with_args<
 }
 
 /// LookupTableImportV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LookupTableImportV2 {
     pub Tin: ::std::option::Option<crate::DataType>,
     pub Tout: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for LookupTableImportV2 {
+    fn default() -> Self {
+        Self {
+            Tin: None,
+            Tout: None,
+        }
+    }
+}
 impl LookupTableImportV2 {
     /// Creates a new `LookupTableImportV2`.
     pub fn new() -> Self {
@@ -42246,12 +46314,19 @@ pub fn lookup_table_import_v2_with_args<
 }
 
 /// LookupTableInsert
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LookupTableInsert {
     pub Tin: ::std::option::Option<crate::DataType>,
     pub Tout: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for LookupTableInsert {
+    fn default() -> Self {
+        Self {
+            Tin: None,
+            Tout: None,
+        }
+    }
+}
 impl LookupTableInsert {
     /// Creates a new `LookupTableInsert`.
     pub fn new() -> Self {
@@ -42320,12 +46395,19 @@ pub fn lookup_table_insert_with_args<
 }
 
 /// LookupTableInsertV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LookupTableInsertV2 {
     pub Tin: ::std::option::Option<crate::DataType>,
     pub Tout: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for LookupTableInsertV2 {
+    fn default() -> Self {
+        Self {
+            Tin: None,
+            Tout: None,
+        }
+    }
+}
 impl LookupTableInsertV2 {
     /// Creates a new `LookupTableInsertV2`.
     pub fn new() -> Self {
@@ -42394,11 +46476,15 @@ pub fn lookup_table_insert_v2_with_args<
 }
 
 /// LookupTableRemoveV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LookupTableRemoveV2 {
     pub Tin: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for LookupTableRemoveV2 {
+    fn default() -> Self {
+        Self { Tin: None }
+    }
+}
 impl LookupTableRemoveV2 {
     /// Creates a new `LookupTableRemoveV2`.
     pub fn new() -> Self {
@@ -42453,9 +46539,13 @@ pub fn lookup_table_remove_v2_with_args<T0: crate::eager::ToHandle, T1: crate::e
 }
 
 /// LookupTableSize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LookupTableSize {}
-
+impl ::std::default::Default for LookupTableSize {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl LookupTableSize {
     /// Creates a new `LookupTableSize`.
     pub fn new() -> Self {
@@ -42505,9 +46595,13 @@ pub fn lookup_table_size_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// LookupTableSizeV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LookupTableSizeV2 {}
-
+impl ::std::default::Default for LookupTableSizeV2 {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl LookupTableSizeV2 {
     /// Creates a new `LookupTableSizeV2`.
     pub fn new() -> Self {
@@ -42557,9 +46651,13 @@ pub fn lookup_table_size_v2_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// LoopCond
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LoopCond {}
-
+impl ::std::default::Default for LoopCond {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl LoopCond {
     /// Creates a new `LoopCond`.
     pub fn new() -> Self {
@@ -42609,12 +46707,19 @@ pub fn loop_cond_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// LowerBound
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct LowerBound {
     pub T: ::std::option::Option<crate::DataType>,
     pub out_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for LowerBound {
+    fn default() -> Self {
+        Self {
+            T: None,
+            out_type: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl LowerBound {
     /// Creates a new `LowerBound`.
     pub fn new() -> Self {
@@ -42673,12 +46778,19 @@ pub fn lower_bound_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHan
 }
 
 /// Lu
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Lu {
     pub T: ::std::option::Option<crate::DataType>,
     pub output_idx_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Lu {
+    fn default() -> Self {
+        Self {
+            T: None,
+            output_idx_type: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl Lu {
     /// Creates a new `Lu`.
     pub fn new() -> Self {
@@ -42737,9 +46849,13 @@ pub fn lu_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// MakeIterator
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MakeIterator {}
-
+impl ::std::default::Default for MakeIterator {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl MakeIterator {
     /// Creates a new `MakeIterator`.
     pub fn new() -> Self {
@@ -42791,9 +46907,13 @@ pub fn make_iterator_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToH
 }
 
 /// MakeUnique
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MakeUnique {}
-
+impl ::std::default::Default for MakeUnique {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl MakeUnique {
     /// Creates a new `MakeUnique`.
     pub fn new() -> Self {
@@ -42843,7 +46963,7 @@ pub fn make_unique_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// MapAndBatchDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MapAndBatchDataset {
     pub f: ::std::option::Option<::std::string::String>,
     pub Targuments: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
@@ -42851,7 +46971,17 @@ pub struct MapAndBatchDataset {
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     pub preserve_cardinality: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for MapAndBatchDataset {
+    fn default() -> Self {
+        Self {
+            f: None,
+            Targuments: None,
+            output_types: None,
+            output_shapes: None,
+            preserve_cardinality: Some(false),
+        }
+    }
+}
 impl MapAndBatchDataset {
     /// Creates a new `MapAndBatchDataset`.
     pub fn new() -> Self {
@@ -42947,7 +47077,7 @@ pub fn map_and_batch_dataset_with_args<
 }
 
 /// MapClear
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MapClear {
     pub capacity: ::std::option::Option<i64>,
     pub memory_limit: ::std::option::Option<i64>,
@@ -42955,7 +47085,17 @@ pub struct MapClear {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for MapClear {
+    fn default() -> Self {
+        Self {
+            capacity: Some(0i64),
+            memory_limit: Some(0i64),
+            dtypes: None,
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl MapClear {
     /// Creates a new `MapClear`.
     pub fn new() -> Self {
@@ -43013,7 +47153,7 @@ pub fn map_clear_with_args(__args: &MapClear) -> crate::Result<()> {
 }
 
 /// MapDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MapDataset {
     pub f: ::std::option::Option<::std::string::String>,
     pub Targuments: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
@@ -43022,7 +47162,18 @@ pub struct MapDataset {
     pub use_inter_op_parallelism: ::std::option::Option<bool>,
     pub preserve_cardinality: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for MapDataset {
+    fn default() -> Self {
+        Self {
+            f: None,
+            Targuments: None,
+            output_types: None,
+            output_shapes: None,
+            use_inter_op_parallelism: Some(true),
+            preserve_cardinality: Some(false),
+        }
+    }
+}
 impl MapDataset {
     /// Creates a new `MapDataset`.
     pub fn new() -> Self {
@@ -43093,7 +47244,7 @@ pub fn map_dataset_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHan
 }
 
 /// MapDefun
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MapDefun {
     pub Targuments: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub Tcaptured: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
@@ -43102,7 +47253,18 @@ pub struct MapDefun {
     pub f: ::std::option::Option<::std::string::String>,
     pub max_intra_op_parallelism: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for MapDefun {
+    fn default() -> Self {
+        Self {
+            Targuments: None,
+            Tcaptured: None,
+            output_types: None,
+            output_shapes: None,
+            f: None,
+            max_intra_op_parallelism: Some(1i64),
+        }
+    }
+}
 impl MapDefun {
     /// Creates a new `MapDefun`.
     pub fn new() -> Self {
@@ -43173,7 +47335,7 @@ pub fn map_defun_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandl
 }
 
 /// MapIncompleteSize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MapIncompleteSize {
     pub capacity: ::std::option::Option<i64>,
     pub memory_limit: ::std::option::Option<i64>,
@@ -43181,7 +47343,17 @@ pub struct MapIncompleteSize {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for MapIncompleteSize {
+    fn default() -> Self {
+        Self {
+            capacity: Some(0i64),
+            memory_limit: Some(0i64),
+            dtypes: None,
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl MapIncompleteSize {
     /// Creates a new `MapIncompleteSize`.
     pub fn new() -> Self {
@@ -43242,7 +47414,7 @@ pub fn map_incomplete_size_with_args(
 }
 
 /// MapPeek
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MapPeek {
     pub capacity: ::std::option::Option<i64>,
     pub memory_limit: ::std::option::Option<i64>,
@@ -43250,7 +47422,17 @@ pub struct MapPeek {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for MapPeek {
+    fn default() -> Self {
+        Self {
+            capacity: Some(0i64),
+            memory_limit: Some(0i64),
+            dtypes: None,
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl MapPeek {
     /// Creates a new `MapPeek`.
     pub fn new() -> Self {
@@ -43318,7 +47500,7 @@ pub fn map_peek_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle
 }
 
 /// MapSize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MapSize {
     pub capacity: ::std::option::Option<i64>,
     pub memory_limit: ::std::option::Option<i64>,
@@ -43326,7 +47508,17 @@ pub struct MapSize {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for MapSize {
+    fn default() -> Self {
+        Self {
+            capacity: Some(0i64),
+            memory_limit: Some(0i64),
+            dtypes: None,
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl MapSize {
     /// Creates a new `MapSize`.
     pub fn new() -> Self {
@@ -43385,7 +47577,7 @@ pub fn map_size_with_args(__args: &MapSize) -> crate::Result<crate::eager::Tenso
 }
 
 /// MapStage
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MapStage {
     pub capacity: ::std::option::Option<i64>,
     pub memory_limit: ::std::option::Option<i64>,
@@ -43394,7 +47586,18 @@ pub struct MapStage {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for MapStage {
+    fn default() -> Self {
+        Self {
+            capacity: Some(0i64),
+            memory_limit: Some(0i64),
+            dtypes: None,
+            fake_dtypes: None,
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl MapStage {
     /// Creates a new `MapStage`.
     pub fn new() -> Self {
@@ -43475,7 +47678,7 @@ pub fn map_stage_with_args<
 }
 
 /// MapUnstage
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MapUnstage {
     pub capacity: ::std::option::Option<i64>,
     pub memory_limit: ::std::option::Option<i64>,
@@ -43483,7 +47686,17 @@ pub struct MapUnstage {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for MapUnstage {
+    fn default() -> Self {
+        Self {
+            capacity: Some(0i64),
+            memory_limit: Some(0i64),
+            dtypes: None,
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl MapUnstage {
     /// Creates a new `MapUnstage`.
     pub fn new() -> Self {
@@ -43551,7 +47764,7 @@ pub fn map_unstage_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHan
 }
 
 /// MapUnstageNoKey
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MapUnstageNoKey {
     pub capacity: ::std::option::Option<i64>,
     pub memory_limit: ::std::option::Option<i64>,
@@ -43559,7 +47772,17 @@ pub struct MapUnstageNoKey {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for MapUnstageNoKey {
+    fn default() -> Self {
+        Self {
+            capacity: Some(0i64),
+            memory_limit: Some(0i64),
+            dtypes: None,
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl MapUnstageNoKey {
     /// Creates a new `MapUnstageNoKey`.
     pub fn new() -> Self {
@@ -43629,13 +47852,21 @@ pub fn map_unstage_no_key_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// MatMul
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MatMul {
     pub transpose_a: ::std::option::Option<bool>,
     pub transpose_b: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for MatMul {
+    fn default() -> Self {
+        Self {
+            transpose_a: Some(false),
+            transpose_b: Some(false),
+            T: None,
+        }
+    }
+}
 impl MatMul {
     /// Creates a new `MatMul`.
     pub fn new() -> Self {
@@ -43697,9 +47928,13 @@ pub fn mat_mul_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>
 }
 
 /// MatchingFiles
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MatchingFiles {}
-
+impl ::std::default::Default for MatchingFiles {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl MatchingFiles {
     /// Creates a new `MatchingFiles`.
     pub fn new() -> Self {
@@ -43749,9 +47984,13 @@ pub fn matching_files_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// MatchingFilesDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MatchingFilesDataset {}
-
+impl ::std::default::Default for MatchingFilesDataset {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl MatchingFilesDataset {
     /// Creates a new `MatchingFilesDataset`.
     pub fn new() -> Self {
@@ -43801,12 +48040,19 @@ pub fn matching_files_dataset_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// MatrixBandPart
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MatrixBandPart {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindex: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for MatrixBandPart {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindex: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl MatrixBandPart {
     /// Creates a new `MatrixBandPart`.
     pub fn new() -> Self {
@@ -43876,11 +48122,15 @@ pub fn matrix_band_part_with_args<
 }
 
 /// MatrixDeterminant
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MatrixDeterminant {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for MatrixDeterminant {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl MatrixDeterminant {
     /// Creates a new `MatrixDeterminant`.
     pub fn new() -> Self {
@@ -43933,11 +48183,15 @@ pub fn matrix_determinant_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// MatrixDiag
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MatrixDiag {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for MatrixDiag {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl MatrixDiag {
     /// Creates a new `MatrixDiag`.
     pub fn new() -> Self {
@@ -43990,11 +48244,15 @@ pub fn matrix_diag_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// MatrixDiagPart
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MatrixDiagPart {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for MatrixDiagPart {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl MatrixDiagPart {
     /// Creates a new `MatrixDiagPart`.
     pub fn new() -> Self {
@@ -44047,11 +48305,15 @@ pub fn matrix_diag_part_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// MatrixDiagPartV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MatrixDiagPartV2 {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for MatrixDiagPartV2 {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl MatrixDiagPartV2 {
     /// Creates a new `MatrixDiagPartV2`.
     pub fn new() -> Self {
@@ -44118,12 +48380,19 @@ pub fn matrix_diag_part_v2_with_args<
 }
 
 /// MatrixDiagPartV3
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MatrixDiagPartV3 {
     pub T: ::std::option::Option<crate::DataType>,
     pub align: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for MatrixDiagPartV3 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            align: Some(::std::string::String::from("RIGHT_LEFT")),
+        }
+    }
+}
 impl MatrixDiagPartV3 {
     /// Creates a new `MatrixDiagPartV3`.
     pub fn new() -> Self {
@@ -44193,11 +48462,15 @@ pub fn matrix_diag_part_v3_with_args<
 }
 
 /// MatrixDiagV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MatrixDiagV2 {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for MatrixDiagV2 {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl MatrixDiagV2 {
     /// Creates a new `MatrixDiagV2`.
     pub fn new() -> Self {
@@ -44274,12 +48547,19 @@ pub fn matrix_diag_v2_with_args<
 }
 
 /// MatrixDiagV3
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MatrixDiagV3 {
     pub T: ::std::option::Option<crate::DataType>,
     pub align: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for MatrixDiagV3 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            align: Some(::std::string::String::from("RIGHT_LEFT")),
+        }
+    }
+}
 impl MatrixDiagV3 {
     /// Creates a new `MatrixDiagV3`.
     pub fn new() -> Self {
@@ -44359,11 +48639,15 @@ pub fn matrix_diag_v3_with_args<
 }
 
 /// MatrixExponential
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MatrixExponential {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for MatrixExponential {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl MatrixExponential {
     /// Creates a new `MatrixExponential`.
     pub fn new() -> Self {
@@ -44416,12 +48700,19 @@ pub fn matrix_exponential_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// MatrixInverse
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MatrixInverse {
     pub adjoint: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for MatrixInverse {
+    fn default() -> Self {
+        Self {
+            adjoint: Some(false),
+            T: None,
+        }
+    }
+}
 impl MatrixInverse {
     /// Creates a new `MatrixInverse`.
     pub fn new() -> Self {
@@ -44477,11 +48768,15 @@ pub fn matrix_inverse_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// MatrixLogarithm
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MatrixLogarithm {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for MatrixLogarithm {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl MatrixLogarithm {
     /// Creates a new `MatrixLogarithm`.
     pub fn new() -> Self {
@@ -44534,11 +48829,15 @@ pub fn matrix_logarithm_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// MatrixSetDiag
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MatrixSetDiag {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for MatrixSetDiag {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl MatrixSetDiag {
     /// Creates a new `MatrixSetDiag`.
     pub fn new() -> Self {
@@ -44594,11 +48893,15 @@ pub fn matrix_set_diag_with_args<T0: crate::eager::ToHandle, T1: crate::eager::T
 }
 
 /// MatrixSetDiagV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MatrixSetDiagV2 {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for MatrixSetDiagV2 {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl MatrixSetDiagV2 {
     /// Creates a new `MatrixSetDiagV2`.
     pub fn new() -> Self {
@@ -44665,12 +48968,19 @@ pub fn matrix_set_diag_v2_with_args<
 }
 
 /// MatrixSetDiagV3
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MatrixSetDiagV3 {
     pub T: ::std::option::Option<crate::DataType>,
     pub align: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for MatrixSetDiagV3 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            align: Some(::std::string::String::from("RIGHT_LEFT")),
+        }
+    }
+}
 impl MatrixSetDiagV3 {
     /// Creates a new `MatrixSetDiagV3`.
     pub fn new() -> Self {
@@ -44740,12 +49050,19 @@ pub fn matrix_set_diag_v3_with_args<
 }
 
 /// MatrixSolve
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MatrixSolve {
     pub adjoint: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for MatrixSolve {
+    fn default() -> Self {
+        Self {
+            adjoint: Some(false),
+            T: None,
+        }
+    }
+}
 impl MatrixSolve {
     /// Creates a new `MatrixSolve`.
     pub fn new() -> Self {
@@ -44804,12 +49121,19 @@ pub fn matrix_solve_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHa
 }
 
 /// MatrixSolveLs
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MatrixSolveLs {
     pub T: ::std::option::Option<crate::DataType>,
     pub fast: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for MatrixSolveLs {
+    fn default() -> Self {
+        Self {
+            T: None,
+            fast: Some(true),
+        }
+    }
+}
 impl MatrixSolveLs {
     /// Creates a new `MatrixSolveLs`.
     pub fn new() -> Self {
@@ -44879,11 +49203,15 @@ pub fn matrix_solve_ls_with_args<
 }
 
 /// MatrixSquareRoot
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MatrixSquareRoot {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for MatrixSquareRoot {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl MatrixSquareRoot {
     /// Creates a new `MatrixSquareRoot`.
     pub fn new() -> Self {
@@ -44936,13 +49264,21 @@ pub fn matrix_square_root_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// MatrixTriangularSolve
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MatrixTriangularSolve {
     pub lower: ::std::option::Option<bool>,
     pub adjoint: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for MatrixTriangularSolve {
+    fn default() -> Self {
+        Self {
+            lower: Some(true),
+            adjoint: Some(false),
+            T: None,
+        }
+    }
+}
 impl MatrixTriangularSolve {
     /// Creates a new `MatrixTriangularSolve`.
     pub fn new() -> Self {
@@ -45004,13 +49340,21 @@ pub fn matrix_triangular_solve_with_args<T0: crate::eager::ToHandle, T1: crate::
 }
 
 /// Max
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Max {
     pub keep_dims: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
     pub Tidx: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Max {
+    fn default() -> Self {
+        Self {
+            keep_dims: Some(false),
+            T: None,
+            Tidx: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl Max {
     /// Creates a new `Max`.
     pub fn new() -> Self {
@@ -45072,12 +49416,19 @@ pub fn max_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// MaxIntraOpParallelismDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MaxIntraOpParallelismDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for MaxIntraOpParallelismDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl MaxIntraOpParallelismDataset {
     /// Creates a new `MaxIntraOpParallelismDataset`.
     pub fn new() -> Self {
@@ -45139,7 +49490,7 @@ pub fn max_intra_op_parallelism_dataset_with_args<
 }
 
 /// MaxPool
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MaxPool {
     pub T: ::std::option::Option<crate::DataType>,
     pub ksize: ::std::option::Option<::std::vec::Vec<i64>>,
@@ -45148,7 +49499,18 @@ pub struct MaxPool {
     pub explicit_paddings: ::std::option::Option<::std::vec::Vec<i64>>,
     pub data_format: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for MaxPool {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Float),
+            ksize: None,
+            strides: None,
+            padding: None,
+            explicit_paddings: Some(vec![]),
+            data_format: Some(::std::string::String::from("NHWC")),
+        }
+    }
+}
 impl MaxPool {
     /// Creates a new `MaxPool`.
     pub fn new() -> Self {
@@ -45216,7 +49578,7 @@ pub fn max_pool_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// MaxPool3D
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MaxPool3D {
     pub ksize: ::std::option::Option<::std::vec::Vec<i64>>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
@@ -45224,7 +49586,17 @@ pub struct MaxPool3D {
     pub data_format: ::std::option::Option<::std::string::String>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for MaxPool3D {
+    fn default() -> Self {
+        Self {
+            ksize: None,
+            strides: None,
+            padding: None,
+            data_format: Some(::std::string::String::from("NDHWC")),
+            T: None,
+        }
+    }
+}
 impl MaxPool3D {
     /// Creates a new `MaxPool3D`.
     pub fn new() -> Self {
@@ -45289,7 +49661,7 @@ pub fn max_pool3_d_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// MaxPool3DGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MaxPool3DGrad {
     pub ksize: ::std::option::Option<::std::vec::Vec<i64>>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
@@ -45298,7 +49670,18 @@ pub struct MaxPool3DGrad {
     pub T: ::std::option::Option<crate::DataType>,
     pub TInput: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for MaxPool3DGrad {
+    fn default() -> Self {
+        Self {
+            ksize: None,
+            strides: None,
+            padding: None,
+            data_format: Some(::std::string::String::from("NDHWC")),
+            T: Some(crate::DataType::Float),
+            TInput: Some(crate::DataType::Float),
+        }
+    }
+}
 impl MaxPool3DGrad {
     /// Creates a new `MaxPool3DGrad`.
     pub fn new() -> Self {
@@ -45380,7 +49763,7 @@ pub fn max_pool3_dgrad_with_args<
 }
 
 /// MaxPool3DGradGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MaxPool3DGradGrad {
     pub ksize: ::std::option::Option<::std::vec::Vec<i64>>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
@@ -45388,7 +49771,17 @@ pub struct MaxPool3DGradGrad {
     pub data_format: ::std::option::Option<::std::string::String>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for MaxPool3DGradGrad {
+    fn default() -> Self {
+        Self {
+            ksize: None,
+            strides: None,
+            padding: None,
+            data_format: Some(::std::string::String::from("NDHWC")),
+            T: None,
+        }
+    }
+}
 impl MaxPool3DGradGrad {
     /// Creates a new `MaxPool3DGradGrad`.
     pub fn new() -> Self {
@@ -45467,7 +49860,7 @@ pub fn max_pool3_dgrad_grad_with_args<
 }
 
 /// MaxPoolGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MaxPoolGrad {
     pub ksize: ::std::option::Option<::std::vec::Vec<i64>>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
@@ -45476,7 +49869,18 @@ pub struct MaxPoolGrad {
     pub data_format: ::std::option::Option<::std::string::String>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for MaxPoolGrad {
+    fn default() -> Self {
+        Self {
+            ksize: None,
+            strides: None,
+            padding: None,
+            explicit_paddings: Some(vec![]),
+            data_format: Some(::std::string::String::from("NHWC")),
+            T: Some(crate::DataType::Float),
+        }
+    }
+}
 impl MaxPoolGrad {
     /// Creates a new `MaxPoolGrad`.
     pub fn new() -> Self {
@@ -45558,7 +49962,7 @@ pub fn max_pool_grad_with_args<
 }
 
 /// MaxPoolGradGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MaxPoolGradGrad {
     pub ksize: ::std::option::Option<::std::vec::Vec<i64>>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
@@ -45566,7 +49970,17 @@ pub struct MaxPoolGradGrad {
     pub data_format: ::std::option::Option<::std::string::String>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for MaxPoolGradGrad {
+    fn default() -> Self {
+        Self {
+            ksize: None,
+            strides: None,
+            padding: None,
+            data_format: Some(::std::string::String::from("NHWC")),
+            T: None,
+        }
+    }
+}
 impl MaxPoolGradGrad {
     /// Creates a new `MaxPoolGradGrad`.
     pub fn new() -> Self {
@@ -45645,13 +50059,21 @@ pub fn max_pool_grad_grad_with_args<
 }
 
 /// MaxPoolGradGradV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MaxPoolGradGradV2 {
     pub padding: ::std::option::Option<::std::string::String>,
     pub data_format: ::std::option::Option<::std::string::String>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for MaxPoolGradGradV2 {
+    fn default() -> Self {
+        Self {
+            padding: None,
+            data_format: Some(::std::string::String::from("NHWC")),
+            T: None,
+        }
+    }
+}
 impl MaxPoolGradGradV2 {
     /// Creates a new `MaxPoolGradGradV2`.
     pub fn new() -> Self {
@@ -45734,7 +50156,7 @@ pub fn max_pool_grad_grad_v2_with_args<
 }
 
 /// MaxPoolGradGradWithArgmax
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MaxPoolGradGradWithArgmax {
     pub ksize: ::std::option::Option<::std::vec::Vec<i64>>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
@@ -45743,7 +50165,18 @@ pub struct MaxPoolGradGradWithArgmax {
     pub Targmax: ::std::option::Option<crate::DataType>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for MaxPoolGradGradWithArgmax {
+    fn default() -> Self {
+        Self {
+            ksize: None,
+            strides: None,
+            padding: None,
+            include_batch_in_index: Some(false),
+            Targmax: None,
+            T: None,
+        }
+    }
+}
 impl MaxPoolGradGradWithArgmax {
     /// Creates a new `MaxPoolGradGradWithArgmax`.
     pub fn new() -> Self {
@@ -45825,13 +50258,21 @@ pub fn max_pool_grad_grad_with_argmax_with_args<
 }
 
 /// MaxPoolGradV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MaxPoolGradV2 {
     pub padding: ::std::option::Option<::std::string::String>,
     pub data_format: ::std::option::Option<::std::string::String>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for MaxPoolGradV2 {
+    fn default() -> Self {
+        Self {
+            padding: None,
+            data_format: Some(::std::string::String::from("NHWC")),
+            T: Some(crate::DataType::Float),
+        }
+    }
+}
 impl MaxPoolGradV2 {
     /// Creates a new `MaxPoolGradV2`.
     pub fn new() -> Self {
@@ -45914,7 +50355,7 @@ pub fn max_pool_grad_v2_with_args<
 }
 
 /// MaxPoolGradWithArgmax
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MaxPoolGradWithArgmax {
     pub ksize: ::std::option::Option<::std::vec::Vec<i64>>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
@@ -45923,7 +50364,18 @@ pub struct MaxPoolGradWithArgmax {
     pub Targmax: ::std::option::Option<crate::DataType>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for MaxPoolGradWithArgmax {
+    fn default() -> Self {
+        Self {
+            ksize: None,
+            strides: None,
+            padding: None,
+            include_batch_in_index: Some(false),
+            Targmax: None,
+            T: None,
+        }
+    }
+}
 impl MaxPoolGradWithArgmax {
     /// Creates a new `MaxPoolGradWithArgmax`.
     pub fn new() -> Self {
@@ -46005,13 +50457,21 @@ pub fn max_pool_grad_with_argmax_with_args<
 }
 
 /// MaxPoolV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MaxPoolV2 {
     pub T: ::std::option::Option<crate::DataType>,
     pub padding: ::std::option::Option<::std::string::String>,
     pub data_format: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for MaxPoolV2 {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Float),
+            padding: None,
+            data_format: Some(::std::string::String::from("NHWC")),
+        }
+    }
+}
 impl MaxPoolV2 {
     /// Creates a new `MaxPoolV2`.
     pub fn new() -> Self {
@@ -46084,7 +50544,7 @@ pub fn max_pool_v2_with_args<
 }
 
 /// MaxPoolWithArgmax
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MaxPoolWithArgmax {
     pub ksize: ::std::option::Option<::std::vec::Vec<i64>>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
@@ -46093,7 +50553,18 @@ pub struct MaxPoolWithArgmax {
     pub include_batch_in_index: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for MaxPoolWithArgmax {
+    fn default() -> Self {
+        Self {
+            ksize: None,
+            strides: None,
+            Targmax: Some(crate::DataType::Int64),
+            padding: None,
+            include_batch_in_index: Some(false),
+            T: None,
+        }
+    }
+}
 impl MaxPoolWithArgmax {
     /// Creates a new `MaxPoolWithArgmax`.
     pub fn new() -> Self {
@@ -46166,11 +50637,15 @@ pub fn max_pool_with_argmax_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Maximum
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Maximum {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Maximum {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Maximum {
     /// Creates a new `Maximum`.
     pub fn new() -> Self {
@@ -46226,13 +50701,21 @@ pub fn maximum_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>
 }
 
 /// Mean
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Mean {
     pub keep_dims: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
     pub Tidx: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Mean {
+    fn default() -> Self {
+        Self {
+            keep_dims: Some(false),
+            T: None,
+            Tidx: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl Mean {
     /// Creates a new `Mean`.
     pub fn new() -> Self {
@@ -46294,12 +50777,16 @@ pub fn mean_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// Merge
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Merge {
     pub T: ::std::option::Option<crate::DataType>,
     pub N: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for Merge {
+    fn default() -> Self {
+        Self { T: None, N: None }
+    }
+}
 impl Merge {
     /// Creates a new `Merge`.
     pub fn new() -> Self {
@@ -46360,11 +50847,15 @@ pub fn merge_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// MergeSummary
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MergeSummary {
     pub N: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for MergeSummary {
+    fn default() -> Self {
+        Self { N: None }
+    }
+}
 impl MergeSummary {
     /// Creates a new `MergeSummary`.
     pub fn new() -> Self {
@@ -46417,11 +50908,17 @@ pub fn merge_summary_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// MergeV2Checkpoints
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MergeV2Checkpoints {
     pub delete_old_dirs: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for MergeV2Checkpoints {
+    fn default() -> Self {
+        Self {
+            delete_old_dirs: Some(true),
+        }
+    }
+}
 impl MergeV2Checkpoints {
     /// Creates a new `MergeV2Checkpoints`.
     pub fn new() -> Self {
@@ -46476,14 +50973,23 @@ pub fn merge_v2_checkpoints_with_args<T0: crate::eager::ToHandle, T1: crate::eag
 }
 
 /// Mfcc
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Mfcc {
     pub upper_frequency_limit: ::std::option::Option<f32>,
     pub lower_frequency_limit: ::std::option::Option<f32>,
     pub filterbank_channel_count: ::std::option::Option<i64>,
     pub dct_coefficient_count: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for Mfcc {
+    fn default() -> Self {
+        Self {
+            upper_frequency_limit: Some(4000f32),
+            lower_frequency_limit: Some(20f32),
+            filterbank_channel_count: Some(40i64),
+            dct_coefficient_count: Some(13i64),
+        }
+    }
+}
 impl Mfcc {
     /// Creates a new `Mfcc`.
     pub fn new() -> Self {
@@ -46548,13 +51054,21 @@ pub fn mfcc_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// Min
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Min {
     pub keep_dims: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
     pub Tidx: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Min {
+    fn default() -> Self {
+        Self {
+            keep_dims: Some(false),
+            T: None,
+            Tidx: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl Min {
     /// Creates a new `Min`.
     pub fn new() -> Self {
@@ -46616,11 +51130,15 @@ pub fn min_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// Minimum
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Minimum {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Minimum {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Minimum {
     /// Creates a new `Minimum`.
     pub fn new() -> Self {
@@ -46676,13 +51194,21 @@ pub fn minimum_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>
 }
 
 /// MirrorPad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MirrorPad {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tpaddings: ::std::option::Option<crate::DataType>,
     pub mode: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for MirrorPad {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tpaddings: Some(crate::DataType::Int32),
+            mode: None,
+        }
+    }
+}
 impl MirrorPad {
     /// Creates a new `MirrorPad`.
     pub fn new() -> Self {
@@ -46744,13 +51270,21 @@ pub fn mirror_pad_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHand
 }
 
 /// MirrorPadGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MirrorPadGrad {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tpaddings: ::std::option::Option<crate::DataType>,
     pub mode: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for MirrorPadGrad {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tpaddings: Some(crate::DataType::Int32),
+            mode: None,
+        }
+    }
+}
 impl MirrorPadGrad {
     /// Creates a new `MirrorPadGrad`.
     pub fn new() -> Self {
@@ -46812,13 +51346,21 @@ pub fn mirror_pad_grad_with_args<T0: crate::eager::ToHandle, T1: crate::eager::T
 }
 
 /// MlirPassthroughOp
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MlirPassthroughOp {
     pub mlir_module: ::std::option::Option<::std::string::String>,
     pub Tinputs: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub Toutputs: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
 }
-
+impl ::std::default::Default for MlirPassthroughOp {
+    fn default() -> Self {
+        Self {
+            mlir_module: None,
+            Tinputs: None,
+            Toutputs: None,
+        }
+    }
+}
 impl MlirPassthroughOp {
     /// Creates a new `MlirPassthroughOp`.
     pub fn new() -> Self {
@@ -46877,11 +51419,15 @@ pub fn mlir_passthrough_op_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Mod
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Mod {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Mod {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Mod {
     /// Creates a new `Mod`.
     pub fn new() -> Self {
@@ -46937,7 +51483,7 @@ pub fn mod__with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// ModelDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ModelDataset {
     pub algorithm: ::std::option::Option<i64>,
     pub cpu_budget: ::std::option::Option<i64>,
@@ -46945,7 +51491,17 @@ pub struct ModelDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ModelDataset {
+    fn default() -> Self {
+        Self {
+            algorithm: Some(0i64),
+            cpu_budget: Some(0i64),
+            ram_budget: Some(0i64),
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ModelDataset {
     /// Creates a new `ModelDataset`.
     pub fn new() -> Self {
@@ -47010,11 +51566,15 @@ pub fn model_dataset_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Mul
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Mul {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Mul {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Mul {
     /// Creates a new `Mul`.
     pub fn new() -> Self {
@@ -47070,11 +51630,15 @@ pub fn mul_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// MulNoNan
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MulNoNan {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for MulNoNan {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl MulNoNan {
     /// Creates a new `MulNoNan`.
     pub fn new() -> Self {
@@ -47130,7 +51694,7 @@ pub fn mul_no_nan_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHand
 }
 
 /// MultiDeviceIterator
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MultiDeviceIterator {
     pub devices: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
     pub shared_name: ::std::option::Option<::std::string::String>,
@@ -47138,7 +51702,17 @@ pub struct MultiDeviceIterator {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for MultiDeviceIterator {
+    fn default() -> Self {
+        Self {
+            devices: None,
+            shared_name: None,
+            container: None,
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl MultiDeviceIterator {
     /// Creates a new `MultiDeviceIterator`.
     pub fn new() -> Self {
@@ -47199,12 +51773,19 @@ pub fn multi_device_iterator_with_args(
 }
 
 /// MultiDeviceIteratorFromStringHandle
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MultiDeviceIteratorFromStringHandle {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for MultiDeviceIteratorFromStringHandle {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl MultiDeviceIteratorFromStringHandle {
     /// Creates a new `MultiDeviceIteratorFromStringHandle`.
     pub fn new() -> Self {
@@ -47263,12 +51844,19 @@ pub fn multi_device_iterator_from_string_handle_with_args<T0: crate::eager::ToHa
 }
 
 /// MultiDeviceIteratorGetNextFromShard
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MultiDeviceIteratorGetNextFromShard {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for MultiDeviceIteratorGetNextFromShard {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl MultiDeviceIteratorGetNextFromShard {
     /// Creates a new `MultiDeviceIteratorGetNextFromShard`.
     pub fn new() -> Self {
@@ -47346,9 +51934,13 @@ pub fn multi_device_iterator_get_next_from_shard_with_args<
 }
 
 /// MultiDeviceIteratorInit
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MultiDeviceIteratorInit {}
-
+impl ::std::default::Default for MultiDeviceIteratorInit {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl MultiDeviceIteratorInit {
     /// Creates a new `MultiDeviceIteratorInit`.
     pub fn new() -> Self {
@@ -47412,9 +52004,13 @@ pub fn multi_device_iterator_init_with_args<
 }
 
 /// MultiDeviceIteratorToStringHandle
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MultiDeviceIteratorToStringHandle {}
-
+impl ::std::default::Default for MultiDeviceIteratorToStringHandle {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl MultiDeviceIteratorToStringHandle {
     /// Creates a new `MultiDeviceIteratorToStringHandle`.
     pub fn new() -> Self {
@@ -47465,14 +52061,23 @@ pub fn multi_device_iterator_to_string_handle_with_args<T0: crate::eager::ToHand
 }
 
 /// Multinomial
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Multinomial {
     pub seed: ::std::option::Option<i64>,
     pub seed2: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
     pub output_dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Multinomial {
+    fn default() -> Self {
+        Self {
+            seed: Some(0i64),
+            seed2: Some(0i64),
+            T: None,
+            output_dtype: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl Multinomial {
     /// Creates a new `Multinomial`.
     pub fn new() -> Self {
@@ -47537,7 +52142,7 @@ pub fn multinomial_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHan
 }
 
 /// MutableDenseHashTable
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MutableDenseHashTable {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
@@ -47548,7 +52153,20 @@ pub struct MutableDenseHashTable {
     pub initial_num_buckets: ::std::option::Option<i64>,
     pub max_load_factor: ::std::option::Option<f32>,
 }
-
+impl ::std::default::Default for MutableDenseHashTable {
+    fn default() -> Self {
+        Self {
+            container: None,
+            shared_name: None,
+            use_node_name_sharing: Some(false),
+            key_dtype: None,
+            value_dtype: None,
+            value_shape: None,
+            initial_num_buckets: Some(131072i64),
+            max_load_factor: Some(0.8f32),
+        }
+    }
+}
 impl MutableDenseHashTable {
     /// Creates a new `MutableDenseHashTable`.
     pub fn new() -> Self {
@@ -47622,7 +52240,7 @@ pub fn mutable_dense_hash_table_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// MutableDenseHashTableV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MutableDenseHashTableV2 {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
@@ -47633,7 +52251,20 @@ pub struct MutableDenseHashTableV2 {
     pub initial_num_buckets: ::std::option::Option<i64>,
     pub max_load_factor: ::std::option::Option<f32>,
 }
-
+impl ::std::default::Default for MutableDenseHashTableV2 {
+    fn default() -> Self {
+        Self {
+            container: None,
+            shared_name: None,
+            use_node_name_sharing: Some(false),
+            key_dtype: None,
+            value_dtype: None,
+            value_shape: None,
+            initial_num_buckets: Some(131072i64),
+            max_load_factor: Some(0.8f32),
+        }
+    }
+}
 impl MutableDenseHashTableV2 {
     /// Creates a new `MutableDenseHashTableV2`.
     pub fn new() -> Self {
@@ -47713,7 +52344,7 @@ pub fn mutable_dense_hash_table_v2_with_args<
 }
 
 /// MutableHashTable
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MutableHashTable {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
@@ -47721,7 +52352,17 @@ pub struct MutableHashTable {
     pub key_dtype: ::std::option::Option<crate::DataType>,
     pub value_dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for MutableHashTable {
+    fn default() -> Self {
+        Self {
+            container: None,
+            shared_name: None,
+            use_node_name_sharing: Some(false),
+            key_dtype: None,
+            value_dtype: None,
+        }
+    }
+}
 impl MutableHashTable {
     /// Creates a new `MutableHashTable`.
     pub fn new() -> Self {
@@ -47782,7 +52423,7 @@ pub fn mutable_hash_table_with_args(
 }
 
 /// MutableHashTableOfTensors
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MutableHashTableOfTensors {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
@@ -47791,7 +52432,18 @@ pub struct MutableHashTableOfTensors {
     pub value_dtype: ::std::option::Option<crate::DataType>,
     pub value_shape: ::std::option::Option<crate::Shape>,
 }
-
+impl ::std::default::Default for MutableHashTableOfTensors {
+    fn default() -> Self {
+        Self {
+            container: None,
+            shared_name: None,
+            use_node_name_sharing: Some(false),
+            key_dtype: None,
+            value_dtype: None,
+            value_shape: None,
+        }
+    }
+}
 impl MutableHashTableOfTensors {
     /// Creates a new `MutableHashTableOfTensors`.
     pub fn new() -> Self {
@@ -47855,7 +52507,7 @@ pub fn mutable_hash_table_of_tensors_with_args(
 }
 
 /// MutableHashTableOfTensorsV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MutableHashTableOfTensorsV2 {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
@@ -47864,7 +52516,18 @@ pub struct MutableHashTableOfTensorsV2 {
     pub value_dtype: ::std::option::Option<crate::DataType>,
     pub value_shape: ::std::option::Option<crate::Shape>,
 }
-
+impl ::std::default::Default for MutableHashTableOfTensorsV2 {
+    fn default() -> Self {
+        Self {
+            container: None,
+            shared_name: None,
+            use_node_name_sharing: Some(false),
+            key_dtype: None,
+            value_dtype: None,
+            value_shape: None,
+        }
+    }
+}
 impl MutableHashTableOfTensorsV2 {
     /// Creates a new `MutableHashTableOfTensorsV2`.
     pub fn new() -> Self {
@@ -47928,7 +52591,7 @@ pub fn mutable_hash_table_of_tensors_v2_with_args(
 }
 
 /// MutableHashTableV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MutableHashTableV2 {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
@@ -47936,7 +52599,17 @@ pub struct MutableHashTableV2 {
     pub key_dtype: ::std::option::Option<crate::DataType>,
     pub value_dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for MutableHashTableV2 {
+    fn default() -> Self {
+        Self {
+            container: None,
+            shared_name: None,
+            use_node_name_sharing: Some(false),
+            key_dtype: None,
+            value_dtype: None,
+        }
+    }
+}
 impl MutableHashTableV2 {
     /// Creates a new `MutableHashTableV2`.
     pub fn new() -> Self {
@@ -47997,9 +52670,13 @@ pub fn mutable_hash_table_v2_with_args(
 }
 
 /// MutexLock
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MutexLock {}
-
+impl ::std::default::Default for MutexLock {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl MutexLock {
     /// Creates a new `MutexLock`.
     pub fn new() -> Self {
@@ -48049,12 +52726,19 @@ pub fn mutex_lock_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// MutexV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct MutexV2 {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for MutexV2 {
+    fn default() -> Self {
+        Self {
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl MutexV2 {
     /// Creates a new `MutexV2`.
     pub fn new() -> Self {
@@ -48104,14 +52788,23 @@ pub fn mutex_v2_with_args(__args: &MutexV2) -> crate::Result<crate::eager::Tenso
 }
 
 /// NcclAllReduce
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct NcclAllReduce {
     pub reduction: ::std::option::Option<::std::string::String>,
     pub T: ::std::option::Option<crate::DataType>,
     pub num_devices: ::std::option::Option<i64>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for NcclAllReduce {
+    fn default() -> Self {
+        Self {
+            reduction: None,
+            T: None,
+            num_devices: None,
+            shared_name: None,
+        }
+    }
+}
 impl NcclAllReduce {
     /// Creates a new `NcclAllReduce`.
     pub fn new() -> Self {
@@ -48173,12 +52866,19 @@ pub fn nccl_all_reduce_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// NcclBroadcast
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct NcclBroadcast {
     pub T: ::std::option::Option<crate::DataType>,
     pub shape: ::std::option::Option<crate::Shape>,
 }
-
+impl ::std::default::Default for NcclBroadcast {
+    fn default() -> Self {
+        Self {
+            T: None,
+            shape: None,
+        }
+    }
+}
 impl NcclBroadcast {
     /// Creates a new `NcclBroadcast`.
     pub fn new() -> Self {
@@ -48234,13 +52934,21 @@ pub fn nccl_broadcast_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// NcclReduce
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct NcclReduce {
     pub reduction: ::std::option::Option<::std::string::String>,
     pub T: ::std::option::Option<crate::DataType>,
     pub num_devices: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for NcclReduce {
+    fn default() -> Self {
+        Self {
+            reduction: None,
+            T: None,
+            num_devices: None,
+        }
+    }
+}
 impl NcclReduce {
     /// Creates a new `NcclReduce`.
     pub fn new() -> Self {
@@ -48299,11 +53007,15 @@ pub fn nccl_reduce_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Ndtri
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Ndtri {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Ndtri {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Ndtri {
     /// Creates a new `Ndtri`.
     pub fn new() -> Self {
@@ -48354,9 +53066,13 @@ pub fn ndtri_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// NearestNeighbors
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct NearestNeighbors {}
-
+impl ::std::default::Default for NearestNeighbors {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl NearestNeighbors {
     /// Creates a new `NearestNeighbors`.
     pub fn new() -> Self {
@@ -48425,11 +53141,15 @@ pub fn nearest_neighbors_with_args<
 }
 
 /// Neg
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Neg {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Neg {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Neg {
     /// Creates a new `Neg`.
     pub fn new() -> Self {
@@ -48480,12 +53200,19 @@ pub fn neg_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// NegTrain
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct NegTrain {
     pub vocab_count: ::std::option::Option<::std::vec::Vec<i64>>,
     pub num_negative_samples: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for NegTrain {
+    fn default() -> Self {
+        Self {
+            vocab_count: None,
+            num_negative_samples: None,
+        }
+    }
+}
 impl NegTrain {
     /// Creates a new `NegTrain`.
     pub fn new() -> Self {
@@ -48564,11 +53291,17 @@ pub fn neg_train_with_args<
 }
 
 /// NextAfter
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct NextAfter {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for NextAfter {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Float),
+        }
+    }
+}
 impl NextAfter {
     /// Creates a new `NextAfter`.
     pub fn new() -> Self {
@@ -48624,11 +53357,15 @@ pub fn next_after_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHand
 }
 
 /// NextIteration
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct NextIteration {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for NextIteration {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl NextIteration {
     /// Creates a new `NextIteration`.
     pub fn new() -> Self {
@@ -48681,9 +53418,13 @@ pub fn next_iteration_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// NoOp
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct NoOp {}
-
+impl ::std::default::Default for NoOp {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl NoOp {
     /// Creates a new `NoOp`.
     pub fn new() -> Self {
@@ -48726,12 +53467,19 @@ pub fn no_op_with_args(__args: &NoOp) -> crate::Result<()> {
 }
 
 /// NonDeterministicInts
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct NonDeterministicInts {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub shape_dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for NonDeterministicInts {
+    fn default() -> Self {
+        Self {
+            dtype: Some(crate::DataType::Int64),
+            shape_dtype: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl NonDeterministicInts {
     /// Creates a new `NonDeterministicInts`.
     pub fn new() -> Self {
@@ -48787,11 +53535,17 @@ pub fn non_deterministic_ints_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// NonMaxSuppression
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct NonMaxSuppression {
     pub iou_threshold: ::std::option::Option<f32>,
 }
-
+impl ::std::default::Default for NonMaxSuppression {
+    fn default() -> Self {
+        Self {
+            iou_threshold: Some(0.5f32),
+        }
+    }
+}
 impl NonMaxSuppression {
     /// Creates a new `NonMaxSuppression`.
     pub fn new() -> Self {
@@ -48858,12 +53612,19 @@ pub fn non_max_suppression_with_args<
 }
 
 /// NonMaxSuppressionV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct NonMaxSuppressionV2 {
     pub T: ::std::option::Option<crate::DataType>,
     pub T_threshold: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for NonMaxSuppressionV2 {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Float),
+            T_threshold: Some(crate::DataType::Float),
+        }
+    }
+}
 impl NonMaxSuppressionV2 {
     /// Creates a new `NonMaxSuppressionV2`.
     pub fn new() -> Self {
@@ -48938,12 +53699,19 @@ pub fn non_max_suppression_v2_with_args<
 }
 
 /// NonMaxSuppressionV3
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct NonMaxSuppressionV3 {
     pub T: ::std::option::Option<crate::DataType>,
     pub T_threshold: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for NonMaxSuppressionV3 {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Float),
+            T_threshold: Some(crate::DataType::Float),
+        }
+    }
+}
 impl NonMaxSuppressionV3 {
     /// Creates a new `NonMaxSuppressionV3`.
     pub fn new() -> Self {
@@ -49030,13 +53798,21 @@ pub fn non_max_suppression_v3_with_args<
 }
 
 /// NonMaxSuppressionV4
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct NonMaxSuppressionV4 {
     pub T: ::std::option::Option<crate::DataType>,
     pub T_threshold: ::std::option::Option<crate::DataType>,
     pub pad_to_max_output_size: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for NonMaxSuppressionV4 {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Float),
+            T_threshold: Some(crate::DataType::Float),
+            pad_to_max_output_size: Some(false),
+        }
+    }
+}
 impl NonMaxSuppressionV4 {
     /// Creates a new `NonMaxSuppressionV4`.
     pub fn new() -> Self {
@@ -49131,12 +53907,19 @@ pub fn non_max_suppression_v4_with_args<
 }
 
 /// NonMaxSuppressionV5
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct NonMaxSuppressionV5 {
     pub T: ::std::option::Option<crate::DataType>,
     pub pad_to_max_output_size: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for NonMaxSuppressionV5 {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Float),
+            pad_to_max_output_size: Some(false),
+        }
+    }
+}
 impl NonMaxSuppressionV5 {
     /// Creates a new `NonMaxSuppressionV5`.
     pub fn new() -> Self {
@@ -49235,9 +54018,13 @@ pub fn non_max_suppression_v5_with_args<
 }
 
 /// NonMaxSuppressionWithOverlaps
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct NonMaxSuppressionWithOverlaps {}
-
+impl ::std::default::Default for NonMaxSuppressionWithOverlaps {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl NonMaxSuppressionWithOverlaps {
     /// Creates a new `NonMaxSuppressionWithOverlaps`.
     pub fn new() -> Self {
@@ -49318,12 +54105,19 @@ pub fn non_max_suppression_with_overlaps_with_args<
 }
 
 /// NonSerializableDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct NonSerializableDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for NonSerializableDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl NonSerializableDataset {
     /// Creates a new `NonSerializableDataset`.
     pub fn new() -> Self {
@@ -49379,12 +54173,19 @@ pub fn non_serializable_dataset_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// NotEqual
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct NotEqual {
     pub T: ::std::option::Option<crate::DataType>,
     pub incompatible_shape_error: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for NotEqual {
+    fn default() -> Self {
+        Self {
+            T: None,
+            incompatible_shape_error: Some(true),
+        }
+    }
+}
 impl NotEqual {
     /// Creates a new `NotEqual`.
     pub fn new() -> Self {
@@ -49443,12 +54244,19 @@ pub fn not_equal_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandl
 }
 
 /// NthElement
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct NthElement {
     pub reverse: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for NthElement {
+    fn default() -> Self {
+        Self {
+            reverse: Some(false),
+            T: None,
+        }
+    }
+}
 impl NthElement {
     /// Creates a new `NthElement`.
     pub fn new() -> Self {
@@ -49507,13 +54315,21 @@ pub fn nth_element_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHan
 }
 
 /// OneHot
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct OneHot {
     pub axis: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
     pub TI: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for OneHot {
+    fn default() -> Self {
+        Self {
+            axis: Some(-1i64),
+            T: None,
+            TI: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl OneHot {
     /// Creates a new `OneHot`.
     pub fn new() -> Self {
@@ -49591,7 +54407,7 @@ pub fn one_hot_with_args<
 }
 
 /// OneShotIterator
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct OneShotIterator {
     pub dataset_factory: ::std::option::Option<::std::string::String>,
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
@@ -49599,7 +54415,17 @@ pub struct OneShotIterator {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for OneShotIterator {
+    fn default() -> Self {
+        Self {
+            dataset_factory: None,
+            output_types: None,
+            output_shapes: None,
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl OneShotIterator {
     /// Creates a new `OneShotIterator`.
     pub fn new() -> Self {
@@ -49660,11 +54486,15 @@ pub fn one_shot_iterator_with_args(
 }
 
 /// OnesLike
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct OnesLike {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for OnesLike {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl OnesLike {
     /// Creates a new `OnesLike`.
     pub fn new() -> Self {
@@ -49715,13 +54545,21 @@ pub fn ones_like_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// OptimizeDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct OptimizeDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     pub optimization_configs: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
 }
-
+impl ::std::default::Default for OptimizeDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+            optimization_configs: Some(vec![]),
+        }
+    }
+}
 impl OptimizeDataset {
     /// Creates a new `OptimizeDataset`.
     pub fn new() -> Self {
@@ -49783,13 +54621,21 @@ pub fn optimize_dataset_with_args<T0: crate::eager::ToHandle, T1: crate::eager::
 }
 
 /// OptimizeDatasetV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct OptimizeDatasetV2 {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     pub optimization_configs: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
 }
-
+impl ::std::default::Default for OptimizeDatasetV2 {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+            optimization_configs: Some(vec![]),
+        }
+    }
+}
 impl OptimizeDatasetV2 {
     /// Creates a new `OptimizeDatasetV2`.
     pub fn new() -> Self {
@@ -49873,11 +54719,17 @@ pub fn optimize_dataset_v2_with_args<
 }
 
 /// OptionalFromValue
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct OptionalFromValue {
     pub Toutput_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
 }
-
+impl ::std::default::Default for OptionalFromValue {
+    fn default() -> Self {
+        Self {
+            Toutput_types: None,
+        }
+    }
+}
 impl OptionalFromValue {
     /// Creates a new `OptionalFromValue`.
     pub fn new() -> Self {
@@ -49930,12 +54782,19 @@ pub fn optional_from_value_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// OptionalGetValue
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct OptionalGetValue {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for OptionalGetValue {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl OptionalGetValue {
     /// Creates a new `OptionalGetValue`.
     pub fn new() -> Self {
@@ -49991,9 +54850,13 @@ pub fn optional_get_value_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// OptionalHasValue
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct OptionalHasValue {}
-
+impl ::std::default::Default for OptionalHasValue {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl OptionalHasValue {
     /// Creates a new `OptionalHasValue`.
     pub fn new() -> Self {
@@ -50043,9 +54906,13 @@ pub fn optional_has_value_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// OptionalNone
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct OptionalNone {}
-
+impl ::std::default::Default for OptionalNone {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl OptionalNone {
     /// Creates a new `OptionalNone`.
     pub fn new() -> Self {
@@ -50089,13 +54956,21 @@ pub fn optional_none_with_args(__args: &OptionalNone) -> crate::Result<crate::ea
 }
 
 /// OptionsDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct OptionsDataset {
     pub serialized_options: ::std::option::Option<::std::string::String>,
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for OptionsDataset {
+    fn default() -> Self {
+        Self {
+            serialized_options: None,
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl OptionsDataset {
     /// Creates a new `OptionsDataset`.
     pub fn new() -> Self {
@@ -50154,7 +55029,7 @@ pub fn options_dataset_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// OrderedMapClear
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct OrderedMapClear {
     pub capacity: ::std::option::Option<i64>,
     pub memory_limit: ::std::option::Option<i64>,
@@ -50162,7 +55037,17 @@ pub struct OrderedMapClear {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for OrderedMapClear {
+    fn default() -> Self {
+        Self {
+            capacity: Some(0i64),
+            memory_limit: Some(0i64),
+            dtypes: None,
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl OrderedMapClear {
     /// Creates a new `OrderedMapClear`.
     pub fn new() -> Self {
@@ -50220,7 +55105,7 @@ pub fn ordered_map_clear_with_args(__args: &OrderedMapClear) -> crate::Result<()
 }
 
 /// OrderedMapIncompleteSize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct OrderedMapIncompleteSize {
     pub capacity: ::std::option::Option<i64>,
     pub memory_limit: ::std::option::Option<i64>,
@@ -50228,7 +55113,17 @@ pub struct OrderedMapIncompleteSize {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for OrderedMapIncompleteSize {
+    fn default() -> Self {
+        Self {
+            capacity: Some(0i64),
+            memory_limit: Some(0i64),
+            dtypes: None,
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl OrderedMapIncompleteSize {
     /// Creates a new `OrderedMapIncompleteSize`.
     pub fn new() -> Self {
@@ -50289,7 +55184,7 @@ pub fn ordered_map_incomplete_size_with_args(
 }
 
 /// OrderedMapPeek
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct OrderedMapPeek {
     pub capacity: ::std::option::Option<i64>,
     pub memory_limit: ::std::option::Option<i64>,
@@ -50297,7 +55192,17 @@ pub struct OrderedMapPeek {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for OrderedMapPeek {
+    fn default() -> Self {
+        Self {
+            capacity: Some(0i64),
+            memory_limit: Some(0i64),
+            dtypes: None,
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl OrderedMapPeek {
     /// Creates a new `OrderedMapPeek`.
     pub fn new() -> Self {
@@ -50365,7 +55270,7 @@ pub fn ordered_map_peek_with_args<T0: crate::eager::ToHandle, T1: crate::eager::
 }
 
 /// OrderedMapSize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct OrderedMapSize {
     pub capacity: ::std::option::Option<i64>,
     pub memory_limit: ::std::option::Option<i64>,
@@ -50373,7 +55278,17 @@ pub struct OrderedMapSize {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for OrderedMapSize {
+    fn default() -> Self {
+        Self {
+            capacity: Some(0i64),
+            memory_limit: Some(0i64),
+            dtypes: None,
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl OrderedMapSize {
     /// Creates a new `OrderedMapSize`.
     pub fn new() -> Self {
@@ -50434,7 +55349,7 @@ pub fn ordered_map_size_with_args(
 }
 
 /// OrderedMapStage
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct OrderedMapStage {
     pub capacity: ::std::option::Option<i64>,
     pub memory_limit: ::std::option::Option<i64>,
@@ -50443,7 +55358,18 @@ pub struct OrderedMapStage {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for OrderedMapStage {
+    fn default() -> Self {
+        Self {
+            capacity: Some(0i64),
+            memory_limit: Some(0i64),
+            dtypes: None,
+            fake_dtypes: None,
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl OrderedMapStage {
     /// Creates a new `OrderedMapStage`.
     pub fn new() -> Self {
@@ -50524,7 +55450,7 @@ pub fn ordered_map_stage_with_args<
 }
 
 /// OrderedMapUnstage
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct OrderedMapUnstage {
     pub capacity: ::std::option::Option<i64>,
     pub memory_limit: ::std::option::Option<i64>,
@@ -50532,7 +55458,17 @@ pub struct OrderedMapUnstage {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for OrderedMapUnstage {
+    fn default() -> Self {
+        Self {
+            capacity: Some(0i64),
+            memory_limit: Some(0i64),
+            dtypes: None,
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl OrderedMapUnstage {
     /// Creates a new `OrderedMapUnstage`.
     pub fn new() -> Self {
@@ -50600,7 +55536,7 @@ pub fn ordered_map_unstage_with_args<T0: crate::eager::ToHandle, T1: crate::eage
 }
 
 /// OrderedMapUnstageNoKey
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct OrderedMapUnstageNoKey {
     pub capacity: ::std::option::Option<i64>,
     pub memory_limit: ::std::option::Option<i64>,
@@ -50608,7 +55544,17 @@ pub struct OrderedMapUnstageNoKey {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for OrderedMapUnstageNoKey {
+    fn default() -> Self {
+        Self {
+            capacity: Some(0i64),
+            memory_limit: Some(0i64),
+            dtypes: None,
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl OrderedMapUnstageNoKey {
     /// Creates a new `OrderedMapUnstageNoKey`.
     pub fn new() -> Self {
@@ -50678,13 +55624,21 @@ pub fn ordered_map_unstage_no_key_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// OutfeedDequeue
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct OutfeedDequeue {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub shape: ::std::option::Option<crate::Shape>,
     pub device_ordinal: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for OutfeedDequeue {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            shape: None,
+            device_ordinal: Some(-1i64),
+        }
+    }
+}
 impl OutfeedDequeue {
     /// Creates a new `OutfeedDequeue`.
     pub fn new() -> Self {
@@ -50739,13 +55693,21 @@ pub fn outfeed_dequeue_with_args(
 }
 
 /// OutfeedDequeueTuple
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct OutfeedDequeueTuple {
     pub dtypes: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     pub device_ordinal: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for OutfeedDequeueTuple {
+    fn default() -> Self {
+        Self {
+            dtypes: None,
+            shapes: None,
+            device_ordinal: Some(-1i64),
+        }
+    }
+}
 impl OutfeedDequeueTuple {
     /// Creates a new `OutfeedDequeueTuple`.
     pub fn new() -> Self {
@@ -50800,12 +55762,19 @@ pub fn outfeed_dequeue_tuple_with_args(
 }
 
 /// OutfeedDequeueTupleV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct OutfeedDequeueTupleV2 {
     pub dtypes: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for OutfeedDequeueTupleV2 {
+    fn default() -> Self {
+        Self {
+            dtypes: None,
+            shapes: None,
+        }
+    }
+}
 impl OutfeedDequeueTupleV2 {
     /// Creates a new `OutfeedDequeueTupleV2`.
     pub fn new() -> Self {
@@ -50861,12 +55830,19 @@ pub fn outfeed_dequeue_tuple_v2_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// OutfeedDequeueV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct OutfeedDequeueV2 {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub shape: ::std::option::Option<crate::Shape>,
 }
-
+impl ::std::default::Default for OutfeedDequeueV2 {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            shape: None,
+        }
+    }
+}
 impl OutfeedDequeueV2 {
     /// Creates a new `OutfeedDequeueV2`.
     pub fn new() -> Self {
@@ -50922,11 +55898,15 @@ pub fn outfeed_dequeue_v2_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// OutfeedEnqueue
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct OutfeedEnqueue {
     pub dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for OutfeedEnqueue {
+    fn default() -> Self {
+        Self { dtype: None }
+    }
+}
 impl OutfeedEnqueue {
     /// Creates a new `OutfeedEnqueue`.
     pub fn new() -> Self {
@@ -50976,11 +55956,15 @@ pub fn outfeed_enqueue_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// OutfeedEnqueueTuple
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct OutfeedEnqueueTuple {
     pub dtypes: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
 }
-
+impl ::std::default::Default for OutfeedEnqueueTuple {
+    fn default() -> Self {
+        Self { dtypes: None }
+    }
+}
 impl OutfeedEnqueueTuple {
     /// Creates a new `OutfeedEnqueueTuple`.
     pub fn new() -> Self {
@@ -51030,13 +56014,21 @@ pub fn outfeed_enqueue_tuple_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Pack
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Pack {
     pub N: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
     pub axis: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for Pack {
+    fn default() -> Self {
+        Self {
+            N: None,
+            T: None,
+            axis: Some(0i64),
+        }
+    }
+}
 impl Pack {
     /// Creates a new `Pack`.
     pub fn new() -> Self {
@@ -51093,12 +56085,19 @@ pub fn pack_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Pad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Pad {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tpaddings: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Pad {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tpaddings: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl Pad {
     /// Creates a new `Pad`.
     pub fn new() -> Self {
@@ -51157,12 +56156,19 @@ pub fn pad_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// PadV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct PadV2 {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tpaddings: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for PadV2 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tpaddings: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl PadV2 {
     /// Creates a new `PadV2`.
     pub fn new() -> Self {
@@ -51232,13 +56238,21 @@ pub fn pad_v2_with_args<
 }
 
 /// PaddedBatchDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct PaddedBatchDataset {
     pub Toutput_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     pub N: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for PaddedBatchDataset {
+    fn default() -> Self {
+        Self {
+            Toutput_types: None,
+            output_shapes: None,
+            N: None,
+        }
+    }
+}
 impl PaddedBatchDataset {
     /// Creates a new `PaddedBatchDataset`.
     pub fn new() -> Self {
@@ -51322,14 +56336,23 @@ pub fn padded_batch_dataset_with_args<
 }
 
 /// PaddedBatchDatasetV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct PaddedBatchDatasetV2 {
     pub parallel_copy: ::std::option::Option<bool>,
     pub Toutput_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     pub N: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for PaddedBatchDatasetV2 {
+    fn default() -> Self {
+        Self {
+            parallel_copy: Some(false),
+            Toutput_types: None,
+            output_shapes: None,
+            N: None,
+        }
+    }
+}
 impl PaddedBatchDatasetV2 {
     /// Creates a new `PaddedBatchDatasetV2`.
     pub fn new() -> Self {
@@ -51422,7 +56445,7 @@ pub fn padded_batch_dataset_v2_with_args<
 }
 
 /// PaddingFIFOQueue
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct PaddingFIFOQueue {
     pub component_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
@@ -51430,7 +56453,17 @@ pub struct PaddingFIFOQueue {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for PaddingFIFOQueue {
+    fn default() -> Self {
+        Self {
+            component_types: None,
+            shapes: None,
+            capacity: Some(-1i64),
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl PaddingFIFOQueue {
     /// Creates a new `PaddingFIFOQueue`.
     pub fn new() -> Self {
@@ -51491,7 +56524,7 @@ pub fn padding_fifoqueue_with_args(
 }
 
 /// PaddingFIFOQueueV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct PaddingFIFOQueueV2 {
     pub component_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
@@ -51499,7 +56532,17 @@ pub struct PaddingFIFOQueueV2 {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for PaddingFIFOQueueV2 {
+    fn default() -> Self {
+        Self {
+            component_types: None,
+            shapes: None,
+            capacity: Some(-1i64),
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl PaddingFIFOQueueV2 {
     /// Creates a new `PaddingFIFOQueueV2`.
     pub fn new() -> Self {
@@ -51560,14 +56603,23 @@ pub fn padding_fifoqueue_v2_with_args(
 }
 
 /// ParallelBatchDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ParallelBatchDataset {
     pub parallel_copy: ::std::option::Option<bool>,
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     pub deterministic: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for ParallelBatchDataset {
+    fn default() -> Self {
+        Self {
+            parallel_copy: Some(false),
+            output_types: None,
+            output_shapes: None,
+            deterministic: Some(::std::string::String::from("default")),
+        }
+    }
+}
 impl ParallelBatchDataset {
     /// Creates a new `ParallelBatchDataset`.
     pub fn new() -> Self {
@@ -51654,13 +56706,21 @@ pub fn parallel_batch_dataset_with_args<
 }
 
 /// ParallelConcat
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ParallelConcat {
     pub N: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
     pub shape: ::std::option::Option<crate::Shape>,
 }
-
+impl ::std::default::Default for ParallelConcat {
+    fn default() -> Self {
+        Self {
+            N: None,
+            T: None,
+            shape: None,
+        }
+    }
+}
 impl ParallelConcat {
     /// Creates a new `ParallelConcat`.
     pub fn new() -> Self {
@@ -51719,12 +56779,16 @@ pub fn parallel_concat_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// ParallelDynamicStitch
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ParallelDynamicStitch {
     pub N: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ParallelDynamicStitch {
+    fn default() -> Self {
+        Self { N: None, T: None }
+    }
+}
 impl ParallelDynamicStitch {
     /// Creates a new `ParallelDynamicStitch`.
     pub fn new() -> Self {
@@ -51783,14 +56847,23 @@ pub fn parallel_dynamic_stitch_with_args<T0: crate::eager::ToHandle, T1: crate::
 }
 
 /// ParallelInterleaveDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ParallelInterleaveDataset {
     pub f: ::std::option::Option<::std::string::String>,
     pub Targuments: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ParallelInterleaveDataset {
+    fn default() -> Self {
+        Self {
+            f: None,
+            Targuments: None,
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ParallelInterleaveDataset {
     /// Creates a new `ParallelInterleaveDataset`.
     pub fn new() -> Self {
@@ -51895,7 +56968,7 @@ pub fn parallel_interleave_dataset_with_args<
 }
 
 /// ParallelInterleaveDatasetV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ParallelInterleaveDatasetV2 {
     pub f: ::std::option::Option<::std::string::String>,
     pub Targuments: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
@@ -51903,7 +56976,17 @@ pub struct ParallelInterleaveDatasetV2 {
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     pub sloppy: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ParallelInterleaveDatasetV2 {
+    fn default() -> Self {
+        Self {
+            f: None,
+            Targuments: None,
+            output_types: None,
+            output_shapes: None,
+            sloppy: Some(false),
+        }
+    }
+}
 impl ParallelInterleaveDatasetV2 {
     /// Creates a new `ParallelInterleaveDatasetV2`.
     pub fn new() -> Self {
@@ -51999,7 +57082,7 @@ pub fn parallel_interleave_dataset_v2_with_args<
 }
 
 /// ParallelInterleaveDatasetV3
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ParallelInterleaveDatasetV3 {
     pub f: ::std::option::Option<::std::string::String>,
     pub deterministic: ::std::option::Option<::std::string::String>,
@@ -52007,7 +57090,17 @@ pub struct ParallelInterleaveDatasetV3 {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ParallelInterleaveDatasetV3 {
+    fn default() -> Self {
+        Self {
+            f: None,
+            deterministic: Some(::std::string::String::from("default")),
+            Targuments: None,
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ParallelInterleaveDatasetV3 {
     /// Creates a new `ParallelInterleaveDatasetV3`.
     pub fn new() -> Self {
@@ -52103,7 +57196,7 @@ pub fn parallel_interleave_dataset_v3_with_args<
 }
 
 /// ParallelInterleaveDatasetV4
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ParallelInterleaveDatasetV4 {
     pub f: ::std::option::Option<::std::string::String>,
     pub deterministic: ::std::option::Option<::std::string::String>,
@@ -52111,7 +57204,17 @@ pub struct ParallelInterleaveDatasetV4 {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ParallelInterleaveDatasetV4 {
+    fn default() -> Self {
+        Self {
+            f: None,
+            deterministic: Some(::std::string::String::from("default")),
+            Targuments: None,
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ParallelInterleaveDatasetV4 {
     /// Creates a new `ParallelInterleaveDatasetV4`.
     pub fn new() -> Self {
@@ -52219,7 +57322,7 @@ pub fn parallel_interleave_dataset_v4_with_args<
 }
 
 /// ParallelMapDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ParallelMapDataset {
     pub f: ::std::option::Option<::std::string::String>,
     pub Targuments: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
@@ -52229,7 +57332,19 @@ pub struct ParallelMapDataset {
     pub sloppy: ::std::option::Option<bool>,
     pub preserve_cardinality: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ParallelMapDataset {
+    fn default() -> Self {
+        Self {
+            f: None,
+            Targuments: None,
+            output_types: None,
+            output_shapes: None,
+            use_inter_op_parallelism: Some(true),
+            sloppy: Some(false),
+            preserve_cardinality: Some(false),
+        }
+    }
+}
 impl ParallelMapDataset {
     /// Creates a new `ParallelMapDataset`.
     pub fn new() -> Self {
@@ -52314,7 +57429,7 @@ pub fn parallel_map_dataset_with_args<
 }
 
 /// ParallelMapDatasetV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ParallelMapDatasetV2 {
     pub f: ::std::option::Option<::std::string::String>,
     pub Targuments: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
@@ -52324,7 +57439,19 @@ pub struct ParallelMapDatasetV2 {
     pub deterministic: ::std::option::Option<::std::string::String>,
     pub preserve_cardinality: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ParallelMapDatasetV2 {
+    fn default() -> Self {
+        Self {
+            f: None,
+            Targuments: None,
+            output_types: None,
+            output_shapes: None,
+            use_inter_op_parallelism: Some(true),
+            deterministic: Some(::std::string::String::from("default")),
+            preserve_cardinality: Some(false),
+        }
+    }
+}
 impl ParallelMapDatasetV2 {
     /// Creates a new `ParallelMapDatasetV2`.
     pub fn new() -> Self {
@@ -52409,14 +57536,23 @@ pub fn parallel_map_dataset_v2_with_args<
 }
 
 /// ParameterizedTruncatedNormal
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ParameterizedTruncatedNormal {
     pub seed: ::std::option::Option<i64>,
     pub seed2: ::std::option::Option<i64>,
     pub dtype: ::std::option::Option<crate::DataType>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ParameterizedTruncatedNormal {
+    fn default() -> Self {
+        Self {
+            seed: Some(0i64),
+            seed2: Some(0i64),
+            dtype: None,
+            T: None,
+        }
+    }
+}
 impl ParameterizedTruncatedNormal {
     /// Creates a new `ParameterizedTruncatedNormal`.
     pub fn new() -> Self {
@@ -52502,7 +57638,7 @@ pub fn parameterized_truncated_normal_with_args<
 }
 
 /// ParseExample
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ParseExample {
     pub Nsparse: ::std::option::Option<i64>,
     pub Ndense: ::std::option::Option<i64>,
@@ -52510,7 +57646,17 @@ pub struct ParseExample {
     pub Tdense: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub dense_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ParseExample {
+    fn default() -> Self {
+        Self {
+            Nsparse: None,
+            Ndense: None,
+            sparse_types: None,
+            Tdense: None,
+            dense_shapes: None,
+        }
+    }
+}
 impl ParseExample {
     /// Creates a new `ParseExample`.
     pub fn new() -> Self {
@@ -52613,7 +57759,7 @@ pub fn parse_example_with_args<
 }
 
 /// ParseExampleDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ParseExampleDataset {
     pub sparse_keys: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
     pub dense_keys: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
@@ -52627,7 +57773,23 @@ pub struct ParseExampleDataset {
     pub ragged_value_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub ragged_split_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
 }
-
+impl ::std::default::Default for ParseExampleDataset {
+    fn default() -> Self {
+        Self {
+            sparse_keys: None,
+            dense_keys: None,
+            sparse_types: None,
+            Tdense: None,
+            dense_shapes: None,
+            output_types: None,
+            output_shapes: None,
+            sloppy: Some(false),
+            ragged_keys: Some(vec![]),
+            ragged_value_types: None,
+            ragged_split_types: None,
+        }
+    }
+}
 impl ParseExampleDataset {
     /// Creates a new `ParseExampleDataset`.
     pub fn new() -> Self {
@@ -52724,7 +57886,7 @@ pub fn parse_example_dataset_with_args<
 }
 
 /// ParseExampleDatasetV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ParseExampleDatasetV2 {
     pub sparse_keys: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
     pub dense_keys: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
@@ -52738,7 +57900,23 @@ pub struct ParseExampleDatasetV2 {
     pub ragged_value_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub ragged_split_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
 }
-
+impl ::std::default::Default for ParseExampleDatasetV2 {
+    fn default() -> Self {
+        Self {
+            sparse_keys: None,
+            dense_keys: None,
+            sparse_types: None,
+            Tdense: None,
+            dense_shapes: None,
+            output_types: None,
+            output_shapes: None,
+            deterministic: Some(::std::string::String::from("default")),
+            ragged_keys: Some(vec![]),
+            ragged_value_types: None,
+            ragged_split_types: None,
+        }
+    }
+}
 impl ParseExampleDatasetV2 {
     /// Creates a new `ParseExampleDatasetV2`.
     pub fn new() -> Self {
@@ -52835,7 +58013,7 @@ pub fn parse_example_dataset_v2_with_args<
 }
 
 /// ParseExampleV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ParseExampleV2 {
     pub Tdense: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub num_sparse: ::std::option::Option<i64>,
@@ -52844,7 +58022,18 @@ pub struct ParseExampleV2 {
     pub ragged_split_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub dense_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ParseExampleV2 {
+    fn default() -> Self {
+        Self {
+            Tdense: None,
+            num_sparse: None,
+            sparse_types: None,
+            ragged_value_types: None,
+            ragged_split_types: None,
+            dense_shapes: None,
+        }
+    }
+}
 impl ParseExampleV2 {
     /// Creates a new `ParseExampleV2`.
     pub fn new() -> Self {
@@ -52958,7 +58147,7 @@ pub fn parse_example_v2_with_args<
 }
 
 /// ParseSequenceExample
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ParseSequenceExample {
     pub feature_list_dense_missing_assumed_empty:
         ::std::option::Option<::std::vec::Vec<::std::string::String>>,
@@ -52977,7 +58166,27 @@ pub struct ParseSequenceExample {
     pub feature_list_sparse_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub feature_list_dense_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ParseSequenceExample {
+    fn default() -> Self {
+        Self {
+            feature_list_dense_missing_assumed_empty: None,
+            context_sparse_keys: None,
+            context_dense_keys: None,
+            feature_list_sparse_keys: None,
+            feature_list_dense_keys: None,
+            Ncontext_sparse: Some(0i64),
+            Ncontext_dense: Some(0i64),
+            Nfeature_list_sparse: Some(0i64),
+            Nfeature_list_dense: Some(0i64),
+            context_sparse_types: None,
+            Tcontext_dense: None,
+            feature_list_dense_types: None,
+            context_dense_shapes: None,
+            feature_list_sparse_types: None,
+            feature_list_dense_shapes: None,
+        }
+    }
+}
 impl ParseSequenceExample {
     /// Creates a new `ParseSequenceExample`.
     pub fn new() -> Self {
@@ -53098,7 +58307,7 @@ pub fn parse_sequence_example_with_args<
 }
 
 /// ParseSequenceExampleV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ParseSequenceExampleV2 {
     pub Ncontext_sparse: ::std::option::Option<i64>,
     pub Tcontext_dense: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
@@ -53114,7 +58323,25 @@ pub struct ParseSequenceExampleV2 {
     pub feature_list_ragged_split_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub feature_list_dense_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ParseSequenceExampleV2 {
+    fn default() -> Self {
+        Self {
+            Ncontext_sparse: Some(0i64),
+            Tcontext_dense: None,
+            context_sparse_types: None,
+            context_ragged_value_types: None,
+            context_ragged_split_types: None,
+            context_dense_shapes: None,
+            Nfeature_list_sparse: Some(0i64),
+            Nfeature_list_dense: Some(0i64),
+            feature_list_dense_types: None,
+            feature_list_sparse_types: None,
+            feature_list_ragged_value_types: None,
+            feature_list_ragged_split_types: None,
+            feature_list_dense_shapes: None,
+        }
+    }
+}
 impl ParseSequenceExampleV2 {
     /// Creates a new `ParseSequenceExampleV2`.
     pub fn new() -> Self {
@@ -53281,7 +58508,7 @@ pub fn parse_sequence_example_v2_with_args<
 }
 
 /// ParseSingleExample
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ParseSingleExample {
     pub num_sparse: ::std::option::Option<i64>,
     pub sparse_keys: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
@@ -53290,7 +58517,18 @@ pub struct ParseSingleExample {
     pub Tdense: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub dense_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ParseSingleExample {
+    fn default() -> Self {
+        Self {
+            num_sparse: None,
+            sparse_keys: None,
+            dense_keys: None,
+            sparse_types: None,
+            Tdense: None,
+            dense_shapes: None,
+        }
+    }
+}
 impl ParseSingleExample {
     /// Creates a new `ParseSingleExample`.
     pub fn new() -> Self {
@@ -53368,7 +58606,7 @@ pub fn parse_single_example_with_args<T0: crate::eager::ToHandle, T1: crate::eag
 }
 
 /// ParseSingleSequenceExample
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ParseSingleSequenceExample {
     pub Ncontext_sparse: ::std::option::Option<i64>,
     pub Ncontext_dense: ::std::option::Option<i64>,
@@ -53381,7 +58619,22 @@ pub struct ParseSingleSequenceExample {
     pub feature_list_sparse_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub feature_list_dense_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ParseSingleSequenceExample {
+    fn default() -> Self {
+        Self {
+            Ncontext_sparse: Some(0i64),
+            Ncontext_dense: Some(0i64),
+            Nfeature_list_sparse: Some(0i64),
+            Nfeature_list_dense: Some(0i64),
+            context_sparse_types: None,
+            Tcontext_dense: None,
+            feature_list_dense_types: None,
+            context_dense_shapes: None,
+            feature_list_sparse_types: None,
+            feature_list_dense_shapes: None,
+        }
+    }
+}
 impl ParseSingleSequenceExample {
     /// Creates a new `ParseSingleSequenceExample`.
     pub fn new() -> Self {
@@ -53521,11 +58774,15 @@ pub fn parse_single_sequence_example_with_args<
 }
 
 /// ParseTensor
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ParseTensor {
     pub out_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ParseTensor {
+    fn default() -> Self {
+        Self { out_type: None }
+    }
+}
 impl ParseTensor {
     /// Creates a new `ParseTensor`.
     pub fn new() -> Self {
@@ -53578,7 +58835,7 @@ pub fn parse_tensor_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// PartitionedCall
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct PartitionedCall {
     pub Tin: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub Tout: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
@@ -53587,7 +58844,18 @@ pub struct PartitionedCall {
     pub config_proto: ::std::option::Option<::std::string::String>,
     pub executor_type: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for PartitionedCall {
+    fn default() -> Self {
+        Self {
+            Tin: None,
+            Tout: None,
+            f: None,
+            config: None,
+            config_proto: None,
+            executor_type: None,
+        }
+    }
+}
 impl PartitionedCall {
     /// Creates a new `PartitionedCall`.
     pub fn new() -> Self {
@@ -53655,12 +58923,19 @@ pub fn partitioned_call_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Placeholder
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Placeholder {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub shape: ::std::option::Option<crate::Shape>,
 }
-
+impl ::std::default::Default for Placeholder {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            shape: None,
+        }
+    }
+}
 impl Placeholder {
     /// Creates a new `Placeholder`.
     pub fn new() -> Self {
@@ -53710,12 +58985,19 @@ pub fn placeholder_with_args(__args: &Placeholder) -> crate::Result<crate::eager
 }
 
 /// PlaceholderV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct PlaceholderV2 {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub shape: ::std::option::Option<crate::Shape>,
 }
-
+impl ::std::default::Default for PlaceholderV2 {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            shape: None,
+        }
+    }
+}
 impl PlaceholderV2 {
     /// Creates a new `PlaceholderV2`.
     pub fn new() -> Self {
@@ -53767,12 +59049,19 @@ pub fn placeholder_v2_with_args(
 }
 
 /// PlaceholderWithDefault
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct PlaceholderWithDefault {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub shape: ::std::option::Option<crate::Shape>,
 }
-
+impl ::std::default::Default for PlaceholderWithDefault {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            shape: None,
+        }
+    }
+}
 impl PlaceholderWithDefault {
     /// Creates a new `PlaceholderWithDefault`.
     pub fn new() -> Self {
@@ -53828,11 +59117,15 @@ pub fn placeholder_with_default_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Polygamma
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Polygamma {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Polygamma {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Polygamma {
     /// Creates a new `Polygamma`.
     pub fn new() -> Self {
@@ -53888,11 +59181,15 @@ pub fn polygamma_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandl
 }
 
 /// PopulationCount
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct PopulationCount {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for PopulationCount {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl PopulationCount {
     /// Creates a new `PopulationCount`.
     pub fn new() -> Self {
@@ -53945,11 +59242,15 @@ pub fn population_count_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Pow
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Pow {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Pow {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Pow {
     /// Creates a new `Pow`.
     pub fn new() -> Self {
@@ -54005,7 +59306,7 @@ pub fn pow_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// PrefetchDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct PrefetchDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
@@ -54013,7 +59314,17 @@ pub struct PrefetchDataset {
     pub legacy_autotune: ::std::option::Option<bool>,
     pub buffer_size_min: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for PrefetchDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+            slack_period: Some(0i64),
+            legacy_autotune: Some(true),
+            buffer_size_min: Some(0i64),
+        }
+    }
+}
 impl PrefetchDataset {
     /// Creates a new `PrefetchDataset`.
     pub fn new() -> Self {
@@ -54081,13 +59392,21 @@ pub fn prefetch_dataset_with_args<T0: crate::eager::ToHandle, T1: crate::eager::
 }
 
 /// Prelinearize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Prelinearize {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub shape: ::std::option::Option<crate::Shape>,
     pub layout: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for Prelinearize {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            shape: None,
+            layout: Some(vec![]),
+        }
+    }
+}
 impl Prelinearize {
     /// Creates a new `Prelinearize`.
     pub fn new() -> Self {
@@ -54146,13 +59465,21 @@ pub fn prelinearize_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// PrelinearizeTuple
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct PrelinearizeTuple {
     pub dtypes: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     pub layouts: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for PrelinearizeTuple {
+    fn default() -> Self {
+        Self {
+            dtypes: None,
+            shapes: None,
+            layouts: Some(vec![]),
+        }
+    }
+}
 impl PrelinearizeTuple {
     /// Creates a new `PrelinearizeTuple`.
     pub fn new() -> Self {
@@ -54211,12 +59538,19 @@ pub fn prelinearize_tuple_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// PreventGradient
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct PreventGradient {
     pub T: ::std::option::Option<crate::DataType>,
     pub message: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for PreventGradient {
+    fn default() -> Self {
+        Self {
+            T: None,
+            message: None,
+        }
+    }
+}
 impl PreventGradient {
     /// Creates a new `PreventGradient`.
     pub fn new() -> Self {
@@ -54272,7 +59606,7 @@ pub fn prevent_gradient_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Print
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Print {
     pub T: ::std::option::Option<crate::DataType>,
     pub U: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
@@ -54280,7 +59614,17 @@ pub struct Print {
     pub first_n: ::std::option::Option<i64>,
     pub summarize: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for Print {
+    fn default() -> Self {
+        Self {
+            T: None,
+            U: None,
+            message: None,
+            first_n: Some(-1i64),
+            summarize: Some(3i64),
+        }
+    }
+}
 impl Print {
     /// Creates a new `Print`.
     pub fn new() -> Self {
@@ -54348,12 +59692,22 @@ pub fn print_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// PrintV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct PrintV2 {
     pub output_stream: ::std::option::Option<::std::string::String>,
     pub end: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for PrintV2 {
+    fn default() -> Self {
+        Self {
+            output_stream: Some(::std::string::String::from("stderr")),
+            end: Some(::std::string::String::from(
+                "
+",
+            )),
+        }
+    }
+}
 impl PrintV2 {
     /// Creates a new `PrintV2`.
     pub fn new() -> Self {
@@ -54406,7 +59760,7 @@ pub fn print_v2_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// PriorityQueue
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct PriorityQueue {
     pub component_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
@@ -54414,7 +59768,17 @@ pub struct PriorityQueue {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for PriorityQueue {
+    fn default() -> Self {
+        Self {
+            component_types: None,
+            shapes: None,
+            capacity: Some(-1i64),
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl PriorityQueue {
     /// Creates a new `PriorityQueue`.
     pub fn new() -> Self {
@@ -54475,7 +59839,7 @@ pub fn priority_queue_with_args(
 }
 
 /// PriorityQueueV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct PriorityQueueV2 {
     pub component_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
@@ -54483,7 +59847,17 @@ pub struct PriorityQueueV2 {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for PriorityQueueV2 {
+    fn default() -> Self {
+        Self {
+            component_types: None,
+            shapes: None,
+            capacity: Some(-1i64),
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl PriorityQueueV2 {
     /// Creates a new `PriorityQueueV2`.
     pub fn new() -> Self {
@@ -54544,12 +59918,19 @@ pub fn priority_queue_v2_with_args(
 }
 
 /// PrivateThreadPoolDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct PrivateThreadPoolDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for PrivateThreadPoolDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl PrivateThreadPoolDataset {
     /// Creates a new `PrivateThreadPoolDataset`.
     pub fn new() -> Self {
@@ -54611,13 +59992,21 @@ pub fn private_thread_pool_dataset_with_args<
 }
 
 /// Prod
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Prod {
     pub keep_dims: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
     pub Tidx: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Prod {
+    fn default() -> Self {
+        Self {
+            keep_dims: Some(false),
+            T: None,
+            Tidx: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl Prod {
     /// Creates a new `Prod`.
     pub fn new() -> Self {
@@ -54679,13 +60068,21 @@ pub fn prod_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// PyFunc
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct PyFunc {
     pub token: ::std::option::Option<::std::string::String>,
     pub Tin: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub Tout: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
 }
-
+impl ::std::default::Default for PyFunc {
+    fn default() -> Self {
+        Self {
+            token: None,
+            Tin: None,
+            Tout: None,
+        }
+    }
+}
 impl PyFunc {
     /// Creates a new `PyFunc`.
     pub fn new() -> Self {
@@ -54742,13 +60139,21 @@ pub fn py_func_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// PyFuncStateless
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct PyFuncStateless {
     pub token: ::std::option::Option<::std::string::String>,
     pub Tin: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub Tout: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
 }
-
+impl ::std::default::Default for PyFuncStateless {
+    fn default() -> Self {
+        Self {
+            token: None,
+            Tin: None,
+            Tout: None,
+        }
+    }
+}
 impl PyFuncStateless {
     /// Creates a new `PyFuncStateless`.
     pub fn new() -> Self {
@@ -54807,12 +60212,19 @@ pub fn py_func_stateless_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Qr
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Qr {
     pub full_matrices: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Qr {
+    fn default() -> Self {
+        Self {
+            full_matrices: Some(false),
+            T: None,
+        }
+    }
+}
 impl Qr {
     /// Creates a new `Qr`.
     pub fn new() -> Self {
@@ -54871,7 +60283,7 @@ pub fn qr_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// QuantizeAndDequantize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizeAndDequantize {
     pub signed_input: ::std::option::Option<bool>,
     pub num_bits: ::std::option::Option<i64>,
@@ -54880,7 +60292,18 @@ pub struct QuantizeAndDequantize {
     pub input_max: ::std::option::Option<f32>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for QuantizeAndDequantize {
+    fn default() -> Self {
+        Self {
+            signed_input: Some(true),
+            num_bits: Some(8i64),
+            range_given: Some(false),
+            input_min: Some(0f32),
+            input_max: Some(0f32),
+            T: None,
+        }
+    }
+}
 impl QuantizeAndDequantize {
     /// Creates a new `QuantizeAndDequantize`.
     pub fn new() -> Self {
@@ -54948,7 +60371,7 @@ pub fn quantize_and_dequantize_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// QuantizeAndDequantizeV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizeAndDequantizeV2 {
     pub signed_input: ::std::option::Option<bool>,
     pub num_bits: ::std::option::Option<i64>,
@@ -54958,7 +60381,19 @@ pub struct QuantizeAndDequantizeV2 {
     pub narrow_range: ::std::option::Option<bool>,
     pub axis: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for QuantizeAndDequantizeV2 {
+    fn default() -> Self {
+        Self {
+            signed_input: Some(true),
+            num_bits: Some(8i64),
+            range_given: Some(false),
+            T: None,
+            round_mode: Some(::std::string::String::from("HALF_TO_EVEN")),
+            narrow_range: Some(false),
+            axis: Some(-1i64),
+        }
+    }
+}
 impl QuantizeAndDequantizeV2 {
     /// Creates a new `QuantizeAndDequantizeV2`.
     pub fn new() -> Self {
@@ -55043,7 +60478,7 @@ pub fn quantize_and_dequantize_v2_with_args<
 }
 
 /// QuantizeAndDequantizeV3
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizeAndDequantizeV3 {
     pub signed_input: ::std::option::Option<bool>,
     pub range_given: ::std::option::Option<bool>,
@@ -55051,7 +60486,17 @@ pub struct QuantizeAndDequantizeV3 {
     pub narrow_range: ::std::option::Option<bool>,
     pub axis: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for QuantizeAndDequantizeV3 {
+    fn default() -> Self {
+        Self {
+            signed_input: Some(true),
+            range_given: Some(true),
+            T: None,
+            narrow_range: Some(false),
+            axis: Some(-1i64),
+        }
+    }
+}
 impl QuantizeAndDequantizeV3 {
     /// Creates a new `QuantizeAndDequantizeV3`.
     pub fn new() -> Self {
@@ -55135,7 +60580,7 @@ pub fn quantize_and_dequantize_v3_with_args<
 }
 
 /// QuantizeAndDequantizeV4
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizeAndDequantizeV4 {
     pub signed_input: ::std::option::Option<bool>,
     pub num_bits: ::std::option::Option<i64>,
@@ -55145,7 +60590,19 @@ pub struct QuantizeAndDequantizeV4 {
     pub narrow_range: ::std::option::Option<bool>,
     pub axis: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for QuantizeAndDequantizeV4 {
+    fn default() -> Self {
+        Self {
+            signed_input: Some(true),
+            num_bits: Some(8i64),
+            range_given: Some(false),
+            T: None,
+            round_mode: Some(::std::string::String::from("HALF_TO_EVEN")),
+            narrow_range: Some(false),
+            axis: Some(-1i64),
+        }
+    }
+}
 impl QuantizeAndDequantizeV4 {
     /// Creates a new `QuantizeAndDequantizeV4`.
     pub fn new() -> Self {
@@ -55230,12 +60687,19 @@ pub fn quantize_and_dequantize_v4_with_args<
 }
 
 /// QuantizeAndDequantizeV4Grad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizeAndDequantizeV4Grad {
     pub T: ::std::option::Option<crate::DataType>,
     pub axis: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for QuantizeAndDequantizeV4Grad {
+    fn default() -> Self {
+        Self {
+            T: None,
+            axis: Some(-1i64),
+        }
+    }
+}
 impl QuantizeAndDequantizeV4Grad {
     /// Creates a new `QuantizeAndDequantizeV4Grad`.
     pub fn new() -> Self {
@@ -55316,12 +60780,19 @@ pub fn quantize_and_dequantize_v4_grad_with_args<
 }
 
 /// QuantizeDownAndShrinkRange
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizeDownAndShrinkRange {
     pub Tinput: ::std::option::Option<crate::DataType>,
     pub out_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for QuantizeDownAndShrinkRange {
+    fn default() -> Self {
+        Self {
+            Tinput: None,
+            out_type: None,
+        }
+    }
+}
 impl QuantizeDownAndShrinkRange {
     /// Creates a new `QuantizeDownAndShrinkRange`.
     pub fn new() -> Self {
@@ -55397,7 +60868,7 @@ pub fn quantize_down_and_shrink_range_with_args<
 }
 
 /// QuantizeV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizeV2 {
     pub T: ::std::option::Option<crate::DataType>,
     pub mode: ::std::option::Option<::std::string::String>,
@@ -55406,7 +60877,18 @@ pub struct QuantizeV2 {
     pub axis: ::std::option::Option<i64>,
     pub ensure_minimum_range: ::std::option::Option<f32>,
 }
-
+impl ::std::default::Default for QuantizeV2 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            mode: Some(::std::string::String::from("MIN_COMBINED")),
+            round_mode: Some(::std::string::String::from("HALF_AWAY_FROM_ZERO")),
+            narrow_range: Some(false),
+            axis: Some(-1i64),
+            ensure_minimum_range: Some(0.01f32),
+        }
+    }
+}
 impl QuantizeV2 {
     /// Creates a new `QuantizeV2`.
     pub fn new() -> Self {
@@ -55494,13 +60976,21 @@ pub fn quantize_v2_with_args<
 }
 
 /// QuantizedAdd
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedAdd {
     pub T1: ::std::option::Option<crate::DataType>,
     pub T2: ::std::option::Option<crate::DataType>,
     pub Toutput: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for QuantizedAdd {
+    fn default() -> Self {
+        Self {
+            T1: None,
+            T2: None,
+            Toutput: Some(crate::DataType::QInt32),
+        }
+    }
+}
 impl QuantizedAdd {
     /// Creates a new `QuantizedAdd`.
     pub fn new() -> Self {
@@ -55594,14 +61084,23 @@ pub fn quantized_add_with_args<
 }
 
 /// QuantizedAvgPool
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedAvgPool {
     pub T: ::std::option::Option<crate::DataType>,
     pub ksize: ::std::option::Option<::std::vec::Vec<i64>>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
     pub padding: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for QuantizedAvgPool {
+    fn default() -> Self {
+        Self {
+            T: None,
+            ksize: None,
+            strides: None,
+            padding: None,
+        }
+    }
+}
 impl QuantizedAvgPool {
     /// Creates a new `QuantizedAvgPool`.
     pub fn new() -> Self {
@@ -55683,14 +61182,23 @@ pub fn quantized_avg_pool_with_args<
 }
 
 /// QuantizedBatchNormWithGlobalNormalization
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedBatchNormWithGlobalNormalization {
     pub Tinput: ::std::option::Option<crate::DataType>,
     pub out_type: ::std::option::Option<crate::DataType>,
     pub variance_epsilon: ::std::option::Option<f32>,
     pub scale_after_normalization: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for QuantizedBatchNormWithGlobalNormalization {
+    fn default() -> Self {
+        Self {
+            Tinput: None,
+            out_type: None,
+            variance_epsilon: None,
+            scale_after_normalization: None,
+        }
+    }
+}
 impl QuantizedBatchNormWithGlobalNormalization {
     /// Creates a new `QuantizedBatchNormWithGlobalNormalization`.
     pub fn new() -> Self {
@@ -55838,13 +61346,21 @@ pub fn quantized_batch_norm_with_global_normalization_with_args<
 }
 
 /// QuantizedBiasAdd
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedBiasAdd {
     pub T1: ::std::option::Option<crate::DataType>,
     pub T2: ::std::option::Option<crate::DataType>,
     pub out_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for QuantizedBiasAdd {
+    fn default() -> Self {
+        Self {
+            T1: None,
+            T2: None,
+            out_type: None,
+        }
+    }
+}
 impl QuantizedBiasAdd {
     /// Creates a new `QuantizedBiasAdd`.
     pub fn new() -> Self {
@@ -55940,12 +61456,16 @@ pub fn quantized_bias_add_with_args<
 }
 
 /// QuantizedConcat
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedConcat {
     pub N: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for QuantizedConcat {
+    fn default() -> Self {
+        Self { N: None, T: None }
+    }
+}
 impl QuantizedConcat {
     /// Creates a new `QuantizedConcat`.
     pub fn new() -> Self {
@@ -56026,7 +61546,7 @@ pub fn quantized_concat_with_args<
 }
 
 /// QuantizedConv2D
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedConv2D {
     pub Tinput: ::std::option::Option<crate::DataType>,
     pub Tfilter: ::std::option::Option<crate::DataType>,
@@ -56035,7 +61555,18 @@ pub struct QuantizedConv2D {
     pub padding: ::std::option::Option<::std::string::String>,
     pub dilations: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for QuantizedConv2D {
+    fn default() -> Self {
+        Self {
+            Tinput: None,
+            Tfilter: None,
+            out_type: Some(crate::DataType::QInt32),
+            strides: None,
+            padding: None,
+            dilations: Some(vec![1, 1, 1, 1]),
+        }
+    }
+}
 impl QuantizedConv2D {
     /// Creates a new `QuantizedConv2D`.
     pub fn new() -> Self {
@@ -56140,7 +61671,7 @@ pub fn quantized_conv2_d_with_args<
 }
 
 /// QuantizedConv2DAndRelu
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedConv2DAndRelu {
     pub Tinput: ::std::option::Option<crate::DataType>,
     pub Tfilter: ::std::option::Option<crate::DataType>,
@@ -56150,7 +61681,19 @@ pub struct QuantizedConv2DAndRelu {
     pub dilations: ::std::option::Option<::std::vec::Vec<i64>>,
     pub padding_list: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for QuantizedConv2DAndRelu {
+    fn default() -> Self {
+        Self {
+            Tinput: None,
+            Tfilter: None,
+            out_type: Some(crate::DataType::QInt32),
+            strides: None,
+            padding: None,
+            dilations: Some(vec![1, 1, 1, 1]),
+            padding_list: Some(vec![]),
+        }
+    }
+}
 impl QuantizedConv2DAndRelu {
     /// Creates a new `QuantizedConv2DAndRelu`.
     pub fn new() -> Self {
@@ -56258,7 +61801,7 @@ pub fn quantized_conv2_dand_relu_with_args<
 }
 
 /// QuantizedConv2DAndReluAndRequantize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedConv2DAndReluAndRequantize {
     pub Tinput: ::std::option::Option<crate::DataType>,
     pub Tfilter: ::std::option::Option<crate::DataType>,
@@ -56268,7 +61811,19 @@ pub struct QuantizedConv2DAndReluAndRequantize {
     pub dilations: ::std::option::Option<::std::vec::Vec<i64>>,
     pub padding_list: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for QuantizedConv2DAndReluAndRequantize {
+    fn default() -> Self {
+        Self {
+            Tinput: None,
+            Tfilter: None,
+            out_type: Some(crate::DataType::QUInt8),
+            strides: None,
+            padding: None,
+            dilations: Some(vec![1, 1, 1, 1]),
+            padding_list: Some(vec![]),
+        }
+    }
+}
 impl QuantizedConv2DAndReluAndRequantize {
     /// Creates a new `QuantizedConv2DAndReluAndRequantize`.
     pub fn new() -> Self {
@@ -56397,7 +61952,7 @@ pub fn quantized_conv2_dand_relu_and_requantize_with_args<
 }
 
 /// QuantizedConv2DAndRequantize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedConv2DAndRequantize {
     pub Tinput: ::std::option::Option<crate::DataType>,
     pub Tfilter: ::std::option::Option<crate::DataType>,
@@ -56407,7 +61962,19 @@ pub struct QuantizedConv2DAndRequantize {
     pub dilations: ::std::option::Option<::std::vec::Vec<i64>>,
     pub padding_list: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for QuantizedConv2DAndRequantize {
+    fn default() -> Self {
+        Self {
+            Tinput: None,
+            Tfilter: None,
+            out_type: Some(crate::DataType::QInt8),
+            strides: None,
+            padding: None,
+            dilations: Some(vec![1, 1, 1, 1]),
+            padding_list: Some(vec![]),
+        }
+    }
+}
 impl QuantizedConv2DAndRequantize {
     /// Creates a new `QuantizedConv2DAndRequantize`.
     pub fn new() -> Self {
@@ -56533,7 +62100,7 @@ pub fn quantized_conv2_dand_requantize_with_args<
 }
 
 /// QuantizedConv2DPerChannel
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedConv2DPerChannel {
     pub Tinput: ::std::option::Option<crate::DataType>,
     pub Tfilter: ::std::option::Option<crate::DataType>,
@@ -56542,7 +62109,18 @@ pub struct QuantizedConv2DPerChannel {
     pub padding: ::std::option::Option<::std::string::String>,
     pub dilations: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for QuantizedConv2DPerChannel {
+    fn default() -> Self {
+        Self {
+            Tinput: None,
+            Tfilter: None,
+            out_type: Some(crate::DataType::QInt32),
+            strides: None,
+            padding: None,
+            dilations: Some(vec![1, 1, 1, 1]),
+        }
+    }
+}
 impl QuantizedConv2DPerChannel {
     /// Creates a new `QuantizedConv2DPerChannel`.
     pub fn new() -> Self {
@@ -56647,7 +62225,7 @@ pub fn quantized_conv2_dper_channel_with_args<
 }
 
 /// QuantizedConv2DWithBias
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedConv2DWithBias {
     pub Tinput: ::std::option::Option<crate::DataType>,
     pub Tfilter: ::std::option::Option<crate::DataType>,
@@ -56657,7 +62235,19 @@ pub struct QuantizedConv2DWithBias {
     pub dilations: ::std::option::Option<::std::vec::Vec<i64>>,
     pub padding_list: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for QuantizedConv2DWithBias {
+    fn default() -> Self {
+        Self {
+            Tinput: None,
+            Tfilter: None,
+            out_type: Some(crate::DataType::QInt32),
+            strides: None,
+            padding: None,
+            dilations: Some(vec![1, 1, 1, 1]),
+            padding_list: Some(vec![]),
+        }
+    }
+}
 impl QuantizedConv2DWithBias {
     /// Creates a new `QuantizedConv2DWithBias`.
     pub fn new() -> Self {
@@ -56770,7 +62360,7 @@ pub fn quantized_conv2_dwith_bias_with_args<
 }
 
 /// QuantizedConv2DWithBiasAndRelu
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedConv2DWithBiasAndRelu {
     pub Tinput: ::std::option::Option<crate::DataType>,
     pub Tfilter: ::std::option::Option<crate::DataType>,
@@ -56780,7 +62370,19 @@ pub struct QuantizedConv2DWithBiasAndRelu {
     pub dilations: ::std::option::Option<::std::vec::Vec<i64>>,
     pub padding_list: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for QuantizedConv2DWithBiasAndRelu {
+    fn default() -> Self {
+        Self {
+            Tinput: None,
+            Tfilter: None,
+            out_type: Some(crate::DataType::QInt32),
+            strides: None,
+            padding: None,
+            dilations: Some(vec![1, 1, 1, 1]),
+            padding_list: Some(vec![]),
+        }
+    }
+}
 impl QuantizedConv2DWithBiasAndRelu {
     /// Creates a new `QuantizedConv2DWithBiasAndRelu`.
     pub fn new() -> Self {
@@ -56893,7 +62495,7 @@ pub fn quantized_conv2_dwith_bias_and_relu_with_args<
 }
 
 /// QuantizedConv2DWithBiasAndReluAndRequantize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedConv2DWithBiasAndReluAndRequantize {
     pub Tinput: ::std::option::Option<crate::DataType>,
     pub Tfilter: ::std::option::Option<crate::DataType>,
@@ -56904,7 +62506,20 @@ pub struct QuantizedConv2DWithBiasAndReluAndRequantize {
     pub dilations: ::std::option::Option<::std::vec::Vec<i64>>,
     pub padding_list: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for QuantizedConv2DWithBiasAndReluAndRequantize {
+    fn default() -> Self {
+        Self {
+            Tinput: None,
+            Tfilter: None,
+            Tbias: None,
+            out_type: Some(crate::DataType::QUInt8),
+            strides: None,
+            padding: None,
+            dilations: Some(vec![1, 1, 1, 1]),
+            padding_list: Some(vec![]),
+        }
+    }
+}
 impl QuantizedConv2DWithBiasAndReluAndRequantize {
     /// Creates a new `QuantizedConv2DWithBiasAndReluAndRequantize`.
     pub fn new() -> Self {
@@ -57042,7 +62657,7 @@ pub fn quantized_conv2_dwith_bias_and_relu_and_requantize_with_args<
 }
 
 /// QuantizedConv2DWithBiasAndRequantize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedConv2DWithBiasAndRequantize {
     pub Tinput: ::std::option::Option<crate::DataType>,
     pub Tfilter: ::std::option::Option<crate::DataType>,
@@ -57053,7 +62668,20 @@ pub struct QuantizedConv2DWithBiasAndRequantize {
     pub dilations: ::std::option::Option<::std::vec::Vec<i64>>,
     pub padding_list: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for QuantizedConv2DWithBiasAndRequantize {
+    fn default() -> Self {
+        Self {
+            Tinput: None,
+            Tfilter: None,
+            Tbias: None,
+            out_type: Some(crate::DataType::QInt8),
+            strides: None,
+            padding: None,
+            dilations: Some(vec![1, 1, 1, 1]),
+            padding_list: Some(vec![]),
+        }
+    }
+}
 impl QuantizedConv2DWithBiasAndRequantize {
     /// Creates a new `QuantizedConv2DWithBiasAndRequantize`.
     pub fn new() -> Self {
@@ -57191,7 +62819,7 @@ pub fn quantized_conv2_dwith_bias_and_requantize_with_args<
 }
 
 /// QuantizedConv2DWithBiasSignedSumAndReluAndRequantize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedConv2DWithBiasSignedSumAndReluAndRequantize {
     pub Tinput: ::std::option::Option<crate::DataType>,
     pub Tfilter: ::std::option::Option<crate::DataType>,
@@ -57203,7 +62831,21 @@ pub struct QuantizedConv2DWithBiasSignedSumAndReluAndRequantize {
     pub dilations: ::std::option::Option<::std::vec::Vec<i64>>,
     pub padding_list: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for QuantizedConv2DWithBiasSignedSumAndReluAndRequantize {
+    fn default() -> Self {
+        Self {
+            Tinput: None,
+            Tfilter: None,
+            Tbias: None,
+            Tsummand: None,
+            out_type: Some(crate::DataType::QUInt8),
+            strides: None,
+            padding: None,
+            dilations: Some(vec![1, 1, 1, 1]),
+            padding_list: Some(vec![]),
+        }
+    }
+}
 impl QuantizedConv2DWithBiasSignedSumAndReluAndRequantize {
     /// Creates a new `QuantizedConv2DWithBiasSignedSumAndReluAndRequantize`.
     pub fn new() -> Self {
@@ -57362,7 +63004,7 @@ pub fn quantized_conv2_dwith_bias_signed_sum_and_relu_and_requantize_with_args<
 }
 
 /// QuantizedConv2DWithBiasSumAndRelu
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedConv2DWithBiasSumAndRelu {
     pub Tinput: ::std::option::Option<crate::DataType>,
     pub Tfilter: ::std::option::Option<crate::DataType>,
@@ -57372,7 +63014,19 @@ pub struct QuantizedConv2DWithBiasSumAndRelu {
     pub dilations: ::std::option::Option<::std::vec::Vec<i64>>,
     pub padding_list: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for QuantizedConv2DWithBiasSumAndRelu {
+    fn default() -> Self {
+        Self {
+            Tinput: None,
+            Tfilter: None,
+            out_type: Some(crate::DataType::QInt32),
+            strides: None,
+            padding: None,
+            dilations: Some(vec![1, 1, 1, 1]),
+            padding_list: Some(vec![]),
+        }
+    }
+}
 impl QuantizedConv2DWithBiasSumAndRelu {
     /// Creates a new `QuantizedConv2DWithBiasSumAndRelu`.
     pub fn new() -> Self {
@@ -57491,7 +63145,7 @@ pub fn quantized_conv2_dwith_bias_sum_and_relu_with_args<
 }
 
 /// QuantizedConv2DWithBiasSumAndReluAndRequantize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedConv2DWithBiasSumAndReluAndRequantize {
     pub Tinput: ::std::option::Option<crate::DataType>,
     pub Tfilter: ::std::option::Option<crate::DataType>,
@@ -57503,7 +63157,21 @@ pub struct QuantizedConv2DWithBiasSumAndReluAndRequantize {
     pub dilations: ::std::option::Option<::std::vec::Vec<i64>>,
     pub padding_list: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for QuantizedConv2DWithBiasSumAndReluAndRequantize {
+    fn default() -> Self {
+        Self {
+            Tinput: None,
+            Tfilter: None,
+            Tbias: None,
+            Tsummand: None,
+            out_type: Some(crate::DataType::QUInt8),
+            strides: None,
+            padding: None,
+            dilations: Some(vec![1, 1, 1, 1]),
+            padding_list: Some(vec![]),
+        }
+    }
+}
 impl QuantizedConv2DWithBiasSumAndReluAndRequantize {
     /// Creates a new `QuantizedConv2DWithBiasSumAndReluAndRequantize`.
     pub fn new() -> Self {
@@ -57662,7 +63330,7 @@ pub fn quantized_conv2_dwith_bias_sum_and_relu_and_requantize_with_args<
 }
 
 /// QuantizedDepthwiseConv2D
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedDepthwiseConv2D {
     pub Tinput: ::std::option::Option<crate::DataType>,
     pub Tfilter: ::std::option::Option<crate::DataType>,
@@ -57671,7 +63339,18 @@ pub struct QuantizedDepthwiseConv2D {
     pub padding: ::std::option::Option<::std::string::String>,
     pub dilations: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for QuantizedDepthwiseConv2D {
+    fn default() -> Self {
+        Self {
+            Tinput: None,
+            Tfilter: None,
+            out_type: Some(crate::DataType::QInt32),
+            strides: None,
+            padding: None,
+            dilations: Some(vec![1, 1, 1, 1]),
+        }
+    }
+}
 impl QuantizedDepthwiseConv2D {
     /// Creates a new `QuantizedDepthwiseConv2D`.
     pub fn new() -> Self {
@@ -57776,7 +63455,7 @@ pub fn quantized_depthwise_conv2_d_with_args<
 }
 
 /// QuantizedDepthwiseConv2DWithBias
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedDepthwiseConv2DWithBias {
     pub Tinput: ::std::option::Option<crate::DataType>,
     pub Tfilter: ::std::option::Option<crate::DataType>,
@@ -57785,7 +63464,18 @@ pub struct QuantizedDepthwiseConv2DWithBias {
     pub padding: ::std::option::Option<::std::string::String>,
     pub dilations: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for QuantizedDepthwiseConv2DWithBias {
+    fn default() -> Self {
+        Self {
+            Tinput: None,
+            Tfilter: None,
+            out_type: Some(crate::DataType::QInt32),
+            strides: None,
+            padding: None,
+            dilations: Some(vec![1, 1, 1, 1]),
+        }
+    }
+}
 impl QuantizedDepthwiseConv2DWithBias {
     /// Creates a new `QuantizedDepthwiseConv2DWithBias`.
     pub fn new() -> Self {
@@ -57895,7 +63585,7 @@ pub fn quantized_depthwise_conv2_dwith_bias_with_args<
 }
 
 /// QuantizedDepthwiseConv2DWithBiasAndRelu
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedDepthwiseConv2DWithBiasAndRelu {
     pub Tinput: ::std::option::Option<crate::DataType>,
     pub Tfilter: ::std::option::Option<crate::DataType>,
@@ -57905,7 +63595,19 @@ pub struct QuantizedDepthwiseConv2DWithBiasAndRelu {
     pub dilations: ::std::option::Option<::std::vec::Vec<i64>>,
     pub padding_list: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for QuantizedDepthwiseConv2DWithBiasAndRelu {
+    fn default() -> Self {
+        Self {
+            Tinput: None,
+            Tfilter: None,
+            out_type: Some(crate::DataType::QInt32),
+            strides: None,
+            padding: None,
+            dilations: Some(vec![1, 1, 1, 1]),
+            padding_list: Some(vec![]),
+        }
+    }
+}
 impl QuantizedDepthwiseConv2DWithBiasAndRelu {
     /// Creates a new `QuantizedDepthwiseConv2DWithBiasAndRelu`.
     pub fn new() -> Self {
@@ -58021,7 +63723,7 @@ pub fn quantized_depthwise_conv2_dwith_bias_and_relu_with_args<
 }
 
 /// QuantizedDepthwiseConv2DWithBiasAndReluAndRequantize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedDepthwiseConv2DWithBiasAndReluAndRequantize {
     pub Tinput: ::std::option::Option<crate::DataType>,
     pub Tfilter: ::std::option::Option<crate::DataType>,
@@ -58032,7 +63734,20 @@ pub struct QuantizedDepthwiseConv2DWithBiasAndReluAndRequantize {
     pub dilations: ::std::option::Option<::std::vec::Vec<i64>>,
     pub padding_list: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for QuantizedDepthwiseConv2DWithBiasAndReluAndRequantize {
+    fn default() -> Self {
+        Self {
+            Tinput: None,
+            Tfilter: None,
+            Tbias: None,
+            out_type: Some(crate::DataType::QUInt8),
+            strides: None,
+            padding: None,
+            dilations: Some(vec![1, 1, 1, 1]),
+            padding_list: Some(vec![]),
+        }
+    }
+}
 impl QuantizedDepthwiseConv2DWithBiasAndReluAndRequantize {
     /// Creates a new `QuantizedDepthwiseConv2DWithBiasAndReluAndRequantize`.
     pub fn new() -> Self {
@@ -58170,7 +63885,7 @@ pub fn quantized_depthwise_conv2_dwith_bias_and_relu_and_requantize_with_args<
 }
 
 /// QuantizedInstanceNorm
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedInstanceNorm {
     pub T: ::std::option::Option<crate::DataType>,
     pub output_range_given: ::std::option::Option<bool>,
@@ -58179,7 +63894,18 @@ pub struct QuantizedInstanceNorm {
     pub variance_epsilon: ::std::option::Option<f32>,
     pub min_separation: ::std::option::Option<f32>,
 }
-
+impl ::std::default::Default for QuantizedInstanceNorm {
+    fn default() -> Self {
+        Self {
+            T: None,
+            output_range_given: Some(false),
+            given_y_min: Some(0f32),
+            given_y_max: Some(0f32),
+            variance_epsilon: Some(0.00001f32),
+            min_separation: Some(0.001f32),
+        }
+    }
+}
 impl QuantizedInstanceNorm {
     /// Creates a new `QuantizedInstanceNorm`.
     pub fn new() -> Self {
@@ -58267,7 +63993,7 @@ pub fn quantized_instance_norm_with_args<
 }
 
 /// QuantizedMatMul
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedMatMul {
     pub T1: ::std::option::Option<crate::DataType>,
     pub T2: ::std::option::Option<crate::DataType>,
@@ -58276,7 +64002,18 @@ pub struct QuantizedMatMul {
     pub transpose_b: ::std::option::Option<bool>,
     pub Tactivation: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for QuantizedMatMul {
+    fn default() -> Self {
+        Self {
+            T1: None,
+            T2: None,
+            Toutput: Some(crate::DataType::QInt32),
+            transpose_a: Some(false),
+            transpose_b: Some(false),
+            Tactivation: Some(crate::DataType::QUInt8),
+        }
+    }
+}
 impl QuantizedMatMul {
     /// Creates a new `QuantizedMatMul`.
     pub fn new() -> Self {
@@ -58379,7 +64116,7 @@ pub fn quantized_mat_mul_with_args<
 }
 
 /// QuantizedMatMulWithBias
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedMatMulWithBias {
     pub T1: ::std::option::Option<crate::DataType>,
     pub T2: ::std::option::Option<crate::DataType>,
@@ -58389,7 +64126,19 @@ pub struct QuantizedMatMulWithBias {
     pub transpose_b: ::std::option::Option<bool>,
     pub input_quant_mode: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for QuantizedMatMulWithBias {
+    fn default() -> Self {
+        Self {
+            T1: None,
+            T2: None,
+            Tbias: None,
+            Toutput: Some(crate::DataType::QInt32),
+            transpose_a: Some(false),
+            transpose_b: Some(false),
+            input_quant_mode: Some(::std::string::String::from("MIN_FIRST")),
+        }
+    }
+}
 impl QuantizedMatMulWithBias {
     /// Creates a new `QuantizedMatMulWithBias`.
     pub fn new() -> Self {
@@ -58500,7 +64249,7 @@ pub fn quantized_mat_mul_with_bias_with_args<
 }
 
 /// QuantizedMatMulWithBiasAndDequantize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedMatMulWithBiasAndDequantize {
     pub T1: ::std::option::Option<crate::DataType>,
     pub T2: ::std::option::Option<crate::DataType>,
@@ -58510,7 +64259,19 @@ pub struct QuantizedMatMulWithBiasAndDequantize {
     pub transpose_b: ::std::option::Option<bool>,
     pub input_quant_mode: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for QuantizedMatMulWithBiasAndDequantize {
+    fn default() -> Self {
+        Self {
+            T1: None,
+            T2: None,
+            Tbias: None,
+            Toutput: None,
+            transpose_a: Some(false),
+            transpose_b: Some(false),
+            input_quant_mode: Some(::std::string::String::from("MIN_FIRST")),
+        }
+    }
+}
 impl QuantizedMatMulWithBiasAndDequantize {
     /// Creates a new `QuantizedMatMulWithBiasAndDequantize`.
     pub fn new() -> Self {
@@ -58639,7 +64400,7 @@ pub fn quantized_mat_mul_with_bias_and_dequantize_with_args<
 }
 
 /// QuantizedMatMulWithBiasAndRelu
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedMatMulWithBiasAndRelu {
     pub T1: ::std::option::Option<crate::DataType>,
     pub T2: ::std::option::Option<crate::DataType>,
@@ -58648,7 +64409,18 @@ pub struct QuantizedMatMulWithBiasAndRelu {
     pub transpose_b: ::std::option::Option<bool>,
     pub input_quant_mode: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for QuantizedMatMulWithBiasAndRelu {
+    fn default() -> Self {
+        Self {
+            T1: None,
+            T2: None,
+            Toutput: Some(crate::DataType::QInt32),
+            transpose_a: Some(false),
+            transpose_b: Some(false),
+            input_quant_mode: Some(::std::string::String::from("MIN_FIRST")),
+        }
+    }
+}
 impl QuantizedMatMulWithBiasAndRelu {
     /// Creates a new `QuantizedMatMulWithBiasAndRelu`.
     pub fn new() -> Self {
@@ -58756,7 +64528,7 @@ pub fn quantized_mat_mul_with_bias_and_relu_with_args<
 }
 
 /// QuantizedMatMulWithBiasAndReluAndRequantize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedMatMulWithBiasAndReluAndRequantize {
     pub T1: ::std::option::Option<crate::DataType>,
     pub T2: ::std::option::Option<crate::DataType>,
@@ -58766,7 +64538,19 @@ pub struct QuantizedMatMulWithBiasAndReluAndRequantize {
     pub transpose_b: ::std::option::Option<bool>,
     pub input_quant_mode: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for QuantizedMatMulWithBiasAndReluAndRequantize {
+    fn default() -> Self {
+        Self {
+            T1: None,
+            T2: None,
+            Tbias: None,
+            Toutput: Some(crate::DataType::QUInt8),
+            transpose_a: Some(false),
+            transpose_b: Some(false),
+            input_quant_mode: Some(::std::string::String::from("MIN_FIRST")),
+        }
+    }
+}
 impl QuantizedMatMulWithBiasAndReluAndRequantize {
     /// Creates a new `QuantizedMatMulWithBiasAndReluAndRequantize`.
     pub fn new() -> Self {
@@ -58901,7 +64685,7 @@ pub fn quantized_mat_mul_with_bias_and_relu_and_requantize_with_args<
 }
 
 /// QuantizedMatMulWithBiasAndRequantize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedMatMulWithBiasAndRequantize {
     pub T1: ::std::option::Option<crate::DataType>,
     pub T2: ::std::option::Option<crate::DataType>,
@@ -58911,7 +64695,19 @@ pub struct QuantizedMatMulWithBiasAndRequantize {
     pub transpose_b: ::std::option::Option<bool>,
     pub input_quant_mode: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for QuantizedMatMulWithBiasAndRequantize {
+    fn default() -> Self {
+        Self {
+            T1: None,
+            T2: None,
+            Tbias: None,
+            Toutput: Some(crate::DataType::QUInt8),
+            transpose_a: Some(false),
+            transpose_b: Some(false),
+            input_quant_mode: Some(::std::string::String::from("MIN_FIRST")),
+        }
+    }
+}
 impl QuantizedMatMulWithBiasAndRequantize {
     /// Creates a new `QuantizedMatMulWithBiasAndRequantize`.
     pub fn new() -> Self {
@@ -59046,14 +64842,23 @@ pub fn quantized_mat_mul_with_bias_and_requantize_with_args<
 }
 
 /// QuantizedMaxPool
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedMaxPool {
     pub T: ::std::option::Option<crate::DataType>,
     pub ksize: ::std::option::Option<::std::vec::Vec<i64>>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
     pub padding: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for QuantizedMaxPool {
+    fn default() -> Self {
+        Self {
+            T: None,
+            ksize: None,
+            strides: None,
+            padding: None,
+        }
+    }
+}
 impl QuantizedMaxPool {
     /// Creates a new `QuantizedMaxPool`.
     pub fn new() -> Self {
@@ -59135,13 +64940,21 @@ pub fn quantized_max_pool_with_args<
 }
 
 /// QuantizedMul
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedMul {
     pub T1: ::std::option::Option<crate::DataType>,
     pub T2: ::std::option::Option<crate::DataType>,
     pub Toutput: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for QuantizedMul {
+    fn default() -> Self {
+        Self {
+            T1: None,
+            T2: None,
+            Toutput: Some(crate::DataType::QInt32),
+        }
+    }
+}
 impl QuantizedMul {
     /// Creates a new `QuantizedMul`.
     pub fn new() -> Self {
@@ -59235,12 +65048,19 @@ pub fn quantized_mul_with_args<
 }
 
 /// QuantizedRelu
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedRelu {
     pub Tinput: ::std::option::Option<crate::DataType>,
     pub out_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for QuantizedRelu {
+    fn default() -> Self {
+        Self {
+            Tinput: None,
+            out_type: Some(crate::DataType::QUInt8),
+        }
+    }
+}
 impl QuantizedRelu {
     /// Creates a new `QuantizedRelu`.
     pub fn new() -> Self {
@@ -59316,12 +65136,19 @@ pub fn quantized_relu_with_args<
 }
 
 /// QuantizedRelu6
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedRelu6 {
     pub Tinput: ::std::option::Option<crate::DataType>,
     pub out_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for QuantizedRelu6 {
+    fn default() -> Self {
+        Self {
+            Tinput: None,
+            out_type: Some(crate::DataType::QUInt8),
+        }
+    }
+}
 impl QuantizedRelu6 {
     /// Creates a new `QuantizedRelu6`.
     pub fn new() -> Self {
@@ -59397,12 +65224,19 @@ pub fn quantized_relu6_with_args<
 }
 
 /// QuantizedReluX
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedReluX {
     pub Tinput: ::std::option::Option<crate::DataType>,
     pub out_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for QuantizedReluX {
+    fn default() -> Self {
+        Self {
+            Tinput: None,
+            out_type: Some(crate::DataType::QUInt8),
+        }
+    }
+}
 impl QuantizedReluX {
     /// Creates a new `QuantizedReluX`.
     pub fn new() -> Self {
@@ -59483,12 +65317,19 @@ pub fn quantized_relu_x_with_args<
 }
 
 /// QuantizedReshape
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedReshape {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tshape: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for QuantizedReshape {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tshape: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl QuantizedReshape {
     /// Creates a new `QuantizedReshape`.
     pub fn new() -> Self {
@@ -59569,13 +65410,21 @@ pub fn quantized_reshape_with_args<
 }
 
 /// QuantizedResizeBilinear
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QuantizedResizeBilinear {
     pub T: ::std::option::Option<crate::DataType>,
     pub align_corners: ::std::option::Option<bool>,
     pub half_pixel_centers: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for QuantizedResizeBilinear {
+    fn default() -> Self {
+        Self {
+            T: None,
+            align_corners: Some(false),
+            half_pixel_centers: Some(false),
+        }
+    }
+}
 impl QuantizedResizeBilinear {
     /// Creates a new `QuantizedResizeBilinear`.
     pub fn new() -> Self {
@@ -59659,11 +65508,17 @@ pub fn quantized_resize_bilinear_with_args<
 }
 
 /// QueueClose
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QueueClose {
     pub cancel_pending_enqueues: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for QueueClose {
+    fn default() -> Self {
+        Self {
+            cancel_pending_enqueues: Some(false),
+        }
+    }
+}
 impl QueueClose {
     /// Creates a new `QueueClose`.
     pub fn new() -> Self {
@@ -59713,11 +65568,17 @@ pub fn queue_close_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// QueueCloseV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QueueCloseV2 {
     pub cancel_pending_enqueues: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for QueueCloseV2 {
+    fn default() -> Self {
+        Self {
+            cancel_pending_enqueues: Some(false),
+        }
+    }
+}
 impl QueueCloseV2 {
     /// Creates a new `QueueCloseV2`.
     pub fn new() -> Self {
@@ -59767,12 +65628,19 @@ pub fn queue_close_v2_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// QueueDequeue
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QueueDequeue {
     pub component_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub timeout_ms: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for QueueDequeue {
+    fn default() -> Self {
+        Self {
+            component_types: None,
+            timeout_ms: Some(-1i64),
+        }
+    }
+}
 impl QueueDequeue {
     /// Creates a new `QueueDequeue`.
     pub fn new() -> Self {
@@ -59828,12 +65696,19 @@ pub fn queue_dequeue_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// QueueDequeueMany
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QueueDequeueMany {
     pub component_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub timeout_ms: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for QueueDequeueMany {
+    fn default() -> Self {
+        Self {
+            component_types: None,
+            timeout_ms: Some(-1i64),
+        }
+    }
+}
 impl QueueDequeueMany {
     /// Creates a new `QueueDequeueMany`.
     pub fn new() -> Self {
@@ -59892,12 +65767,19 @@ pub fn queue_dequeue_many_with_args<T0: crate::eager::ToHandle, T1: crate::eager
 }
 
 /// QueueDequeueManyV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QueueDequeueManyV2 {
     pub component_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub timeout_ms: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for QueueDequeueManyV2 {
+    fn default() -> Self {
+        Self {
+            component_types: None,
+            timeout_ms: Some(-1i64),
+        }
+    }
+}
 impl QueueDequeueManyV2 {
     /// Creates a new `QueueDequeueManyV2`.
     pub fn new() -> Self {
@@ -59956,12 +65838,19 @@ pub fn queue_dequeue_many_v2_with_args<T0: crate::eager::ToHandle, T1: crate::ea
 }
 
 /// QueueDequeueUpTo
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QueueDequeueUpTo {
     pub component_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub timeout_ms: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for QueueDequeueUpTo {
+    fn default() -> Self {
+        Self {
+            component_types: None,
+            timeout_ms: Some(-1i64),
+        }
+    }
+}
 impl QueueDequeueUpTo {
     /// Creates a new `QueueDequeueUpTo`.
     pub fn new() -> Self {
@@ -60020,12 +65909,19 @@ pub fn queue_dequeue_up_to_with_args<T0: crate::eager::ToHandle, T1: crate::eage
 }
 
 /// QueueDequeueUpToV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QueueDequeueUpToV2 {
     pub component_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub timeout_ms: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for QueueDequeueUpToV2 {
+    fn default() -> Self {
+        Self {
+            component_types: None,
+            timeout_ms: Some(-1i64),
+        }
+    }
+}
 impl QueueDequeueUpToV2 {
     /// Creates a new `QueueDequeueUpToV2`.
     pub fn new() -> Self {
@@ -60084,12 +65980,19 @@ pub fn queue_dequeue_up_to_v2_with_args<T0: crate::eager::ToHandle, T1: crate::e
 }
 
 /// QueueDequeueV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QueueDequeueV2 {
     pub component_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub timeout_ms: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for QueueDequeueV2 {
+    fn default() -> Self {
+        Self {
+            component_types: None,
+            timeout_ms: Some(-1i64),
+        }
+    }
+}
 impl QueueDequeueV2 {
     /// Creates a new `QueueDequeueV2`.
     pub fn new() -> Self {
@@ -60145,12 +66048,19 @@ pub fn queue_dequeue_v2_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// QueueEnqueue
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QueueEnqueue {
     pub Tcomponents: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub timeout_ms: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for QueueEnqueue {
+    fn default() -> Self {
+        Self {
+            Tcomponents: None,
+            timeout_ms: Some(-1i64),
+        }
+    }
+}
 impl QueueEnqueue {
     /// Creates a new `QueueEnqueue`.
     pub fn new() -> Self {
@@ -60208,12 +66118,19 @@ pub fn queue_enqueue_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToH
 }
 
 /// QueueEnqueueMany
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QueueEnqueueMany {
     pub Tcomponents: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub timeout_ms: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for QueueEnqueueMany {
+    fn default() -> Self {
+        Self {
+            Tcomponents: None,
+            timeout_ms: Some(-1i64),
+        }
+    }
+}
 impl QueueEnqueueMany {
     /// Creates a new `QueueEnqueueMany`.
     pub fn new() -> Self {
@@ -60271,12 +66188,19 @@ pub fn queue_enqueue_many_with_args<T0: crate::eager::ToHandle, T1: crate::eager
 }
 
 /// QueueEnqueueManyV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QueueEnqueueManyV2 {
     pub Tcomponents: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub timeout_ms: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for QueueEnqueueManyV2 {
+    fn default() -> Self {
+        Self {
+            Tcomponents: None,
+            timeout_ms: Some(-1i64),
+        }
+    }
+}
 impl QueueEnqueueManyV2 {
     /// Creates a new `QueueEnqueueManyV2`.
     pub fn new() -> Self {
@@ -60334,12 +66258,19 @@ pub fn queue_enqueue_many_v2_with_args<T0: crate::eager::ToHandle, T1: crate::ea
 }
 
 /// QueueEnqueueV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QueueEnqueueV2 {
     pub Tcomponents: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub timeout_ms: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for QueueEnqueueV2 {
+    fn default() -> Self {
+        Self {
+            Tcomponents: None,
+            timeout_ms: Some(-1i64),
+        }
+    }
+}
 impl QueueEnqueueV2 {
     /// Creates a new `QueueEnqueueV2`.
     pub fn new() -> Self {
@@ -60397,9 +66328,13 @@ pub fn queue_enqueue_v2_with_args<T0: crate::eager::ToHandle, T1: crate::eager::
 }
 
 /// QueueIsClosed
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QueueIsClosed {}
-
+impl ::std::default::Default for QueueIsClosed {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl QueueIsClosed {
     /// Creates a new `QueueIsClosed`.
     pub fn new() -> Self {
@@ -60449,9 +66384,13 @@ pub fn queue_is_closed_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// QueueIsClosedV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QueueIsClosedV2 {}
-
+impl ::std::default::Default for QueueIsClosedV2 {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl QueueIsClosedV2 {
     /// Creates a new `QueueIsClosedV2`.
     pub fn new() -> Self {
@@ -60501,9 +66440,13 @@ pub fn queue_is_closed_v2_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// QueueSize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QueueSize {}
-
+impl ::std::default::Default for QueueSize {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl QueueSize {
     /// Creates a new `QueueSize`.
     pub fn new() -> Self {
@@ -60553,9 +66496,13 @@ pub fn queue_size_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// QueueSizeV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct QueueSizeV2 {}
-
+impl ::std::default::Default for QueueSizeV2 {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl QueueSizeV2 {
     /// Creates a new `QueueSizeV2`.
     pub fn new() -> Self {
@@ -60605,12 +66552,19 @@ pub fn queue_size_v2_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RFFT
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RFFT {
     pub Treal: ::std::option::Option<crate::DataType>,
     pub Tcomplex: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RFFT {
+    fn default() -> Self {
+        Self {
+            Treal: Some(crate::DataType::Float),
+            Tcomplex: Some(crate::DataType::Complex64),
+        }
+    }
+}
 impl RFFT {
     /// Creates a new `RFFT`.
     pub fn new() -> Self {
@@ -60669,12 +66623,19 @@ pub fn rfft_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// RFFT2D
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RFFT2D {
     pub Treal: ::std::option::Option<crate::DataType>,
     pub Tcomplex: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RFFT2D {
+    fn default() -> Self {
+        Self {
+            Treal: Some(crate::DataType::Float),
+            Tcomplex: Some(crate::DataType::Complex64),
+        }
+    }
+}
 impl RFFT2D {
     /// Creates a new `RFFT2D`.
     pub fn new() -> Self {
@@ -60733,12 +66694,19 @@ pub fn rfft2_d_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>
 }
 
 /// RFFT3D
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RFFT3D {
     pub Treal: ::std::option::Option<crate::DataType>,
     pub Tcomplex: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RFFT3D {
+    fn default() -> Self {
+        Self {
+            Treal: Some(crate::DataType::Float),
+            Tcomplex: Some(crate::DataType::Complex64),
+        }
+    }
+}
 impl RFFT3D {
     /// Creates a new `RFFT3D`.
     pub fn new() -> Self {
@@ -60797,11 +66765,17 @@ pub fn rfft3_d_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>
 }
 
 /// RGBToHSV
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RGBToHSV {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RGBToHSV {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Float),
+        }
+    }
+}
 impl RGBToHSV {
     /// Creates a new `RGBToHSV`.
     pub fn new() -> Self {
@@ -60854,13 +66828,21 @@ pub fn rgbto_hsv_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RaggedBincount
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RaggedBincount {
     pub Tidx: ::std::option::Option<crate::DataType>,
     pub T: ::std::option::Option<crate::DataType>,
     pub binary_output: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for RaggedBincount {
+    fn default() -> Self {
+        Self {
+            Tidx: None,
+            T: None,
+            binary_output: Some(false),
+        }
+    }
+}
 impl RaggedBincount {
     /// Creates a new `RaggedBincount`.
     pub fn new() -> Self {
@@ -60938,7 +66920,7 @@ pub fn ragged_bincount_with_args<
 }
 
 /// RaggedCountSparseOutput
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RaggedCountSparseOutput {
     pub T: ::std::option::Option<crate::DataType>,
     pub minlength: ::std::option::Option<i64>,
@@ -60946,7 +66928,17 @@ pub struct RaggedCountSparseOutput {
     pub binary_output: ::std::option::Option<bool>,
     pub output_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RaggedCountSparseOutput {
+    fn default() -> Self {
+        Self {
+            T: None,
+            minlength: Some(-1i64),
+            maxlength: Some(-1i64),
+            binary_output: None,
+            output_type: None,
+        }
+    }
+}
 impl RaggedCountSparseOutput {
     /// Creates a new `RaggedCountSparseOutput`.
     pub fn new() -> Self {
@@ -61031,7 +67023,7 @@ pub fn ragged_count_sparse_output_with_args<
 }
 
 /// RaggedCross
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RaggedCross {
     pub Nsparse: ::std::option::Option<i64>,
     pub input_order: ::std::option::Option<::std::string::String>,
@@ -61045,7 +67037,23 @@ pub struct RaggedCross {
     pub out_values_type: ::std::option::Option<crate::DataType>,
     pub out_row_splits_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RaggedCross {
+    fn default() -> Self {
+        Self {
+            Nsparse: None,
+            input_order: None,
+            hashed_output: None,
+            num_buckets: None,
+            hash_key: None,
+            ragged_values_types: None,
+            ragged_splits_types: None,
+            sparse_values_types: None,
+            dense_types: None,
+            out_values_type: None,
+            out_row_splits_type: None,
+        }
+    }
+}
 impl RaggedCross {
     /// Creates a new `RaggedCross`.
     pub fn new() -> Self {
@@ -61170,7 +67178,7 @@ pub fn ragged_cross_with_args<
 }
 
 /// RaggedGather
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RaggedGather {
     pub Tvalues: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
@@ -61178,7 +67186,17 @@ pub struct RaggedGather {
     pub PARAMS_RAGGED_RANK: ::std::option::Option<i64>,
     pub OUTPUT_RAGGED_RANK: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for RaggedGather {
+    fn default() -> Self {
+        Self {
+            Tvalues: None,
+            Tindices: None,
+            Tsplits: Some(crate::DataType::Int64),
+            PARAMS_RAGGED_RANK: None,
+            OUTPUT_RAGGED_RANK: None,
+        }
+    }
+}
 impl RaggedGather {
     /// Creates a new `RaggedGather`.
     pub fn new() -> Self {
@@ -61262,12 +67280,19 @@ pub fn ragged_gather_with_args<
 }
 
 /// RaggedRange
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RaggedRange {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tsplits: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RaggedRange {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Int32),
+            Tsplits: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl RaggedRange {
     /// Creates a new `RaggedRange`.
     pub fn new() -> Self {
@@ -61342,14 +67367,23 @@ pub fn ragged_range_with_args<
 }
 
 /// RaggedTensorFromVariant
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RaggedTensorFromVariant {
     pub input_ragged_rank: ::std::option::Option<i64>,
     pub output_ragged_rank: ::std::option::Option<i64>,
     pub Tvalues: ::std::option::Option<crate::DataType>,
     pub Tsplits: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RaggedTensorFromVariant {
+    fn default() -> Self {
+        Self {
+            input_ragged_rank: None,
+            output_ragged_rank: None,
+            Tvalues: None,
+            Tsplits: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl RaggedTensorFromVariant {
     /// Creates a new `RaggedTensorFromVariant`.
     pub fn new() -> Self {
@@ -61416,13 +67450,21 @@ pub fn ragged_tensor_from_variant_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RaggedTensorToSparse
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RaggedTensorToSparse {
     pub RAGGED_RANK: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
     pub Tsplits: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RaggedTensorToSparse {
+    fn default() -> Self {
+        Self {
+            RAGGED_RANK: None,
+            T: None,
+            Tsplits: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl RaggedTensorToSparse {
     /// Creates a new `RaggedTensorToSparse`.
     pub fn new() -> Self {
@@ -61490,7 +67532,7 @@ pub fn ragged_tensor_to_sparse_with_args<T0: crate::eager::ToHandle, T1: crate::
 }
 
 /// RaggedTensorToTensor
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RaggedTensorToTensor {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindex: ::std::option::Option<crate::DataType>,
@@ -61498,7 +67540,17 @@ pub struct RaggedTensorToTensor {
     pub num_row_partition_tensors: ::std::option::Option<i64>,
     pub row_partition_types: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
 }
-
+impl ::std::default::Default for RaggedTensorToTensor {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindex: None,
+            Tshape: None,
+            num_row_partition_tensors: None,
+            row_partition_types: None,
+        }
+    }
+}
 impl RaggedTensorToTensor {
     /// Creates a new `RaggedTensorToTensor`.
     pub fn new() -> Self {
@@ -61582,14 +67634,23 @@ pub fn ragged_tensor_to_tensor_with_args<
 }
 
 /// RaggedTensorToVariant
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RaggedTensorToVariant {
     pub RAGGED_RANK: ::std::option::Option<i64>,
     pub Tvalues: ::std::option::Option<crate::DataType>,
     pub Tsplits: ::std::option::Option<crate::DataType>,
     pub batched_input: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for RaggedTensorToVariant {
+    fn default() -> Self {
+        Self {
+            RAGGED_RANK: None,
+            Tvalues: None,
+            Tsplits: Some(crate::DataType::Int64),
+            batched_input: None,
+        }
+    }
+}
 impl RaggedTensorToVariant {
     /// Creates a new `RaggedTensorToVariant`.
     pub fn new() -> Self {
@@ -61657,12 +67718,19 @@ pub fn ragged_tensor_to_variant_with_args<
 }
 
 /// RaggedTensorToVariantGradient
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RaggedTensorToVariantGradient {
     pub Tvalues: ::std::option::Option<crate::DataType>,
     pub Tsplits: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RaggedTensorToVariantGradient {
+    fn default() -> Self {
+        Self {
+            Tvalues: None,
+            Tsplits: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl RaggedTensorToVariantGradient {
     /// Creates a new `RaggedTensorToVariantGradient`.
     pub fn new() -> Self {
@@ -61737,13 +67805,21 @@ pub fn ragged_tensor_to_variant_gradient_with_args<
 }
 
 /// RandomCrop
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RandomCrop {
     pub T: ::std::option::Option<crate::DataType>,
     pub seed: ::std::option::Option<i64>,
     pub seed2: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for RandomCrop {
+    fn default() -> Self {
+        Self {
+            T: None,
+            seed: Some(0i64),
+            seed2: Some(0i64),
+        }
+    }
+}
 impl RandomCrop {
     /// Creates a new `RandomCrop`.
     pub fn new() -> Self {
@@ -61805,12 +67881,19 @@ pub fn random_crop_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHan
 }
 
 /// RandomDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RandomDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for RandomDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl RandomDataset {
     /// Creates a new `RandomDataset`.
     pub fn new() -> Self {
@@ -61869,14 +67952,23 @@ pub fn random_dataset_with_args<T0: crate::eager::ToHandle, T1: crate::eager::To
 }
 
 /// RandomGamma
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RandomGamma {
     pub seed: ::std::option::Option<i64>,
     pub seed2: ::std::option::Option<i64>,
     pub S: ::std::option::Option<crate::DataType>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RandomGamma {
+    fn default() -> Self {
+        Self {
+            seed: Some(0i64),
+            seed2: Some(0i64),
+            S: None,
+            T: None,
+        }
+    }
+}
 impl RandomGamma {
     /// Creates a new `RandomGamma`.
     pub fn new() -> Self {
@@ -61941,11 +68033,15 @@ pub fn random_gamma_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHa
 }
 
 /// RandomGammaGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RandomGammaGrad {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RandomGammaGrad {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl RandomGammaGrad {
     /// Creates a new `RandomGammaGrad`.
     pub fn new() -> Self {
@@ -62001,14 +68097,23 @@ pub fn random_gamma_grad_with_args<T0: crate::eager::ToHandle, T1: crate::eager:
 }
 
 /// RandomPoisson
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RandomPoisson {
     pub seed: ::std::option::Option<i64>,
     pub seed2: ::std::option::Option<i64>,
     pub S: ::std::option::Option<crate::DataType>,
     pub dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RandomPoisson {
+    fn default() -> Self {
+        Self {
+            seed: Some(0i64),
+            seed2: Some(0i64),
+            S: None,
+            dtype: None,
+        }
+    }
+}
 impl RandomPoisson {
     /// Creates a new `RandomPoisson`.
     pub fn new() -> Self {
@@ -62073,7 +68178,7 @@ pub fn random_poisson_with_args<T0: crate::eager::ToHandle, T1: crate::eager::To
 }
 
 /// RandomPoissonV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RandomPoissonV2 {
     pub seed: ::std::option::Option<i64>,
     pub seed2: ::std::option::Option<i64>,
@@ -62081,7 +68186,17 @@ pub struct RandomPoissonV2 {
     pub R: ::std::option::Option<crate::DataType>,
     pub dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RandomPoissonV2 {
+    fn default() -> Self {
+        Self {
+            seed: Some(0i64),
+            seed2: Some(0i64),
+            S: None,
+            R: Some(crate::DataType::Double),
+            dtype: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl RandomPoissonV2 {
     /// Creates a new `RandomPoissonV2`.
     pub fn new() -> Self {
@@ -62149,13 +68264,21 @@ pub fn random_poisson_v2_with_args<T0: crate::eager::ToHandle, T1: crate::eager:
 }
 
 /// RandomShuffle
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RandomShuffle {
     pub seed: ::std::option::Option<i64>,
     pub seed2: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RandomShuffle {
+    fn default() -> Self {
+        Self {
+            seed: Some(0i64),
+            seed2: Some(0i64),
+            T: None,
+        }
+    }
+}
 impl RandomShuffle {
     /// Creates a new `RandomShuffle`.
     pub fn new() -> Self {
@@ -62214,7 +68337,7 @@ pub fn random_shuffle_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RandomShuffleQueue
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RandomShuffleQueue {
     pub component_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
@@ -62225,7 +68348,20 @@ pub struct RandomShuffleQueue {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for RandomShuffleQueue {
+    fn default() -> Self {
+        Self {
+            component_types: None,
+            shapes: None,
+            capacity: Some(-1i64),
+            min_after_dequeue: Some(0i64),
+            seed: Some(0i64),
+            seed2: Some(0i64),
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl RandomShuffleQueue {
     /// Creates a new `RandomShuffleQueue`.
     pub fn new() -> Self {
@@ -62295,7 +68431,7 @@ pub fn random_shuffle_queue_with_args(
 }
 
 /// RandomShuffleQueueV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RandomShuffleQueueV2 {
     pub component_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
@@ -62306,7 +68442,20 @@ pub struct RandomShuffleQueueV2 {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for RandomShuffleQueueV2 {
+    fn default() -> Self {
+        Self {
+            component_types: None,
+            shapes: None,
+            capacity: Some(-1i64),
+            min_after_dequeue: Some(0i64),
+            seed: Some(0i64),
+            seed2: Some(0i64),
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl RandomShuffleQueueV2 {
     /// Creates a new `RandomShuffleQueueV2`.
     pub fn new() -> Self {
@@ -62376,14 +68525,23 @@ pub fn random_shuffle_queue_v2_with_args(
 }
 
 /// RandomStandardNormal
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RandomStandardNormal {
     pub seed: ::std::option::Option<i64>,
     pub seed2: ::std::option::Option<i64>,
     pub dtype: ::std::option::Option<crate::DataType>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RandomStandardNormal {
+    fn default() -> Self {
+        Self {
+            seed: Some(0i64),
+            seed2: Some(0i64),
+            dtype: None,
+            T: None,
+        }
+    }
+}
 impl RandomStandardNormal {
     /// Creates a new `RandomStandardNormal`.
     pub fn new() -> Self {
@@ -62445,14 +68603,23 @@ pub fn random_standard_normal_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RandomUniform
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RandomUniform {
     pub seed: ::std::option::Option<i64>,
     pub seed2: ::std::option::Option<i64>,
     pub dtype: ::std::option::Option<crate::DataType>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RandomUniform {
+    fn default() -> Self {
+        Self {
+            seed: Some(0i64),
+            seed2: Some(0i64),
+            dtype: None,
+            T: None,
+        }
+    }
+}
 impl RandomUniform {
     /// Creates a new `RandomUniform`.
     pub fn new() -> Self {
@@ -62514,14 +68681,23 @@ pub fn random_uniform_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RandomUniformInt
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RandomUniformInt {
     pub seed: ::std::option::Option<i64>,
     pub seed2: ::std::option::Option<i64>,
     pub Tout: ::std::option::Option<crate::DataType>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RandomUniformInt {
+    fn default() -> Self {
+        Self {
+            seed: Some(0i64),
+            seed2: Some(0i64),
+            Tout: None,
+            T: None,
+        }
+    }
+}
 impl RandomUniformInt {
     /// Creates a new `RandomUniformInt`.
     pub fn new() -> Self {
@@ -62597,11 +68773,17 @@ pub fn random_uniform_int_with_args<
 }
 
 /// Range
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Range {
     pub Tidx: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Range {
+    fn default() -> Self {
+        Self {
+            Tidx: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl Range {
     /// Creates a new `Range`.
     pub fn new() -> Self {
@@ -62664,12 +68846,19 @@ pub fn range_with_args<
 }
 
 /// RangeDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RangeDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for RangeDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl RangeDataset {
     /// Creates a new `RangeDataset`.
     pub fn new() -> Self {
@@ -62739,11 +68928,15 @@ pub fn range_dataset_with_args<
 }
 
 /// Rank
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Rank {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Rank {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Rank {
     /// Creates a new `Rank`.
     pub fn new() -> Self {
@@ -62794,9 +68987,13 @@ pub fn rank_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// ReadFile
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ReadFile {}
-
+impl ::std::default::Default for ReadFile {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl ReadFile {
     /// Creates a new `ReadFile`.
     pub fn new() -> Self {
@@ -62846,11 +69043,15 @@ pub fn read_file_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// ReadVariableOp
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ReadVariableOp {
     pub dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ReadVariableOp {
+    fn default() -> Self {
+        Self { dtype: None }
+    }
+}
 impl ReadVariableOp {
     /// Creates a new `ReadVariableOp`.
     pub fn new() -> Self {
@@ -62903,9 +69104,13 @@ pub fn read_variable_op_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// ReaderNumRecordsProduced
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ReaderNumRecordsProduced {}
-
+impl ::std::default::Default for ReaderNumRecordsProduced {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl ReaderNumRecordsProduced {
     /// Creates a new `ReaderNumRecordsProduced`.
     pub fn new() -> Self {
@@ -62955,9 +69160,13 @@ pub fn reader_num_records_produced_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// ReaderNumRecordsProducedV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ReaderNumRecordsProducedV2 {}
-
+impl ::std::default::Default for ReaderNumRecordsProducedV2 {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl ReaderNumRecordsProducedV2 {
     /// Creates a new `ReaderNumRecordsProducedV2`.
     pub fn new() -> Self {
@@ -63007,9 +69216,13 @@ pub fn reader_num_records_produced_v2_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// ReaderNumWorkUnitsCompleted
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ReaderNumWorkUnitsCompleted {}
-
+impl ::std::default::Default for ReaderNumWorkUnitsCompleted {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl ReaderNumWorkUnitsCompleted {
     /// Creates a new `ReaderNumWorkUnitsCompleted`.
     pub fn new() -> Self {
@@ -63059,9 +69272,13 @@ pub fn reader_num_work_units_completed_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// ReaderNumWorkUnitsCompletedV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ReaderNumWorkUnitsCompletedV2 {}
-
+impl ::std::default::Default for ReaderNumWorkUnitsCompletedV2 {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl ReaderNumWorkUnitsCompletedV2 {
     /// Creates a new `ReaderNumWorkUnitsCompletedV2`.
     pub fn new() -> Self {
@@ -63111,9 +69328,13 @@ pub fn reader_num_work_units_completed_v2_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// ReaderRead
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ReaderRead {}
-
+impl ::std::default::Default for ReaderRead {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl ReaderRead {
     /// Creates a new `ReaderRead`.
     pub fn new() -> Self {
@@ -63171,9 +69392,13 @@ pub fn reader_read_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHan
 }
 
 /// ReaderReadUpTo
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ReaderReadUpTo {}
-
+impl ::std::default::Default for ReaderReadUpTo {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl ReaderReadUpTo {
     /// Creates a new `ReaderReadUpTo`.
     pub fn new() -> Self {
@@ -63242,9 +69467,13 @@ pub fn reader_read_up_to_with_args<
 }
 
 /// ReaderReadUpToV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ReaderReadUpToV2 {}
-
+impl ::std::default::Default for ReaderReadUpToV2 {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl ReaderReadUpToV2 {
     /// Creates a new `ReaderReadUpToV2`.
     pub fn new() -> Self {
@@ -63313,9 +69542,13 @@ pub fn reader_read_up_to_v2_with_args<
 }
 
 /// ReaderReadV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ReaderReadV2 {}
-
+impl ::std::default::Default for ReaderReadV2 {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl ReaderReadV2 {
     /// Creates a new `ReaderReadV2`.
     pub fn new() -> Self {
@@ -63373,9 +69606,13 @@ pub fn reader_read_v2_with_args<T0: crate::eager::ToHandle, T1: crate::eager::To
 }
 
 /// ReaderReset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ReaderReset {}
-
+impl ::std::default::Default for ReaderReset {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl ReaderReset {
     /// Creates a new `ReaderReset`.
     pub fn new() -> Self {
@@ -63422,9 +69659,13 @@ pub fn reader_reset_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// ReaderResetV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ReaderResetV2 {}
-
+impl ::std::default::Default for ReaderResetV2 {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl ReaderResetV2 {
     /// Creates a new `ReaderResetV2`.
     pub fn new() -> Self {
@@ -63471,9 +69712,13 @@ pub fn reader_reset_v2_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// ReaderRestoreState
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ReaderRestoreState {}
-
+impl ::std::default::Default for ReaderRestoreState {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl ReaderRestoreState {
     /// Creates a new `ReaderRestoreState`.
     pub fn new() -> Self {
@@ -63525,9 +69770,13 @@ pub fn reader_restore_state_with_args<T0: crate::eager::ToHandle, T1: crate::eag
 }
 
 /// ReaderRestoreStateV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ReaderRestoreStateV2 {}
-
+impl ::std::default::Default for ReaderRestoreStateV2 {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl ReaderRestoreStateV2 {
     /// Creates a new `ReaderRestoreStateV2`.
     pub fn new() -> Self {
@@ -63579,9 +69828,13 @@ pub fn reader_restore_state_v2_with_args<T0: crate::eager::ToHandle, T1: crate::
 }
 
 /// ReaderSerializeState
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ReaderSerializeState {}
-
+impl ::std::default::Default for ReaderSerializeState {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl ReaderSerializeState {
     /// Creates a new `ReaderSerializeState`.
     pub fn new() -> Self {
@@ -63631,9 +69884,13 @@ pub fn reader_serialize_state_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// ReaderSerializeStateV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ReaderSerializeStateV2 {}
-
+impl ::std::default::Default for ReaderSerializeStateV2 {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl ReaderSerializeStateV2 {
     /// Creates a new `ReaderSerializeStateV2`.
     pub fn new() -> Self {
@@ -63683,12 +69940,19 @@ pub fn reader_serialize_state_v2_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Real
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Real {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tout: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Real {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Complex64),
+            Tout: Some(crate::DataType::Float),
+        }
+    }
+}
 impl Real {
     /// Creates a new `Real`.
     pub fn new() -> Self {
@@ -63742,11 +70006,15 @@ pub fn real_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RealDiv
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RealDiv {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RealDiv {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl RealDiv {
     /// Creates a new `RealDiv`.
     pub fn new() -> Self {
@@ -63802,13 +70070,21 @@ pub fn real_div_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle
 }
 
 /// RebatchDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RebatchDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     pub use_fallback: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for RebatchDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+            use_fallback: Some(true),
+        }
+    }
+}
 impl RebatchDataset {
     /// Creates a new `RebatchDataset`.
     pub fn new() -> Self {
@@ -63870,12 +70146,19 @@ pub fn rebatch_dataset_with_args<T0: crate::eager::ToHandle, T1: crate::eager::T
 }
 
 /// RebatchDatasetV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RebatchDatasetV2 {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for RebatchDatasetV2 {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl RebatchDatasetV2 {
     /// Creates a new `RebatchDatasetV2`.
     pub fn new() -> Self {
@@ -63945,11 +70228,15 @@ pub fn rebatch_dataset_v2_with_args<
 }
 
 /// Reciprocal
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Reciprocal {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Reciprocal {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Reciprocal {
     /// Creates a new `Reciprocal`.
     pub fn new() -> Self {
@@ -64000,11 +70287,15 @@ pub fn reciprocal_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// ReciprocalGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ReciprocalGrad {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ReciprocalGrad {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl ReciprocalGrad {
     /// Creates a new `ReciprocalGrad`.
     pub fn new() -> Self {
@@ -64060,7 +70351,7 @@ pub fn reciprocal_grad_with_args<T0: crate::eager::ToHandle, T1: crate::eager::T
 }
 
 /// RecordInput
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RecordInput {
     pub file_pattern: ::std::option::Option<::std::string::String>,
     pub file_random_seed: ::std::option::Option<i64>,
@@ -64070,7 +70361,19 @@ pub struct RecordInput {
     pub batch_size: ::std::option::Option<i64>,
     pub compression_type: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for RecordInput {
+    fn default() -> Self {
+        Self {
+            file_pattern: None,
+            file_random_seed: Some(301i64),
+            file_shuffle_shift_ratio: Some(0f32),
+            file_buffer_size: Some(10000i64),
+            file_parallelism: Some(16i64),
+            batch_size: Some(32i64),
+            compression_type: None,
+        }
+    }
+}
 impl RecordInput {
     /// Creates a new `RecordInput`.
     pub fn new() -> Self {
@@ -64135,7 +70438,7 @@ pub fn record_input_with_args(__args: &RecordInput) -> crate::Result<crate::eage
 }
 
 /// Recv
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Recv {
     pub tensor_type: ::std::option::Option<crate::DataType>,
     pub tensor_name: ::std::option::Option<::std::string::String>,
@@ -64144,7 +70447,18 @@ pub struct Recv {
     pub recv_device: ::std::option::Option<::std::string::String>,
     pub client_terminated: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for Recv {
+    fn default() -> Self {
+        Self {
+            tensor_type: None,
+            tensor_name: None,
+            send_device: None,
+            send_device_incarnation: None,
+            recv_device: None,
+            client_terminated: Some(false),
+        }
+    }
+}
 impl Recv {
     /// Creates a new `Recv`.
     pub fn new() -> Self {
@@ -64206,12 +70520,19 @@ pub fn recv_with_args(__args: &Recv) -> crate::Result<crate::eager::TensorHandle
 }
 
 /// RecvTPUEmbeddingActivations
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RecvTPUEmbeddingActivations {
     pub num_outputs: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for RecvTPUEmbeddingActivations {
+    fn default() -> Self {
+        Self {
+            num_outputs: None,
+            config: None,
+        }
+    }
+}
 impl RecvTPUEmbeddingActivations {
     /// Creates a new `RecvTPUEmbeddingActivations`.
     pub fn new() -> Self {
@@ -64263,7 +70584,7 @@ pub fn recv_tpuembedding_activations_with_args(
 }
 
 /// ReduceDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ReduceDataset {
     pub f: ::std::option::Option<::std::string::String>,
     pub Tstate: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
@@ -64272,7 +70593,18 @@ pub struct ReduceDataset {
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     pub use_inter_op_parallelism: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ReduceDataset {
+    fn default() -> Self {
+        Self {
+            f: None,
+            Tstate: None,
+            Targuments: None,
+            output_types: None,
+            output_shapes: None,
+            use_inter_op_parallelism: Some(true),
+        }
+    }
+}
 impl ReduceDataset {
     /// Creates a new `ReduceDataset`.
     pub fn new() -> Self {
@@ -64354,12 +70686,19 @@ pub fn reduce_dataset_with_args<
 }
 
 /// ReduceJoin
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ReduceJoin {
     pub keep_dims: ::std::option::Option<bool>,
     pub separator: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for ReduceJoin {
+    fn default() -> Self {
+        Self {
+            keep_dims: Some(false),
+            separator: None,
+        }
+    }
+}
 impl ReduceJoin {
     /// Creates a new `ReduceJoin`.
     pub fn new() -> Self {
@@ -64418,14 +70757,23 @@ pub fn reduce_join_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHan
 }
 
 /// RefEnter
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RefEnter {
     pub T: ::std::option::Option<crate::DataType>,
     pub frame_name: ::std::option::Option<::std::string::String>,
     pub is_constant: ::std::option::Option<bool>,
     pub parallel_iterations: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for RefEnter {
+    fn default() -> Self {
+        Self {
+            T: None,
+            frame_name: None,
+            is_constant: Some(false),
+            parallel_iterations: Some(10i64),
+        }
+    }
+}
 impl RefEnter {
     /// Creates a new `RefEnter`.
     pub fn new() -> Self {
@@ -64487,11 +70835,15 @@ pub fn ref_enter_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RefExit
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RefExit {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RefExit {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl RefExit {
     /// Creates a new `RefExit`.
     pub fn new() -> Self {
@@ -64542,11 +70894,15 @@ pub fn ref_exit_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RefIdentity
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RefIdentity {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RefIdentity {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl RefIdentity {
     /// Creates a new `RefIdentity`.
     pub fn new() -> Self {
@@ -64599,12 +70955,16 @@ pub fn ref_identity_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RefMerge
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RefMerge {
     pub T: ::std::option::Option<crate::DataType>,
     pub N: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for RefMerge {
+    fn default() -> Self {
+        Self { T: None, N: None }
+    }
+}
 impl RefMerge {
     /// Creates a new `RefMerge`.
     pub fn new() -> Self {
@@ -64665,11 +71025,15 @@ pub fn ref_merge_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RefNextIteration
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RefNextIteration {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RefNextIteration {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl RefNextIteration {
     /// Creates a new `RefNextIteration`.
     pub fn new() -> Self {
@@ -64722,12 +71086,16 @@ pub fn ref_next_iteration_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RefSelect
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RefSelect {
     pub T: ::std::option::Option<crate::DataType>,
     pub N: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for RefSelect {
+    fn default() -> Self {
+        Self { T: None, N: None }
+    }
+}
 impl RefSelect {
     /// Creates a new `RefSelect`.
     pub fn new() -> Self {
@@ -64786,11 +71154,15 @@ pub fn ref_select_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHand
 }
 
 /// RefSwitch
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RefSwitch {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RefSwitch {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl RefSwitch {
     /// Creates a new `RefSwitch`.
     pub fn new() -> Self {
@@ -64851,9 +71223,13 @@ pub fn ref_switch_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHand
 }
 
 /// RegexFullMatch
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RegexFullMatch {}
-
+impl ::std::default::Default for RegexFullMatch {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl RegexFullMatch {
     /// Creates a new `RegexFullMatch`.
     pub fn new() -> Self {
@@ -64906,11 +71282,17 @@ pub fn regex_full_match_with_args<T0: crate::eager::ToHandle, T1: crate::eager::
 }
 
 /// RegexReplace
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RegexReplace {
     pub replace_global: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for RegexReplace {
+    fn default() -> Self {
+        Self {
+            replace_global: Some(true),
+        }
+    }
+}
 impl RegexReplace {
     /// Creates a new `RegexReplace`.
     pub fn new() -> Self {
@@ -64977,11 +71359,17 @@ pub fn regex_replace_with_args<
 }
 
 /// RegisterDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RegisterDataset {
     pub external_state_policy: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for RegisterDataset {
+    fn default() -> Self {
+        Self {
+            external_state_policy: None,
+        }
+    }
+}
 impl RegisterDataset {
     /// Creates a new `RegisterDataset`.
     pub fn new() -> Self {
@@ -65048,11 +71436,15 @@ pub fn register_dataset_with_args<
 }
 
 /// Relu
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Relu {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Relu {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Relu {
     /// Creates a new `Relu`.
     pub fn new() -> Self {
@@ -65103,11 +71495,15 @@ pub fn relu_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Relu6
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Relu6 {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Relu6 {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Relu6 {
     /// Creates a new `Relu6`.
     pub fn new() -> Self {
@@ -65160,11 +71556,15 @@ pub fn relu6_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Relu6Grad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Relu6Grad {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Relu6Grad {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Relu6Grad {
     /// Creates a new `Relu6Grad`.
     pub fn new() -> Self {
@@ -65220,11 +71620,15 @@ pub fn relu6_grad_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHand
 }
 
 /// ReluGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ReluGrad {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ReluGrad {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl ReluGrad {
     /// Creates a new `ReluGrad`.
     pub fn new() -> Self {
@@ -65280,13 +71684,21 @@ pub fn relu_grad_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandl
 }
 
 /// RemoteCall
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RemoteCall {
     pub Tin: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub Tout: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub f: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for RemoteCall {
+    fn default() -> Self {
+        Self {
+            Tin: None,
+            Tout: None,
+            f: None,
+        }
+    }
+}
 impl RemoteCall {
     /// Creates a new `RemoteCall`.
     pub fn new() -> Self {
@@ -65348,12 +71760,19 @@ pub fn remote_call_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHan
 }
 
 /// RepeatDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RepeatDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for RepeatDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl RepeatDataset {
     /// Creates a new `RepeatDataset`.
     pub fn new() -> Self {
@@ -65412,11 +71831,15 @@ pub fn repeat_dataset_with_args<T0: crate::eager::ToHandle, T1: crate::eager::To
 }
 
 /// RequantizationRange
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RequantizationRange {
     pub Tinput: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RequantizationRange {
+    fn default() -> Self {
+        Self { Tinput: None }
+    }
+}
 impl RequantizationRange {
     /// Creates a new `RequantizationRange`.
     pub fn new() -> Self {
@@ -65488,12 +71911,19 @@ pub fn requantization_range_with_args<
 }
 
 /// RequantizationRangePerChannel
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RequantizationRangePerChannel {
     pub T: ::std::option::Option<crate::DataType>,
     pub clip_value_max: ::std::option::Option<f32>,
 }
-
+impl ::std::default::Default for RequantizationRangePerChannel {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::QInt32),
+            clip_value_max: None,
+        }
+    }
+}
 impl RequantizationRangePerChannel {
     /// Creates a new `RequantizationRangePerChannel`.
     pub fn new() -> Self {
@@ -65568,12 +71998,19 @@ pub fn requantization_range_per_channel_with_args<
 }
 
 /// Requantize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Requantize {
     pub Tinput: ::std::option::Option<crate::DataType>,
     pub out_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Requantize {
+    fn default() -> Self {
+        Self {
+            Tinput: None,
+            out_type: None,
+        }
+    }
+}
 impl Requantize {
     /// Creates a new `Requantize`.
     pub fn new() -> Self {
@@ -65666,12 +72103,19 @@ pub fn requantize_with_args<
 }
 
 /// RequantizePerChannel
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RequantizePerChannel {
     pub T: ::std::option::Option<crate::DataType>,
     pub out_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RequantizePerChannel {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::QInt32),
+            out_type: Some(crate::DataType::QUInt8),
+        }
+    }
+}
 impl RequantizePerChannel {
     /// Creates a new `RequantizePerChannel`.
     pub fn new() -> Self {
@@ -65764,12 +72208,19 @@ pub fn requantize_per_channel_with_args<
 }
 
 /// Reshape
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Reshape {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tshape: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Reshape {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tshape: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl Reshape {
     /// Creates a new `Reshape`.
     pub fn new() -> Self {
@@ -65828,12 +72279,19 @@ pub fn reshape_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>
 }
 
 /// ResizeArea
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResizeArea {
     pub T: ::std::option::Option<crate::DataType>,
     pub align_corners: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResizeArea {
+    fn default() -> Self {
+        Self {
+            T: None,
+            align_corners: Some(false),
+        }
+    }
+}
 impl ResizeArea {
     /// Creates a new `ResizeArea`.
     pub fn new() -> Self {
@@ -65892,13 +72350,21 @@ pub fn resize_area_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHan
 }
 
 /// ResizeBicubic
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResizeBicubic {
     pub T: ::std::option::Option<crate::DataType>,
     pub align_corners: ::std::option::Option<bool>,
     pub half_pixel_centers: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResizeBicubic {
+    fn default() -> Self {
+        Self {
+            T: None,
+            align_corners: Some(false),
+            half_pixel_centers: Some(false),
+        }
+    }
+}
 impl ResizeBicubic {
     /// Creates a new `ResizeBicubic`.
     pub fn new() -> Self {
@@ -65960,13 +72426,21 @@ pub fn resize_bicubic_with_args<T0: crate::eager::ToHandle, T1: crate::eager::To
 }
 
 /// ResizeBicubicGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResizeBicubicGrad {
     pub T: ::std::option::Option<crate::DataType>,
     pub align_corners: ::std::option::Option<bool>,
     pub half_pixel_centers: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResizeBicubicGrad {
+    fn default() -> Self {
+        Self {
+            T: None,
+            align_corners: Some(false),
+            half_pixel_centers: Some(false),
+        }
+    }
+}
 impl ResizeBicubicGrad {
     /// Creates a new `ResizeBicubicGrad`.
     pub fn new() -> Self {
@@ -66028,13 +72502,21 @@ pub fn resize_bicubic_grad_with_args<T0: crate::eager::ToHandle, T1: crate::eage
 }
 
 /// ResizeBilinear
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResizeBilinear {
     pub T: ::std::option::Option<crate::DataType>,
     pub align_corners: ::std::option::Option<bool>,
     pub half_pixel_centers: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResizeBilinear {
+    fn default() -> Self {
+        Self {
+            T: None,
+            align_corners: Some(false),
+            half_pixel_centers: Some(false),
+        }
+    }
+}
 impl ResizeBilinear {
     /// Creates a new `ResizeBilinear`.
     pub fn new() -> Self {
@@ -66096,13 +72578,21 @@ pub fn resize_bilinear_with_args<T0: crate::eager::ToHandle, T1: crate::eager::T
 }
 
 /// ResizeBilinearGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResizeBilinearGrad {
     pub T: ::std::option::Option<crate::DataType>,
     pub align_corners: ::std::option::Option<bool>,
     pub half_pixel_centers: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResizeBilinearGrad {
+    fn default() -> Self {
+        Self {
+            T: None,
+            align_corners: Some(false),
+            half_pixel_centers: Some(false),
+        }
+    }
+}
 impl ResizeBilinearGrad {
     /// Creates a new `ResizeBilinearGrad`.
     pub fn new() -> Self {
@@ -66164,13 +72654,21 @@ pub fn resize_bilinear_grad_with_args<T0: crate::eager::ToHandle, T1: crate::eag
 }
 
 /// ResizeNearestNeighbor
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResizeNearestNeighbor {
     pub T: ::std::option::Option<crate::DataType>,
     pub align_corners: ::std::option::Option<bool>,
     pub half_pixel_centers: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResizeNearestNeighbor {
+    fn default() -> Self {
+        Self {
+            T: None,
+            align_corners: Some(false),
+            half_pixel_centers: Some(false),
+        }
+    }
+}
 impl ResizeNearestNeighbor {
     /// Creates a new `ResizeNearestNeighbor`.
     pub fn new() -> Self {
@@ -66232,13 +72730,21 @@ pub fn resize_nearest_neighbor_with_args<T0: crate::eager::ToHandle, T1: crate::
 }
 
 /// ResizeNearestNeighborGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResizeNearestNeighborGrad {
     pub T: ::std::option::Option<crate::DataType>,
     pub align_corners: ::std::option::Option<bool>,
     pub half_pixel_centers: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResizeNearestNeighborGrad {
+    fn default() -> Self {
+        Self {
+            T: None,
+            align_corners: Some(false),
+            half_pixel_centers: Some(false),
+        }
+    }
+}
 impl ResizeNearestNeighborGrad {
     /// Creates a new `ResizeNearestNeighborGrad`.
     pub fn new() -> Self {
@@ -66303,11 +72809,15 @@ pub fn resize_nearest_neighbor_grad_with_args<
 }
 
 /// ResourceAccumulatorApplyGradient
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceAccumulatorApplyGradient {
     pub dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ResourceAccumulatorApplyGradient {
+    fn default() -> Self {
+        Self { dtype: None }
+    }
+}
 impl ResourceAccumulatorApplyGradient {
     /// Creates a new `ResourceAccumulatorApplyGradient`.
     pub fn new() -> Self {
@@ -66373,9 +72883,13 @@ pub fn resource_accumulator_apply_gradient_with_args<
 }
 
 /// ResourceAccumulatorNumAccumulated
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceAccumulatorNumAccumulated {}
-
+impl ::std::default::Default for ResourceAccumulatorNumAccumulated {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl ResourceAccumulatorNumAccumulated {
     /// Creates a new `ResourceAccumulatorNumAccumulated`.
     pub fn new() -> Self {
@@ -66426,9 +72940,13 @@ pub fn resource_accumulator_num_accumulated_with_args<T0: crate::eager::ToHandle
 }
 
 /// ResourceAccumulatorSetGlobalStep
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceAccumulatorSetGlobalStep {}
-
+impl ::std::default::Default for ResourceAccumulatorSetGlobalStep {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl ResourceAccumulatorSetGlobalStep {
     /// Creates a new `ResourceAccumulatorSetGlobalStep`.
     pub fn new() -> Self {
@@ -66486,11 +73004,15 @@ pub fn resource_accumulator_set_global_step_with_args<
 }
 
 /// ResourceAccumulatorTakeGradient
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceAccumulatorTakeGradient {
     pub dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ResourceAccumulatorTakeGradient {
+    fn default() -> Self {
+        Self { dtype: None }
+    }
+}
 impl ResourceAccumulatorTakeGradient {
     /// Creates a new `ResourceAccumulatorTakeGradient`.
     pub fn new() -> Self {
@@ -66552,12 +73074,19 @@ pub fn resource_accumulator_take_gradient_with_args<
 }
 
 /// ResourceApplyAdaMax
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceApplyAdaMax {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceApplyAdaMax {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ResourceApplyAdaMax {
     /// Creates a new `ResourceApplyAdaMax`.
     pub fn new() -> Self {
@@ -66667,12 +73196,19 @@ pub fn resource_apply_ada_max_with_args<
 }
 
 /// ResourceApplyAdadelta
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceApplyAdadelta {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceApplyAdadelta {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ResourceApplyAdadelta {
     /// Creates a new `ResourceApplyAdadelta`.
     pub fn new() -> Self {
@@ -66761,13 +73297,21 @@ pub fn resource_apply_adadelta_with_args<
 }
 
 /// ResourceApplyAdagrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceApplyAdagrad {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
     pub update_slots: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceApplyAdagrad {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+            update_slots: Some(true),
+        }
+    }
+}
 impl ResourceApplyAdagrad {
     /// Creates a new `ResourceApplyAdagrad`.
     pub fn new() -> Self {
@@ -66844,12 +73388,19 @@ pub fn resource_apply_adagrad_with_args<
 }
 
 /// ResourceApplyAdagradDA
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceApplyAdagradDA {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceApplyAdagradDA {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ResourceApplyAdagradDA {
     /// Creates a new `ResourceApplyAdagradDA`.
     pub fn new() -> Self {
@@ -66953,13 +73504,21 @@ pub fn resource_apply_adagrad_da_with_args<
 }
 
 /// ResourceApplyAdagradV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceApplyAdagradV2 {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
     pub update_slots: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceApplyAdagradV2 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+            update_slots: Some(true),
+        }
+    }
+}
 impl ResourceApplyAdagradV2 {
     /// Creates a new `ResourceApplyAdagradV2`.
     pub fn new() -> Self {
@@ -67041,13 +73600,21 @@ pub fn resource_apply_adagrad_v2_with_args<
 }
 
 /// ResourceApplyAdam
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceApplyAdam {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
     pub use_nesterov: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceApplyAdam {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+            use_nesterov: Some(false),
+        }
+    }
+}
 impl ResourceApplyAdam {
     /// Creates a new `ResourceApplyAdam`.
     pub fn new() -> Self {
@@ -67166,12 +73733,19 @@ pub fn resource_apply_adam_with_args<
 }
 
 /// ResourceApplyAdamWithAmsgrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceApplyAdamWithAmsgrad {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceApplyAdamWithAmsgrad {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ResourceApplyAdamWithAmsgrad {
     /// Creates a new `ResourceApplyAdamWithAmsgrad`.
     pub fn new() -> Self {
@@ -67293,12 +73867,19 @@ pub fn resource_apply_adam_with_amsgrad_with_args<
 }
 
 /// ResourceApplyAddSign
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceApplyAddSign {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceApplyAddSign {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ResourceApplyAddSign {
     /// Creates a new `ResourceApplyAddSign`.
     pub fn new() -> Self {
@@ -67387,12 +73968,19 @@ pub fn resource_apply_add_sign_with_args<
 }
 
 /// ResourceApplyCenteredRMSProp
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceApplyCenteredRMSProp {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceApplyCenteredRMSProp {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ResourceApplyCenteredRMSProp {
     /// Creates a new `ResourceApplyCenteredRMSProp`.
     pub fn new() -> Self {
@@ -67493,13 +74081,21 @@ pub fn resource_apply_centered_rmsprop_with_args<
 }
 
 /// ResourceApplyFtrl
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceApplyFtrl {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
     pub multiply_linear_by_lr: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceApplyFtrl {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+            multiply_linear_by_lr: Some(false),
+        }
+    }
+}
 impl ResourceApplyFtrl {
     /// Creates a new `ResourceApplyFtrl`.
     pub fn new() -> Self {
@@ -67596,13 +74192,21 @@ pub fn resource_apply_ftrl_with_args<
 }
 
 /// ResourceApplyFtrlV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceApplyFtrlV2 {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
     pub multiply_linear_by_lr: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceApplyFtrlV2 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+            multiply_linear_by_lr: Some(false),
+        }
+    }
+}
 impl ResourceApplyFtrlV2 {
     /// Creates a new `ResourceApplyFtrlV2`.
     pub fn new() -> Self {
@@ -67715,12 +74319,19 @@ pub fn resource_apply_ftrl_v2_with_args<
 }
 
 /// ResourceApplyGradientDescent
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceApplyGradientDescent {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceApplyGradientDescent {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ResourceApplyGradientDescent {
     /// Creates a new `ResourceApplyGradientDescent`.
     pub fn new() -> Self {
@@ -67789,13 +74400,21 @@ pub fn resource_apply_gradient_descent_with_args<
 }
 
 /// ResourceApplyKerasMomentum
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceApplyKerasMomentum {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
     pub use_nesterov: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceApplyKerasMomentum {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+            use_nesterov: Some(false),
+        }
+    }
+}
 impl ResourceApplyKerasMomentum {
     /// Creates a new `ResourceApplyKerasMomentum`.
     pub fn new() -> Self {
@@ -67877,13 +74496,21 @@ pub fn resource_apply_keras_momentum_with_args<
 }
 
 /// ResourceApplyMomentum
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceApplyMomentum {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
     pub use_nesterov: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceApplyMomentum {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+            use_nesterov: Some(false),
+        }
+    }
+}
 impl ResourceApplyMomentum {
     /// Creates a new `ResourceApplyMomentum`.
     pub fn new() -> Self {
@@ -67965,12 +74592,19 @@ pub fn resource_apply_momentum_with_args<
 }
 
 /// ResourceApplyPowerSign
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceApplyPowerSign {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceApplyPowerSign {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ResourceApplyPowerSign {
     /// Creates a new `ResourceApplyPowerSign`.
     pub fn new() -> Self {
@@ -68059,12 +74693,19 @@ pub fn resource_apply_power_sign_with_args<
 }
 
 /// ResourceApplyProximalAdagrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceApplyProximalAdagrad {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceApplyProximalAdagrad {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ResourceApplyProximalAdagrad {
     /// Creates a new `ResourceApplyProximalAdagrad`.
     pub fn new() -> Self {
@@ -68148,12 +74789,19 @@ pub fn resource_apply_proximal_adagrad_with_args<
 }
 
 /// ResourceApplyProximalGradientDescent
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceApplyProximalGradientDescent {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceApplyProximalGradientDescent {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ResourceApplyProximalGradientDescent {
     /// Creates a new `ResourceApplyProximalGradientDescent`.
     pub fn new() -> Self {
@@ -68235,12 +74883,19 @@ pub fn resource_apply_proximal_gradient_descent_with_args<
 }
 
 /// ResourceApplyRMSProp
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceApplyRMSProp {
     pub T: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceApplyRMSProp {
+    fn default() -> Self {
+        Self {
+            T: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ResourceApplyRMSProp {
     /// Creates a new `ResourceApplyRMSProp`.
     pub fn new() -> Self {
@@ -68334,7 +74989,7 @@ pub fn resource_apply_rmsprop_with_args<
 }
 
 /// ResourceConditionalAccumulator
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceConditionalAccumulator {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub shape: ::std::option::Option<crate::Shape>,
@@ -68342,7 +74997,17 @@ pub struct ResourceConditionalAccumulator {
     pub shared_name: ::std::option::Option<::std::string::String>,
     pub reduction_type: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for ResourceConditionalAccumulator {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            shape: None,
+            container: None,
+            shared_name: None,
+            reduction_type: Some(::std::string::String::from("MEAN")),
+        }
+    }
+}
 impl ResourceConditionalAccumulator {
     /// Creates a new `ResourceConditionalAccumulator`.
     pub fn new() -> Self {
@@ -68403,12 +75068,19 @@ pub fn resource_conditional_accumulator_with_args(
 }
 
 /// ResourceCountUpTo
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceCountUpTo {
     pub limit: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ResourceCountUpTo {
+    fn default() -> Self {
+        Self {
+            limit: None,
+            T: None,
+        }
+    }
+}
 impl ResourceCountUpTo {
     /// Creates a new `ResourceCountUpTo`.
     pub fn new() -> Self {
@@ -68464,14 +75136,23 @@ pub fn resource_count_up_to_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// ResourceGather
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceGather {
     pub batch_dims: ::std::option::Option<i64>,
     pub validate_indices: ::std::option::Option<bool>,
     pub dtype: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ResourceGather {
+    fn default() -> Self {
+        Self {
+            batch_dims: Some(0i64),
+            validate_indices: Some(true),
+            dtype: None,
+            Tindices: None,
+        }
+    }
+}
 impl ResourceGather {
     /// Creates a new `ResourceGather`.
     pub fn new() -> Self {
@@ -68536,12 +75217,19 @@ pub fn resource_gather_with_args<T0: crate::eager::ToHandle, T1: crate::eager::T
 }
 
 /// ResourceGatherNd
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceGatherNd {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ResourceGatherNd {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            Tindices: None,
+        }
+    }
+}
 impl ResourceGatherNd {
     /// Creates a new `ResourceGatherNd`.
     pub fn new() -> Self {
@@ -68600,12 +75288,19 @@ pub fn resource_gather_nd_with_args<T0: crate::eager::ToHandle, T1: crate::eager
 }
 
 /// ResourceScatterAdd
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceScatterAdd {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ResourceScatterAdd {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            Tindices: None,
+        }
+    }
+}
 impl ResourceScatterAdd {
     /// Creates a new `ResourceScatterAdd`.
     pub fn new() -> Self {
@@ -68674,12 +75369,19 @@ pub fn resource_scatter_add_with_args<
 }
 
 /// ResourceScatterDiv
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceScatterDiv {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ResourceScatterDiv {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            Tindices: None,
+        }
+    }
+}
 impl ResourceScatterDiv {
     /// Creates a new `ResourceScatterDiv`.
     pub fn new() -> Self {
@@ -68748,12 +75450,19 @@ pub fn resource_scatter_div_with_args<
 }
 
 /// ResourceScatterMax
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceScatterMax {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ResourceScatterMax {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            Tindices: None,
+        }
+    }
+}
 impl ResourceScatterMax {
     /// Creates a new `ResourceScatterMax`.
     pub fn new() -> Self {
@@ -68822,12 +75531,19 @@ pub fn resource_scatter_max_with_args<
 }
 
 /// ResourceScatterMin
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceScatterMin {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ResourceScatterMin {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            Tindices: None,
+        }
+    }
+}
 impl ResourceScatterMin {
     /// Creates a new `ResourceScatterMin`.
     pub fn new() -> Self {
@@ -68896,12 +75612,19 @@ pub fn resource_scatter_min_with_args<
 }
 
 /// ResourceScatterMul
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceScatterMul {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ResourceScatterMul {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            Tindices: None,
+        }
+    }
+}
 impl ResourceScatterMul {
     /// Creates a new `ResourceScatterMul`.
     pub fn new() -> Self {
@@ -68970,13 +75693,21 @@ pub fn resource_scatter_mul_with_args<
 }
 
 /// ResourceScatterNdAdd
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceScatterNdAdd {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceScatterNdAdd {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(true),
+        }
+    }
+}
 impl ResourceScatterNdAdd {
     /// Creates a new `ResourceScatterNdAdd`.
     pub fn new() -> Self {
@@ -69048,13 +75779,21 @@ pub fn resource_scatter_nd_add_with_args<
 }
 
 /// ResourceScatterNdMax
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceScatterNdMax {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceScatterNdMax {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(true),
+        }
+    }
+}
 impl ResourceScatterNdMax {
     /// Creates a new `ResourceScatterNdMax`.
     pub fn new() -> Self {
@@ -69126,13 +75865,21 @@ pub fn resource_scatter_nd_max_with_args<
 }
 
 /// ResourceScatterNdMin
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceScatterNdMin {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceScatterNdMin {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(true),
+        }
+    }
+}
 impl ResourceScatterNdMin {
     /// Creates a new `ResourceScatterNdMin`.
     pub fn new() -> Self {
@@ -69204,13 +75951,21 @@ pub fn resource_scatter_nd_min_with_args<
 }
 
 /// ResourceScatterNdSub
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceScatterNdSub {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceScatterNdSub {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(true),
+        }
+    }
+}
 impl ResourceScatterNdSub {
     /// Creates a new `ResourceScatterNdSub`.
     pub fn new() -> Self {
@@ -69282,13 +76037,21 @@ pub fn resource_scatter_nd_sub_with_args<
 }
 
 /// ResourceScatterNdUpdate
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceScatterNdUpdate {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceScatterNdUpdate {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(true),
+        }
+    }
+}
 impl ResourceScatterNdUpdate {
     /// Creates a new `ResourceScatterNdUpdate`.
     pub fn new() -> Self {
@@ -69360,12 +76123,19 @@ pub fn resource_scatter_nd_update_with_args<
 }
 
 /// ResourceScatterSub
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceScatterSub {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ResourceScatterSub {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            Tindices: None,
+        }
+    }
+}
 impl ResourceScatterSub {
     /// Creates a new `ResourceScatterSub`.
     pub fn new() -> Self {
@@ -69434,12 +76204,19 @@ pub fn resource_scatter_sub_with_args<
 }
 
 /// ResourceScatterUpdate
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceScatterUpdate {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ResourceScatterUpdate {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            Tindices: None,
+        }
+    }
+}
 impl ResourceScatterUpdate {
     /// Creates a new `ResourceScatterUpdate`.
     pub fn new() -> Self {
@@ -69508,13 +76285,21 @@ pub fn resource_scatter_update_with_args<
 }
 
 /// ResourceSparseApplyAdadelta
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceSparseApplyAdadelta {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceSparseApplyAdadelta {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ResourceSparseApplyAdadelta {
     /// Creates a new `ResourceSparseApplyAdadelta`.
     pub fn new() -> Self {
@@ -69621,14 +76406,23 @@ pub fn resource_sparse_apply_adadelta_with_args<
 }
 
 /// ResourceSparseApplyAdagrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceSparseApplyAdagrad {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
     pub update_slots: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceSparseApplyAdagrad {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+            update_slots: Some(true),
+        }
+    }
+}
 impl ResourceSparseApplyAdagrad {
     /// Creates a new `ResourceSparseApplyAdagrad`.
     pub fn new() -> Self {
@@ -69713,13 +76507,21 @@ pub fn resource_sparse_apply_adagrad_with_args<
 }
 
 /// ResourceSparseApplyAdagradDA
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceSparseApplyAdagradDA {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceSparseApplyAdagradDA {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ResourceSparseApplyAdagradDA {
     /// Creates a new `ResourceSparseApplyAdagradDA`.
     pub fn new() -> Self {
@@ -69832,14 +76634,23 @@ pub fn resource_sparse_apply_adagrad_da_with_args<
 }
 
 /// ResourceSparseApplyAdagradV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceSparseApplyAdagradV2 {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
     pub update_slots: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceSparseApplyAdagradV2 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+            update_slots: Some(true),
+        }
+    }
+}
 impl ResourceSparseApplyAdagradV2 {
     /// Creates a new `ResourceSparseApplyAdagradV2`.
     pub fn new() -> Self {
@@ -69929,13 +76740,21 @@ pub fn resource_sparse_apply_adagrad_v2_with_args<
 }
 
 /// ResourceSparseApplyCenteredRMSProp
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceSparseApplyCenteredRMSProp {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceSparseApplyCenteredRMSProp {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ResourceSparseApplyCenteredRMSProp {
     /// Creates a new `ResourceSparseApplyCenteredRMSProp`.
     pub fn new() -> Self {
@@ -70045,14 +76864,23 @@ pub fn resource_sparse_apply_centered_rmsprop_with_args<
 }
 
 /// ResourceSparseApplyFtrl
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceSparseApplyFtrl {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
     pub multiply_linear_by_lr: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceSparseApplyFtrl {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+            multiply_linear_by_lr: Some(false),
+        }
+    }
+}
 impl ResourceSparseApplyFtrl {
     /// Creates a new `ResourceSparseApplyFtrl`.
     pub fn new() -> Self {
@@ -70159,14 +76987,23 @@ pub fn resource_sparse_apply_ftrl_with_args<
 }
 
 /// ResourceSparseApplyFtrlV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceSparseApplyFtrlV2 {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
     pub multiply_linear_by_lr: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceSparseApplyFtrlV2 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+            multiply_linear_by_lr: Some(false),
+        }
+    }
+}
 impl ResourceSparseApplyFtrlV2 {
     /// Creates a new `ResourceSparseApplyFtrlV2`.
     pub fn new() -> Self {
@@ -70288,14 +77125,23 @@ pub fn resource_sparse_apply_ftrl_v2_with_args<
 }
 
 /// ResourceSparseApplyKerasMomentum
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceSparseApplyKerasMomentum {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
     pub use_nesterov: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceSparseApplyKerasMomentum {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+            use_nesterov: Some(false),
+        }
+    }
+}
 impl ResourceSparseApplyKerasMomentum {
     /// Creates a new `ResourceSparseApplyKerasMomentum`.
     pub fn new() -> Self {
@@ -70385,14 +77231,23 @@ pub fn resource_sparse_apply_keras_momentum_with_args<
 }
 
 /// ResourceSparseApplyMomentum
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceSparseApplyMomentum {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
     pub use_nesterov: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceSparseApplyMomentum {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+            use_nesterov: Some(false),
+        }
+    }
+}
 impl ResourceSparseApplyMomentum {
     /// Creates a new `ResourceSparseApplyMomentum`.
     pub fn new() -> Self {
@@ -70482,13 +77337,21 @@ pub fn resource_sparse_apply_momentum_with_args<
 }
 
 /// ResourceSparseApplyProximalAdagrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceSparseApplyProximalAdagrad {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceSparseApplyProximalAdagrad {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ResourceSparseApplyProximalAdagrad {
     /// Creates a new `ResourceSparseApplyProximalAdagrad`.
     pub fn new() -> Self {
@@ -70581,13 +77444,21 @@ pub fn resource_sparse_apply_proximal_adagrad_with_args<
 }
 
 /// ResourceSparseApplyProximalGradientDescent
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceSparseApplyProximalGradientDescent {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceSparseApplyProximalGradientDescent {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ResourceSparseApplyProximalGradientDescent {
     /// Creates a new `ResourceSparseApplyProximalGradientDescent`.
     pub fn new() -> Self {
@@ -70679,13 +77550,21 @@ pub fn resource_sparse_apply_proximal_gradient_descent_with_args<
 }
 
 /// ResourceSparseApplyRMSProp
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceSparseApplyRMSProp {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ResourceSparseApplyRMSProp {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ResourceSparseApplyRMSProp {
     /// Creates a new `ResourceSparseApplyRMSProp`.
     pub fn new() -> Self {
@@ -70789,7 +77668,7 @@ pub fn resource_sparse_apply_rmsprop_with_args<
 }
 
 /// ResourceStridedSliceAssign
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ResourceStridedSliceAssign {
     pub T: ::std::option::Option<crate::DataType>,
     pub Index: ::std::option::Option<crate::DataType>,
@@ -70799,7 +77678,19 @@ pub struct ResourceStridedSliceAssign {
     pub new_axis_mask: ::std::option::Option<i64>,
     pub shrink_axis_mask: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for ResourceStridedSliceAssign {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Index: None,
+            begin_mask: Some(0i64),
+            end_mask: Some(0i64),
+            ellipsis_mask: Some(0i64),
+            new_axis_mask: Some(0i64),
+            shrink_axis_mask: Some(0i64),
+        }
+    }
+}
 impl ResourceStridedSliceAssign {
     /// Creates a new `ResourceStridedSliceAssign`.
     pub fn new() -> Self {
@@ -70893,12 +77784,19 @@ pub fn resource_strided_slice_assign_with_args<
 }
 
 /// Restore
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Restore {
     pub dt: ::std::option::Option<crate::DataType>,
     pub preferred_shard: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for Restore {
+    fn default() -> Self {
+        Self {
+            dt: None,
+            preferred_shard: Some(-1i64),
+        }
+    }
+}
 impl Restore {
     /// Creates a new `Restore`.
     pub fn new() -> Self {
@@ -70957,12 +77855,19 @@ pub fn restore_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>
 }
 
 /// RestoreSlice
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RestoreSlice {
     pub dt: ::std::option::Option<crate::DataType>,
     pub preferred_shard: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for RestoreSlice {
+    fn default() -> Self {
+        Self {
+            dt: None,
+            preferred_shard: Some(-1i64),
+        }
+    }
+}
 impl RestoreSlice {
     /// Creates a new `RestoreSlice`.
     pub fn new() -> Self {
@@ -71032,11 +77937,15 @@ pub fn restore_slice_with_args<
 }
 
 /// RestoreV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RestoreV2 {
     pub dtypes: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
 }
-
+impl ::std::default::Default for RestoreV2 {
+    fn default() -> Self {
+        Self { dtypes: None }
+    }
+}
 impl RestoreV2 {
     /// Creates a new `RestoreV2`.
     pub fn new() -> Self {
@@ -71103,7 +78012,7 @@ pub fn restore_v2_with_args<
 }
 
 /// RetrieveTPUEmbeddingADAMParameters
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RetrieveTPUEmbeddingADAMParameters {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -71111,7 +78020,17 @@ pub struct RetrieveTPUEmbeddingADAMParameters {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for RetrieveTPUEmbeddingADAMParameters {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl RetrieveTPUEmbeddingADAMParameters {
     /// Creates a new `RetrieveTPUEmbeddingADAMParameters`.
     pub fn new() -> Self {
@@ -71179,7 +78098,7 @@ pub fn retrieve_tpuembedding_adamparameters_with_args(
 }
 
 /// RetrieveTPUEmbeddingADAMParametersGradAccumDebug
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RetrieveTPUEmbeddingADAMParametersGradAccumDebug {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -71187,7 +78106,17 @@ pub struct RetrieveTPUEmbeddingADAMParametersGradAccumDebug {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for RetrieveTPUEmbeddingADAMParametersGradAccumDebug {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl RetrieveTPUEmbeddingADAMParametersGradAccumDebug {
     /// Creates a new `RetrieveTPUEmbeddingADAMParametersGradAccumDebug`.
     pub fn new() -> Self {
@@ -71259,7 +78188,7 @@ pub fn retrieve_tpuembedding_adamparameters_grad_accum_debug_with_args(
 }
 
 /// RetrieveTPUEmbeddingAdadeltaParameters
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RetrieveTPUEmbeddingAdadeltaParameters {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -71267,7 +78196,17 @@ pub struct RetrieveTPUEmbeddingAdadeltaParameters {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for RetrieveTPUEmbeddingAdadeltaParameters {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl RetrieveTPUEmbeddingAdadeltaParameters {
     /// Creates a new `RetrieveTPUEmbeddingAdadeltaParameters`.
     pub fn new() -> Self {
@@ -71338,7 +78277,7 @@ pub fn retrieve_tpuembedding_adadelta_parameters_with_args(
 }
 
 /// RetrieveTPUEmbeddingAdadeltaParametersGradAccumDebug
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RetrieveTPUEmbeddingAdadeltaParametersGradAccumDebug {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -71346,7 +78285,17 @@ pub struct RetrieveTPUEmbeddingAdadeltaParametersGradAccumDebug {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for RetrieveTPUEmbeddingAdadeltaParametersGradAccumDebug {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl RetrieveTPUEmbeddingAdadeltaParametersGradAccumDebug {
     /// Creates a new `RetrieveTPUEmbeddingAdadeltaParametersGradAccumDebug`.
     pub fn new() -> Self {
@@ -71418,7 +78367,7 @@ pub fn retrieve_tpuembedding_adadelta_parameters_grad_accum_debug_with_args(
 }
 
 /// RetrieveTPUEmbeddingAdagradParameters
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RetrieveTPUEmbeddingAdagradParameters {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -71426,7 +78375,17 @@ pub struct RetrieveTPUEmbeddingAdagradParameters {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for RetrieveTPUEmbeddingAdagradParameters {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl RetrieveTPUEmbeddingAdagradParameters {
     /// Creates a new `RetrieveTPUEmbeddingAdagradParameters`.
     pub fn new() -> Self {
@@ -71496,7 +78455,7 @@ pub fn retrieve_tpuembedding_adagrad_parameters_with_args(
 }
 
 /// RetrieveTPUEmbeddingAdagradParametersGradAccumDebug
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RetrieveTPUEmbeddingAdagradParametersGradAccumDebug {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -71504,7 +78463,17 @@ pub struct RetrieveTPUEmbeddingAdagradParametersGradAccumDebug {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for RetrieveTPUEmbeddingAdagradParametersGradAccumDebug {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl RetrieveTPUEmbeddingAdagradParametersGradAccumDebug {
     /// Creates a new `RetrieveTPUEmbeddingAdagradParametersGradAccumDebug`.
     pub fn new() -> Self {
@@ -71575,7 +78544,7 @@ pub fn retrieve_tpuembedding_adagrad_parameters_grad_accum_debug_with_args(
 }
 
 /// RetrieveTPUEmbeddingCenteredRMSPropParameters
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RetrieveTPUEmbeddingCenteredRMSPropParameters {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -71583,7 +78552,17 @@ pub struct RetrieveTPUEmbeddingCenteredRMSPropParameters {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for RetrieveTPUEmbeddingCenteredRMSPropParameters {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl RetrieveTPUEmbeddingCenteredRMSPropParameters {
     /// Creates a new `RetrieveTPUEmbeddingCenteredRMSPropParameters`.
     pub fn new() -> Self {
@@ -71655,7 +78634,7 @@ pub fn retrieve_tpuembedding_centered_rmsprop_parameters_with_args(
 }
 
 /// RetrieveTPUEmbeddingFTRLParameters
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RetrieveTPUEmbeddingFTRLParameters {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -71663,7 +78642,17 @@ pub struct RetrieveTPUEmbeddingFTRLParameters {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for RetrieveTPUEmbeddingFTRLParameters {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl RetrieveTPUEmbeddingFTRLParameters {
     /// Creates a new `RetrieveTPUEmbeddingFTRLParameters`.
     pub fn new() -> Self {
@@ -71731,7 +78720,7 @@ pub fn retrieve_tpuembedding_ftrlparameters_with_args(
 }
 
 /// RetrieveTPUEmbeddingFTRLParametersGradAccumDebug
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RetrieveTPUEmbeddingFTRLParametersGradAccumDebug {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -71739,7 +78728,17 @@ pub struct RetrieveTPUEmbeddingFTRLParametersGradAccumDebug {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for RetrieveTPUEmbeddingFTRLParametersGradAccumDebug {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl RetrieveTPUEmbeddingFTRLParametersGradAccumDebug {
     /// Creates a new `RetrieveTPUEmbeddingFTRLParametersGradAccumDebug`.
     pub fn new() -> Self {
@@ -71811,7 +78810,7 @@ pub fn retrieve_tpuembedding_ftrlparameters_grad_accum_debug_with_args(
 }
 
 /// RetrieveTPUEmbeddingFrequencyEstimatorParameters
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RetrieveTPUEmbeddingFrequencyEstimatorParameters {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -71819,7 +78818,17 @@ pub struct RetrieveTPUEmbeddingFrequencyEstimatorParameters {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for RetrieveTPUEmbeddingFrequencyEstimatorParameters {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl RetrieveTPUEmbeddingFrequencyEstimatorParameters {
     /// Creates a new `RetrieveTPUEmbeddingFrequencyEstimatorParameters`.
     pub fn new() -> Self {
@@ -71889,7 +78898,7 @@ pub fn retrieve_tpuembedding_frequency_estimator_parameters_with_args(
 }
 
 /// RetrieveTPUEmbeddingFrequencyEstimatorParametersGradAccumDebug
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RetrieveTPUEmbeddingFrequencyEstimatorParametersGradAccumDebug {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -71897,7 +78906,17 @@ pub struct RetrieveTPUEmbeddingFrequencyEstimatorParametersGradAccumDebug {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for RetrieveTPUEmbeddingFrequencyEstimatorParametersGradAccumDebug {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl RetrieveTPUEmbeddingFrequencyEstimatorParametersGradAccumDebug {
     /// Creates a new `RetrieveTPUEmbeddingFrequencyEstimatorParametersGradAccumDebug`.
     pub fn new() -> Self {
@@ -71968,7 +78987,7 @@ pub fn retrieve_tpuembedding_frequency_estimator_parameters_grad_accum_debug_wit
 }
 
 /// RetrieveTPUEmbeddingMDLAdagradLightParameters
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RetrieveTPUEmbeddingMDLAdagradLightParameters {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -71976,7 +78995,17 @@ pub struct RetrieveTPUEmbeddingMDLAdagradLightParameters {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for RetrieveTPUEmbeddingMDLAdagradLightParameters {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl RetrieveTPUEmbeddingMDLAdagradLightParameters {
     /// Creates a new `RetrieveTPUEmbeddingMDLAdagradLightParameters`.
     pub fn new() -> Self {
@@ -72048,7 +79077,7 @@ pub fn retrieve_tpuembedding_mdladagrad_light_parameters_with_args(
 }
 
 /// RetrieveTPUEmbeddingMomentumParameters
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RetrieveTPUEmbeddingMomentumParameters {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -72056,7 +79085,17 @@ pub struct RetrieveTPUEmbeddingMomentumParameters {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for RetrieveTPUEmbeddingMomentumParameters {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl RetrieveTPUEmbeddingMomentumParameters {
     /// Creates a new `RetrieveTPUEmbeddingMomentumParameters`.
     pub fn new() -> Self {
@@ -72126,7 +79165,7 @@ pub fn retrieve_tpuembedding_momentum_parameters_with_args(
 }
 
 /// RetrieveTPUEmbeddingMomentumParametersGradAccumDebug
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RetrieveTPUEmbeddingMomentumParametersGradAccumDebug {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -72134,7 +79173,17 @@ pub struct RetrieveTPUEmbeddingMomentumParametersGradAccumDebug {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for RetrieveTPUEmbeddingMomentumParametersGradAccumDebug {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl RetrieveTPUEmbeddingMomentumParametersGradAccumDebug {
     /// Creates a new `RetrieveTPUEmbeddingMomentumParametersGradAccumDebug`.
     pub fn new() -> Self {
@@ -72205,7 +79254,7 @@ pub fn retrieve_tpuembedding_momentum_parameters_grad_accum_debug_with_args(
 }
 
 /// RetrieveTPUEmbeddingProximalAdagradParameters
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RetrieveTPUEmbeddingProximalAdagradParameters {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -72213,7 +79262,17 @@ pub struct RetrieveTPUEmbeddingProximalAdagradParameters {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for RetrieveTPUEmbeddingProximalAdagradParameters {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl RetrieveTPUEmbeddingProximalAdagradParameters {
     /// Creates a new `RetrieveTPUEmbeddingProximalAdagradParameters`.
     pub fn new() -> Self {
@@ -72283,7 +79342,7 @@ pub fn retrieve_tpuembedding_proximal_adagrad_parameters_with_args(
 }
 
 /// RetrieveTPUEmbeddingProximalAdagradParametersGradAccumDebug
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RetrieveTPUEmbeddingProximalAdagradParametersGradAccumDebug {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -72291,7 +79350,17 @@ pub struct RetrieveTPUEmbeddingProximalAdagradParametersGradAccumDebug {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for RetrieveTPUEmbeddingProximalAdagradParametersGradAccumDebug {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl RetrieveTPUEmbeddingProximalAdagradParametersGradAccumDebug {
     /// Creates a new `RetrieveTPUEmbeddingProximalAdagradParametersGradAccumDebug`.
     pub fn new() -> Self {
@@ -72362,7 +79431,7 @@ pub fn retrieve_tpuembedding_proximal_adagrad_parameters_grad_accum_debug_with_a
 }
 
 /// RetrieveTPUEmbeddingProximalYogiParameters
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RetrieveTPUEmbeddingProximalYogiParameters {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -72370,7 +79439,17 @@ pub struct RetrieveTPUEmbeddingProximalYogiParameters {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for RetrieveTPUEmbeddingProximalYogiParameters {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl RetrieveTPUEmbeddingProximalYogiParameters {
     /// Creates a new `RetrieveTPUEmbeddingProximalYogiParameters`.
     pub fn new() -> Self {
@@ -72441,7 +79520,7 @@ pub fn retrieve_tpuembedding_proximal_yogi_parameters_with_args(
 }
 
 /// RetrieveTPUEmbeddingProximalYogiParametersGradAccumDebug
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RetrieveTPUEmbeddingProximalYogiParametersGradAccumDebug {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -72449,7 +79528,17 @@ pub struct RetrieveTPUEmbeddingProximalYogiParametersGradAccumDebug {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for RetrieveTPUEmbeddingProximalYogiParametersGradAccumDebug {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl RetrieveTPUEmbeddingProximalYogiParametersGradAccumDebug {
     /// Creates a new `RetrieveTPUEmbeddingProximalYogiParametersGradAccumDebug`.
     pub fn new() -> Self {
@@ -72521,7 +79610,7 @@ pub fn retrieve_tpuembedding_proximal_yogi_parameters_grad_accum_debug_with_args
 }
 
 /// RetrieveTPUEmbeddingRMSPropParameters
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RetrieveTPUEmbeddingRMSPropParameters {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -72529,7 +79618,17 @@ pub struct RetrieveTPUEmbeddingRMSPropParameters {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for RetrieveTPUEmbeddingRMSPropParameters {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl RetrieveTPUEmbeddingRMSPropParameters {
     /// Creates a new `RetrieveTPUEmbeddingRMSPropParameters`.
     pub fn new() -> Self {
@@ -72600,7 +79699,7 @@ pub fn retrieve_tpuembedding_rmsprop_parameters_with_args(
 }
 
 /// RetrieveTPUEmbeddingRMSPropParametersGradAccumDebug
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RetrieveTPUEmbeddingRMSPropParametersGradAccumDebug {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -72608,7 +79707,17 @@ pub struct RetrieveTPUEmbeddingRMSPropParametersGradAccumDebug {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for RetrieveTPUEmbeddingRMSPropParametersGradAccumDebug {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl RetrieveTPUEmbeddingRMSPropParametersGradAccumDebug {
     /// Creates a new `RetrieveTPUEmbeddingRMSPropParametersGradAccumDebug`.
     pub fn new() -> Self {
@@ -72680,7 +79789,7 @@ pub fn retrieve_tpuembedding_rmsprop_parameters_grad_accum_debug_with_args(
 }
 
 /// RetrieveTPUEmbeddingStochasticGradientDescentParameters
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RetrieveTPUEmbeddingStochasticGradientDescentParameters {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -72688,7 +79797,17 @@ pub struct RetrieveTPUEmbeddingStochasticGradientDescentParameters {
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for RetrieveTPUEmbeddingStochasticGradientDescentParameters {
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl RetrieveTPUEmbeddingStochasticGradientDescentParameters {
     /// Creates a new `RetrieveTPUEmbeddingStochasticGradientDescentParameters`.
     pub fn new() -> Self {
@@ -72753,7 +79872,7 @@ pub fn retrieve_tpuembedding_stochastic_gradient_descent_parameters_with_args(
 }
 
 /// RetrieveTPUEmbeddingStochasticGradientDescentParametersGradAccumDebug
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RetrieveTPUEmbeddingStochasticGradientDescentParametersGradAccumDebug {
     pub table_id: ::std::option::Option<i64>,
     pub table_name: ::std::option::Option<::std::string::String>,
@@ -72761,7 +79880,19 @@ pub struct RetrieveTPUEmbeddingStochasticGradientDescentParametersGradAccumDebug
     pub shard_id: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default
+    for RetrieveTPUEmbeddingStochasticGradientDescentParametersGradAccumDebug
+{
+    fn default() -> Self {
+        Self {
+            table_id: Some(-1i64),
+            table_name: None,
+            num_shards: None,
+            shard_id: None,
+            config: None,
+        }
+    }
+}
 impl RetrieveTPUEmbeddingStochasticGradientDescentParametersGradAccumDebug {
     /// Creates a new `RetrieveTPUEmbeddingStochasticGradientDescentParametersGradAccumDebug`.
     pub fn new() -> Self {
@@ -72831,11 +79962,15 @@ pub fn retrieve_tpuembedding_stochastic_gradient_descent_parameters_grad_accum_d
 }
 
 /// Reverse
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Reverse {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Reverse {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Reverse {
     /// Creates a new `Reverse`.
     pub fn new() -> Self {
@@ -72891,14 +80026,23 @@ pub fn reverse_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>
 }
 
 /// ReverseSequence
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ReverseSequence {
     pub seq_dim: ::std::option::Option<i64>,
     pub batch_dim: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
     pub Tlen: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ReverseSequence {
+    fn default() -> Self {
+        Self {
+            seq_dim: None,
+            batch_dim: Some(0i64),
+            T: None,
+            Tlen: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl ReverseSequence {
     /// Creates a new `ReverseSequence`.
     pub fn new() -> Self {
@@ -72963,12 +80107,19 @@ pub fn reverse_sequence_with_args<T0: crate::eager::ToHandle, T1: crate::eager::
 }
 
 /// ReverseV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ReverseV2 {
     pub Tidx: ::std::option::Option<crate::DataType>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ReverseV2 {
+    fn default() -> Self {
+        Self {
+            Tidx: Some(crate::DataType::Int32),
+            T: None,
+        }
+    }
+}
 impl ReverseV2 {
     /// Creates a new `ReverseV2`.
     pub fn new() -> Self {
@@ -73027,11 +80178,15 @@ pub fn reverse_v2_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHand
 }
 
 /// RightShift
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RightShift {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RightShift {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl RightShift {
     /// Creates a new `RightShift`.
     pub fn new() -> Self {
@@ -73087,11 +80242,15 @@ pub fn right_shift_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHan
 }
 
 /// Rint
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Rint {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Rint {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Rint {
     /// Creates a new `Rint`.
     pub fn new() -> Self {
@@ -73142,11 +80301,15 @@ pub fn rint_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RiscAbs
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscAbs {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscAbs {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl RiscAbs {
     /// Creates a new `RiscAbs`.
     pub fn new() -> Self {
@@ -73197,11 +80360,15 @@ pub fn risc_abs_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RiscAdd
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscAdd {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscAdd {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl RiscAdd {
     /// Creates a new `RiscAdd`.
     pub fn new() -> Self {
@@ -73257,12 +80424,19 @@ pub fn risc_add_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle
 }
 
 /// RiscBinaryArithmetic
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscBinaryArithmetic {
     pub op_type: ::std::option::Option<::std::string::String>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscBinaryArithmetic {
+    fn default() -> Self {
+        Self {
+            op_type: None,
+            T: None,
+        }
+    }
+}
 impl RiscBinaryArithmetic {
     /// Creates a new `RiscBinaryArithmetic`.
     pub fn new() -> Self {
@@ -73321,12 +80495,19 @@ pub fn risc_binary_arithmetic_with_args<T0: crate::eager::ToHandle, T1: crate::e
 }
 
 /// RiscBinaryComparison
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscBinaryComparison {
     pub op_type: ::std::option::Option<::std::string::String>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscBinaryComparison {
+    fn default() -> Self {
+        Self {
+            op_type: None,
+            T: None,
+        }
+    }
+}
 impl RiscBinaryComparison {
     /// Creates a new `RiscBinaryComparison`.
     pub fn new() -> Self {
@@ -73385,12 +80566,19 @@ pub fn risc_binary_comparison_with_args<T0: crate::eager::ToHandle, T1: crate::e
 }
 
 /// RiscBitcast
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscBitcast {
     pub SrcT: ::std::option::Option<crate::DataType>,
     pub DstT: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscBitcast {
+    fn default() -> Self {
+        Self {
+            SrcT: None,
+            DstT: None,
+        }
+    }
+}
 impl RiscBitcast {
     /// Creates a new `RiscBitcast`.
     pub fn new() -> Self {
@@ -73446,12 +80634,19 @@ pub fn risc_bitcast_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RiscBroadcast
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscBroadcast {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tidx: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscBroadcast {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tidx: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl RiscBroadcast {
     /// Creates a new `RiscBroadcast`.
     pub fn new() -> Self {
@@ -73510,12 +80705,19 @@ pub fn risc_broadcast_with_args<T0: crate::eager::ToHandle, T1: crate::eager::To
 }
 
 /// RiscCast
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscCast {
     pub SrcT: ::std::option::Option<crate::DataType>,
     pub DstT: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscCast {
+    fn default() -> Self {
+        Self {
+            SrcT: None,
+            DstT: None,
+        }
+    }
+}
 impl RiscCast {
     /// Creates a new `RiscCast`.
     pub fn new() -> Self {
@@ -73569,11 +80771,15 @@ pub fn risc_cast_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RiscCeil
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscCeil {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscCeil {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl RiscCeil {
     /// Creates a new `RiscCeil`.
     pub fn new() -> Self {
@@ -73624,11 +80830,15 @@ pub fn risc_ceil_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RiscCholesky
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscCholesky {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscCholesky {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl RiscCholesky {
     /// Creates a new `RiscCholesky`.
     pub fn new() -> Self {
@@ -73681,13 +80891,21 @@ pub fn risc_cholesky_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RiscConcat
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscConcat {
     pub N: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
     pub Tidx: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscConcat {
+    fn default() -> Self {
+        Self {
+            N: None,
+            T: None,
+            Tidx: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl RiscConcat {
     /// Creates a new `RiscConcat`.
     pub fn new() -> Self {
@@ -73749,14 +80967,23 @@ pub fn risc_concat_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHan
 }
 
 /// RiscCondition
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscCondition {
     pub func_true: ::std::option::Option<::std::string::String>,
     pub func_false: ::std::option::Option<::std::string::String>,
     pub SrcT: ::std::option::Option<crate::DataType>,
     pub DstT: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscCondition {
+    fn default() -> Self {
+        Self {
+            func_true: None,
+            func_false: None,
+            SrcT: None,
+            DstT: None,
+        }
+    }
+}
 impl RiscCondition {
     /// Creates a new `RiscCondition`.
     pub fn new() -> Self {
@@ -73832,14 +81059,23 @@ pub fn risc_condition_with_args<
 }
 
 /// RiscConv
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscConv {
     pub T: ::std::option::Option<crate::DataType>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
     pub data_format: ::std::option::Option<::std::string::String>,
     pub dilations: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for RiscConv {
+    fn default() -> Self {
+        Self {
+            T: None,
+            strides: None,
+            data_format: Some(::std::string::String::from("NHWC")),
+            dilations: Some(vec![1, 1, 1, 1]),
+        }
+    }
+}
 impl RiscConv {
     /// Creates a new `RiscConv`.
     pub fn new() -> Self {
@@ -73904,11 +81140,15 @@ pub fn risc_conv_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandl
 }
 
 /// RiscCos
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscCos {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscCos {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl RiscCos {
     /// Creates a new `RiscCos`.
     pub fn new() -> Self {
@@ -73959,11 +81199,15 @@ pub fn risc_cos_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RiscDiv
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscDiv {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscDiv {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl RiscDiv {
     /// Creates a new `RiscDiv`.
     pub fn new() -> Self {
@@ -74019,13 +81263,21 @@ pub fn risc_div_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle
 }
 
 /// RiscDot
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscDot {
     pub transpose_a: ::std::option::Option<bool>,
     pub transpose_b: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscDot {
+    fn default() -> Self {
+        Self {
+            transpose_a: Some(false),
+            transpose_b: Some(false),
+            T: None,
+        }
+    }
+}
 impl RiscDot {
     /// Creates a new `RiscDot`.
     pub fn new() -> Self {
@@ -74087,11 +81339,15 @@ pub fn risc_dot_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle
 }
 
 /// RiscExp
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscExp {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscExp {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl RiscExp {
     /// Creates a new `RiscExp`.
     pub fn new() -> Self {
@@ -74142,11 +81398,17 @@ pub fn risc_exp_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RiscFft
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscFft {
     pub Tcomplex: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscFft {
+    fn default() -> Self {
+        Self {
+            Tcomplex: Some(crate::DataType::Complex64),
+        }
+    }
+}
 impl RiscFft {
     /// Creates a new `RiscFft`.
     pub fn new() -> Self {
@@ -74199,11 +81461,15 @@ pub fn risc_fft_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RiscFloor
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscFloor {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscFloor {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl RiscFloor {
     /// Creates a new `RiscFloor`.
     pub fn new() -> Self {
@@ -74254,14 +81520,23 @@ pub fn risc_floor_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RiscGather
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscGather {
     pub batch_dims: ::std::option::Option<i64>,
     pub Tparams: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub Taxis: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscGather {
+    fn default() -> Self {
+        Self {
+            batch_dims: Some(0i64),
+            Tparams: None,
+            Tindices: None,
+            Taxis: None,
+        }
+    }
+}
 impl RiscGather {
     /// Creates a new `RiscGather`.
     pub fn new() -> Self {
@@ -74337,12 +81612,19 @@ pub fn risc_gather_with_args<
 }
 
 /// RiscImag
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscImag {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tout: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscImag {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Complex64),
+            Tout: Some(crate::DataType::Float),
+        }
+    }
+}
 impl RiscImag {
     /// Creates a new `RiscImag`.
     pub fn new() -> Self {
@@ -74398,11 +81680,15 @@ pub fn risc_imag_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RiscIsFinite
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscIsFinite {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscIsFinite {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl RiscIsFinite {
     /// Creates a new `RiscIsFinite`.
     pub fn new() -> Self {
@@ -74455,11 +81741,15 @@ pub fn risc_is_finite_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RiscLog
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscLog {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscLog {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl RiscLog {
     /// Creates a new `RiscLog`.
     pub fn new() -> Self {
@@ -74510,9 +81800,13 @@ pub fn risc_log_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RiscLogicalAnd
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscLogicalAnd {}
-
+impl ::std::default::Default for RiscLogicalAnd {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl RiscLogicalAnd {
     /// Creates a new `RiscLogicalAnd`.
     pub fn new() -> Self {
@@ -74565,9 +81859,13 @@ pub fn risc_logical_and_with_args<T0: crate::eager::ToHandle, T1: crate::eager::
 }
 
 /// RiscLogicalNot
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscLogicalNot {}
-
+impl ::std::default::Default for RiscLogicalNot {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl RiscLogicalNot {
     /// Creates a new `RiscLogicalNot`.
     pub fn new() -> Self {
@@ -74617,9 +81915,13 @@ pub fn risc_logical_not_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RiscLogicalOr
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscLogicalOr {}
-
+impl ::std::default::Default for RiscLogicalOr {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl RiscLogicalOr {
     /// Creates a new `RiscLogicalOr`.
     pub fn new() -> Self {
@@ -74672,11 +81974,15 @@ pub fn risc_logical_or_with_args<T0: crate::eager::ToHandle, T1: crate::eager::T
 }
 
 /// RiscMax
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscMax {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscMax {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl RiscMax {
     /// Creates a new `RiscMax`.
     pub fn new() -> Self {
@@ -74732,11 +82038,15 @@ pub fn risc_max_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle
 }
 
 /// RiscMin
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscMin {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscMin {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl RiscMin {
     /// Creates a new `RiscMin`.
     pub fn new() -> Self {
@@ -74792,11 +82102,15 @@ pub fn risc_min_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle
 }
 
 /// RiscMul
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscMul {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscMul {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl RiscMul {
     /// Creates a new `RiscMul`.
     pub fn new() -> Self {
@@ -74852,11 +82166,15 @@ pub fn risc_mul_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle
 }
 
 /// RiscNeg
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscNeg {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscNeg {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl RiscNeg {
     /// Creates a new `RiscNeg`.
     pub fn new() -> Self {
@@ -74907,12 +82225,19 @@ pub fn risc_neg_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RiscPad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscPad {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tpaddings: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscPad {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tpaddings: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl RiscPad {
     /// Creates a new `RiscPad`.
     pub fn new() -> Self {
@@ -74982,7 +82307,7 @@ pub fn risc_pad_with_args<
 }
 
 /// RiscPool
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscPool {
     pub ksize: ::std::option::Option<::std::vec::Vec<i64>>,
     pub strides: ::std::option::Option<::std::vec::Vec<i64>>,
@@ -74990,7 +82315,17 @@ pub struct RiscPool {
     pub data_format: ::std::option::Option<::std::string::String>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscPool {
+    fn default() -> Self {
+        Self {
+            ksize: None,
+            strides: None,
+            pooling_type: None,
+            data_format: Some(::std::string::String::from("NHWC")),
+            T: None,
+        }
+    }
+}
 impl RiscPool {
     /// Creates a new `RiscPool`.
     pub fn new() -> Self {
@@ -75055,11 +82390,15 @@ pub fn risc_pool_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RiscPow
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscPow {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscPow {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl RiscPow {
     /// Creates a new `RiscPow`.
     pub fn new() -> Self {
@@ -75115,12 +82454,19 @@ pub fn risc_pow_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle
 }
 
 /// RiscRandomUniform
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscRandomUniform {
     pub seed: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscRandomUniform {
+    fn default() -> Self {
+        Self {
+            seed: Some(0i64),
+            T: None,
+        }
+    }
+}
 impl RiscRandomUniform {
     /// Creates a new `RiscRandomUniform`.
     pub fn new() -> Self {
@@ -75176,12 +82522,19 @@ pub fn risc_random_uniform_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RiscReal
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscReal {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tout: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscReal {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Complex64),
+            Tout: Some(crate::DataType::Float),
+        }
+    }
+}
 impl RiscReal {
     /// Creates a new `RiscReal`.
     pub fn new() -> Self {
@@ -75237,13 +82590,21 @@ pub fn risc_real_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RiscReduce
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscReduce {
     pub reduce_type: ::std::option::Option<::std::string::String>,
     pub Index: ::std::option::Option<crate::DataType>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscReduce {
+    fn default() -> Self {
+        Self {
+            reduce_type: None,
+            Index: Some(crate::DataType::Int32),
+            T: None,
+        }
+    }
+}
 impl RiscReduce {
     /// Creates a new `RiscReduce`.
     pub fn new() -> Self {
@@ -75305,11 +82666,15 @@ pub fn risc_reduce_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHan
 }
 
 /// RiscRem
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscRem {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscRem {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl RiscRem {
     /// Creates a new `RiscRem`.
     pub fn new() -> Self {
@@ -75365,12 +82730,19 @@ pub fn risc_rem_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle
 }
 
 /// RiscReshape
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscReshape {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tshape: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscReshape {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tshape: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl RiscReshape {
     /// Creates a new `RiscReshape`.
     pub fn new() -> Self {
@@ -75429,12 +82801,19 @@ pub fn risc_reshape_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHa
 }
 
 /// RiscReverse
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscReverse {
     pub Tidx: ::std::option::Option<crate::DataType>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscReverse {
+    fn default() -> Self {
+        Self {
+            Tidx: Some(crate::DataType::Int32),
+            T: None,
+        }
+    }
+}
 impl RiscReverse {
     /// Creates a new `RiscReverse`.
     pub fn new() -> Self {
@@ -75493,12 +82872,19 @@ pub fn risc_reverse_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHa
 }
 
 /// RiscScatter
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscScatter {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscScatter {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+        }
+    }
+}
 impl RiscScatter {
     /// Creates a new `RiscScatter`.
     pub fn new() -> Self {
@@ -75568,12 +82954,19 @@ pub fn risc_scatter_with_args<
 }
 
 /// RiscShape
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscShape {
     pub T: ::std::option::Option<crate::DataType>,
     pub out_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscShape {
+    fn default() -> Self {
+        Self {
+            T: None,
+            out_type: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl RiscShape {
     /// Creates a new `RiscShape`.
     pub fn new() -> Self {
@@ -75629,11 +83022,15 @@ pub fn risc_shape_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RiscSign
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscSign {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscSign {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl RiscSign {
     /// Creates a new `RiscSign`.
     pub fn new() -> Self {
@@ -75684,12 +83081,19 @@ pub fn risc_sign_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RiscSlice
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscSlice {
     pub T: ::std::option::Option<crate::DataType>,
     pub Index: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscSlice {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Index: None,
+        }
+    }
+}
 impl RiscSlice {
     /// Creates a new `RiscSlice`.
     pub fn new() -> Self {
@@ -75759,13 +83163,21 @@ pub fn risc_slice_with_args<
 }
 
 /// RiscSort
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscSort {
     pub Index: ::std::option::Option<crate::DataType>,
     pub T: ::std::option::Option<crate::DataType>,
     pub direction: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for RiscSort {
+    fn default() -> Self {
+        Self {
+            Index: Some(crate::DataType::Int32),
+            T: None,
+            direction: None,
+        }
+    }
+}
 impl RiscSort {
     /// Creates a new `RiscSort`.
     pub fn new() -> Self {
@@ -75827,12 +83239,19 @@ pub fn risc_sort_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandl
 }
 
 /// RiscSqueeze
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscSqueeze {
     pub T: ::std::option::Option<crate::DataType>,
     pub squeeze_dims: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for RiscSqueeze {
+    fn default() -> Self {
+        Self {
+            T: None,
+            squeeze_dims: Some(vec![]),
+        }
+    }
+}
 impl RiscSqueeze {
     /// Creates a new `RiscSqueeze`.
     pub fn new() -> Self {
@@ -75888,11 +83307,15 @@ pub fn risc_squeeze_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RiscSub
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscSub {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscSub {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl RiscSub {
     /// Creates a new `RiscSub`.
     pub fn new() -> Self {
@@ -75948,12 +83371,19 @@ pub fn risc_sub_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle
 }
 
 /// RiscTranspose
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscTranspose {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tperm: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscTranspose {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tperm: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl RiscTranspose {
     /// Creates a new `RiscTranspose`.
     pub fn new() -> Self {
@@ -76012,13 +83442,21 @@ pub fn risc_transpose_with_args<T0: crate::eager::ToHandle, T1: crate::eager::To
 }
 
 /// RiscTriangularSolve
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscTriangularSolve {
     pub lower: ::std::option::Option<bool>,
     pub adjoint: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscTriangularSolve {
+    fn default() -> Self {
+        Self {
+            lower: Some(true),
+            adjoint: Some(false),
+            T: None,
+        }
+    }
+}
 impl RiscTriangularSolve {
     /// Creates a new `RiscTriangularSolve`.
     pub fn new() -> Self {
@@ -76080,12 +83518,19 @@ pub fn risc_triangular_solve_with_args<T0: crate::eager::ToHandle, T1: crate::ea
 }
 
 /// RiscUnary
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscUnary {
     pub op_type: ::std::option::Option<::std::string::String>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RiscUnary {
+    fn default() -> Self {
+        Self {
+            op_type: None,
+            T: None,
+        }
+    }
+}
 impl RiscUnary {
     /// Creates a new `RiscUnary`.
     pub fn new() -> Self {
@@ -76139,7 +83584,7 @@ pub fn risc_unary_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RiscWhile
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RiscWhile {
     pub T: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub cond: ::std::option::Option<::std::string::String>,
@@ -76147,7 +83592,17 @@ pub struct RiscWhile {
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     pub parallel_iterations: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for RiscWhile {
+    fn default() -> Self {
+        Self {
+            T: None,
+            cond: None,
+            body: None,
+            output_shapes: None,
+            parallel_iterations: Some(10i64),
+        }
+    }
+}
 impl RiscWhile {
     /// Creates a new `RiscWhile`.
     pub fn new() -> Self {
@@ -76212,9 +83667,13 @@ pub fn risc_while_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RngReadAndSkip
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RngReadAndSkip {}
-
+impl ::std::default::Default for RngReadAndSkip {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl RngReadAndSkip {
     /// Creates a new `RngReadAndSkip`.
     pub fn new() -> Self {
@@ -76278,9 +83737,13 @@ pub fn rng_read_and_skip_with_args<
 }
 
 /// RngSkip
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RngSkip {}
-
+impl ::std::default::Default for RngSkip {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl RngSkip {
     /// Creates a new `RngSkip`.
     pub fn new() -> Self {
@@ -76343,13 +83806,21 @@ pub fn rng_skip_with_args<
 }
 
 /// Roll
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Roll {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tshift: ::std::option::Option<crate::DataType>,
     pub Taxis: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Roll {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tshift: None,
+            Taxis: None,
+        }
+    }
+}
 impl Roll {
     /// Creates a new `Roll`.
     pub fn new() -> Self {
@@ -76418,11 +83889,15 @@ pub fn roll_with_args<
 }
 
 /// Round
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Round {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Round {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Round {
     /// Creates a new `Round`.
     pub fn new() -> Self {
@@ -76473,11 +83948,15 @@ pub fn round_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Rsqrt
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Rsqrt {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Rsqrt {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Rsqrt {
     /// Creates a new `Rsqrt`.
     pub fn new() -> Self {
@@ -76528,11 +84007,15 @@ pub fn rsqrt_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// RsqrtGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct RsqrtGrad {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for RsqrtGrad {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl RsqrtGrad {
     /// Creates a new `RsqrtGrad`.
     pub fn new() -> Self {
@@ -76588,7 +84071,7 @@ pub fn rsqrt_grad_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHand
 }
 
 /// SampleDistortedBoundingBox
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SampleDistortedBoundingBox {
     pub T: ::std::option::Option<crate::DataType>,
     pub seed: ::std::option::Option<i64>,
@@ -76599,7 +84082,20 @@ pub struct SampleDistortedBoundingBox {
     pub max_attempts: ::std::option::Option<i64>,
     pub use_image_if_no_bounding_boxes: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for SampleDistortedBoundingBox {
+    fn default() -> Self {
+        Self {
+            T: None,
+            seed: Some(0i64),
+            seed2: Some(0i64),
+            min_object_covered: Some(0.1f32),
+            aspect_ratio_range: Some(vec![0.75, 1.33]),
+            area_range: Some(vec![0.05, 1.0]),
+            max_attempts: Some(100i64),
+            use_image_if_no_bounding_boxes: Some(false),
+        }
+    }
+}
 impl SampleDistortedBoundingBox {
     /// Creates a new `SampleDistortedBoundingBox`.
     pub fn new() -> Self {
@@ -76685,7 +84181,7 @@ pub fn sample_distorted_bounding_box_with_args<
 }
 
 /// SampleDistortedBoundingBoxV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SampleDistortedBoundingBoxV2 {
     pub T: ::std::option::Option<crate::DataType>,
     pub seed: ::std::option::Option<i64>,
@@ -76695,7 +84191,19 @@ pub struct SampleDistortedBoundingBoxV2 {
     pub max_attempts: ::std::option::Option<i64>,
     pub use_image_if_no_bounding_boxes: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for SampleDistortedBoundingBoxV2 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            seed: Some(0i64),
+            seed2: Some(0i64),
+            aspect_ratio_range: Some(vec![0.75, 1.33]),
+            area_range: Some(vec![0.05, 1.0]),
+            max_attempts: Some(100i64),
+            use_image_if_no_bounding_boxes: Some(false),
+        }
+    }
+}
 impl SampleDistortedBoundingBoxV2 {
     /// Creates a new `SampleDistortedBoundingBoxV2`.
     pub fn new() -> Self {
@@ -76791,12 +84299,19 @@ pub fn sample_distorted_bounding_box_v2_with_args<
 }
 
 /// SamplingDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SamplingDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for SamplingDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl SamplingDataset {
     /// Creates a new `SamplingDataset`.
     pub fn new() -> Self {
@@ -76871,11 +84386,15 @@ pub fn sampling_dataset_with_args<
 }
 
 /// Save
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Save {
     pub T: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
 }
-
+impl ::std::default::Default for Save {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Save {
     /// Creates a new `Save`.
     pub fn new() -> Self {
@@ -76937,14 +84456,23 @@ pub fn save_with_args<
 }
 
 /// SaveDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SaveDataset {
     pub compression: ::std::option::Option<::std::string::String>,
     pub shard_func: ::std::option::Option<::std::string::String>,
     pub use_shard_func: ::std::option::Option<bool>,
     pub Tshard_func_args: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
 }
-
+impl ::std::default::Default for SaveDataset {
+    fn default() -> Self {
+        Self {
+            compression: None,
+            shard_func: None,
+            use_shard_func: Some(true),
+            Tshard_func_args: None,
+        }
+    }
+}
 impl SaveDataset {
     /// Creates a new `SaveDataset`.
     pub fn new() -> Self {
@@ -77019,11 +84547,15 @@ pub fn save_dataset_with_args<
 }
 
 /// SaveSlices
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SaveSlices {
     pub T: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
 }
-
+impl ::std::default::Default for SaveSlices {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl SaveSlices {
     /// Creates a new `SaveSlices`.
     pub fn new() -> Self {
@@ -77094,11 +84626,15 @@ pub fn save_slices_with_args<
 }
 
 /// SaveV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SaveV2 {
     pub dtypes: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
 }
-
+impl ::std::default::Default for SaveV2 {
+    fn default() -> Self {
+        Self { dtypes: None }
+    }
+}
 impl SaveV2 {
     /// Creates a new `SaveV2`.
     pub fn new() -> Self {
@@ -77169,11 +84705,15 @@ pub fn save_v2_with_args<
 }
 
 /// ScalarSummary
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ScalarSummary {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ScalarSummary {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl ScalarSummary {
     /// Creates a new `ScalarSummary`.
     pub fn new() -> Self {
@@ -77229,13 +84769,21 @@ pub fn scalar_summary_with_args<T0: crate::eager::ToHandle, T1: crate::eager::To
 }
 
 /// ScaleAndTranslate
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ScaleAndTranslate {
     pub T: ::std::option::Option<crate::DataType>,
     pub kernel_type: ::std::option::Option<::std::string::String>,
     pub antialias: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ScaleAndTranslate {
+    fn default() -> Self {
+        Self {
+            T: None,
+            kernel_type: Some(::std::string::String::from("lanczos3")),
+            antialias: Some(true),
+        }
+    }
+}
 impl ScaleAndTranslate {
     /// Creates a new `ScaleAndTranslate`.
     pub fn new() -> Self {
@@ -77313,13 +84861,21 @@ pub fn scale_and_translate_with_args<
 }
 
 /// ScaleAndTranslateGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ScaleAndTranslateGrad {
     pub T: ::std::option::Option<crate::DataType>,
     pub kernel_type: ::std::option::Option<::std::string::String>,
     pub antialias: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ScaleAndTranslateGrad {
+    fn default() -> Self {
+        Self {
+            T: None,
+            kernel_type: Some(::std::string::String::from("lanczos3")),
+            antialias: Some(true),
+        }
+    }
+}
 impl ScaleAndTranslateGrad {
     /// Creates a new `ScaleAndTranslateGrad`.
     pub fn new() -> Self {
@@ -77397,7 +84953,7 @@ pub fn scale_and_translate_grad_with_args<
 }
 
 /// ScanDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ScanDataset {
     pub f: ::std::option::Option<::std::string::String>,
     pub Tstate: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
@@ -77407,7 +84963,19 @@ pub struct ScanDataset {
     pub preserve_cardinality: ::std::option::Option<bool>,
     pub use_default_device: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ScanDataset {
+    fn default() -> Self {
+        Self {
+            f: None,
+            Tstate: None,
+            Targuments: None,
+            output_types: None,
+            output_shapes: None,
+            preserve_cardinality: Some(false),
+            use_default_device: Some(true),
+        }
+    }
+}
 impl ScanDataset {
     /// Creates a new `ScanDataset`.
     pub fn new() -> Self {
@@ -77492,13 +85060,21 @@ pub fn scan_dataset_with_args<
 }
 
 /// ScatterAdd
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ScatterAdd {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ScatterAdd {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ScatterAdd {
     /// Creates a new `ScatterAdd`.
     pub fn new() -> Self {
@@ -77571,13 +85147,21 @@ pub fn scatter_add_with_args<
 }
 
 /// ScatterDiv
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ScatterDiv {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ScatterDiv {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ScatterDiv {
     /// Creates a new `ScatterDiv`.
     pub fn new() -> Self {
@@ -77650,13 +85234,21 @@ pub fn scatter_div_with_args<
 }
 
 /// ScatterMax
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ScatterMax {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ScatterMax {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ScatterMax {
     /// Creates a new `ScatterMax`.
     pub fn new() -> Self {
@@ -77729,13 +85321,21 @@ pub fn scatter_max_with_args<
 }
 
 /// ScatterMin
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ScatterMin {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ScatterMin {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ScatterMin {
     /// Creates a new `ScatterMin`.
     pub fn new() -> Self {
@@ -77808,13 +85408,21 @@ pub fn scatter_min_with_args<
 }
 
 /// ScatterMul
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ScatterMul {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ScatterMul {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ScatterMul {
     /// Creates a new `ScatterMul`.
     pub fn new() -> Self {
@@ -77887,12 +85495,19 @@ pub fn scatter_mul_with_args<
 }
 
 /// ScatterNd
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ScatterNd {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ScatterNd {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+        }
+    }
+}
 impl ScatterNd {
     /// Creates a new `ScatterNd`.
     pub fn new() -> Self {
@@ -77962,13 +85577,21 @@ pub fn scatter_nd_with_args<
 }
 
 /// ScatterNdAdd
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ScatterNdAdd {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ScatterNdAdd {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ScatterNdAdd {
     /// Creates a new `ScatterNdAdd`.
     pub fn new() -> Self {
@@ -78041,13 +85664,21 @@ pub fn scatter_nd_add_with_args<
 }
 
 /// ScatterNdMax
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ScatterNdMax {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ScatterNdMax {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ScatterNdMax {
     /// Creates a new `ScatterNdMax`.
     pub fn new() -> Self {
@@ -78120,13 +85751,21 @@ pub fn scatter_nd_max_with_args<
 }
 
 /// ScatterNdMin
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ScatterNdMin {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ScatterNdMin {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ScatterNdMin {
     /// Creates a new `ScatterNdMin`.
     pub fn new() -> Self {
@@ -78199,12 +85838,19 @@ pub fn scatter_nd_min_with_args<
 }
 
 /// ScatterNdNonAliasingAdd
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ScatterNdNonAliasingAdd {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ScatterNdNonAliasingAdd {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+        }
+    }
+}
 impl ScatterNdNonAliasingAdd {
     /// Creates a new `ScatterNdNonAliasingAdd`.
     pub fn new() -> Self {
@@ -78274,13 +85920,21 @@ pub fn scatter_nd_non_aliasing_add_with_args<
 }
 
 /// ScatterNdSub
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ScatterNdSub {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ScatterNdSub {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ScatterNdSub {
     /// Creates a new `ScatterNdSub`.
     pub fn new() -> Self {
@@ -78353,13 +86007,21 @@ pub fn scatter_nd_sub_with_args<
 }
 
 /// ScatterNdUpdate
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ScatterNdUpdate {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ScatterNdUpdate {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(true),
+        }
+    }
+}
 impl ScatterNdUpdate {
     /// Creates a new `ScatterNdUpdate`.
     pub fn new() -> Self {
@@ -78432,13 +86094,21 @@ pub fn scatter_nd_update_with_args<
 }
 
 /// ScatterSub
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ScatterSub {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ScatterSub {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl ScatterSub {
     /// Creates a new `ScatterSub`.
     pub fn new() -> Self {
@@ -78511,13 +86181,21 @@ pub fn scatter_sub_with_args<
 }
 
 /// ScatterUpdate
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ScatterUpdate {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ScatterUpdate {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(true),
+        }
+    }
+}
 impl ScatterUpdate {
     /// Creates a new `ScatterUpdate`.
     pub fn new() -> Self {
@@ -78590,9 +86268,13 @@ pub fn scatter_update_with_args<
 }
 
 /// SdcaFprint
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SdcaFprint {}
-
+impl ::std::default::Default for SdcaFprint {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl SdcaFprint {
     /// Creates a new `SdcaFprint`.
     pub fn new() -> Self {
@@ -78642,7 +86324,7 @@ pub fn sdca_fprint_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// SdcaOptimizer
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SdcaOptimizer {
     pub loss_type: ::std::option::Option<::std::string::String>,
     pub adaptative: ::std::option::Option<bool>,
@@ -78654,7 +86336,21 @@ pub struct SdcaOptimizer {
     pub num_loss_partitions: ::std::option::Option<i64>,
     pub num_inner_iterations: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for SdcaOptimizer {
+    fn default() -> Self {
+        Self {
+            loss_type: None,
+            adaptative: Some(false),
+            num_sparse_features: None,
+            num_sparse_features_with_values: None,
+            num_dense_features: None,
+            l1: None,
+            l2: None,
+            num_loss_partitions: None,
+            num_inner_iterations: None,
+        }
+    }
+}
 impl SdcaOptimizer {
     /// Creates a new `SdcaOptimizer`.
     pub fn new() -> Self {
@@ -78798,7 +86494,7 @@ pub fn sdca_optimizer_with_args<
 }
 
 /// SdcaOptimizerV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SdcaOptimizerV2 {
     pub loss_type: ::std::option::Option<::std::string::String>,
     pub adaptive: ::std::option::Option<bool>,
@@ -78810,7 +86506,21 @@ pub struct SdcaOptimizerV2 {
     pub num_loss_partitions: ::std::option::Option<i64>,
     pub num_inner_iterations: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for SdcaOptimizerV2 {
+    fn default() -> Self {
+        Self {
+            loss_type: None,
+            adaptive: Some(false),
+            num_sparse_features: None,
+            num_sparse_features_with_values: None,
+            num_dense_features: None,
+            l1: None,
+            l2: None,
+            num_loss_partitions: None,
+            num_inner_iterations: None,
+        }
+    }
+}
 impl SdcaOptimizerV2 {
     /// Creates a new `SdcaOptimizerV2`.
     pub fn new() -> Self {
@@ -78954,13 +86664,21 @@ pub fn sdca_optimizer_v2_with_args<
 }
 
 /// SdcaShrinkL1
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SdcaShrinkL1 {
     pub num_features: ::std::option::Option<i64>,
     pub l1: ::std::option::Option<f32>,
     pub l2: ::std::option::Option<f32>,
 }
-
+impl ::std::default::Default for SdcaShrinkL1 {
+    fn default() -> Self {
+        Self {
+            num_features: None,
+            l1: None,
+            l2: None,
+        }
+    }
+}
 impl SdcaShrinkL1 {
     /// Creates a new `SdcaShrinkL1`.
     pub fn new() -> Self {
@@ -79016,12 +86734,19 @@ pub fn sdca_shrink_l1_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// SegmentMax
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SegmentMax {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SegmentMax {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+        }
+    }
+}
 impl SegmentMax {
     /// Creates a new `SegmentMax`.
     pub fn new() -> Self {
@@ -79080,12 +86805,19 @@ pub fn segment_max_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHan
 }
 
 /// SegmentMean
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SegmentMean {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SegmentMean {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+        }
+    }
+}
 impl SegmentMean {
     /// Creates a new `SegmentMean`.
     pub fn new() -> Self {
@@ -79144,12 +86876,19 @@ pub fn segment_mean_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHa
 }
 
 /// SegmentMin
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SegmentMin {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SegmentMin {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+        }
+    }
+}
 impl SegmentMin {
     /// Creates a new `SegmentMin`.
     pub fn new() -> Self {
@@ -79208,12 +86947,19 @@ pub fn segment_min_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHan
 }
 
 /// SegmentProd
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SegmentProd {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SegmentProd {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+        }
+    }
+}
 impl SegmentProd {
     /// Creates a new `SegmentProd`.
     pub fn new() -> Self {
@@ -79272,12 +87018,19 @@ pub fn segment_prod_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHa
 }
 
 /// SegmentSum
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SegmentSum {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SegmentSum {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+        }
+    }
+}
 impl SegmentSum {
     /// Creates a new `SegmentSum`.
     pub fn new() -> Self {
@@ -79336,11 +87089,15 @@ pub fn segment_sum_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHan
 }
 
 /// Select
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Select {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Select {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Select {
     /// Creates a new `Select`.
     pub fn new() -> Self {
@@ -79407,11 +87164,15 @@ pub fn select_with_args<
 }
 
 /// SelectV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SelectV2 {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SelectV2 {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl SelectV2 {
     /// Creates a new `SelectV2`.
     pub fn new() -> Self {
@@ -79478,11 +87239,15 @@ pub fn select_v2_with_args<
 }
 
 /// SelfAdjointEig
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SelfAdjointEig {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SelfAdjointEig {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl SelfAdjointEig {
     /// Creates a new `SelfAdjointEig`.
     pub fn new() -> Self {
@@ -79535,12 +87300,19 @@ pub fn self_adjoint_eig_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// SelfAdjointEigV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SelfAdjointEigV2 {
     pub compute_v: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SelfAdjointEigV2 {
+    fn default() -> Self {
+        Self {
+            compute_v: Some(true),
+            T: None,
+        }
+    }
+}
 impl SelfAdjointEigV2 {
     /// Creates a new `SelfAdjointEigV2`.
     pub fn new() -> Self {
@@ -79601,11 +87373,15 @@ pub fn self_adjoint_eig_v2_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Selu
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Selu {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Selu {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Selu {
     /// Creates a new `Selu`.
     pub fn new() -> Self {
@@ -79656,11 +87432,15 @@ pub fn selu_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// SeluGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SeluGrad {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SeluGrad {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl SeluGrad {
     /// Creates a new `SeluGrad`.
     pub fn new() -> Self {
@@ -79716,7 +87496,7 @@ pub fn selu_grad_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandl
 }
 
 /// Send
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Send {
     pub T: ::std::option::Option<crate::DataType>,
     pub tensor_name: ::std::option::Option<::std::string::String>,
@@ -79725,7 +87505,18 @@ pub struct Send {
     pub recv_device: ::std::option::Option<::std::string::String>,
     pub client_terminated: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for Send {
+    fn default() -> Self {
+        Self {
+            T: None,
+            tensor_name: None,
+            send_device: None,
+            send_device_incarnation: None,
+            recv_device: None,
+            client_terminated: Some(false),
+        }
+    }
+}
 impl Send {
     /// Creates a new `Send`.
     pub fn new() -> Self {
@@ -79787,13 +87578,21 @@ pub fn send_with_args<T0: crate::eager::ToHandle>(tensor: T0, __args: &Send) -> 
 }
 
 /// SendTPUEmbeddingGradients
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SendTPUEmbeddingGradients {
     pub N: ::std::option::Option<i64>,
     pub NN: ::std::option::Option<i64>,
     pub config: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for SendTPUEmbeddingGradients {
+    fn default() -> Self {
+        Self {
+            N: None,
+            NN: Some(0i64),
+            config: None,
+        }
+    }
+}
 impl SendTPUEmbeddingGradients {
     /// Creates a new `SendTPUEmbeddingGradients`.
     pub fn new() -> Self {
@@ -79857,11 +87656,17 @@ pub fn send_tpuembedding_gradients_with_args<
 }
 
 /// SerializeIterator
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SerializeIterator {
     pub external_state_policy: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for SerializeIterator {
+    fn default() -> Self {
+        Self {
+            external_state_policy: Some(0i64),
+        }
+    }
+}
 impl SerializeIterator {
     /// Creates a new `SerializeIterator`.
     pub fn new() -> Self {
@@ -79914,12 +87719,19 @@ pub fn serialize_iterator_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// SerializeManySparse
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SerializeManySparse {
     pub T: ::std::option::Option<crate::DataType>,
     pub out_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SerializeManySparse {
+    fn default() -> Self {
+        Self {
+            T: None,
+            out_type: Some(crate::DataType::String),
+        }
+    }
+}
 impl SerializeManySparse {
     /// Creates a new `SerializeManySparse`.
     pub fn new() -> Self {
@@ -79989,12 +87801,19 @@ pub fn serialize_many_sparse_with_args<
 }
 
 /// SerializeSparse
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SerializeSparse {
     pub T: ::std::option::Option<crate::DataType>,
     pub out_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SerializeSparse {
+    fn default() -> Self {
+        Self {
+            T: None,
+            out_type: Some(crate::DataType::String),
+        }
+    }
+}
 impl SerializeSparse {
     /// Creates a new `SerializeSparse`.
     pub fn new() -> Self {
@@ -80064,11 +87883,15 @@ pub fn serialize_sparse_with_args<
 }
 
 /// SerializeTensor
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SerializeTensor {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SerializeTensor {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl SerializeTensor {
     /// Creates a new `SerializeTensor`.
     pub fn new() -> Self {
@@ -80121,12 +87944,19 @@ pub fn serialize_tensor_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// SetSize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SetSize {
     pub validate_indices: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SetSize {
+    fn default() -> Self {
+        Self {
+            validate_indices: Some(true),
+            T: None,
+        }
+    }
+}
 impl SetSize {
     /// Creates a new `SetSize`.
     pub fn new() -> Self {
@@ -80196,12 +88026,19 @@ pub fn set_size_with_args<
 }
 
 /// SetStatsAggregatorDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SetStatsAggregatorDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for SetStatsAggregatorDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl SetStatsAggregatorDataset {
     /// Creates a new `SetStatsAggregatorDataset`.
     pub fn new() -> Self {
@@ -80282,12 +88119,19 @@ pub fn set_stats_aggregator_dataset_with_args<
 }
 
 /// Shape
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Shape {
     pub T: ::std::option::Option<crate::DataType>,
     pub out_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Shape {
+    fn default() -> Self {
+        Self {
+            T: None,
+            out_type: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl Shape {
     /// Creates a new `Shape`.
     pub fn new() -> Self {
@@ -80341,13 +88185,21 @@ pub fn shape_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// ShapeN
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ShapeN {
     pub N: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
     pub out_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ShapeN {
+    fn default() -> Self {
+        Self {
+            N: None,
+            T: None,
+            out_type: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl ShapeN {
     /// Creates a new `ShapeN`.
     pub fn new() -> Self {
@@ -80404,13 +88256,21 @@ pub fn shape_n_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// ShardDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ShardDataset {
     pub require_non_empty: ::std::option::Option<bool>,
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ShardDataset {
+    fn default() -> Self {
+        Self {
+            require_non_empty: Some(false),
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ShardDataset {
     /// Creates a new `ShardDataset`.
     pub fn new() -> Self {
@@ -80483,9 +88343,13 @@ pub fn shard_dataset_with_args<
 }
 
 /// ShardedFilename
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ShardedFilename {}
-
+impl ::std::default::Default for ShardedFilename {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl ShardedFilename {
     /// Creates a new `ShardedFilename`.
     pub fn new() -> Self {
@@ -80549,9 +88413,13 @@ pub fn sharded_filename_with_args<
 }
 
 /// ShardedFilespec
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ShardedFilespec {}
-
+impl ::std::default::Default for ShardedFilespec {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl ShardedFilespec {
     /// Creates a new `ShardedFilespec`.
     pub fn new() -> Self {
@@ -80604,13 +88472,21 @@ pub fn sharded_filespec_with_args<T0: crate::eager::ToHandle, T1: crate::eager::
 }
 
 /// ShuffleAndRepeatDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ShuffleAndRepeatDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     pub reshuffle_each_iteration: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for ShuffleAndRepeatDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+            reshuffle_each_iteration: Some(true),
+        }
+    }
+}
 impl ShuffleAndRepeatDataset {
     /// Creates a new `ShuffleAndRepeatDataset`.
     pub fn new() -> Self {
@@ -80693,13 +88569,21 @@ pub fn shuffle_and_repeat_dataset_with_args<
 }
 
 /// ShuffleAndRepeatDatasetV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ShuffleAndRepeatDatasetV2 {
     pub reshuffle_each_iteration: ::std::option::Option<bool>,
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ShuffleAndRepeatDatasetV2 {
+    fn default() -> Self {
+        Self {
+            reshuffle_each_iteration: Some(true),
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ShuffleAndRepeatDatasetV2 {
     /// Creates a new `ShuffleAndRepeatDatasetV2`.
     pub fn new() -> Self {
@@ -80795,13 +88679,21 @@ pub fn shuffle_and_repeat_dataset_v2_with_args<
 }
 
 /// ShuffleDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ShuffleDataset {
     pub reshuffle_each_iteration: ::std::option::Option<bool>,
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ShuffleDataset {
+    fn default() -> Self {
+        Self {
+            reshuffle_each_iteration: Some(true),
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ShuffleDataset {
     /// Creates a new `ShuffleDataset`.
     pub fn new() -> Self {
@@ -80879,12 +88771,19 @@ pub fn shuffle_dataset_with_args<
 }
 
 /// ShuffleDatasetV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ShuffleDatasetV2 {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ShuffleDatasetV2 {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ShuffleDatasetV2 {
     /// Creates a new `ShuffleDatasetV2`.
     pub fn new() -> Self {
@@ -80954,13 +88853,21 @@ pub fn shuffle_dataset_v2_with_args<
 }
 
 /// ShuffleDatasetV3
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ShuffleDatasetV3 {
     pub reshuffle_each_iteration: ::std::option::Option<bool>,
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ShuffleDatasetV3 {
+    fn default() -> Self {
+        Self {
+            reshuffle_each_iteration: Some(true),
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ShuffleDatasetV3 {
     /// Creates a new `ShuffleDatasetV3`.
     pub fn new() -> Self {
@@ -81050,9 +88957,13 @@ pub fn shuffle_dataset_v3_with_args<
 }
 
 /// ShutdownDistributedTPU
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ShutdownDistributedTPU {}
-
+impl ::std::default::Default for ShutdownDistributedTPU {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl ShutdownDistributedTPU {
     /// Creates a new `ShutdownDistributedTPU`.
     pub fn new() -> Self {
@@ -81095,11 +89006,15 @@ pub fn shutdown_distributed_tpu_with_args(__args: &ShutdownDistributedTPU) -> cr
 }
 
 /// Sigmoid
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Sigmoid {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Sigmoid {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Sigmoid {
     /// Creates a new `Sigmoid`.
     pub fn new() -> Self {
@@ -81150,11 +89065,15 @@ pub fn sigmoid_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// SigmoidGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SigmoidGrad {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SigmoidGrad {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl SigmoidGrad {
     /// Creates a new `SigmoidGrad`.
     pub fn new() -> Self {
@@ -81210,11 +89129,15 @@ pub fn sigmoid_grad_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHa
 }
 
 /// Sign
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Sign {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Sign {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Sign {
     /// Creates a new `Sign`.
     pub fn new() -> Self {
@@ -81265,11 +89188,15 @@ pub fn sign_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Sin
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Sin {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Sin {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Sin {
     /// Creates a new `Sin`.
     pub fn new() -> Self {
@@ -81320,11 +89247,15 @@ pub fn sin_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Sinh
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Sinh {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Sinh {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Sinh {
     /// Creates a new `Sinh`.
     pub fn new() -> Self {
@@ -81375,12 +89306,19 @@ pub fn sinh_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Size
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Size {
     pub T: ::std::option::Option<crate::DataType>,
     pub out_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Size {
+    fn default() -> Self {
+        Self {
+            T: None,
+            out_type: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl Size {
     /// Creates a new `Size`.
     pub fn new() -> Self {
@@ -81434,12 +89372,19 @@ pub fn size_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// SkipDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SkipDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for SkipDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl SkipDataset {
     /// Creates a new `SkipDataset`.
     pub fn new() -> Self {
@@ -81498,7 +89443,7 @@ pub fn skip_dataset_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHa
 }
 
 /// Skipgram
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Skipgram {
     pub filename: ::std::option::Option<::std::string::String>,
     pub batch_size: ::std::option::Option<i64>,
@@ -81506,7 +89451,17 @@ pub struct Skipgram {
     pub min_count: ::std::option::Option<i64>,
     pub subsample: ::std::option::Option<f32>,
 }
-
+impl ::std::default::Default for Skipgram {
+    fn default() -> Self {
+        Self {
+            filename: None,
+            batch_size: None,
+            window_size: Some(5i64),
+            min_count: Some(5i64),
+            subsample: Some(0.001f32),
+        }
+    }
+}
 impl Skipgram {
     /// Creates a new `Skipgram`.
     pub fn new() -> Self {
@@ -81575,12 +89530,19 @@ pub fn skipgram_with_args(__args: &Skipgram) -> crate::Result<[crate::eager::Ten
 }
 
 /// SleepDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SleepDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for SleepDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl SleepDataset {
     /// Creates a new `SleepDataset`.
     pub fn new() -> Self {
@@ -81639,12 +89601,19 @@ pub fn sleep_dataset_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToH
 }
 
 /// Slice
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Slice {
     pub T: ::std::option::Option<crate::DataType>,
     pub Index: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Slice {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Index: None,
+        }
+    }
+}
 impl Slice {
     /// Creates a new `Slice`.
     pub fn new() -> Self {
@@ -81710,12 +89679,19 @@ pub fn slice_with_args<
 }
 
 /// SlidingWindowDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SlidingWindowDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for SlidingWindowDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl SlidingWindowDataset {
     /// Creates a new `SlidingWindowDataset`.
     pub fn new() -> Self {
@@ -81796,11 +89772,15 @@ pub fn sliding_window_dataset_with_args<
 }
 
 /// Snapshot
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Snapshot {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Snapshot {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Snapshot {
     /// Creates a new `Snapshot`.
     pub fn new() -> Self {
@@ -81853,7 +89833,7 @@ pub fn snapshot_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// SnapshotDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SnapshotDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
@@ -81872,7 +89852,28 @@ pub struct SnapshotDataset {
     pub mode: ::std::option::Option<::std::string::String>,
     pub snapshot_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for SnapshotDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+            compression: None,
+            reader_path_prefix: None,
+            writer_path_prefix: None,
+            shard_size_bytes: Some(10737418240i64),
+            pending_snapshot_expiry_seconds: Some(86400i64),
+            num_reader_threads: Some(1i64),
+            reader_buffer_size: Some(1i64),
+            num_writer_threads: Some(1i64),
+            writer_buffer_size: Some(1i64),
+            shuffle_on_read: Some(false),
+            seed: Some(0i64),
+            seed2: Some(0i64),
+            mode: Some(::std::string::String::from("auto")),
+            snapshot_name: None,
+        }
+    }
+}
 impl SnapshotDataset {
     /// Creates a new `SnapshotDataset`.
     pub fn new() -> Self {
@@ -81973,14 +89974,23 @@ pub fn snapshot_dataset_with_args<T0: crate::eager::ToHandle, T1: crate::eager::
 }
 
 /// SnapshotDatasetReader
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SnapshotDatasetReader {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     pub compression: ::std::option::Option<::std::string::String>,
     pub version: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for SnapshotDatasetReader {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+            compression: None,
+            version: None,
+        }
+    }
+}
 impl SnapshotDatasetReader {
     /// Creates a new `SnapshotDatasetReader`.
     pub fn new() -> Self {
@@ -82045,7 +90055,7 @@ pub fn snapshot_dataset_reader_with_args<T0: crate::eager::ToHandle, T1: crate::
 }
 
 /// SnapshotDatasetV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SnapshotDatasetV2 {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
@@ -82059,7 +90069,23 @@ pub struct SnapshotDatasetV2 {
     pub Treader_func_args: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub Tshard_func_args: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
 }
-
+impl ::std::default::Default for SnapshotDatasetV2 {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+            compression: None,
+            reader_prefix: None,
+            writer_prefix: None,
+            hash_valid: Some(false),
+            hash: Some(0i64),
+            reader_func: None,
+            shard_func: None,
+            Treader_func_args: None,
+            Tshard_func_args: None,
+        }
+    }
+}
 impl SnapshotDatasetV2 {
     /// Creates a new `SnapshotDatasetV2`.
     pub fn new() -> Self {
@@ -82167,13 +90193,21 @@ pub fn snapshot_dataset_v2_with_args<
 }
 
 /// SnapshotNestedDatasetReader
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SnapshotNestedDatasetReader {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     pub N: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for SnapshotNestedDatasetReader {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+            N: None,
+        }
+    }
+}
 impl SnapshotNestedDatasetReader {
     /// Creates a new `SnapshotNestedDatasetReader`.
     pub fn new() -> Self {
@@ -82232,11 +90266,17 @@ pub fn snapshot_nested_dataset_reader_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// SobolSample
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SobolSample {
     pub dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SobolSample {
+    fn default() -> Self {
+        Self {
+            dtype: Some(crate::DataType::Float),
+        }
+    }
+}
 impl SobolSample {
     /// Creates a new `SobolSample`.
     pub fn new() -> Self {
@@ -82303,11 +90343,15 @@ pub fn sobol_sample_with_args<
 }
 
 /// Softmax
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Softmax {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Softmax {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Softmax {
     /// Creates a new `Softmax`.
     pub fn new() -> Self {
@@ -82360,11 +90404,15 @@ pub fn softmax_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// SoftmaxCrossEntropyWithLogits
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SoftmaxCrossEntropyWithLogits {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SoftmaxCrossEntropyWithLogits {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl SoftmaxCrossEntropyWithLogits {
     /// Creates a new `SoftmaxCrossEntropyWithLogits`.
     pub fn new() -> Self {
@@ -82428,11 +90476,15 @@ pub fn softmax_cross_entropy_with_logits_with_args<
 }
 
 /// Softplus
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Softplus {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Softplus {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Softplus {
     /// Creates a new `Softplus`.
     pub fn new() -> Self {
@@ -82485,11 +90537,15 @@ pub fn softplus_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// SoftplusGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SoftplusGrad {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SoftplusGrad {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl SoftplusGrad {
     /// Creates a new `SoftplusGrad`.
     pub fn new() -> Self {
@@ -82545,11 +90601,15 @@ pub fn softplus_grad_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToH
 }
 
 /// Softsign
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Softsign {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Softsign {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Softsign {
     /// Creates a new `Softsign`.
     pub fn new() -> Self {
@@ -82602,11 +90662,15 @@ pub fn softsign_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// SoftsignGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SoftsignGrad {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SoftsignGrad {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl SoftsignGrad {
     /// Creates a new `SoftsignGrad`.
     pub fn new() -> Self {
@@ -82662,13 +90726,21 @@ pub fn softsign_grad_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToH
 }
 
 /// SpaceToBatch
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SpaceToBatch {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tpaddings: ::std::option::Option<crate::DataType>,
     pub block_size: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for SpaceToBatch {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tpaddings: Some(crate::DataType::Int32),
+            block_size: None,
+        }
+    }
+}
 impl SpaceToBatch {
     /// Creates a new `SpaceToBatch`.
     pub fn new() -> Self {
@@ -82730,13 +90802,21 @@ pub fn space_to_batch_with_args<T0: crate::eager::ToHandle, T1: crate::eager::To
 }
 
 /// SpaceToBatchND
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SpaceToBatchND {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tblock_shape: ::std::option::Option<crate::DataType>,
     pub Tpaddings: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SpaceToBatchND {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tblock_shape: Some(crate::DataType::Int32),
+            Tpaddings: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl SpaceToBatchND {
     /// Creates a new `SpaceToBatchND`.
     pub fn new() -> Self {
@@ -82809,13 +90889,21 @@ pub fn space_to_batch_nd_with_args<
 }
 
 /// SpaceToDepth
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SpaceToDepth {
     pub T: ::std::option::Option<crate::DataType>,
     pub block_size: ::std::option::Option<i64>,
     pub data_format: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for SpaceToDepth {
+    fn default() -> Self {
+        Self {
+            T: None,
+            block_size: None,
+            data_format: Some(::std::string::String::from("NHWC")),
+        }
+    }
+}
 impl SpaceToDepth {
     /// Creates a new `SpaceToDepth`.
     pub fn new() -> Self {
@@ -82874,12 +90962,19 @@ pub fn space_to_depth_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// SparseAccumulatorApplyGradient
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseAccumulatorApplyGradient {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub has_known_shape: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for SparseAccumulatorApplyGradient {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            has_known_shape: None,
+        }
+    }
+}
 impl SparseAccumulatorApplyGradient {
     /// Creates a new `SparseAccumulatorApplyGradient`.
     pub fn new() -> Self {
@@ -82965,11 +91060,15 @@ pub fn sparse_accumulator_apply_gradient_with_args<
 }
 
 /// SparseAccumulatorTakeGradient
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseAccumulatorTakeGradient {
     pub dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseAccumulatorTakeGradient {
+    fn default() -> Self {
+        Self { dtype: None }
+    }
+}
 impl SparseAccumulatorTakeGradient {
     /// Creates a new `SparseAccumulatorTakeGradient`.
     pub fn new() -> Self {
@@ -83034,12 +91133,19 @@ pub fn sparse_accumulator_take_gradient_with_args<
 }
 
 /// SparseAdd
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseAdd {
     pub T: ::std::option::Option<crate::DataType>,
     pub Treal: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseAdd {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Treal: None,
+        }
+    }
+}
 impl SparseAdd {
     /// Creates a new `SparseAdd`.
     pub fn new() -> Self {
@@ -83137,11 +91243,15 @@ pub fn sparse_add_with_args<
 }
 
 /// SparseAddGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseAddGrad {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseAddGrad {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl SparseAddGrad {
     /// Creates a new `SparseAddGrad`.
     pub fn new() -> Self {
@@ -83224,13 +91334,21 @@ pub fn sparse_add_grad_with_args<
 }
 
 /// SparseApplyAdadelta
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseApplyAdadelta {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for SparseApplyAdadelta {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl SparseApplyAdadelta {
     /// Creates a new `SparseApplyAdadelta`.
     pub fn new() -> Self {
@@ -83338,14 +91456,23 @@ pub fn sparse_apply_adadelta_with_args<
 }
 
 /// SparseApplyAdagrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseApplyAdagrad {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
     pub update_slots: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for SparseApplyAdagrad {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+            update_slots: Some(true),
+        }
+    }
+}
 impl SparseApplyAdagrad {
     /// Creates a new `SparseApplyAdagrad`.
     pub fn new() -> Self {
@@ -83431,13 +91558,21 @@ pub fn sparse_apply_adagrad_with_args<
 }
 
 /// SparseApplyAdagradDA
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseApplyAdagradDA {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for SparseApplyAdagradDA {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl SparseApplyAdagradDA {
     /// Creates a new `SparseApplyAdagradDA`.
     pub fn new() -> Self {
@@ -83551,14 +91686,23 @@ pub fn sparse_apply_adagrad_da_with_args<
 }
 
 /// SparseApplyAdagradV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseApplyAdagradV2 {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
     pub update_slots: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for SparseApplyAdagradV2 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+            update_slots: Some(true),
+        }
+    }
+}
 impl SparseApplyAdagradV2 {
     /// Creates a new `SparseApplyAdagradV2`.
     pub fn new() -> Self {
@@ -83649,13 +91793,21 @@ pub fn sparse_apply_adagrad_v2_with_args<
 }
 
 /// SparseApplyCenteredRMSProp
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseApplyCenteredRMSProp {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for SparseApplyCenteredRMSProp {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl SparseApplyCenteredRMSProp {
     /// Creates a new `SparseApplyCenteredRMSProp`.
     pub fn new() -> Self {
@@ -83765,14 +91917,23 @@ pub fn sparse_apply_centered_rmsprop_with_args<
 }
 
 /// SparseApplyFtrl
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseApplyFtrl {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
     pub multiply_linear_by_lr: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for SparseApplyFtrl {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+            multiply_linear_by_lr: Some(false),
+        }
+    }
+}
 impl SparseApplyFtrl {
     /// Creates a new `SparseApplyFtrl`.
     pub fn new() -> Self {
@@ -83880,14 +92041,23 @@ pub fn sparse_apply_ftrl_with_args<
 }
 
 /// SparseApplyFtrlV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseApplyFtrlV2 {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
     pub multiply_linear_by_lr: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for SparseApplyFtrlV2 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+            multiply_linear_by_lr: Some(false),
+        }
+    }
+}
 impl SparseApplyFtrlV2 {
     /// Creates a new `SparseApplyFtrlV2`.
     pub fn new() -> Self {
@@ -84010,14 +92180,23 @@ pub fn sparse_apply_ftrl_v2_with_args<
 }
 
 /// SparseApplyMomentum
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseApplyMomentum {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
     pub use_nesterov: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for SparseApplyMomentum {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+            use_nesterov: Some(false),
+        }
+    }
+}
 impl SparseApplyMomentum {
     /// Creates a new `SparseApplyMomentum`.
     pub fn new() -> Self {
@@ -84108,13 +92287,21 @@ pub fn sparse_apply_momentum_with_args<
 }
 
 /// SparseApplyProximalAdagrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseApplyProximalAdagrad {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for SparseApplyProximalAdagrad {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl SparseApplyProximalAdagrad {
     /// Creates a new `SparseApplyProximalAdagrad`.
     pub fn new() -> Self {
@@ -84207,13 +92394,21 @@ pub fn sparse_apply_proximal_adagrad_with_args<
 }
 
 /// SparseApplyProximalGradientDescent
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseApplyProximalGradientDescent {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for SparseApplyProximalGradientDescent {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl SparseApplyProximalGradientDescent {
     /// Creates a new `SparseApplyProximalGradientDescent`.
     pub fn new() -> Self {
@@ -84302,13 +92497,21 @@ pub fn sparse_apply_proximal_gradient_descent_with_args<
 }
 
 /// SparseApplyRMSProp
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseApplyRMSProp {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub use_locking: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for SparseApplyRMSProp {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            use_locking: Some(false),
+        }
+    }
+}
 impl SparseApplyRMSProp {
     /// Creates a new `SparseApplyRMSProp`.
     pub fn new() -> Self {
@@ -84413,13 +92616,21 @@ pub fn sparse_apply_rmsprop_with_args<
 }
 
 /// SparseBincount
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseBincount {
     pub Tidx: ::std::option::Option<crate::DataType>,
     pub T: ::std::option::Option<crate::DataType>,
     pub binary_output: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for SparseBincount {
+    fn default() -> Self {
+        Self {
+            Tidx: None,
+            T: None,
+            binary_output: Some(false),
+        }
+    }
+}
 impl SparseBincount {
     /// Creates a new `SparseBincount`.
     pub fn new() -> Self {
@@ -84502,13 +92713,21 @@ pub fn sparse_bincount_with_args<
 }
 
 /// SparseConcat
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseConcat {
     pub concat_dim: ::std::option::Option<i64>,
     pub N: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseConcat {
+    fn default() -> Self {
+        Self {
+            concat_dim: None,
+            N: None,
+            T: None,
+        }
+    }
+}
 impl SparseConcat {
     /// Creates a new `SparseConcat`.
     pub fn new() -> Self {
@@ -84587,7 +92806,7 @@ pub fn sparse_concat_with_args<
 }
 
 /// SparseConditionalAccumulator
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseConditionalAccumulator {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub shape: ::std::option::Option<crate::Shape>,
@@ -84595,7 +92814,17 @@ pub struct SparseConditionalAccumulator {
     pub shared_name: ::std::option::Option<::std::string::String>,
     pub reduction_type: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for SparseConditionalAccumulator {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            shape: None,
+            container: None,
+            shared_name: None,
+            reduction_type: Some(::std::string::String::from("MEAN")),
+        }
+    }
+}
 impl SparseConditionalAccumulator {
     /// Creates a new `SparseConditionalAccumulator`.
     pub fn new() -> Self {
@@ -84656,7 +92885,7 @@ pub fn sparse_conditional_accumulator_with_args(
 }
 
 /// SparseCountSparseOutput
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseCountSparseOutput {
     pub T: ::std::option::Option<crate::DataType>,
     pub minlength: ::std::option::Option<i64>,
@@ -84664,7 +92893,17 @@ pub struct SparseCountSparseOutput {
     pub binary_output: ::std::option::Option<bool>,
     pub output_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseCountSparseOutput {
+    fn default() -> Self {
+        Self {
+            T: None,
+            minlength: Some(-1i64),
+            maxlength: Some(-1i64),
+            binary_output: None,
+            output_type: None,
+        }
+    }
+}
 impl SparseCountSparseOutput {
     /// Creates a new `SparseCountSparseOutput`.
     pub fn new() -> Self {
@@ -84754,7 +92993,7 @@ pub fn sparse_count_sparse_output_with_args<
 }
 
 /// SparseCross
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseCross {
     pub N: ::std::option::Option<i64>,
     pub hashed_output: ::std::option::Option<bool>,
@@ -84765,7 +93004,20 @@ pub struct SparseCross {
     pub out_type: ::std::option::Option<crate::DataType>,
     pub internal_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseCross {
+    fn default() -> Self {
+        Self {
+            N: None,
+            hashed_output: None,
+            num_buckets: None,
+            hash_key: None,
+            sparse_types: None,
+            dense_types: None,
+            out_type: None,
+            internal_type: None,
+        }
+    }
+}
 impl SparseCross {
     /// Creates a new `SparseCross`.
     pub fn new() -> Self {
@@ -84864,13 +93116,21 @@ pub fn sparse_cross_with_args<
 }
 
 /// SparseCrossHashed
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseCrossHashed {
     pub N: ::std::option::Option<i64>,
     pub sparse_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub dense_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
 }
-
+impl ::std::default::Default for SparseCrossHashed {
+    fn default() -> Self {
+        Self {
+            N: None,
+            sparse_types: None,
+            dense_types: None,
+        }
+    }
+}
 impl SparseCrossHashed {
     /// Creates a new `SparseCrossHashed`.
     pub fn new() -> Self {
@@ -84978,13 +93238,21 @@ pub fn sparse_cross_hashed_with_args<
 }
 
 /// SparseCrossV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseCrossV2 {
     pub N: ::std::option::Option<i64>,
     pub sparse_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub dense_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
 }
-
+impl ::std::default::Default for SparseCrossV2 {
+    fn default() -> Self {
+        Self {
+            N: None,
+            sparse_types: None,
+            dense_types: None,
+        }
+    }
+}
 impl SparseCrossV2 {
     /// Creates a new `SparseCrossV2`.
     pub fn new() -> Self {
@@ -85073,11 +93341,15 @@ pub fn sparse_cross_v2_with_args<
 }
 
 /// SparseDenseCwiseAdd
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseDenseCwiseAdd {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseDenseCwiseAdd {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl SparseDenseCwiseAdd {
     /// Creates a new `SparseDenseCwiseAdd`.
     pub fn new() -> Self {
@@ -85149,11 +93421,15 @@ pub fn sparse_dense_cwise_add_with_args<
 }
 
 /// SparseDenseCwiseDiv
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseDenseCwiseDiv {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseDenseCwiseDiv {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl SparseDenseCwiseDiv {
     /// Creates a new `SparseDenseCwiseDiv`.
     pub fn new() -> Self {
@@ -85225,11 +93501,15 @@ pub fn sparse_dense_cwise_div_with_args<
 }
 
 /// SparseDenseCwiseMul
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseDenseCwiseMul {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseDenseCwiseMul {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl SparseDenseCwiseMul {
     /// Creates a new `SparseDenseCwiseMul`.
     pub fn new() -> Self {
@@ -85301,11 +93581,15 @@ pub fn sparse_dense_cwise_mul_with_args<
 }
 
 /// SparseFillEmptyRows
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseFillEmptyRows {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseFillEmptyRows {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl SparseFillEmptyRows {
     /// Creates a new `SparseFillEmptyRows`.
     pub fn new() -> Self {
@@ -85384,11 +93668,15 @@ pub fn sparse_fill_empty_rows_with_args<
 }
 
 /// SparseFillEmptyRowsGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseFillEmptyRowsGrad {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseFillEmptyRowsGrad {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl SparseFillEmptyRowsGrad {
     /// Creates a new `SparseFillEmptyRowsGrad`.
     pub fn new() -> Self {
@@ -85452,7 +93740,7 @@ pub fn sparse_fill_empty_rows_grad_with_args<
 }
 
 /// SparseMatMul
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseMatMul {
     pub transpose_a: ::std::option::Option<bool>,
     pub transpose_b: ::std::option::Option<bool>,
@@ -85461,7 +93749,18 @@ pub struct SparseMatMul {
     pub Ta: ::std::option::Option<crate::DataType>,
     pub Tb: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseMatMul {
+    fn default() -> Self {
+        Self {
+            transpose_a: Some(false),
+            transpose_b: Some(false),
+            a_is_sparse: Some(false),
+            b_is_sparse: Some(false),
+            Ta: Some(crate::DataType::Float),
+            Tb: Some(crate::DataType::Float),
+        }
+    }
+}
 impl SparseMatMul {
     /// Creates a new `SparseMatMul`.
     pub fn new() -> Self {
@@ -85532,11 +93831,15 @@ pub fn sparse_mat_mul_with_args<T0: crate::eager::ToHandle, T1: crate::eager::To
 }
 
 /// SparseMatrixAdd
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseMatrixAdd {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseMatrixAdd {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl SparseMatrixAdd {
     /// Creates a new `SparseMatrixAdd`.
     pub fn new() -> Self {
@@ -85608,7 +93911,7 @@ pub fn sparse_matrix_add_with_args<
 }
 
 /// SparseMatrixMatMul
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseMatrixMatMul {
     pub T: ::std::option::Option<crate::DataType>,
     pub transpose_a: ::std::option::Option<bool>,
@@ -85618,7 +93921,19 @@ pub struct SparseMatrixMatMul {
     pub transpose_output: ::std::option::Option<bool>,
     pub conjugate_output: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for SparseMatrixMatMul {
+    fn default() -> Self {
+        Self {
+            T: None,
+            transpose_a: Some(false),
+            transpose_b: Some(false),
+            adjoint_a: Some(false),
+            adjoint_b: Some(false),
+            transpose_output: Some(false),
+            conjugate_output: Some(false),
+        }
+    }
+}
 impl SparseMatrixMatMul {
     /// Creates a new `SparseMatrixMatMul`.
     pub fn new() -> Self {
@@ -85692,11 +94007,15 @@ pub fn sparse_matrix_mat_mul_with_args<T0: crate::eager::ToHandle, T1: crate::ea
 }
 
 /// SparseMatrixMul
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseMatrixMul {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseMatrixMul {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl SparseMatrixMul {
     /// Creates a new `SparseMatrixMul`.
     pub fn new() -> Self {
@@ -85752,9 +94071,13 @@ pub fn sparse_matrix_mul_with_args<T0: crate::eager::ToHandle, T1: crate::eager:
 }
 
 /// SparseMatrixNNZ
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseMatrixNNZ {}
-
+impl ::std::default::Default for SparseMatrixNNZ {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl SparseMatrixNNZ {
     /// Creates a new `SparseMatrixNNZ`.
     pub fn new() -> Self {
@@ -85804,9 +94127,13 @@ pub fn sparse_matrix_nnz_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// SparseMatrixOrderingAMD
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseMatrixOrderingAMD {}
-
+impl ::std::default::Default for SparseMatrixOrderingAMD {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl SparseMatrixOrderingAMD {
     /// Creates a new `SparseMatrixOrderingAMD`.
     pub fn new() -> Self {
@@ -85856,11 +94183,15 @@ pub fn sparse_matrix_ordering_amd_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// SparseMatrixSoftmax
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseMatrixSoftmax {
     pub type_: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseMatrixSoftmax {
+    fn default() -> Self {
+        Self { type_: None }
+    }
+}
 impl SparseMatrixSoftmax {
     /// Creates a new `SparseMatrixSoftmax`.
     pub fn new() -> Self {
@@ -85913,11 +94244,15 @@ pub fn sparse_matrix_softmax_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// SparseMatrixSoftmaxGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseMatrixSoftmaxGrad {
     pub type_: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseMatrixSoftmaxGrad {
+    fn default() -> Self {
+        Self { type_: None }
+    }
+}
 impl SparseMatrixSoftmaxGrad {
     /// Creates a new `SparseMatrixSoftmaxGrad`.
     pub fn new() -> Self {
@@ -85976,11 +94311,15 @@ pub fn sparse_matrix_softmax_grad_with_args<
 }
 
 /// SparseMatrixSparseCholesky
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseMatrixSparseCholesky {
     pub type_: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseMatrixSparseCholesky {
+    fn default() -> Self {
+        Self { type_: None }
+    }
+}
 impl SparseMatrixSparseCholesky {
     /// Creates a new `SparseMatrixSparseCholesky`.
     pub fn new() -> Self {
@@ -86039,7 +94378,7 @@ pub fn sparse_matrix_sparse_cholesky_with_args<
 }
 
 /// SparseMatrixSparseMatMul
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseMatrixSparseMatMul {
     pub type_: ::std::option::Option<crate::DataType>,
     pub transpose_a: ::std::option::Option<bool>,
@@ -86047,7 +94386,17 @@ pub struct SparseMatrixSparseMatMul {
     pub adjoint_a: ::std::option::Option<bool>,
     pub adjoint_b: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for SparseMatrixSparseMatMul {
+    fn default() -> Self {
+        Self {
+            type_: None,
+            transpose_a: Some(false),
+            transpose_b: Some(false),
+            adjoint_a: Some(false),
+            adjoint_b: Some(false),
+        }
+    }
+}
 impl SparseMatrixSparseMatMul {
     /// Creates a new `SparseMatrixSparseMatMul`.
     pub fn new() -> Self {
@@ -86118,12 +94467,19 @@ pub fn sparse_matrix_sparse_mat_mul_with_args<
 }
 
 /// SparseMatrixTranspose
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseMatrixTranspose {
     pub conjugate: ::std::option::Option<bool>,
     pub type_: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseMatrixTranspose {
+    fn default() -> Self {
+        Self {
+            conjugate: Some(false),
+            type_: None,
+        }
+    }
+}
 impl SparseMatrixTranspose {
     /// Creates a new `SparseMatrixTranspose`.
     pub fn new() -> Self {
@@ -86179,11 +94535,15 @@ pub fn sparse_matrix_transpose_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// SparseMatrixZeros
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseMatrixZeros {
     pub type_: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseMatrixZeros {
+    fn default() -> Self {
+        Self { type_: None }
+    }
+}
 impl SparseMatrixZeros {
     /// Creates a new `SparseMatrixZeros`.
     pub fn new() -> Self {
@@ -86236,12 +94596,19 @@ pub fn sparse_matrix_zeros_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// SparseReduceMax
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseReduceMax {
     pub keep_dims: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseReduceMax {
+    fn default() -> Self {
+        Self {
+            keep_dims: Some(false),
+            T: None,
+        }
+    }
+}
 impl SparseReduceMax {
     /// Creates a new `SparseReduceMax`.
     pub fn new() -> Self {
@@ -86322,12 +94689,19 @@ pub fn sparse_reduce_max_with_args<
 }
 
 /// SparseReduceMaxSparse
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseReduceMaxSparse {
     pub keep_dims: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseReduceMaxSparse {
+    fn default() -> Self {
+        Self {
+            keep_dims: Some(false),
+            T: None,
+        }
+    }
+}
 impl SparseReduceMaxSparse {
     /// Creates a new `SparseReduceMaxSparse`.
     pub fn new() -> Self {
@@ -86414,12 +94788,19 @@ pub fn sparse_reduce_max_sparse_with_args<
 }
 
 /// SparseReduceSum
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseReduceSum {
     pub keep_dims: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseReduceSum {
+    fn default() -> Self {
+        Self {
+            keep_dims: Some(false),
+            T: None,
+        }
+    }
+}
 impl SparseReduceSum {
     /// Creates a new `SparseReduceSum`.
     pub fn new() -> Self {
@@ -86500,12 +94881,19 @@ pub fn sparse_reduce_sum_with_args<
 }
 
 /// SparseReduceSumSparse
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseReduceSumSparse {
     pub keep_dims: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseReduceSumSparse {
+    fn default() -> Self {
+        Self {
+            keep_dims: Some(false),
+            T: None,
+        }
+    }
+}
 impl SparseReduceSumSparse {
     /// Creates a new `SparseReduceSumSparse`.
     pub fn new() -> Self {
@@ -86592,11 +94980,15 @@ pub fn sparse_reduce_sum_sparse_with_args<
 }
 
 /// SparseReorder
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseReorder {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseReorder {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl SparseReorder {
     /// Creates a new `SparseReorder`.
     pub fn new() -> Self {
@@ -86668,9 +95060,13 @@ pub fn sparse_reorder_with_args<
 }
 
 /// SparseReshape
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseReshape {}
-
+impl ::std::default::Default for SparseReshape {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl SparseReshape {
     /// Creates a new `SparseReshape`.
     pub fn new() -> Self {
@@ -86739,13 +95135,21 @@ pub fn sparse_reshape_with_args<
 }
 
 /// SparseSegmentMean
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseSegmentMean {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tidx: ::std::option::Option<crate::DataType>,
     pub Tsegmentids: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseSegmentMean {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tidx: Some(crate::DataType::Int32),
+            Tsegmentids: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl SparseSegmentMean {
     /// Creates a new `SparseSegmentMean`.
     pub fn new() -> Self {
@@ -86818,13 +95222,21 @@ pub fn sparse_segment_mean_with_args<
 }
 
 /// SparseSegmentMeanGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseSegmentMeanGrad {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tidx: ::std::option::Option<crate::DataType>,
     pub Tsegmentids: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseSegmentMeanGrad {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tidx: Some(crate::DataType::Int32),
+            Tsegmentids: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl SparseSegmentMeanGrad {
     /// Creates a new `SparseSegmentMeanGrad`.
     pub fn new() -> Self {
@@ -86902,14 +95314,23 @@ pub fn sparse_segment_mean_grad_with_args<
 }
 
 /// SparseSegmentMeanWithNumSegments
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseSegmentMeanWithNumSegments {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tidx: ::std::option::Option<crate::DataType>,
     pub Tnumsegments: ::std::option::Option<crate::DataType>,
     pub Tsegmentids: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseSegmentMeanWithNumSegments {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tidx: Some(crate::DataType::Int32),
+            Tnumsegments: Some(crate::DataType::Int32),
+            Tsegmentids: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl SparseSegmentMeanWithNumSegments {
     /// Creates a new `SparseSegmentMeanWithNumSegments`.
     pub fn new() -> Self {
@@ -86996,13 +95417,21 @@ pub fn sparse_segment_mean_with_num_segments_with_args<
 }
 
 /// SparseSegmentSqrtN
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseSegmentSqrtN {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tidx: ::std::option::Option<crate::DataType>,
     pub Tsegmentids: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseSegmentSqrtN {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tidx: Some(crate::DataType::Int32),
+            Tsegmentids: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl SparseSegmentSqrtN {
     /// Creates a new `SparseSegmentSqrtN`.
     pub fn new() -> Self {
@@ -87075,13 +95504,21 @@ pub fn sparse_segment_sqrt_n_with_args<
 }
 
 /// SparseSegmentSqrtNGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseSegmentSqrtNGrad {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tidx: ::std::option::Option<crate::DataType>,
     pub Tsegmentids: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseSegmentSqrtNGrad {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tidx: Some(crate::DataType::Int32),
+            Tsegmentids: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl SparseSegmentSqrtNGrad {
     /// Creates a new `SparseSegmentSqrtNGrad`.
     pub fn new() -> Self {
@@ -87159,14 +95596,23 @@ pub fn sparse_segment_sqrt_ngrad_with_args<
 }
 
 /// SparseSegmentSqrtNWithNumSegments
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseSegmentSqrtNWithNumSegments {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tidx: ::std::option::Option<crate::DataType>,
     pub Tnumsegments: ::std::option::Option<crate::DataType>,
     pub Tsegmentids: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseSegmentSqrtNWithNumSegments {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tidx: Some(crate::DataType::Int32),
+            Tnumsegments: Some(crate::DataType::Int32),
+            Tsegmentids: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl SparseSegmentSqrtNWithNumSegments {
     /// Creates a new `SparseSegmentSqrtNWithNumSegments`.
     pub fn new() -> Self {
@@ -87254,13 +95700,21 @@ pub fn sparse_segment_sqrt_nwith_num_segments_with_args<
 }
 
 /// SparseSegmentSum
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseSegmentSum {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tidx: ::std::option::Option<crate::DataType>,
     pub Tsegmentids: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseSegmentSum {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tidx: Some(crate::DataType::Int32),
+            Tsegmentids: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl SparseSegmentSum {
     /// Creates a new `SparseSegmentSum`.
     pub fn new() -> Self {
@@ -87333,13 +95787,21 @@ pub fn sparse_segment_sum_with_args<
 }
 
 /// SparseSegmentSumGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseSegmentSumGrad {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tidx: ::std::option::Option<crate::DataType>,
     pub Tsegmentids: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseSegmentSumGrad {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tidx: Some(crate::DataType::Int32),
+            Tsegmentids: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl SparseSegmentSumGrad {
     /// Creates a new `SparseSegmentSumGrad`.
     pub fn new() -> Self {
@@ -87417,14 +95879,23 @@ pub fn sparse_segment_sum_grad_with_args<
 }
 
 /// SparseSegmentSumWithNumSegments
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseSegmentSumWithNumSegments {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tidx: ::std::option::Option<crate::DataType>,
     pub Tnumsegments: ::std::option::Option<crate::DataType>,
     pub Tsegmentids: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseSegmentSumWithNumSegments {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tidx: Some(crate::DataType::Int32),
+            Tnumsegments: Some(crate::DataType::Int32),
+            Tsegmentids: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl SparseSegmentSumWithNumSegments {
     /// Creates a new `SparseSegmentSumWithNumSegments`.
     pub fn new() -> Self {
@@ -87511,11 +95982,15 @@ pub fn sparse_segment_sum_with_num_segments_with_args<
 }
 
 /// SparseSlice
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseSlice {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseSlice {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl SparseSlice {
     /// Creates a new `SparseSlice`.
     pub fn new() -> Self {
@@ -87598,11 +96073,15 @@ pub fn sparse_slice_with_args<
 }
 
 /// SparseSliceGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseSliceGrad {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseSliceGrad {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl SparseSliceGrad {
     /// Creates a new `SparseSliceGrad`.
     pub fn new() -> Self {
@@ -87680,11 +96159,15 @@ pub fn sparse_slice_grad_with_args<
 }
 
 /// SparseSoftmax
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseSoftmax {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseSoftmax {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl SparseSoftmax {
     /// Creates a new `SparseSoftmax`.
     pub fn new() -> Self {
@@ -87751,12 +96234,19 @@ pub fn sparse_softmax_with_args<
 }
 
 /// SparseSoftmaxCrossEntropyWithLogits
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseSoftmaxCrossEntropyWithLogits {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tlabels: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseSoftmaxCrossEntropyWithLogits {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tlabels: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl SparseSoftmaxCrossEntropyWithLogits {
     /// Creates a new `SparseSoftmaxCrossEntropyWithLogits`.
     pub fn new() -> Self {
@@ -87829,11 +96319,15 @@ pub fn sparse_softmax_cross_entropy_with_logits_with_args<
 }
 
 /// SparseSparseMaximum
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseSparseMaximum {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseSparseMaximum {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl SparseSparseMaximum {
     /// Creates a new `SparseSparseMaximum`.
     pub fn new() -> Self {
@@ -87922,11 +96416,15 @@ pub fn sparse_sparse_maximum_with_args<
 }
 
 /// SparseSparseMinimum
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseSparseMinimum {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseSparseMinimum {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl SparseSparseMinimum {
     /// Creates a new `SparseSparseMinimum`.
     pub fn new() -> Self {
@@ -88015,12 +96513,19 @@ pub fn sparse_sparse_minimum_with_args<
 }
 
 /// SparseSplit
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseSplit {
     pub num_split: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseSplit {
+    fn default() -> Self {
+        Self {
+            num_split: None,
+            T: None,
+        }
+    }
+}
 impl SparseSplit {
     /// Creates a new `SparseSplit`.
     pub fn new() -> Self {
@@ -88101,12 +96606,19 @@ pub fn sparse_split_with_args<
 }
 
 /// SparseTensorDenseAdd
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseTensorDenseAdd {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseTensorDenseAdd {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+        }
+    }
+}
 impl SparseTensorDenseAdd {
     /// Creates a new `SparseTensorDenseAdd`.
     pub fn new() -> Self {
@@ -88181,14 +96693,23 @@ pub fn sparse_tensor_dense_add_with_args<
 }
 
 /// SparseTensorDenseMatMul
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseTensorDenseMatMul {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub adjoint_a: ::std::option::Option<bool>,
     pub adjoint_b: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for SparseTensorDenseMatMul {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: Some(crate::DataType::Int64),
+            adjoint_a: Some(false),
+            adjoint_b: Some(false),
+        }
+    }
+}
 impl SparseTensorDenseMatMul {
     /// Creates a new `SparseTensorDenseMatMul`.
     pub fn new() -> Self {
@@ -88269,11 +96790,15 @@ pub fn sparse_tensor_dense_mat_mul_with_args<
 }
 
 /// SparseTensorSliceDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseTensorSliceDataset {
     pub Tvalues: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseTensorSliceDataset {
+    fn default() -> Self {
+        Self { Tvalues: None }
+    }
+}
 impl SparseTensorSliceDataset {
     /// Creates a new `SparseTensorSliceDataset`.
     pub fn new() -> Self {
@@ -88340,11 +96865,15 @@ pub fn sparse_tensor_slice_dataset_with_args<
 }
 
 /// SparseTensorToCSRSparseMatrix
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseTensorToCSRSparseMatrix {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseTensorToCSRSparseMatrix {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl SparseTensorToCSRSparseMatrix {
     /// Creates a new `SparseTensorToCSRSparseMatrix`.
     pub fn new() -> Self {
@@ -88411,13 +96940,21 @@ pub fn sparse_tensor_to_csrsparse_matrix_with_args<
 }
 
 /// SparseToDense
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseToDense {
     pub validate_indices: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseToDense {
+    fn default() -> Self {
+        Self {
+            validate_indices: Some(true),
+            T: None,
+            Tindices: None,
+        }
+    }
+}
 impl SparseToDense {
     /// Creates a new `SparseToDense`.
     pub fn new() -> Self {
@@ -88501,13 +97038,21 @@ pub fn sparse_to_dense_with_args<
 }
 
 /// SparseToSparseSetOperation
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SparseToSparseSetOperation {
     pub set_operation: ::std::option::Option<::std::string::String>,
     pub validate_indices: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SparseToSparseSetOperation {
+    fn default() -> Self {
+        Self {
+            set_operation: None,
+            validate_indices: Some(true),
+            T: None,
+        }
+    }
+}
 impl SparseToSparseSetOperation {
     /// Creates a new `SparseToSparseSetOperation`.
     pub fn new() -> Self {
@@ -88609,11 +97154,15 @@ pub fn sparse_to_sparse_set_operation_with_args<
 }
 
 /// Spence
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Spence {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Spence {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Spence {
     /// Creates a new `Spence`.
     pub fn new() -> Self {
@@ -88664,12 +97213,19 @@ pub fn spence_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Split
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Split {
     pub num_split: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Split {
+    fn default() -> Self {
+        Self {
+            num_split: None,
+            T: None,
+        }
+    }
+}
 impl Split {
     /// Creates a new `Split`.
     pub fn new() -> Self {
@@ -88728,13 +97284,21 @@ pub fn split_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// SplitV
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SplitV {
     pub num_split: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
     pub Tlen: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SplitV {
+    fn default() -> Self {
+        Self {
+            num_split: None,
+            T: None,
+            Tlen: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl SplitV {
     /// Creates a new `SplitV`.
     pub fn new() -> Self {
@@ -88807,12 +97371,19 @@ pub fn split_v_with_args<
 }
 
 /// SqlDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SqlDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for SqlDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl SqlDataset {
     /// Creates a new `SqlDataset`.
     pub fn new() -> Self {
@@ -88882,11 +97453,15 @@ pub fn sql_dataset_with_args<
 }
 
 /// Sqrt
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Sqrt {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Sqrt {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Sqrt {
     /// Creates a new `Sqrt`.
     pub fn new() -> Self {
@@ -88937,11 +97512,15 @@ pub fn sqrt_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// SqrtGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SqrtGrad {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SqrtGrad {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl SqrtGrad {
     /// Creates a new `SqrtGrad`.
     pub fn new() -> Self {
@@ -88997,11 +97576,15 @@ pub fn sqrt_grad_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandl
 }
 
 /// Square
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Square {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Square {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Square {
     /// Creates a new `Square`.
     pub fn new() -> Self {
@@ -89052,11 +97635,15 @@ pub fn square_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// SquaredDifference
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SquaredDifference {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for SquaredDifference {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl SquaredDifference {
     /// Creates a new `SquaredDifference`.
     pub fn new() -> Self {
@@ -89112,12 +97699,19 @@ pub fn squared_difference_with_args<T0: crate::eager::ToHandle, T1: crate::eager
 }
 
 /// Squeeze
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Squeeze {
     pub T: ::std::option::Option<crate::DataType>,
     pub squeeze_dims: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for Squeeze {
+    fn default() -> Self {
+        Self {
+            T: None,
+            squeeze_dims: Some(vec![]),
+        }
+    }
+}
 impl Squeeze {
     /// Creates a new `Squeeze`.
     pub fn new() -> Self {
@@ -89171,12 +97765,19 @@ pub fn squeeze_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Stack
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Stack {
     pub elem_type: ::std::option::Option<crate::DataType>,
     pub stack_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for Stack {
+    fn default() -> Self {
+        Self {
+            elem_type: None,
+            stack_name: None,
+        }
+    }
+}
 impl Stack {
     /// Creates a new `Stack`.
     pub fn new() -> Self {
@@ -89226,9 +97827,13 @@ pub fn stack_with_args(__args: &Stack) -> crate::Result<crate::eager::TensorHand
 }
 
 /// StackClose
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StackClose {}
-
+impl ::std::default::Default for StackClose {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl StackClose {
     /// Creates a new `StackClose`.
     pub fn new() -> Self {
@@ -89275,9 +97880,13 @@ pub fn stack_close_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// StackCloseV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StackCloseV2 {}
-
+impl ::std::default::Default for StackCloseV2 {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl StackCloseV2 {
     /// Creates a new `StackCloseV2`.
     pub fn new() -> Self {
@@ -89324,11 +97933,15 @@ pub fn stack_close_v2_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// StackPop
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StackPop {
     pub elem_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for StackPop {
+    fn default() -> Self {
+        Self { elem_type: None }
+    }
+}
 impl StackPop {
     /// Creates a new `StackPop`.
     pub fn new() -> Self {
@@ -89381,11 +97994,15 @@ pub fn stack_pop_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// StackPopV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StackPopV2 {
     pub elem_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for StackPopV2 {
+    fn default() -> Self {
+        Self { elem_type: None }
+    }
+}
 impl StackPopV2 {
     /// Creates a new `StackPopV2`.
     pub fn new() -> Self {
@@ -89438,12 +98055,19 @@ pub fn stack_pop_v2_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// StackPush
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StackPush {
     pub T: ::std::option::Option<crate::DataType>,
     pub swap_memory: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for StackPush {
+    fn default() -> Self {
+        Self {
+            T: None,
+            swap_memory: Some(false),
+        }
+    }
+}
 impl StackPush {
     /// Creates a new `StackPush`.
     pub fn new() -> Self {
@@ -89502,12 +98126,19 @@ pub fn stack_push_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHand
 }
 
 /// StackPushV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StackPushV2 {
     pub T: ::std::option::Option<crate::DataType>,
     pub swap_memory: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for StackPushV2 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            swap_memory: Some(false),
+        }
+    }
+}
 impl StackPushV2 {
     /// Creates a new `StackPushV2`.
     pub fn new() -> Self {
@@ -89566,12 +98197,19 @@ pub fn stack_push_v2_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToH
 }
 
 /// StackV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StackV2 {
     pub elem_type: ::std::option::Option<crate::DataType>,
     pub stack_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for StackV2 {
+    fn default() -> Self {
+        Self {
+            elem_type: None,
+            stack_name: None,
+        }
+    }
+}
 impl StackV2 {
     /// Creates a new `StackV2`.
     pub fn new() -> Self {
@@ -89627,7 +98265,7 @@ pub fn stack_v2_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Stage
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Stage {
     pub capacity: ::std::option::Option<i64>,
     pub memory_limit: ::std::option::Option<i64>,
@@ -89635,7 +98273,17 @@ pub struct Stage {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for Stage {
+    fn default() -> Self {
+        Self {
+            capacity: Some(0i64),
+            memory_limit: Some(0i64),
+            dtypes: None,
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl Stage {
     /// Creates a new `Stage`.
     pub fn new() -> Self {
@@ -89697,7 +98345,7 @@ pub fn stage_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// StageClear
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StageClear {
     pub capacity: ::std::option::Option<i64>,
     pub memory_limit: ::std::option::Option<i64>,
@@ -89705,7 +98353,17 @@ pub struct StageClear {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for StageClear {
+    fn default() -> Self {
+        Self {
+            capacity: Some(0i64),
+            memory_limit: Some(0i64),
+            dtypes: None,
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl StageClear {
     /// Creates a new `StageClear`.
     pub fn new() -> Self {
@@ -89763,7 +98421,7 @@ pub fn stage_clear_with_args(__args: &StageClear) -> crate::Result<()> {
 }
 
 /// StagePeek
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StagePeek {
     pub capacity: ::std::option::Option<i64>,
     pub memory_limit: ::std::option::Option<i64>,
@@ -89771,7 +98429,17 @@ pub struct StagePeek {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for StagePeek {
+    fn default() -> Self {
+        Self {
+            capacity: Some(0i64),
+            memory_limit: Some(0i64),
+            dtypes: None,
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl StagePeek {
     /// Creates a new `StagePeek`.
     pub fn new() -> Self {
@@ -89836,7 +98504,7 @@ pub fn stage_peek_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// StageSize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StageSize {
     pub capacity: ::std::option::Option<i64>,
     pub memory_limit: ::std::option::Option<i64>,
@@ -89844,7 +98512,17 @@ pub struct StageSize {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for StageSize {
+    fn default() -> Self {
+        Self {
+            capacity: Some(0i64),
+            memory_limit: Some(0i64),
+            dtypes: None,
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl StageSize {
     /// Creates a new `StageSize`.
     pub fn new() -> Self {
@@ -89903,7 +98581,7 @@ pub fn stage_size_with_args(__args: &StageSize) -> crate::Result<crate::eager::T
 }
 
 /// StatefulPartitionedCall
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatefulPartitionedCall {
     pub Tin: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub Tout: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
@@ -89912,7 +98590,18 @@ pub struct StatefulPartitionedCall {
     pub config_proto: ::std::option::Option<::std::string::String>,
     pub executor_type: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for StatefulPartitionedCall {
+    fn default() -> Self {
+        Self {
+            Tin: None,
+            Tout: None,
+            f: None,
+            config: None,
+            config_proto: None,
+            executor_type: None,
+        }
+    }
+}
 impl StatefulPartitionedCall {
     /// Creates a new `StatefulPartitionedCall`.
     pub fn new() -> Self {
@@ -89980,13 +98669,21 @@ pub fn stateful_partitioned_call_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// StatefulRandomBinomial
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatefulRandomBinomial {
     pub S: ::std::option::Option<crate::DataType>,
     pub T: ::std::option::Option<crate::DataType>,
     pub dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for StatefulRandomBinomial {
+    fn default() -> Self {
+        Self {
+            S: None,
+            T: Some(crate::DataType::Double),
+            dtype: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl StatefulRandomBinomial {
     /// Creates a new `StatefulRandomBinomial`.
     pub fn new() -> Self {
@@ -90069,12 +98766,19 @@ pub fn stateful_random_binomial_with_args<
 }
 
 /// StatefulStandardNormal
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatefulStandardNormal {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub shape_dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for StatefulStandardNormal {
+    fn default() -> Self {
+        Self {
+            dtype: Some(crate::DataType::Float),
+            shape_dtype: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl StatefulStandardNormal {
     /// Creates a new `StatefulStandardNormal`.
     pub fn new() -> Self {
@@ -90136,12 +98840,19 @@ pub fn stateful_standard_normal_with_args<
 }
 
 /// StatefulStandardNormalV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatefulStandardNormalV2 {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub shape_dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for StatefulStandardNormalV2 {
+    fn default() -> Self {
+        Self {
+            dtype: Some(crate::DataType::Float),
+            shape_dtype: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl StatefulStandardNormalV2 {
     /// Creates a new `StatefulStandardNormalV2`.
     pub fn new() -> Self {
@@ -90211,12 +98922,19 @@ pub fn stateful_standard_normal_v2_with_args<
 }
 
 /// StatefulTruncatedNormal
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatefulTruncatedNormal {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub shape_dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for StatefulTruncatedNormal {
+    fn default() -> Self {
+        Self {
+            dtype: Some(crate::DataType::Float),
+            shape_dtype: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl StatefulTruncatedNormal {
     /// Creates a new `StatefulTruncatedNormal`.
     pub fn new() -> Self {
@@ -90286,12 +99004,19 @@ pub fn stateful_truncated_normal_with_args<
 }
 
 /// StatefulUniform
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatefulUniform {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub shape_dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for StatefulUniform {
+    fn default() -> Self {
+        Self {
+            dtype: Some(crate::DataType::Float),
+            shape_dtype: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl StatefulUniform {
     /// Creates a new `StatefulUniform`.
     pub fn new() -> Self {
@@ -90361,12 +99086,19 @@ pub fn stateful_uniform_with_args<
 }
 
 /// StatefulUniformFullInt
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatefulUniformFullInt {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub shape_dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for StatefulUniformFullInt {
+    fn default() -> Self {
+        Self {
+            dtype: Some(crate::DataType::UInt64),
+            shape_dtype: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl StatefulUniformFullInt {
     /// Creates a new `StatefulUniformFullInt`.
     pub fn new() -> Self {
@@ -90436,12 +99168,19 @@ pub fn stateful_uniform_full_int_with_args<
 }
 
 /// StatefulUniformInt
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatefulUniformInt {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub shape_dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for StatefulUniformInt {
+    fn default() -> Self {
+        Self {
+            dtype: Some(crate::DataType::Int64),
+            shape_dtype: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl StatefulUniformInt {
     /// Creates a new `StatefulUniformInt`.
     pub fn new() -> Self {
@@ -90521,14 +99260,23 @@ pub fn stateful_uniform_int_with_args<
 }
 
 /// StatelessCase
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatelessCase {
     pub Tin: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub Tout: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub branches: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for StatelessCase {
+    fn default() -> Self {
+        Self {
+            Tin: None,
+            Tout: None,
+            branches: None,
+            output_shapes: None,
+        }
+    }
+}
 impl StatelessCase {
     /// Creates a new `StatelessCase`.
     pub fn new() -> Self {
@@ -90593,7 +99341,7 @@ pub fn stateless_case_with_args<T0: crate::eager::ToHandle, T1: crate::eager::To
 }
 
 /// StatelessIf
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatelessIf {
     pub Tcond: ::std::option::Option<crate::DataType>,
     pub Tin: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
@@ -90602,7 +99350,18 @@ pub struct StatelessIf {
     pub else_branch: ::std::option::Option<::std::string::String>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for StatelessIf {
+    fn default() -> Self {
+        Self {
+            Tcond: None,
+            Tin: None,
+            Tout: None,
+            then_branch: None,
+            else_branch: None,
+            output_shapes: None,
+        }
+    }
+}
 impl StatelessIf {
     /// Creates a new `StatelessIf`.
     pub fn new() -> Self {
@@ -90673,13 +99432,21 @@ pub fn stateless_if_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHa
 }
 
 /// StatelessMultinomial
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatelessMultinomial {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tseed: ::std::option::Option<crate::DataType>,
     pub output_dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for StatelessMultinomial {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tseed: Some(crate::DataType::Int64),
+            output_dtype: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl StatelessMultinomial {
     /// Creates a new `StatelessMultinomial`.
     pub fn new() -> Self {
@@ -90752,13 +99519,21 @@ pub fn stateless_multinomial_with_args<
 }
 
 /// StatelessParameterizedTruncatedNormal
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatelessParameterizedTruncatedNormal {
     pub S: ::std::option::Option<crate::DataType>,
     pub Tseed: ::std::option::Option<crate::DataType>,
     pub dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for StatelessParameterizedTruncatedNormal {
+    fn default() -> Self {
+        Self {
+            S: None,
+            Tseed: Some(crate::DataType::Int64),
+            dtype: None,
+        }
+    }
+}
 impl StatelessParameterizedTruncatedNormal {
     /// Creates a new `StatelessParameterizedTruncatedNormal`.
     pub fn new() -> Self {
@@ -90851,14 +99626,23 @@ pub fn stateless_parameterized_truncated_normal_with_args<
 }
 
 /// StatelessRandomBinomial
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatelessRandomBinomial {
     pub S: ::std::option::Option<crate::DataType>,
     pub Tseed: ::std::option::Option<crate::DataType>,
     pub T: ::std::option::Option<crate::DataType>,
     pub dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for StatelessRandomBinomial {
+    fn default() -> Self {
+        Self {
+            S: None,
+            Tseed: Some(crate::DataType::Int64),
+            T: Some(crate::DataType::Double),
+            dtype: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl StatelessRandomBinomial {
     /// Creates a new `StatelessRandomBinomial`.
     pub fn new() -> Self {
@@ -90939,13 +99723,21 @@ pub fn stateless_random_binomial_with_args<
 }
 
 /// StatelessRandomGammaV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatelessRandomGammaV2 {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub T: ::std::option::Option<crate::DataType>,
     pub Tseed: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for StatelessRandomGammaV2 {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            T: None,
+            Tseed: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl StatelessRandomGammaV2 {
     /// Creates a new `StatelessRandomGammaV2`.
     pub fn new() -> Self {
@@ -91018,9 +99810,13 @@ pub fn stateless_random_gamma_v2_with_args<
 }
 
 /// StatelessRandomGetAlg
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatelessRandomGetAlg {}
-
+impl ::std::default::Default for StatelessRandomGetAlg {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl StatelessRandomGetAlg {
     /// Creates a new `StatelessRandomGetAlg`.
     pub fn new() -> Self {
@@ -91066,11 +99862,17 @@ pub fn stateless_random_get_alg_with_args(
 }
 
 /// StatelessRandomGetKeyCounter
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatelessRandomGetKeyCounter {
     pub Tseed: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for StatelessRandomGetKeyCounter {
+    fn default() -> Self {
+        Self {
+            Tseed: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl StatelessRandomGetKeyCounter {
     /// Creates a new `StatelessRandomGetKeyCounter`.
     pub fn new() -> Self {
@@ -91128,11 +99930,17 @@ pub fn stateless_random_get_key_counter_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// StatelessRandomGetKeyCounterAlg
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatelessRandomGetKeyCounterAlg {
     pub Tseed: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for StatelessRandomGetKeyCounterAlg {
+    fn default() -> Self {
+        Self {
+            Tseed: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl StatelessRandomGetKeyCounterAlg {
     /// Creates a new `StatelessRandomGetKeyCounterAlg`.
     pub fn new() -> Self {
@@ -91191,13 +99999,21 @@ pub fn stateless_random_get_key_counter_alg_with_args<T0: crate::eager::ToHandle
 }
 
 /// StatelessRandomNormal
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatelessRandomNormal {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub T: ::std::option::Option<crate::DataType>,
     pub Tseed: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for StatelessRandomNormal {
+    fn default() -> Self {
+        Self {
+            dtype: Some(crate::DataType::Float),
+            T: Some(crate::DataType::Int32),
+            Tseed: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl StatelessRandomNormal {
     /// Creates a new `StatelessRandomNormal`.
     pub fn new() -> Self {
@@ -91259,12 +100075,19 @@ pub fn stateless_random_normal_with_args<T0: crate::eager::ToHandle, T1: crate::
 }
 
 /// StatelessRandomNormalV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatelessRandomNormalV2 {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub Tshape: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for StatelessRandomNormalV2 {
+    fn default() -> Self {
+        Self {
+            dtype: Some(crate::DataType::Float),
+            Tshape: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl StatelessRandomNormalV2 {
     /// Creates a new `StatelessRandomNormalV2`.
     pub fn new() -> Self {
@@ -91339,14 +100162,23 @@ pub fn stateless_random_normal_v2_with_args<
 }
 
 /// StatelessRandomPoisson
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatelessRandomPoisson {
     pub Rtype: ::std::option::Option<crate::DataType>,
     pub dtype: ::std::option::Option<crate::DataType>,
     pub T: ::std::option::Option<crate::DataType>,
     pub Tseed: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for StatelessRandomPoisson {
+    fn default() -> Self {
+        Self {
+            Rtype: None,
+            dtype: None,
+            T: None,
+            Tseed: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl StatelessRandomPoisson {
     /// Creates a new `StatelessRandomPoisson`.
     pub fn new() -> Self {
@@ -91422,13 +100254,21 @@ pub fn stateless_random_poisson_with_args<
 }
 
 /// StatelessRandomUniform
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatelessRandomUniform {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub T: ::std::option::Option<crate::DataType>,
     pub Tseed: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for StatelessRandomUniform {
+    fn default() -> Self {
+        Self {
+            dtype: Some(crate::DataType::Float),
+            T: Some(crate::DataType::Int32),
+            Tseed: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl StatelessRandomUniform {
     /// Creates a new `StatelessRandomUniform`.
     pub fn new() -> Self {
@@ -91493,13 +100333,21 @@ pub fn stateless_random_uniform_with_args<
 }
 
 /// StatelessRandomUniformFullInt
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatelessRandomUniformFullInt {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub T: ::std::option::Option<crate::DataType>,
     pub Tseed: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for StatelessRandomUniformFullInt {
+    fn default() -> Self {
+        Self {
+            dtype: Some(crate::DataType::UInt64),
+            T: Some(crate::DataType::Int32),
+            Tseed: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl StatelessRandomUniformFullInt {
     /// Creates a new `StatelessRandomUniformFullInt`.
     pub fn new() -> Self {
@@ -91564,12 +100412,19 @@ pub fn stateless_random_uniform_full_int_with_args<
 }
 
 /// StatelessRandomUniformFullIntV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatelessRandomUniformFullIntV2 {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub Tshape: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for StatelessRandomUniformFullIntV2 {
+    fn default() -> Self {
+        Self {
+            dtype: Some(crate::DataType::UInt64),
+            Tshape: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl StatelessRandomUniformFullIntV2 {
     /// Creates a new `StatelessRandomUniformFullIntV2`.
     pub fn new() -> Self {
@@ -91644,13 +100499,21 @@ pub fn stateless_random_uniform_full_int_v2_with_args<
 }
 
 /// StatelessRandomUniformInt
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatelessRandomUniformInt {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub T: ::std::option::Option<crate::DataType>,
     pub Tseed: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for StatelessRandomUniformInt {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            T: None,
+            Tseed: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl StatelessRandomUniformInt {
     /// Creates a new `StatelessRandomUniformInt`.
     pub fn new() -> Self {
@@ -91728,12 +100591,19 @@ pub fn stateless_random_uniform_int_with_args<
 }
 
 /// StatelessRandomUniformIntV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatelessRandomUniformIntV2 {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub Tshape: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for StatelessRandomUniformIntV2 {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            Tshape: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl StatelessRandomUniformIntV2 {
     /// Creates a new `StatelessRandomUniformIntV2`.
     pub fn new() -> Self {
@@ -91818,12 +100688,19 @@ pub fn stateless_random_uniform_int_v2_with_args<
 }
 
 /// StatelessRandomUniformV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatelessRandomUniformV2 {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub Tshape: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for StatelessRandomUniformV2 {
+    fn default() -> Self {
+        Self {
+            dtype: Some(crate::DataType::Float),
+            Tshape: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl StatelessRandomUniformV2 {
     /// Creates a new `StatelessRandomUniformV2`.
     pub fn new() -> Self {
@@ -91898,7 +100775,7 @@ pub fn stateless_random_uniform_v2_with_args<
 }
 
 /// StatelessSampleDistortedBoundingBox
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatelessSampleDistortedBoundingBox {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tseed: ::std::option::Option<crate::DataType>,
@@ -91907,7 +100784,18 @@ pub struct StatelessSampleDistortedBoundingBox {
     pub max_attempts: ::std::option::Option<i64>,
     pub use_image_if_no_bounding_boxes: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for StatelessSampleDistortedBoundingBox {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tseed: None,
+            aspect_ratio_range: Some(vec![0.75, 1.33]),
+            area_range: Some(vec![0.05, 1.0]),
+            max_attempts: Some(100i64),
+            use_image_if_no_bounding_boxes: Some(false),
+        }
+    }
+}
 impl StatelessSampleDistortedBoundingBox {
     /// Creates a new `StatelessSampleDistortedBoundingBox`.
     pub fn new() -> Self {
@@ -92009,13 +100897,21 @@ pub fn stateless_sample_distorted_bounding_box_with_args<
 }
 
 /// StatelessTruncatedNormal
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatelessTruncatedNormal {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub T: ::std::option::Option<crate::DataType>,
     pub Tseed: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for StatelessTruncatedNormal {
+    fn default() -> Self {
+        Self {
+            dtype: Some(crate::DataType::Float),
+            T: Some(crate::DataType::Int32),
+            Tseed: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl StatelessTruncatedNormal {
     /// Creates a new `StatelessTruncatedNormal`.
     pub fn new() -> Self {
@@ -92080,12 +100976,19 @@ pub fn stateless_truncated_normal_with_args<
 }
 
 /// StatelessTruncatedNormalV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatelessTruncatedNormalV2 {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub Tshape: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for StatelessTruncatedNormalV2 {
+    fn default() -> Self {
+        Self {
+            dtype: Some(crate::DataType::Float),
+            Tshape: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl StatelessTruncatedNormalV2 {
     /// Creates a new `StatelessTruncatedNormalV2`.
     pub fn new() -> Self {
@@ -92160,7 +101063,7 @@ pub fn stateless_truncated_normal_v2_with_args<
 }
 
 /// StatelessWhile
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatelessWhile {
     pub T: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub cond: ::std::option::Option<::std::string::String>,
@@ -92168,7 +101071,17 @@ pub struct StatelessWhile {
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     pub parallel_iterations: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for StatelessWhile {
+    fn default() -> Self {
+        Self {
+            T: None,
+            cond: None,
+            body: None,
+            output_shapes: None,
+            parallel_iterations: Some(10i64),
+        }
+    }
+}
 impl StatelessWhile {
     /// Creates a new `StatelessWhile`.
     pub fn new() -> Self {
@@ -92233,11 +101146,15 @@ pub fn stateless_while_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// StaticRegexFullMatch
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StaticRegexFullMatch {
     pub pattern: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for StaticRegexFullMatch {
+    fn default() -> Self {
+        Self { pattern: None }
+    }
+}
 impl StaticRegexFullMatch {
     /// Creates a new `StaticRegexFullMatch`.
     pub fn new() -> Self {
@@ -92290,13 +101207,21 @@ pub fn static_regex_full_match_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// StaticRegexReplace
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StaticRegexReplace {
     pub pattern: ::std::option::Option<::std::string::String>,
     pub rewrite: ::std::option::Option<::std::string::String>,
     pub replace_global: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for StaticRegexReplace {
+    fn default() -> Self {
+        Self {
+            pattern: None,
+            rewrite: None,
+            replace_global: Some(true),
+        }
+    }
+}
 impl StaticRegexReplace {
     /// Creates a new `StaticRegexReplace`.
     pub fn new() -> Self {
@@ -92355,12 +101280,19 @@ pub fn static_regex_replace_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// StatsAggregatorHandle
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatsAggregatorHandle {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for StatsAggregatorHandle {
+    fn default() -> Self {
+        Self {
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl StatsAggregatorHandle {
     /// Creates a new `StatsAggregatorHandle`.
     pub fn new() -> Self {
@@ -92412,12 +101344,19 @@ pub fn stats_aggregator_handle_with_args(
 }
 
 /// StatsAggregatorHandleV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatsAggregatorHandleV2 {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for StatsAggregatorHandleV2 {
+    fn default() -> Self {
+        Self {
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl StatsAggregatorHandleV2 {
     /// Creates a new `StatsAggregatorHandleV2`.
     pub fn new() -> Self {
@@ -92469,9 +101408,13 @@ pub fn stats_aggregator_handle_v2_with_args(
 }
 
 /// StatsAggregatorSetSummaryWriter
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatsAggregatorSetSummaryWriter {}
-
+impl ::std::default::Default for StatsAggregatorSetSummaryWriter {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl StatsAggregatorSetSummaryWriter {
     /// Creates a new `StatsAggregatorSetSummaryWriter`.
     pub fn new() -> Self {
@@ -92529,9 +101472,13 @@ pub fn stats_aggregator_set_summary_writer_with_args<
 }
 
 /// StatsAggregatorSummary
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StatsAggregatorSummary {}
-
+impl ::std::default::Default for StatsAggregatorSummary {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl StatsAggregatorSummary {
     /// Creates a new `StatsAggregatorSummary`.
     pub fn new() -> Self {
@@ -92581,11 +101528,15 @@ pub fn stats_aggregator_summary_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// StopGradient
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StopGradient {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for StopGradient {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl StopGradient {
     /// Creates a new `StopGradient`.
     pub fn new() -> Self {
@@ -92638,7 +101589,7 @@ pub fn stop_gradient_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// StridedSlice
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StridedSlice {
     pub T: ::std::option::Option<crate::DataType>,
     pub Index: ::std::option::Option<crate::DataType>,
@@ -92648,7 +101599,19 @@ pub struct StridedSlice {
     pub new_axis_mask: ::std::option::Option<i64>,
     pub shrink_axis_mask: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for StridedSlice {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Index: None,
+            begin_mask: Some(0i64),
+            end_mask: Some(0i64),
+            ellipsis_mask: Some(0i64),
+            new_axis_mask: Some(0i64),
+            shrink_axis_mask: Some(0i64),
+        }
+    }
+}
 impl StridedSlice {
     /// Creates a new `StridedSlice`.
     pub fn new() -> Self {
@@ -92738,7 +101701,7 @@ pub fn strided_slice_with_args<
 }
 
 /// StridedSliceAssign
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StridedSliceAssign {
     pub T: ::std::option::Option<crate::DataType>,
     pub Index: ::std::option::Option<crate::DataType>,
@@ -92748,7 +101711,19 @@ pub struct StridedSliceAssign {
     pub new_axis_mask: ::std::option::Option<i64>,
     pub shrink_axis_mask: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for StridedSliceAssign {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Index: None,
+            begin_mask: Some(0i64),
+            end_mask: Some(0i64),
+            ellipsis_mask: Some(0i64),
+            new_axis_mask: Some(0i64),
+            shrink_axis_mask: Some(0i64),
+        }
+    }
+}
 impl StridedSliceAssign {
     /// Creates a new `StridedSliceAssign`.
     pub fn new() -> Self {
@@ -92843,7 +101818,7 @@ pub fn strided_slice_assign_with_args<
 }
 
 /// StridedSliceGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StridedSliceGrad {
     pub T: ::std::option::Option<crate::DataType>,
     pub Index: ::std::option::Option<crate::DataType>,
@@ -92853,7 +101828,19 @@ pub struct StridedSliceGrad {
     pub new_axis_mask: ::std::option::Option<i64>,
     pub shrink_axis_mask: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for StridedSliceGrad {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Index: None,
+            begin_mask: Some(0i64),
+            end_mask: Some(0i64),
+            ellipsis_mask: Some(0i64),
+            new_axis_mask: Some(0i64),
+            shrink_axis_mask: Some(0i64),
+        }
+    }
+}
 impl StridedSliceGrad {
     /// Creates a new `StridedSliceGrad`.
     pub fn new() -> Self {
@@ -92948,14 +101935,23 @@ pub fn strided_slice_grad_with_args<
 }
 
 /// StringFormat
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StringFormat {
     pub T: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub template: ::std::option::Option<::std::string::String>,
     pub placeholder: ::std::option::Option<::std::string::String>,
     pub summarize: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for StringFormat {
+    fn default() -> Self {
+        Self {
+            T: None,
+            template: Some(::std::string::String::from("%s")),
+            placeholder: Some(::std::string::String::from("%s")),
+            summarize: Some(3i64),
+        }
+    }
+}
 impl StringFormat {
     /// Creates a new `StringFormat`.
     pub fn new() -> Self {
@@ -93017,12 +102013,19 @@ pub fn string_format_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// StringJoin
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StringJoin {
     pub N: ::std::option::Option<i64>,
     pub separator: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for StringJoin {
+    fn default() -> Self {
+        Self {
+            N: None,
+            separator: None,
+        }
+    }
+}
 impl StringJoin {
     /// Creates a new `StringJoin`.
     pub fn new() -> Self {
@@ -93078,11 +102081,17 @@ pub fn string_join_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// StringLength
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StringLength {
     pub unit: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for StringLength {
+    fn default() -> Self {
+        Self {
+            unit: Some(::std::string::String::from("BYTE")),
+        }
+    }
+}
 impl StringLength {
     /// Creates a new `StringLength`.
     pub fn new() -> Self {
@@ -93135,11 +102144,15 @@ pub fn string_length_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// StringLower
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StringLower {
     pub encoding: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for StringLower {
+    fn default() -> Self {
+        Self { encoding: None }
+    }
+}
 impl StringLower {
     /// Creates a new `StringLower`.
     pub fn new() -> Self {
@@ -93192,7 +102205,7 @@ pub fn string_lower_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// StringNGrams
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StringNGrams {
     pub separator: ::std::option::Option<::std::string::String>,
     pub ngram_widths: ::std::option::Option<::std::vec::Vec<i64>>,
@@ -93202,7 +102215,19 @@ pub struct StringNGrams {
     pub preserve_short_sequences: ::std::option::Option<bool>,
     pub Tsplits: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for StringNGrams {
+    fn default() -> Self {
+        Self {
+            separator: None,
+            ngram_widths: None,
+            left_pad: None,
+            right_pad: None,
+            pad_width: None,
+            preserve_short_sequences: None,
+            Tsplits: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl StringNGrams {
     /// Creates a new `StringNGrams`.
     pub fn new() -> Self {
@@ -93281,11 +102306,17 @@ pub fn string_ngrams_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToH
 }
 
 /// StringSplit
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StringSplit {
     pub skip_empty: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for StringSplit {
+    fn default() -> Self {
+        Self {
+            skip_empty: Some(true),
+        }
+    }
+}
 impl StringSplit {
     /// Creates a new `StringSplit`.
     pub fn new() -> Self {
@@ -93347,11 +102378,17 @@ pub fn string_split_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHa
 }
 
 /// StringSplitV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StringSplitV2 {
     pub maxsplit: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for StringSplitV2 {
+    fn default() -> Self {
+        Self {
+            maxsplit: Some(-1i64),
+        }
+    }
+}
 impl StringSplitV2 {
     /// Creates a new `StringSplitV2`.
     pub fn new() -> Self {
@@ -93413,9 +102450,13 @@ pub fn string_split_v2_with_args<T0: crate::eager::ToHandle, T1: crate::eager::T
 }
 
 /// StringStrip
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StringStrip {}
-
+impl ::std::default::Default for StringStrip {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl StringStrip {
     /// Creates a new `StringStrip`.
     pub fn new() -> Self {
@@ -93465,11 +102506,15 @@ pub fn string_strip_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// StringToHashBucket
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StringToHashBucket {
     pub num_buckets: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for StringToHashBucket {
+    fn default() -> Self {
+        Self { num_buckets: None }
+    }
+}
 impl StringToHashBucket {
     /// Creates a new `StringToHashBucket`.
     pub fn new() -> Self {
@@ -93522,11 +102567,15 @@ pub fn string_to_hash_bucket_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// StringToHashBucketFast
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StringToHashBucketFast {
     pub num_buckets: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for StringToHashBucketFast {
+    fn default() -> Self {
+        Self { num_buckets: None }
+    }
+}
 impl StringToHashBucketFast {
     /// Creates a new `StringToHashBucketFast`.
     pub fn new() -> Self {
@@ -93579,12 +102628,19 @@ pub fn string_to_hash_bucket_fast_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// StringToHashBucketStrong
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StringToHashBucketStrong {
     pub num_buckets: ::std::option::Option<i64>,
     pub key: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for StringToHashBucketStrong {
+    fn default() -> Self {
+        Self {
+            num_buckets: None,
+            key: None,
+        }
+    }
+}
 impl StringToHashBucketStrong {
     /// Creates a new `StringToHashBucketStrong`.
     pub fn new() -> Self {
@@ -93640,11 +102696,17 @@ pub fn string_to_hash_bucket_strong_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// StringToNumber
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StringToNumber {
     pub out_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for StringToNumber {
+    fn default() -> Self {
+        Self {
+            out_type: Some(crate::DataType::Float),
+        }
+    }
+}
 impl StringToNumber {
     /// Creates a new `StringToNumber`.
     pub fn new() -> Self {
@@ -93697,11 +102759,15 @@ pub fn string_to_number_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// StringUpper
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct StringUpper {
     pub encoding: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for StringUpper {
+    fn default() -> Self {
+        Self { encoding: None }
+    }
+}
 impl StringUpper {
     /// Creates a new `StringUpper`.
     pub fn new() -> Self {
@@ -93754,11 +102820,15 @@ pub fn string_upper_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Sub
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Sub {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Sub {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Sub {
     /// Creates a new `Sub`.
     pub fn new() -> Self {
@@ -93814,12 +102884,19 @@ pub fn sub_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// Substr
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Substr {
     pub T: ::std::option::Option<crate::DataType>,
     pub unit: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for Substr {
+    fn default() -> Self {
+        Self {
+            T: None,
+            unit: Some(::std::string::String::from("BYTE")),
+        }
+    }
+}
 impl Substr {
     /// Creates a new `Substr`.
     pub fn new() -> Self {
@@ -93889,13 +102966,21 @@ pub fn substr_with_args<
 }
 
 /// Sum
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Sum {
     pub keep_dims: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
     pub Tidx: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Sum {
+    fn default() -> Self {
+        Self {
+            keep_dims: Some(false),
+            T: None,
+            Tidx: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl Sum {
     /// Creates a new `Sum`.
     pub fn new() -> Self {
@@ -93957,12 +103042,19 @@ pub fn sum_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// SummaryWriter
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SummaryWriter {
     pub shared_name: ::std::option::Option<::std::string::String>,
     pub container: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for SummaryWriter {
+    fn default() -> Self {
+        Self {
+            shared_name: None,
+            container: None,
+        }
+    }
+}
 impl SummaryWriter {
     /// Creates a new `SummaryWriter`.
     pub fn new() -> Self {
@@ -94014,13 +103106,21 @@ pub fn summary_writer_with_args(
 }
 
 /// Svd
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Svd {
     pub compute_uv: ::std::option::Option<bool>,
     pub full_matrices: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Svd {
+    fn default() -> Self {
+        Self {
+            compute_uv: Some(true),
+            full_matrices: Some(false),
+            T: None,
+        }
+    }
+}
 impl Svd {
     /// Creates a new `Svd`.
     pub fn new() -> Self {
@@ -94085,11 +103185,15 @@ pub fn svd_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Switch
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Switch {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Switch {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Switch {
     /// Creates a new `Switch`.
     pub fn new() -> Self {
@@ -94150,13 +103254,21 @@ pub fn switch_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// SymbolicGradient
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct SymbolicGradient {
     pub Tin: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub Tout: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub f: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for SymbolicGradient {
+    fn default() -> Self {
+        Self {
+            Tin: None,
+            Tout: None,
+            f: None,
+        }
+    }
+}
 impl SymbolicGradient {
     /// Creates a new `SymbolicGradient`.
     pub fn new() -> Self {
@@ -94215,9 +103327,13 @@ pub fn symbolic_gradient_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// TFRecordDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TFRecordDataset {}
-
+impl ::std::default::Default for TFRecordDataset {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl TFRecordDataset {
     /// Creates a new `TFRecordDataset`.
     pub fn new() -> Self {
@@ -94281,13 +103397,21 @@ pub fn tfrecord_dataset_with_args<
 }
 
 /// TFRecordReader
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TFRecordReader {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
     pub compression_type: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for TFRecordReader {
+    fn default() -> Self {
+        Self {
+            container: None,
+            shared_name: None,
+            compression_type: None,
+        }
+    }
+}
 impl TFRecordReader {
     /// Creates a new `TFRecordReader`.
     pub fn new() -> Self {
@@ -94342,13 +103466,21 @@ pub fn tfrecord_reader_with_args(
 }
 
 /// TFRecordReaderV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TFRecordReaderV2 {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
     pub compression_type: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for TFRecordReaderV2 {
+    fn default() -> Self {
+        Self {
+            container: None,
+            shared_name: None,
+            compression_type: None,
+        }
+    }
+}
 impl TFRecordReaderV2 {
     /// Creates a new `TFRecordReaderV2`.
     pub fn new() -> Self {
@@ -94403,9 +103535,13 @@ pub fn tfrecord_reader_v2_with_args(
 }
 
 /// TPUCompilationResult
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TPUCompilationResult {}
-
+impl ::std::default::Default for TPUCompilationResult {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl TPUCompilationResult {
     /// Creates a new `TPUCompilationResult`.
     pub fn new() -> Self {
@@ -94451,7 +103587,7 @@ pub fn tpucompilation_result_with_args(
 }
 
 /// TPUCompile
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TPUCompile {
     pub num_computations: ::std::option::Option<i64>,
     pub function: ::std::option::Option<::std::string::String>,
@@ -94459,7 +103595,17 @@ pub struct TPUCompile {
     pub NumDynamicShapes: ::std::option::Option<i64>,
     pub Tguaranteed_constants: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
 }
-
+impl ::std::default::Default for TPUCompile {
+    fn default() -> Self {
+        Self {
+            num_computations: None,
+            function: None,
+            metadata: None,
+            NumDynamicShapes: None,
+            Tguaranteed_constants: None,
+        }
+    }
+}
 impl TPUCompile {
     /// Creates a new `TPUCompile`.
     pub fn new() -> Self {
@@ -94533,9 +103679,13 @@ pub fn tpucompile_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHand
 }
 
 /// TPUCompileSucceededAssert
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TPUCompileSucceededAssert {}
-
+impl ::std::default::Default for TPUCompileSucceededAssert {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl TPUCompileSucceededAssert {
     /// Creates a new `TPUCompileSucceededAssert`.
     pub fn new() -> Self {
@@ -94584,12 +103734,19 @@ pub fn tpucompile_succeeded_assert_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// TPUEmbeddingActivations
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TPUEmbeddingActivations {
     pub table_id: ::std::option::Option<i64>,
     pub lookup_id: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for TPUEmbeddingActivations {
+    fn default() -> Self {
+        Self {
+            table_id: None,
+            lookup_id: None,
+        }
+    }
+}
 impl TPUEmbeddingActivations {
     /// Creates a new `TPUEmbeddingActivations`.
     pub fn new() -> Self {
@@ -94651,12 +103808,19 @@ pub fn tpuembedding_activations_with_args<
 }
 
 /// TPUExecute
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TPUExecute {
     pub Targs: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub Tresults: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
 }
-
+impl ::std::default::Default for TPUExecute {
+    fn default() -> Self {
+        Self {
+            Targs: None,
+            Tresults: None,
+        }
+    }
+}
 impl TPUExecute {
     /// Creates a new `TPUExecute`.
     pub fn new() -> Self {
@@ -94715,14 +103879,23 @@ pub fn tpuexecute_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHand
 }
 
 /// TPUExecuteAndUpdateVariables
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TPUExecuteAndUpdateVariables {
     pub Targs: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub Tresults: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub device_var_reads_indices: ::std::option::Option<::std::vec::Vec<i64>>,
     pub device_var_updates_indices: ::std::option::Option<::std::vec::Vec<i64>>,
 }
-
+impl ::std::default::Default for TPUExecuteAndUpdateVariables {
+    fn default() -> Self {
+        Self {
+            Targs: None,
+            Tresults: None,
+            device_var_reads_indices: None,
+            device_var_updates_indices: None,
+        }
+    }
+}
 impl TPUExecuteAndUpdateVariables {
     /// Creates a new `TPUExecuteAndUpdateVariables`.
     pub fn new() -> Self {
@@ -94790,9 +103963,13 @@ pub fn tpuexecute_and_update_variables_with_args<
 }
 
 /// TPUOrdinalSelector
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TPUOrdinalSelector {}
-
+impl ::std::default::Default for TPUOrdinalSelector {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl TPUOrdinalSelector {
     /// Creates a new `TPUOrdinalSelector`.
     pub fn new() -> Self {
@@ -94838,14 +104015,23 @@ pub fn tpuordinal_selector_with_args(
 }
 
 /// TPUPartitionedCall
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TPUPartitionedCall {
     pub Tin: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub Tout: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub f: ::std::option::Option<::std::string::String>,
     pub autotuner_thresh: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for TPUPartitionedCall {
+    fn default() -> Self {
+        Self {
+            Tin: None,
+            Tout: None,
+            f: None,
+            autotuner_thresh: Some(0i64),
+        }
+    }
+}
 impl TPUPartitionedCall {
     /// Creates a new `TPUPartitionedCall`.
     pub fn new() -> Self {
@@ -94910,13 +104096,21 @@ pub fn tpupartitioned_call_with_args<T0: crate::eager::ToHandle, T1: crate::eage
 }
 
 /// TPUPartitionedInput
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TPUPartitionedInput {
     pub N: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
     pub partition_dim: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for TPUPartitionedInput {
+    fn default() -> Self {
+        Self {
+            N: None,
+            T: None,
+            partition_dim: Some(0i64),
+        }
+    }
+}
 impl TPUPartitionedInput {
     /// Creates a new `TPUPartitionedInput`.
     pub fn new() -> Self {
@@ -94975,13 +104169,21 @@ pub fn tpupartitioned_input_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// TPUPartitionedOutput
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TPUPartitionedOutput {
     pub T: ::std::option::Option<crate::DataType>,
     pub num_splits: ::std::option::Option<i64>,
     pub partition_dim: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for TPUPartitionedOutput {
+    fn default() -> Self {
+        Self {
+            T: None,
+            num_splits: None,
+            partition_dim: Some(0i64),
+        }
+    }
+}
 impl TPUPartitionedOutput {
     /// Creates a new `TPUPartitionedOutput`.
     pub fn new() -> Self {
@@ -95040,7 +104242,7 @@ pub fn tpupartitioned_output_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// TPUReplicateMetadata
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TPUReplicateMetadata {
     pub num_replicas: ::std::option::Option<i64>,
     pub num_cores_per_replica: ::std::option::Option<i64>,
@@ -95054,7 +104256,23 @@ pub struct TPUReplicateMetadata {
     pub allow_soft_placement: ::std::option::Option<bool>,
     pub use_spmd_for_xla_partitioning: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for TPUReplicateMetadata {
+    fn default() -> Self {
+        Self {
+            num_replicas: None,
+            num_cores_per_replica: Some(1i64),
+            topology: None,
+            use_tpu: Some(true),
+            device_assignment: Some(vec![]),
+            computation_shape: Some(vec![]),
+            host_compute_core: Some(vec![]),
+            padding_map: Some(vec![]),
+            step_marker_location: Some(::std::string::String::from("STEP_MARK_AT_ENTRY")),
+            allow_soft_placement: Some(false),
+            use_spmd_for_xla_partitioning: Some(false),
+        }
+    }
+}
 impl TPUReplicateMetadata {
     /// Creates a new `TPUReplicateMetadata`.
     pub fn new() -> Self {
@@ -95130,7 +104348,7 @@ pub fn tpureplicate_metadata_with_args(__args: &TPUReplicateMetadata) -> crate::
 }
 
 /// TPUReplicatedInput
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TPUReplicatedInput {
     pub N: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
@@ -95138,7 +104356,17 @@ pub struct TPUReplicatedInput {
     pub index: ::std::option::Option<i64>,
     pub is_packed: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for TPUReplicatedInput {
+    fn default() -> Self {
+        Self {
+            N: None,
+            T: None,
+            is_mirrored_variable: Some(false),
+            index: Some(-1i64),
+            is_packed: Some(false),
+        }
+    }
+}
 impl TPUReplicatedInput {
     /// Creates a new `TPUReplicatedInput`.
     pub fn new() -> Self {
@@ -95203,12 +104431,19 @@ pub fn tpureplicated_input_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// TPUReplicatedOutput
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TPUReplicatedOutput {
     pub num_replicas: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TPUReplicatedOutput {
+    fn default() -> Self {
+        Self {
+            num_replicas: None,
+            T: None,
+        }
+    }
+}
 impl TPUReplicatedOutput {
     /// Creates a new `TPUReplicatedOutput`.
     pub fn new() -> Self {
@@ -95264,11 +104499,15 @@ pub fn tpureplicated_output_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// TPUReshardVariables
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TPUReshardVariables {
     pub N: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for TPUReshardVariables {
+    fn default() -> Self {
+        Self { N: None }
+    }
+}
 impl TPUReshardVariables {
     /// Creates a new `TPUReshardVariables`.
     pub fn new() -> Self {
@@ -95334,12 +104573,19 @@ pub fn tpureshard_variables_with_args<
 }
 
 /// TakeDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TakeDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for TakeDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl TakeDataset {
     /// Creates a new `TakeDataset`.
     pub fn new() -> Self {
@@ -95398,13 +104644,21 @@ pub fn take_dataset_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHa
 }
 
 /// TakeManySparseFromTensorsMap
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TakeManySparseFromTensorsMap {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for TakeManySparseFromTensorsMap {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl TakeManySparseFromTensorsMap {
     /// Creates a new `TakeManySparseFromTensorsMap`.
     pub fn new() -> Self {
@@ -95469,14 +104723,23 @@ pub fn take_many_sparse_from_tensors_map_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// TakeWhileDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TakeWhileDataset {
     pub predicate: ::std::option::Option<::std::string::String>,
     pub Targuments: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for TakeWhileDataset {
+    fn default() -> Self {
+        Self {
+            predicate: None,
+            Targuments: None,
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl TakeWhileDataset {
     /// Creates a new `TakeWhileDataset`.
     pub fn new() -> Self {
@@ -95541,11 +104804,15 @@ pub fn take_while_dataset_with_args<T0: crate::eager::ToHandle, T1: crate::eager
 }
 
 /// Tan
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Tan {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Tan {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Tan {
     /// Creates a new `Tan`.
     pub fn new() -> Self {
@@ -95596,11 +104863,15 @@ pub fn tan_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Tanh
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Tanh {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Tanh {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Tanh {
     /// Creates a new `Tanh`.
     pub fn new() -> Self {
@@ -95651,11 +104922,15 @@ pub fn tanh_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// TanhGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TanhGrad {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TanhGrad {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl TanhGrad {
     /// Creates a new `TanhGrad`.
     pub fn new() -> Self {
@@ -95711,13 +104986,21 @@ pub fn tanh_grad_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandl
 }
 
 /// TemporaryVariable
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TemporaryVariable {
     pub shape: ::std::option::Option<crate::Shape>,
     pub dtype: ::std::option::Option<crate::DataType>,
     pub var_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for TemporaryVariable {
+    fn default() -> Self {
+        Self {
+            shape: None,
+            dtype: None,
+            var_name: None,
+        }
+    }
+}
 impl TemporaryVariable {
     /// Creates a new `TemporaryVariable`.
     pub fn new() -> Self {
@@ -95772,7 +105055,7 @@ pub fn temporary_variable_with_args(
 }
 
 /// TensorArray
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArray {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub dynamic_size: ::std::option::Option<bool>,
@@ -95780,7 +105063,17 @@ pub struct TensorArray {
     pub tensor_array_name: ::std::option::Option<::std::string::String>,
     pub element_shape: ::std::option::Option<crate::Shape>,
 }
-
+impl ::std::default::Default for TensorArray {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            dynamic_size: Some(false),
+            clear_after_read: Some(true),
+            tensor_array_name: None,
+            element_shape: None,
+        }
+    }
+}
 impl TensorArray {
     /// Creates a new `TensorArray`.
     pub fn new() -> Self {
@@ -95845,9 +105138,13 @@ pub fn tensor_array_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// TensorArrayClose
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArrayClose {}
-
+impl ::std::default::Default for TensorArrayClose {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl TensorArrayClose {
     /// Creates a new `TensorArrayClose`.
     pub fn new() -> Self {
@@ -95894,9 +105191,13 @@ pub fn tensor_array_close_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// TensorArrayCloseV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArrayCloseV2 {}
-
+impl ::std::default::Default for TensorArrayCloseV2 {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl TensorArrayCloseV2 {
     /// Creates a new `TensorArrayCloseV2`.
     pub fn new() -> Self {
@@ -95943,9 +105244,13 @@ pub fn tensor_array_close_v2_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// TensorArrayCloseV3
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArrayCloseV3 {}
-
+impl ::std::default::Default for TensorArrayCloseV3 {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl TensorArrayCloseV3 {
     /// Creates a new `TensorArrayCloseV3`.
     pub fn new() -> Self {
@@ -95992,12 +105297,19 @@ pub fn tensor_array_close_v3_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// TensorArrayConcat
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArrayConcat {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub element_shape_except0: ::std::option::Option<crate::Shape>,
 }
-
+impl ::std::default::Default for TensorArrayConcat {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            element_shape_except0: None,
+        }
+    }
+}
 impl TensorArrayConcat {
     /// Creates a new `TensorArrayConcat`.
     pub fn new() -> Self {
@@ -96061,12 +105373,19 @@ pub fn tensor_array_concat_with_args<T0: crate::eager::ToHandle, T1: crate::eage
 }
 
 /// TensorArrayConcatV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArrayConcatV2 {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub element_shape_except0: ::std::option::Option<crate::Shape>,
 }
-
+impl ::std::default::Default for TensorArrayConcatV2 {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            element_shape_except0: None,
+        }
+    }
+}
 impl TensorArrayConcatV2 {
     /// Creates a new `TensorArrayConcatV2`.
     pub fn new() -> Self {
@@ -96130,12 +105449,19 @@ pub fn tensor_array_concat_v2_with_args<T0: crate::eager::ToHandle, T1: crate::e
 }
 
 /// TensorArrayConcatV3
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArrayConcatV3 {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub element_shape_except0: ::std::option::Option<crate::Shape>,
 }
-
+impl ::std::default::Default for TensorArrayConcatV3 {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            element_shape_except0: None,
+        }
+    }
+}
 impl TensorArrayConcatV3 {
     /// Creates a new `TensorArrayConcatV3`.
     pub fn new() -> Self {
@@ -96199,12 +105525,19 @@ pub fn tensor_array_concat_v3_with_args<T0: crate::eager::ToHandle, T1: crate::e
 }
 
 /// TensorArrayGather
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArrayGather {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub element_shape: ::std::option::Option<crate::Shape>,
 }
-
+impl ::std::default::Default for TensorArrayGather {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            element_shape: None,
+        }
+    }
+}
 impl TensorArrayGather {
     /// Creates a new `TensorArrayGather`.
     pub fn new() -> Self {
@@ -96274,12 +105607,19 @@ pub fn tensor_array_gather_with_args<
 }
 
 /// TensorArrayGatherV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArrayGatherV2 {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub element_shape: ::std::option::Option<crate::Shape>,
 }
-
+impl ::std::default::Default for TensorArrayGatherV2 {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            element_shape: None,
+        }
+    }
+}
 impl TensorArrayGatherV2 {
     /// Creates a new `TensorArrayGatherV2`.
     pub fn new() -> Self {
@@ -96349,12 +105689,19 @@ pub fn tensor_array_gather_v2_with_args<
 }
 
 /// TensorArrayGatherV3
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArrayGatherV3 {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub element_shape: ::std::option::Option<crate::Shape>,
 }
-
+impl ::std::default::Default for TensorArrayGatherV3 {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            element_shape: None,
+        }
+    }
+}
 impl TensorArrayGatherV3 {
     /// Creates a new `TensorArrayGatherV3`.
     pub fn new() -> Self {
@@ -96424,11 +105771,15 @@ pub fn tensor_array_gather_v3_with_args<
 }
 
 /// TensorArrayGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArrayGrad {
     pub source: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for TensorArrayGrad {
+    fn default() -> Self {
+        Self { source: None }
+    }
+}
 impl TensorArrayGrad {
     /// Creates a new `TensorArrayGrad`.
     pub fn new() -> Self {
@@ -96484,11 +105835,15 @@ pub fn tensor_array_grad_with_args<T0: crate::eager::ToHandle, T1: crate::eager:
 }
 
 /// TensorArrayGradV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArrayGradV2 {
     pub source: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for TensorArrayGradV2 {
+    fn default() -> Self {
+        Self { source: None }
+    }
+}
 impl TensorArrayGradV2 {
     /// Creates a new `TensorArrayGradV2`.
     pub fn new() -> Self {
@@ -96544,11 +105899,15 @@ pub fn tensor_array_grad_v2_with_args<T0: crate::eager::ToHandle, T1: crate::eag
 }
 
 /// TensorArrayGradV3
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArrayGradV3 {
     pub source: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for TensorArrayGradV3 {
+    fn default() -> Self {
+        Self { source: None }
+    }
+}
 impl TensorArrayGradV3 {
     /// Creates a new `TensorArrayGradV3`.
     pub fn new() -> Self {
@@ -96609,11 +105968,15 @@ pub fn tensor_array_grad_v3_with_args<T0: crate::eager::ToHandle, T1: crate::eag
 }
 
 /// TensorArrayGradWithShape
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArrayGradWithShape {
     pub source: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for TensorArrayGradWithShape {
+    fn default() -> Self {
+        Self { source: None }
+    }
+}
 impl TensorArrayGradWithShape {
     /// Creates a new `TensorArrayGradWithShape`.
     pub fn new() -> Self {
@@ -96685,12 +106048,19 @@ pub fn tensor_array_grad_with_shape_with_args<
 }
 
 /// TensorArrayPack
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArrayPack {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub element_shape: ::std::option::Option<crate::Shape>,
 }
-
+impl ::std::default::Default for TensorArrayPack {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            element_shape: None,
+        }
+    }
+}
 impl TensorArrayPack {
     /// Creates a new `TensorArrayPack`.
     pub fn new() -> Self {
@@ -96749,11 +106119,15 @@ pub fn tensor_array_pack_with_args<T0: crate::eager::ToHandle, T1: crate::eager:
 }
 
 /// TensorArrayRead
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArrayRead {
     pub dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorArrayRead {
+    fn default() -> Self {
+        Self { dtype: None }
+    }
+}
 impl TensorArrayRead {
     /// Creates a new `TensorArrayRead`.
     pub fn new() -> Self {
@@ -96820,11 +106194,15 @@ pub fn tensor_array_read_with_args<
 }
 
 /// TensorArrayReadV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArrayReadV2 {
     pub dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorArrayReadV2 {
+    fn default() -> Self {
+        Self { dtype: None }
+    }
+}
 impl TensorArrayReadV2 {
     /// Creates a new `TensorArrayReadV2`.
     pub fn new() -> Self {
@@ -96891,11 +106269,15 @@ pub fn tensor_array_read_v2_with_args<
 }
 
 /// TensorArrayReadV3
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArrayReadV3 {
     pub dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorArrayReadV3 {
+    fn default() -> Self {
+        Self { dtype: None }
+    }
+}
 impl TensorArrayReadV3 {
     /// Creates a new `TensorArrayReadV3`.
     pub fn new() -> Self {
@@ -96962,11 +106344,15 @@ pub fn tensor_array_read_v3_with_args<
 }
 
 /// TensorArrayScatter
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArrayScatter {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorArrayScatter {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl TensorArrayScatter {
     /// Creates a new `TensorArrayScatter`.
     pub fn new() -> Self {
@@ -97038,11 +106424,15 @@ pub fn tensor_array_scatter_with_args<
 }
 
 /// TensorArrayScatterV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArrayScatterV2 {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorArrayScatterV2 {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl TensorArrayScatterV2 {
     /// Creates a new `TensorArrayScatterV2`.
     pub fn new() -> Self {
@@ -97114,11 +106504,15 @@ pub fn tensor_array_scatter_v2_with_args<
 }
 
 /// TensorArrayScatterV3
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArrayScatterV3 {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorArrayScatterV3 {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl TensorArrayScatterV3 {
     /// Creates a new `TensorArrayScatterV3`.
     pub fn new() -> Self {
@@ -97190,9 +106584,13 @@ pub fn tensor_array_scatter_v3_with_args<
 }
 
 /// TensorArraySize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArraySize {}
-
+impl ::std::default::Default for TensorArraySize {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl TensorArraySize {
     /// Creates a new `TensorArraySize`.
     pub fn new() -> Self {
@@ -97245,9 +106643,13 @@ pub fn tensor_array_size_with_args<T0: crate::eager::ToHandle, T1: crate::eager:
 }
 
 /// TensorArraySizeV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArraySizeV2 {}
-
+impl ::std::default::Default for TensorArraySizeV2 {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl TensorArraySizeV2 {
     /// Creates a new `TensorArraySizeV2`.
     pub fn new() -> Self {
@@ -97300,9 +106702,13 @@ pub fn tensor_array_size_v2_with_args<T0: crate::eager::ToHandle, T1: crate::eag
 }
 
 /// TensorArraySizeV3
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArraySizeV3 {}
-
+impl ::std::default::Default for TensorArraySizeV3 {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl TensorArraySizeV3 {
     /// Creates a new `TensorArraySizeV3`.
     pub fn new() -> Self {
@@ -97355,11 +106761,15 @@ pub fn tensor_array_size_v3_with_args<T0: crate::eager::ToHandle, T1: crate::eag
 }
 
 /// TensorArraySplit
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArraySplit {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorArraySplit {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl TensorArraySplit {
     /// Creates a new `TensorArraySplit`.
     pub fn new() -> Self {
@@ -97431,11 +106841,15 @@ pub fn tensor_array_split_with_args<
 }
 
 /// TensorArraySplitV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArraySplitV2 {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorArraySplitV2 {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl TensorArraySplitV2 {
     /// Creates a new `TensorArraySplitV2`.
     pub fn new() -> Self {
@@ -97507,11 +106921,15 @@ pub fn tensor_array_split_v2_with_args<
 }
 
 /// TensorArraySplitV3
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArraySplitV3 {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorArraySplitV3 {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl TensorArraySplitV3 {
     /// Creates a new `TensorArraySplitV3`.
     pub fn new() -> Self {
@@ -97583,11 +107001,15 @@ pub fn tensor_array_split_v3_with_args<
 }
 
 /// TensorArrayUnpack
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArrayUnpack {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorArrayUnpack {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl TensorArrayUnpack {
     /// Creates a new `TensorArrayUnpack`.
     pub fn new() -> Self {
@@ -97654,7 +107076,7 @@ pub fn tensor_array_unpack_with_args<
 }
 
 /// TensorArrayV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArrayV2 {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub element_shape: ::std::option::Option<crate::Shape>,
@@ -97662,7 +107084,17 @@ pub struct TensorArrayV2 {
     pub clear_after_read: ::std::option::Option<bool>,
     pub tensor_array_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for TensorArrayV2 {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            element_shape: None,
+            dynamic_size: Some(false),
+            clear_after_read: Some(true),
+            tensor_array_name: None,
+        }
+    }
+}
 impl TensorArrayV2 {
     /// Creates a new `TensorArrayV2`.
     pub fn new() -> Self {
@@ -97727,7 +107159,7 @@ pub fn tensor_array_v2_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// TensorArrayV3
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArrayV3 {
     pub dtype: ::std::option::Option<crate::DataType>,
     pub element_shape: ::std::option::Option<crate::Shape>,
@@ -97736,7 +107168,18 @@ pub struct TensorArrayV3 {
     pub identical_element_shapes: ::std::option::Option<bool>,
     pub tensor_array_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for TensorArrayV3 {
+    fn default() -> Self {
+        Self {
+            dtype: None,
+            element_shape: None,
+            dynamic_size: Some(false),
+            clear_after_read: Some(true),
+            identical_element_shapes: Some(false),
+            tensor_array_name: None,
+        }
+    }
+}
 impl TensorArrayV3 {
     /// Creates a new `TensorArrayV3`.
     pub fn new() -> Self {
@@ -97809,11 +107252,15 @@ pub fn tensor_array_v3_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// TensorArrayWrite
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArrayWrite {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorArrayWrite {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl TensorArrayWrite {
     /// Creates a new `TensorArrayWrite`.
     pub fn new() -> Self {
@@ -97885,11 +107332,15 @@ pub fn tensor_array_write_with_args<
 }
 
 /// TensorArrayWriteV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArrayWriteV2 {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorArrayWriteV2 {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl TensorArrayWriteV2 {
     /// Creates a new `TensorArrayWriteV2`.
     pub fn new() -> Self {
@@ -97961,11 +107412,15 @@ pub fn tensor_array_write_v2_with_args<
 }
 
 /// TensorArrayWriteV3
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorArrayWriteV3 {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorArrayWriteV3 {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl TensorArrayWriteV3 {
     /// Creates a new `TensorArrayWriteV3`.
     pub fn new() -> Self {
@@ -98037,12 +107492,19 @@ pub fn tensor_array_write_v3_with_args<
 }
 
 /// TensorDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorDataset {
     pub Toutput_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for TensorDataset {
+    fn default() -> Self {
+        Self {
+            Toutput_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl TensorDataset {
     /// Creates a new `TensorDataset`.
     pub fn new() -> Self {
@@ -98098,12 +107560,19 @@ pub fn tensor_dataset_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// TensorListConcat
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorListConcat {
     pub element_dtype: ::std::option::Option<crate::DataType>,
     pub element_shape: ::std::option::Option<crate::Shape>,
 }
-
+impl ::std::default::Default for TensorListConcat {
+    fn default() -> Self {
+        Self {
+            element_dtype: None,
+            element_shape: None,
+        }
+    }
+}
 impl TensorListConcat {
     /// Creates a new `TensorListConcat`.
     pub fn new() -> Self {
@@ -98164,11 +107633,17 @@ pub fn tensor_list_concat_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// TensorListConcatLists
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorListConcatLists {
     pub element_dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorListConcatLists {
+    fn default() -> Self {
+        Self {
+            element_dtype: None,
+        }
+    }
+}
 impl TensorListConcatLists {
     /// Creates a new `TensorListConcatLists`.
     pub fn new() -> Self {
@@ -98227,12 +107702,19 @@ pub fn tensor_list_concat_lists_with_args<
 }
 
 /// TensorListConcatV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorListConcatV2 {
     pub element_dtype: ::std::option::Option<crate::DataType>,
     pub shape_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorListConcatV2 {
+    fn default() -> Self {
+        Self {
+            element_dtype: None,
+            shape_type: None,
+        }
+    }
+}
 impl TensorListConcatV2 {
     /// Creates a new `TensorListConcatV2`.
     pub fn new() -> Self {
@@ -98307,11 +107789,15 @@ pub fn tensor_list_concat_v2_with_args<
 }
 
 /// TensorListElementShape
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorListElementShape {
     pub shape_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorListElementShape {
+    fn default() -> Self {
+        Self { shape_type: None }
+    }
+}
 impl TensorListElementShape {
     /// Creates a new `TensorListElementShape`.
     pub fn new() -> Self {
@@ -98364,12 +107850,19 @@ pub fn tensor_list_element_shape_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// TensorListFromTensor
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorListFromTensor {
     pub element_dtype: ::std::option::Option<crate::DataType>,
     pub shape_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorListFromTensor {
+    fn default() -> Self {
+        Self {
+            element_dtype: None,
+            shape_type: None,
+        }
+    }
+}
 impl TensorListFromTensor {
     /// Creates a new `TensorListFromTensor`.
     pub fn new() -> Self {
@@ -98428,11 +107921,17 @@ pub fn tensor_list_from_tensor_with_args<T0: crate::eager::ToHandle, T1: crate::
 }
 
 /// TensorListGather
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorListGather {
     pub element_dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorListGather {
+    fn default() -> Self {
+        Self {
+            element_dtype: None,
+        }
+    }
+}
 impl TensorListGather {
     /// Creates a new `TensorListGather`.
     pub fn new() -> Self {
@@ -98499,11 +107998,17 @@ pub fn tensor_list_gather_with_args<
 }
 
 /// TensorListGetItem
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorListGetItem {
     pub element_dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorListGetItem {
+    fn default() -> Self {
+        Self {
+            element_dtype: None,
+        }
+    }
+}
 impl TensorListGetItem {
     /// Creates a new `TensorListGetItem`.
     pub fn new() -> Self {
@@ -98570,9 +108075,13 @@ pub fn tensor_list_get_item_with_args<
 }
 
 /// TensorListLength
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorListLength {}
-
+impl ::std::default::Default for TensorListLength {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl TensorListLength {
     /// Creates a new `TensorListLength`.
     pub fn new() -> Self {
@@ -98622,11 +108131,17 @@ pub fn tensor_list_length_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// TensorListPopBack
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorListPopBack {
     pub element_dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorListPopBack {
+    fn default() -> Self {
+        Self {
+            element_dtype: None,
+        }
+    }
+}
 impl TensorListPopBack {
     /// Creates a new `TensorListPopBack`.
     pub fn new() -> Self {
@@ -98687,11 +108202,17 @@ pub fn tensor_list_pop_back_with_args<T0: crate::eager::ToHandle, T1: crate::eag
 }
 
 /// TensorListPushBack
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorListPushBack {
     pub element_dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorListPushBack {
+    fn default() -> Self {
+        Self {
+            element_dtype: None,
+        }
+    }
+}
 impl TensorListPushBack {
     /// Creates a new `TensorListPushBack`.
     pub fn new() -> Self {
@@ -98747,11 +108268,17 @@ pub fn tensor_list_push_back_with_args<T0: crate::eager::ToHandle, T1: crate::ea
 }
 
 /// TensorListPushBackBatch
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorListPushBackBatch {
     pub element_dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorListPushBackBatch {
+    fn default() -> Self {
+        Self {
+            element_dtype: None,
+        }
+    }
+}
 impl TensorListPushBackBatch {
     /// Creates a new `TensorListPushBackBatch`.
     pub fn new() -> Self {
@@ -98810,12 +108337,19 @@ pub fn tensor_list_push_back_batch_with_args<
 }
 
 /// TensorListReserve
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorListReserve {
     pub element_dtype: ::std::option::Option<crate::DataType>,
     pub shape_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorListReserve {
+    fn default() -> Self {
+        Self {
+            element_dtype: None,
+            shape_type: None,
+        }
+    }
+}
 impl TensorListReserve {
     /// Creates a new `TensorListReserve`.
     pub fn new() -> Self {
@@ -98874,9 +108408,13 @@ pub fn tensor_list_reserve_with_args<T0: crate::eager::ToHandle, T1: crate::eage
 }
 
 /// TensorListResize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorListResize {}
-
+impl ::std::default::Default for TensorListResize {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl TensorListResize {
     /// Creates a new `TensorListResize`.
     pub fn new() -> Self {
@@ -98929,12 +108467,19 @@ pub fn tensor_list_resize_with_args<T0: crate::eager::ToHandle, T1: crate::eager
 }
 
 /// TensorListScatter
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorListScatter {
     pub element_dtype: ::std::option::Option<crate::DataType>,
     pub shape_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorListScatter {
+    fn default() -> Self {
+        Self {
+            element_dtype: None,
+            shape_type: None,
+        }
+    }
+}
 impl TensorListScatter {
     /// Creates a new `TensorListScatter`.
     pub fn new() -> Self {
@@ -99004,11 +108549,17 @@ pub fn tensor_list_scatter_with_args<
 }
 
 /// TensorListScatterIntoExistingList
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorListScatterIntoExistingList {
     pub element_dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorListScatterIntoExistingList {
+    fn default() -> Self {
+        Self {
+            element_dtype: None,
+        }
+    }
+}
 impl TensorListScatterIntoExistingList {
     /// Creates a new `TensorListScatterIntoExistingList`.
     pub fn new() -> Self {
@@ -99076,12 +108627,19 @@ pub fn tensor_list_scatter_into_existing_list_with_args<
 }
 
 /// TensorListScatterV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorListScatterV2 {
     pub element_dtype: ::std::option::Option<crate::DataType>,
     pub shape_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorListScatterV2 {
+    fn default() -> Self {
+        Self {
+            element_dtype: None,
+            shape_type: None,
+        }
+    }
+}
 impl TensorListScatterV2 {
     /// Creates a new `TensorListScatterV2`.
     pub fn new() -> Self {
@@ -99156,11 +108714,17 @@ pub fn tensor_list_scatter_v2_with_args<
 }
 
 /// TensorListSetItem
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorListSetItem {
     pub element_dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorListSetItem {
+    fn default() -> Self {
+        Self {
+            element_dtype: None,
+        }
+    }
+}
 impl TensorListSetItem {
     /// Creates a new `TensorListSetItem`.
     pub fn new() -> Self {
@@ -99227,12 +108791,19 @@ pub fn tensor_list_set_item_with_args<
 }
 
 /// TensorListSplit
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorListSplit {
     pub element_dtype: ::std::option::Option<crate::DataType>,
     pub shape_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorListSplit {
+    fn default() -> Self {
+        Self {
+            element_dtype: None,
+            shape_type: None,
+        }
+    }
+}
 impl TensorListSplit {
     /// Creates a new `TensorListSplit`.
     pub fn new() -> Self {
@@ -99302,12 +108873,19 @@ pub fn tensor_list_split_with_args<
 }
 
 /// TensorListStack
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorListStack {
     pub element_dtype: ::std::option::Option<crate::DataType>,
     pub num_elements: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for TensorListStack {
+    fn default() -> Self {
+        Self {
+            element_dtype: None,
+            num_elements: Some(-1i64),
+        }
+    }
+}
 impl TensorListStack {
     /// Creates a new `TensorListStack`.
     pub fn new() -> Self {
@@ -99366,12 +108944,19 @@ pub fn tensor_list_stack_with_args<T0: crate::eager::ToHandle, T1: crate::eager:
 }
 
 /// TensorMapErase
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorMapErase {
     pub key_dtype: ::std::option::Option<crate::DataType>,
     pub value_dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorMapErase {
+    fn default() -> Self {
+        Self {
+            key_dtype: None,
+            value_dtype: None,
+        }
+    }
+}
 impl TensorMapErase {
     /// Creates a new `TensorMapErase`.
     pub fn new() -> Self {
@@ -99430,11 +109015,15 @@ pub fn tensor_map_erase_with_args<T0: crate::eager::ToHandle, T1: crate::eager::
 }
 
 /// TensorMapHasKey
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorMapHasKey {
     pub key_dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorMapHasKey {
+    fn default() -> Self {
+        Self { key_dtype: None }
+    }
+}
 impl TensorMapHasKey {
     /// Creates a new `TensorMapHasKey`.
     pub fn new() -> Self {
@@ -99490,12 +109079,19 @@ pub fn tensor_map_has_key_with_args<T0: crate::eager::ToHandle, T1: crate::eager
 }
 
 /// TensorMapInsert
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorMapInsert {
     pub key_dtype: ::std::option::Option<crate::DataType>,
     pub value_dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorMapInsert {
+    fn default() -> Self {
+        Self {
+            key_dtype: None,
+            value_dtype: None,
+        }
+    }
+}
 impl TensorMapInsert {
     /// Creates a new `TensorMapInsert`.
     pub fn new() -> Self {
@@ -99565,12 +109161,19 @@ pub fn tensor_map_insert_with_args<
 }
 
 /// TensorMapLookup
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorMapLookup {
     pub key_dtype: ::std::option::Option<crate::DataType>,
     pub value_dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorMapLookup {
+    fn default() -> Self {
+        Self {
+            key_dtype: None,
+            value_dtype: None,
+        }
+    }
+}
 impl TensorMapLookup {
     /// Creates a new `TensorMapLookup`.
     pub fn new() -> Self {
@@ -99629,9 +109232,13 @@ pub fn tensor_map_lookup_with_args<T0: crate::eager::ToHandle, T1: crate::eager:
 }
 
 /// TensorMapSize
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorMapSize {}
-
+impl ::std::default::Default for TensorMapSize {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl TensorMapSize {
     /// Creates a new `TensorMapSize`.
     pub fn new() -> Self {
@@ -99681,11 +109288,15 @@ pub fn tensor_map_size_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// TensorMapStackKeys
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorMapStackKeys {
     pub key_dtype: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorMapStackKeys {
+    fn default() -> Self {
+        Self { key_dtype: None }
+    }
+}
 impl TensorMapStackKeys {
     /// Creates a new `TensorMapStackKeys`.
     pub fn new() -> Self {
@@ -99738,12 +109349,19 @@ pub fn tensor_map_stack_keys_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// TensorScatterAdd
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorScatterAdd {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorScatterAdd {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+        }
+    }
+}
 impl TensorScatterAdd {
     /// Creates a new `TensorScatterAdd`.
     pub fn new() -> Self {
@@ -99813,12 +109431,19 @@ pub fn tensor_scatter_add_with_args<
 }
 
 /// TensorScatterMax
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorScatterMax {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorScatterMax {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+        }
+    }
+}
 impl TensorScatterMax {
     /// Creates a new `TensorScatterMax`.
     pub fn new() -> Self {
@@ -99888,12 +109513,19 @@ pub fn tensor_scatter_max_with_args<
 }
 
 /// TensorScatterMin
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorScatterMin {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorScatterMin {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+        }
+    }
+}
 impl TensorScatterMin {
     /// Creates a new `TensorScatterMin`.
     pub fn new() -> Self {
@@ -99963,12 +109595,19 @@ pub fn tensor_scatter_min_with_args<
 }
 
 /// TensorScatterSub
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorScatterSub {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorScatterSub {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+        }
+    }
+}
 impl TensorScatterSub {
     /// Creates a new `TensorScatterSub`.
     pub fn new() -> Self {
@@ -100038,12 +109677,19 @@ pub fn tensor_scatter_sub_with_args<
 }
 
 /// TensorScatterUpdate
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorScatterUpdate {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorScatterUpdate {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+        }
+    }
+}
 impl TensorScatterUpdate {
     /// Creates a new `TensorScatterUpdate`.
     pub fn new() -> Self {
@@ -100113,12 +109759,19 @@ pub fn tensor_scatter_update_with_args<
 }
 
 /// TensorSliceDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorSliceDataset {
     pub Toutput_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for TensorSliceDataset {
+    fn default() -> Self {
+        Self {
+            Toutput_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl TensorSliceDataset {
     /// Creates a new `TensorSliceDataset`.
     pub fn new() -> Self {
@@ -100174,7 +109827,7 @@ pub fn tensor_slice_dataset_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// TensorStridedSliceUpdate
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorStridedSliceUpdate {
     pub T: ::std::option::Option<crate::DataType>,
     pub Index: ::std::option::Option<crate::DataType>,
@@ -100184,7 +109837,19 @@ pub struct TensorStridedSliceUpdate {
     pub new_axis_mask: ::std::option::Option<i64>,
     pub shrink_axis_mask: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for TensorStridedSliceUpdate {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Index: None,
+            begin_mask: Some(0i64),
+            end_mask: Some(0i64),
+            ellipsis_mask: Some(0i64),
+            new_axis_mask: Some(0i64),
+            shrink_axis_mask: Some(0i64),
+        }
+    }
+}
 impl TensorStridedSliceUpdate {
     /// Creates a new `TensorStridedSliceUpdate`.
     pub fn new() -> Self {
@@ -100279,14 +109944,23 @@ pub fn tensor_strided_slice_update_with_args<
 }
 
 /// TensorSummary
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorSummary {
     pub T: ::std::option::Option<crate::DataType>,
     pub description: ::std::option::Option<::std::string::String>,
     pub labels: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
     pub display_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for TensorSummary {
+    fn default() -> Self {
+        Self {
+            T: None,
+            description: None,
+            labels: Some(vec![]),
+            display_name: None,
+        }
+    }
+}
 impl TensorSummary {
     /// Creates a new `TensorSummary`.
     pub fn new() -> Self {
@@ -100348,11 +110022,15 @@ pub fn tensor_summary_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// TensorSummaryV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TensorSummaryV2 {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TensorSummaryV2 {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl TensorSummaryV2 {
     /// Creates a new `TensorSummaryV2`.
     pub fn new() -> Self {
@@ -100419,9 +110097,13 @@ pub fn tensor_summary_v2_with_args<
 }
 
 /// TextLineDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TextLineDataset {}
-
+impl ::std::default::Default for TextLineDataset {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl TextLineDataset {
     /// Creates a new `TextLineDataset`.
     pub fn new() -> Self {
@@ -100485,13 +110167,21 @@ pub fn text_line_dataset_with_args<
 }
 
 /// TextLineReader
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TextLineReader {
     pub skip_header_lines: ::std::option::Option<i64>,
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for TextLineReader {
+    fn default() -> Self {
+        Self {
+            skip_header_lines: Some(0i64),
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl TextLineReader {
     /// Creates a new `TextLineReader`.
     pub fn new() -> Self {
@@ -100546,13 +110236,21 @@ pub fn text_line_reader_with_args(
 }
 
 /// TextLineReaderV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TextLineReaderV2 {
     pub skip_header_lines: ::std::option::Option<i64>,
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for TextLineReaderV2 {
+    fn default() -> Self {
+        Self {
+            skip_header_lines: Some(0i64),
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl TextLineReaderV2 {
     /// Creates a new `TextLineReaderV2`.
     pub fn new() -> Self {
@@ -100607,12 +110305,19 @@ pub fn text_line_reader_v2_with_args(
 }
 
 /// ThreadPoolDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ThreadPoolDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for ThreadPoolDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl ThreadPoolDataset {
     /// Creates a new `ThreadPoolDataset`.
     pub fn new() -> Self {
@@ -100671,7 +110376,7 @@ pub fn thread_pool_dataset_with_args<T0: crate::eager::ToHandle, T1: crate::eage
 }
 
 /// ThreadPoolHandle
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ThreadPoolHandle {
     pub num_threads: ::std::option::Option<i64>,
     pub max_intra_op_parallelism: ::std::option::Option<i64>,
@@ -100679,7 +110384,17 @@ pub struct ThreadPoolHandle {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for ThreadPoolHandle {
+    fn default() -> Self {
+        Self {
+            num_threads: None,
+            max_intra_op_parallelism: Some(1i64),
+            display_name: None,
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl ThreadPoolHandle {
     /// Creates a new `ThreadPoolHandle`.
     pub fn new() -> Self {
@@ -100740,7 +110455,7 @@ pub fn thread_pool_handle_with_args(
 }
 
 /// ThreadUnsafeUnigramCandidateSampler
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ThreadUnsafeUnigramCandidateSampler {
     pub num_true: ::std::option::Option<i64>,
     pub num_sampled: ::std::option::Option<i64>,
@@ -100749,7 +110464,18 @@ pub struct ThreadUnsafeUnigramCandidateSampler {
     pub seed: ::std::option::Option<i64>,
     pub seed2: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for ThreadUnsafeUnigramCandidateSampler {
+    fn default() -> Self {
+        Self {
+            num_true: None,
+            num_sampled: None,
+            unique: None,
+            range_max: None,
+            seed: Some(0i64),
+            seed2: Some(0i64),
+        }
+    }
+}
 impl ThreadUnsafeUnigramCandidateSampler {
     /// Creates a new `ThreadUnsafeUnigramCandidateSampler`.
     pub fn new() -> Self {
@@ -100826,12 +110552,19 @@ pub fn thread_unsafe_unigram_candidate_sampler_with_args<T0: crate::eager::ToHan
 }
 
 /// Tile
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Tile {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tmultiples: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Tile {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tmultiples: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl Tile {
     /// Creates a new `Tile`.
     pub fn new() -> Self {
@@ -100890,11 +110623,15 @@ pub fn tile_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// TileGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TileGrad {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TileGrad {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl TileGrad {
     /// Creates a new `TileGrad`.
     pub fn new() -> Self {
@@ -100950,9 +110687,13 @@ pub fn tile_grad_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandl
 }
 
 /// Timestamp
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Timestamp {}
-
+impl ::std::default::Default for Timestamp {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl Timestamp {
     /// Creates a new `Timestamp`.
     pub fn new() -> Self {
@@ -100996,11 +110737,15 @@ pub fn timestamp_with_args(__args: &Timestamp) -> crate::Result<crate::eager::Te
 }
 
 /// ToBool
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ToBool {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ToBool {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl ToBool {
     /// Creates a new `ToBool`.
     pub fn new() -> Self {
@@ -101051,13 +110796,21 @@ pub fn to_bool_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// TopK
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TopK {
     pub k: ::std::option::Option<i64>,
     pub sorted: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TopK {
+    fn default() -> Self {
+        Self {
+            k: None,
+            sorted: Some(true),
+            T: None,
+        }
+    }
+}
 impl TopK {
     /// Creates a new `TopK`.
     pub fn new() -> Self {
@@ -101121,11 +110874,15 @@ pub fn top_k_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// TopKUnique
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TopKUnique {
     pub k: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for TopKUnique {
+    fn default() -> Self {
+        Self { k: None }
+    }
+}
 impl TopKUnique {
     /// Creates a new `TopKUnique`.
     pub fn new() -> Self {
@@ -101183,12 +110940,19 @@ pub fn top_kunique_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// TopKV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TopKV2 {
     pub sorted: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TopKV2 {
+    fn default() -> Self {
+        Self {
+            sorted: Some(true),
+            T: None,
+        }
+    }
+}
 impl TopKV2 {
     /// Creates a new `TopKV2`.
     pub fn new() -> Self {
@@ -101252,11 +111016,15 @@ pub fn top_kv2_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>
 }
 
 /// TopKWithUnique
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TopKWithUnique {
     pub k: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for TopKWithUnique {
+    fn default() -> Self {
+        Self { k: None }
+    }
+}
 impl TopKWithUnique {
     /// Creates a new `TopKWithUnique`.
     pub fn new() -> Self {
@@ -101314,12 +111082,19 @@ pub fn top_kwith_unique_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Transpose
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Transpose {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tperm: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Transpose {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tperm: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl Transpose {
     /// Creates a new `Transpose`.
     pub fn new() -> Self {
@@ -101378,11 +111153,15 @@ pub fn transpose_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandl
 }
 
 /// TridiagonalMatMul
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TridiagonalMatMul {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TridiagonalMatMul {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl TridiagonalMatMul {
     /// Creates a new `TridiagonalMatMul`.
     pub fn new() -> Self {
@@ -101454,13 +111233,21 @@ pub fn tridiagonal_mat_mul_with_args<
 }
 
 /// TridiagonalSolve
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TridiagonalSolve {
     pub partial_pivoting: ::std::option::Option<bool>,
     pub perturb_singular: ::std::option::Option<bool>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TridiagonalSolve {
+    fn default() -> Self {
+        Self {
+            partial_pivoting: Some(true),
+            perturb_singular: Some(false),
+            T: None,
+        }
+    }
+}
 impl TridiagonalSolve {
     /// Creates a new `TridiagonalSolve`.
     pub fn new() -> Self {
@@ -101522,11 +111309,15 @@ pub fn tridiagonal_solve_with_args<T0: crate::eager::ToHandle, T1: crate::eager:
 }
 
 /// TruncateDiv
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TruncateDiv {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TruncateDiv {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl TruncateDiv {
     /// Creates a new `TruncateDiv`.
     pub fn new() -> Self {
@@ -101582,11 +111373,15 @@ pub fn truncate_div_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHa
 }
 
 /// TruncateMod
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TruncateMod {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TruncateMod {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl TruncateMod {
     /// Creates a new `TruncateMod`.
     pub fn new() -> Self {
@@ -101642,14 +111437,23 @@ pub fn truncate_mod_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHa
 }
 
 /// TruncatedNormal
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct TruncatedNormal {
     pub seed: ::std::option::Option<i64>,
     pub seed2: ::std::option::Option<i64>,
     pub dtype: ::std::option::Option<crate::DataType>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for TruncatedNormal {
+    fn default() -> Self {
+        Self {
+            seed: Some(0i64),
+            seed2: Some(0i64),
+            dtype: None,
+            T: None,
+        }
+    }
+}
 impl TruncatedNormal {
     /// Creates a new `TruncatedNormal`.
     pub fn new() -> Self {
@@ -101711,14 +111515,23 @@ pub fn truncated_normal_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Unbatch
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Unbatch {
     pub timeout_micros: ::std::option::Option<i64>,
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Unbatch {
+    fn default() -> Self {
+        Self {
+            timeout_micros: None,
+            container: None,
+            shared_name: None,
+            T: None,
+        }
+    }
+}
 impl Unbatch {
     /// Creates a new `Unbatch`.
     pub fn new() -> Self {
@@ -101794,12 +111607,19 @@ pub fn unbatch_with_args<
 }
 
 /// UnbatchDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct UnbatchDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for UnbatchDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl UnbatchDataset {
     /// Creates a new `UnbatchDataset`.
     pub fn new() -> Self {
@@ -101855,13 +111675,21 @@ pub fn unbatch_dataset_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// UnbatchGrad
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct UnbatchGrad {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for UnbatchGrad {
+    fn default() -> Self {
+        Self {
+            container: None,
+            shared_name: None,
+            T: None,
+        }
+    }
+}
 impl UnbatchGrad {
     /// Creates a new `UnbatchGrad`.
     pub fn new() -> Self {
@@ -101939,12 +111767,19 @@ pub fn unbatch_grad_with_args<
 }
 
 /// UncompressElement
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct UncompressElement {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for UncompressElement {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl UncompressElement {
     /// Creates a new `UncompressElement`.
     pub fn new() -> Self {
@@ -102000,7 +111835,7 @@ pub fn uncompress_element_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// UnicodeDecode
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct UnicodeDecode {
     pub input_encoding: ::std::option::Option<::std::string::String>,
     pub errors: ::std::option::Option<::std::string::String>,
@@ -102008,7 +111843,17 @@ pub struct UnicodeDecode {
     pub replace_control_characters: ::std::option::Option<bool>,
     pub Tsplits: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for UnicodeDecode {
+    fn default() -> Self {
+        Self {
+            input_encoding: None,
+            errors: Some(::std::string::String::from("replace")),
+            replacement_char: Some(65533i64),
+            replace_control_characters: Some(false),
+            Tsplits: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl UnicodeDecode {
     /// Creates a new `UnicodeDecode`.
     pub fn new() -> Self {
@@ -102078,7 +111923,7 @@ pub fn unicode_decode_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// UnicodeDecodeWithOffsets
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct UnicodeDecodeWithOffsets {
     pub input_encoding: ::std::option::Option<::std::string::String>,
     pub errors: ::std::option::Option<::std::string::String>,
@@ -102086,7 +111931,17 @@ pub struct UnicodeDecodeWithOffsets {
     pub replace_control_characters: ::std::option::Option<bool>,
     pub Tsplits: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for UnicodeDecodeWithOffsets {
+    fn default() -> Self {
+        Self {
+            input_encoding: None,
+            errors: Some(::std::string::String::from("replace")),
+            replacement_char: Some(65533i64),
+            replace_control_characters: Some(false),
+            Tsplits: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl UnicodeDecodeWithOffsets {
     /// Creates a new `UnicodeDecodeWithOffsets`.
     pub fn new() -> Self {
@@ -102157,14 +112012,23 @@ pub fn unicode_decode_with_offsets_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// UnicodeEncode
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct UnicodeEncode {
     pub errors: ::std::option::Option<::std::string::String>,
     pub output_encoding: ::std::option::Option<::std::string::String>,
     pub replacement_char: ::std::option::Option<i64>,
     pub Tsplits: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for UnicodeEncode {
+    fn default() -> Self {
+        Self {
+            errors: Some(::std::string::String::from("replace")),
+            output_encoding: None,
+            replacement_char: Some(65533i64),
+            Tsplits: Some(crate::DataType::Int64),
+        }
+    }
+}
 impl UnicodeEncode {
     /// Creates a new `UnicodeEncode`.
     pub fn new() -> Self {
@@ -102229,9 +112093,13 @@ pub fn unicode_encode_with_args<T0: crate::eager::ToHandle, T1: crate::eager::To
 }
 
 /// UnicodeScript
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct UnicodeScript {}
-
+impl ::std::default::Default for UnicodeScript {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl UnicodeScript {
     /// Creates a new `UnicodeScript`.
     pub fn new() -> Self {
@@ -102281,7 +112149,7 @@ pub fn unicode_script_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// UnicodeTranscode
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct UnicodeTranscode {
     pub input_encoding: ::std::option::Option<::std::string::String>,
     pub output_encoding: ::std::option::Option<::std::string::String>,
@@ -102289,7 +112157,17 @@ pub struct UnicodeTranscode {
     pub replacement_char: ::std::option::Option<i64>,
     pub replace_control_characters: ::std::option::Option<bool>,
 }
-
+impl ::std::default::Default for UnicodeTranscode {
+    fn default() -> Self {
+        Self {
+            input_encoding: None,
+            output_encoding: None,
+            errors: Some(::std::string::String::from("replace")),
+            replacement_char: Some(65533i64),
+            replace_control_characters: Some(false),
+        }
+    }
+}
 impl UnicodeTranscode {
     /// Creates a new `UnicodeTranscode`.
     pub fn new() -> Self {
@@ -102354,7 +112232,7 @@ pub fn unicode_transcode_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// UniformCandidateSampler
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct UniformCandidateSampler {
     pub num_true: ::std::option::Option<i64>,
     pub num_sampled: ::std::option::Option<i64>,
@@ -102363,7 +112241,18 @@ pub struct UniformCandidateSampler {
     pub seed: ::std::option::Option<i64>,
     pub seed2: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for UniformCandidateSampler {
+    fn default() -> Self {
+        Self {
+            num_true: None,
+            num_sampled: None,
+            unique: None,
+            range_max: None,
+            seed: Some(0i64),
+            seed2: Some(0i64),
+        }
+    }
+}
 impl UniformCandidateSampler {
     /// Creates a new `UniformCandidateSampler`.
     pub fn new() -> Self {
@@ -102437,12 +112326,19 @@ pub fn uniform_candidate_sampler_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Unique
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Unique {
     pub T: ::std::option::Option<crate::DataType>,
     pub out_idx: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Unique {
+    fn default() -> Self {
+        Self {
+            T: None,
+            out_idx: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl Unique {
     /// Creates a new `Unique`.
     pub fn new() -> Self {
@@ -102501,12 +112397,19 @@ pub fn unique_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// UniqueDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct UniqueDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for UniqueDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl UniqueDataset {
     /// Creates a new `UniqueDataset`.
     pub fn new() -> Self {
@@ -102562,13 +112465,21 @@ pub fn unique_dataset_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// UniqueV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct UniqueV2 {
     pub T: ::std::option::Option<crate::DataType>,
     pub Taxis: ::std::option::Option<crate::DataType>,
     pub out_idx: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for UniqueV2 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Taxis: Some(crate::DataType::Int64),
+            out_idx: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl UniqueV2 {
     /// Creates a new `UniqueV2`.
     pub fn new() -> Self {
@@ -102635,12 +112546,19 @@ pub fn unique_v2_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandl
 }
 
 /// UniqueWithCounts
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct UniqueWithCounts {
     pub T: ::std::option::Option<crate::DataType>,
     pub out_idx: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for UniqueWithCounts {
+    fn default() -> Self {
+        Self {
+            T: None,
+            out_idx: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl UniqueWithCounts {
     /// Creates a new `UniqueWithCounts`.
     pub fn new() -> Self {
@@ -102702,13 +112620,21 @@ pub fn unique_with_counts_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// UniqueWithCountsV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct UniqueWithCountsV2 {
     pub T: ::std::option::Option<crate::DataType>,
     pub Taxis: ::std::option::Option<crate::DataType>,
     pub out_idx: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for UniqueWithCountsV2 {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Taxis: Some(crate::DataType::Int64),
+            out_idx: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl UniqueWithCountsV2 {
     /// Creates a new `UniqueWithCountsV2`.
     pub fn new() -> Self {
@@ -102776,13 +112702,21 @@ pub fn unique_with_counts_v2_with_args<T0: crate::eager::ToHandle, T1: crate::ea
 }
 
 /// Unpack
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Unpack {
     pub num: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
     pub axis: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for Unpack {
+    fn default() -> Self {
+        Self {
+            num: None,
+            T: None,
+            axis: Some(0i64),
+        }
+    }
+}
 impl Unpack {
     /// Creates a new `Unpack`.
     pub fn new() -> Self {
@@ -102839,11 +112773,17 @@ pub fn unpack_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// UnravelIndex
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct UnravelIndex {
     pub Tidx: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for UnravelIndex {
+    fn default() -> Self {
+        Self {
+            Tidx: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl UnravelIndex {
     /// Creates a new `UnravelIndex`.
     pub fn new() -> Self {
@@ -102899,13 +112839,21 @@ pub fn unravel_index_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToH
 }
 
 /// UnsortedSegmentJoin
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct UnsortedSegmentJoin {
     pub separator: ::std::option::Option<::std::string::String>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub Tnumsegments: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for UnsortedSegmentJoin {
+    fn default() -> Self {
+        Self {
+            separator: None,
+            Tindices: None,
+            Tnumsegments: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl UnsortedSegmentJoin {
     /// Creates a new `UnsortedSegmentJoin`.
     pub fn new() -> Self {
@@ -102978,13 +112926,21 @@ pub fn unsorted_segment_join_with_args<
 }
 
 /// UnsortedSegmentMax
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct UnsortedSegmentMax {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub Tnumsegments: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for UnsortedSegmentMax {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            Tnumsegments: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl UnsortedSegmentMax {
     /// Creates a new `UnsortedSegmentMax`.
     pub fn new() -> Self {
@@ -103057,13 +113013,21 @@ pub fn unsorted_segment_max_with_args<
 }
 
 /// UnsortedSegmentMin
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct UnsortedSegmentMin {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub Tnumsegments: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for UnsortedSegmentMin {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            Tnumsegments: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl UnsortedSegmentMin {
     /// Creates a new `UnsortedSegmentMin`.
     pub fn new() -> Self {
@@ -103136,13 +113100,21 @@ pub fn unsorted_segment_min_with_args<
 }
 
 /// UnsortedSegmentProd
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct UnsortedSegmentProd {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub Tnumsegments: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for UnsortedSegmentProd {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            Tnumsegments: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl UnsortedSegmentProd {
     /// Creates a new `UnsortedSegmentProd`.
     pub fn new() -> Self {
@@ -103215,13 +113187,21 @@ pub fn unsorted_segment_prod_with_args<
 }
 
 /// UnsortedSegmentSum
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct UnsortedSegmentSum {
     pub T: ::std::option::Option<crate::DataType>,
     pub Tindices: ::std::option::Option<crate::DataType>,
     pub Tnumsegments: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for UnsortedSegmentSum {
+    fn default() -> Self {
+        Self {
+            T: None,
+            Tindices: None,
+            Tnumsegments: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl UnsortedSegmentSum {
     /// Creates a new `UnsortedSegmentSum`.
     pub fn new() -> Self {
@@ -103294,7 +113274,7 @@ pub fn unsorted_segment_sum_with_args<
 }
 
 /// Unstage
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Unstage {
     pub capacity: ::std::option::Option<i64>,
     pub memory_limit: ::std::option::Option<i64>,
@@ -103302,7 +113282,17 @@ pub struct Unstage {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for Unstage {
+    fn default() -> Self {
+        Self {
+            capacity: Some(0i64),
+            memory_limit: Some(0i64),
+            dtypes: None,
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl Unstage {
     /// Creates a new `Unstage`.
     pub fn new() -> Self {
@@ -103361,9 +113351,13 @@ pub fn unstage_with_args(__args: &Unstage) -> crate::Result<crate::eager::Tensor
 }
 
 /// UnwrapDatasetVariant
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct UnwrapDatasetVariant {}
-
+impl ::std::default::Default for UnwrapDatasetVariant {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl UnwrapDatasetVariant {
     /// Creates a new `UnwrapDatasetVariant`.
     pub fn new() -> Self {
@@ -103413,12 +113407,19 @@ pub fn unwrap_dataset_variant_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// UpperBound
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct UpperBound {
     pub T: ::std::option::Option<crate::DataType>,
     pub out_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for UpperBound {
+    fn default() -> Self {
+        Self {
+            T: None,
+            out_type: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl UpperBound {
     /// Creates a new `UpperBound`.
     pub fn new() -> Self {
@@ -103477,7 +113478,7 @@ pub fn upper_bound_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHan
 }
 
 /// VarHandleOp
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct VarHandleOp {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
@@ -103485,7 +113486,17 @@ pub struct VarHandleOp {
     pub shape: ::std::option::Option<crate::Shape>,
     pub allowed_devices: ::std::option::Option<::std::vec::Vec<::std::string::String>>,
 }
-
+impl ::std::default::Default for VarHandleOp {
+    fn default() -> Self {
+        Self {
+            container: None,
+            shared_name: None,
+            dtype: None,
+            shape: None,
+            allowed_devices: Some(vec![]),
+        }
+    }
+}
 impl VarHandleOp {
     /// Creates a new `VarHandleOp`.
     pub fn new() -> Self {
@@ -103544,9 +113555,13 @@ pub fn var_handle_op_with_args(__args: &VarHandleOp) -> crate::Result<crate::eag
 }
 
 /// VarIsInitializedOp
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct VarIsInitializedOp {}
-
+impl ::std::default::Default for VarIsInitializedOp {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl VarIsInitializedOp {
     /// Creates a new `VarIsInitializedOp`.
     pub fn new() -> Self {
@@ -103596,14 +113611,23 @@ pub fn var_is_initialized_op_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Variable
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Variable {
     pub shape: ::std::option::Option<crate::Shape>,
     pub dtype: ::std::option::Option<crate::DataType>,
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for Variable {
+    fn default() -> Self {
+        Self {
+            shape: None,
+            dtype: None,
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl Variable {
     /// Creates a new `Variable`.
     pub fn new() -> Self {
@@ -103659,11 +113683,17 @@ pub fn variable_with_args(__args: &Variable) -> crate::Result<crate::eager::Tens
 }
 
 /// VariableShape
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct VariableShape {
     pub out_type: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for VariableShape {
+    fn default() -> Self {
+        Self {
+            out_type: Some(crate::DataType::Int32),
+        }
+    }
+}
 impl VariableShape {
     /// Creates a new `VariableShape`.
     pub fn new() -> Self {
@@ -103716,14 +113746,23 @@ pub fn variable_shape_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// VariableV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct VariableV2 {
     pub shape: ::std::option::Option<crate::Shape>,
     pub dtype: ::std::option::Option<crate::DataType>,
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for VariableV2 {
+    fn default() -> Self {
+        Self {
+            shape: None,
+            dtype: None,
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl VariableV2 {
     /// Creates a new `VariableV2`.
     pub fn new() -> Self {
@@ -103779,11 +113818,17 @@ pub fn variable_v2_with_args(__args: &VariableV2) -> crate::Result<crate::eager:
 }
 
 /// Where
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Where {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Where {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Bool),
+        }
+    }
+}
 impl Where {
     /// Creates a new `Where`.
     pub fn new() -> Self {
@@ -103834,7 +113879,7 @@ pub fn where__with_args<T0: crate::eager::ToHandle>(
 }
 
 /// While
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct While {
     pub T: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub cond: ::std::option::Option<::std::string::String>,
@@ -103842,7 +113887,17 @@ pub struct While {
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     pub parallel_iterations: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for While {
+    fn default() -> Self {
+        Self {
+            T: None,
+            cond: None,
+            body: None,
+            output_shapes: None,
+            parallel_iterations: Some(10i64),
+        }
+    }
+}
 impl While {
     /// Creates a new `While`.
     pub fn new() -> Self {
@@ -103905,12 +113960,19 @@ pub fn while__with_args<T0: crate::eager::ToHandle>(
 }
 
 /// WholeFileReader
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct WholeFileReader {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for WholeFileReader {
+    fn default() -> Self {
+        Self {
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl WholeFileReader {
     /// Creates a new `WholeFileReader`.
     pub fn new() -> Self {
@@ -103962,12 +114024,19 @@ pub fn whole_file_reader_with_args(
 }
 
 /// WholeFileReaderV2
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct WholeFileReaderV2 {
     pub container: ::std::option::Option<::std::string::String>,
     pub shared_name: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for WholeFileReaderV2 {
+    fn default() -> Self {
+        Self {
+            container: None,
+            shared_name: None,
+        }
+    }
+}
 impl WholeFileReaderV2 {
     /// Creates a new `WholeFileReaderV2`.
     pub fn new() -> Self {
@@ -104019,13 +114088,21 @@ pub fn whole_file_reader_v2_with_args(
 }
 
 /// Window
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Window {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     pub Tinputs: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
 }
-
+impl ::std::default::Default for Window {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+            Tinputs: None,
+        }
+    }
+}
 impl Window {
     /// Creates a new `Window`.
     pub fn new() -> Self {
@@ -104082,12 +114159,19 @@ pub fn window_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// WindowDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct WindowDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
 }
-
+impl ::std::default::Default for WindowDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+        }
+    }
+}
 impl WindowDataset {
     /// Creates a new `WindowDataset`.
     pub fn new() -> Self {
@@ -104167,9 +114251,13 @@ pub fn window_dataset_with_args<
 }
 
 /// WorkerHeartbeat
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct WorkerHeartbeat {}
-
+impl ::std::default::Default for WorkerHeartbeat {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl WorkerHeartbeat {
     /// Creates a new `WorkerHeartbeat`.
     pub fn new() -> Self {
@@ -104219,9 +114307,13 @@ pub fn worker_heartbeat_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// WrapDatasetVariant
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct WrapDatasetVariant {}
-
+impl ::std::default::Default for WrapDatasetVariant {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl WrapDatasetVariant {
     /// Creates a new `WrapDatasetVariant`.
     pub fn new() -> Self {
@@ -104271,11 +114363,17 @@ pub fn wrap_dataset_variant_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// WriteAudioSummary
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct WriteAudioSummary {
     pub max_outputs: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for WriteAudioSummary {
+    fn default() -> Self {
+        Self {
+            max_outputs: Some(3i64),
+        }
+    }
+}
 impl WriteAudioSummary {
     /// Creates a new `WriteAudioSummary`.
     pub fn new() -> Self {
@@ -104351,9 +114449,13 @@ pub fn write_audio_summary_with_args<
 }
 
 /// WriteFile
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct WriteFile {}
-
+impl ::std::default::Default for WriteFile {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl WriteFile {
     /// Creates a new `WriteFile`.
     pub fn new() -> Self {
@@ -104405,9 +114507,13 @@ pub fn write_file_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHand
 }
 
 /// WriteGraphSummary
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct WriteGraphSummary {}
-
+impl ::std::default::Default for WriteGraphSummary {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl WriteGraphSummary {
     /// Creates a new `WriteGraphSummary`.
     pub fn new() -> Self {
@@ -104470,11 +114576,17 @@ pub fn write_graph_summary_with_args<
 }
 
 /// WriteHistogramSummary
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct WriteHistogramSummary {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for WriteHistogramSummary {
+    fn default() -> Self {
+        Self {
+            T: Some(crate::DataType::Float),
+        }
+    }
+}
 impl WriteHistogramSummary {
     /// Creates a new `WriteHistogramSummary`.
     pub fn new() -> Self {
@@ -104545,12 +114657,19 @@ pub fn write_histogram_summary_with_args<
 }
 
 /// WriteImageSummary
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct WriteImageSummary {
     pub max_images: ::std::option::Option<i64>,
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for WriteImageSummary {
+    fn default() -> Self {
+        Self {
+            max_images: Some(3i64),
+            T: Some(crate::DataType::Float),
+        }
+    }
+}
 impl WriteImageSummary {
     /// Creates a new `WriteImageSummary`.
     pub fn new() -> Self {
@@ -104629,9 +114748,13 @@ pub fn write_image_summary_with_args<
 }
 
 /// WriteRawProtoSummary
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct WriteRawProtoSummary {}
-
+impl ::std::default::Default for WriteRawProtoSummary {
+    fn default() -> Self {
+        Self {}
+    }
+}
 impl WriteRawProtoSummary {
     /// Creates a new `WriteRawProtoSummary`.
     pub fn new() -> Self {
@@ -104694,11 +114817,15 @@ pub fn write_raw_proto_summary_with_args<
 }
 
 /// WriteScalarSummary
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct WriteScalarSummary {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for WriteScalarSummary {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl WriteScalarSummary {
     /// Creates a new `WriteScalarSummary`.
     pub fn new() -> Self {
@@ -104769,11 +114896,15 @@ pub fn write_scalar_summary_with_args<
 }
 
 /// WriteSummary
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct WriteSummary {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for WriteSummary {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl WriteSummary {
     /// Creates a new `WriteSummary`.
     pub fn new() -> Self {
@@ -104849,11 +114980,15 @@ pub fn write_summary_with_args<
 }
 
 /// Xdivy
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Xdivy {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Xdivy {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Xdivy {
     /// Creates a new `Xdivy`.
     pub fn new() -> Self {
@@ -104909,7 +115044,7 @@ pub fn xdivy_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// XlaHostCompute
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct XlaHostCompute {
     pub Tinputs: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub Toutputs: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
@@ -104922,7 +115057,22 @@ pub struct XlaHostCompute {
     pub cost_estimate_ns: ::std::option::Option<i64>,
     pub tpu_core: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for XlaHostCompute {
+    fn default() -> Self {
+        Self {
+            Tinputs: None,
+            Toutputs: None,
+            ancestors: None,
+            shapes: None,
+            shape_inference_graph: None,
+            key: None,
+            send_key: None,
+            recv_key: None,
+            cost_estimate_ns: Some(1000000i64),
+            tpu_core: Some(0i64),
+        }
+    }
+}
 impl XlaHostCompute {
     /// Creates a new `XlaHostCompute`.
     pub fn new() -> Self {
@@ -105002,13 +115152,21 @@ pub fn xla_host_compute_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// XlaRecvFromHost
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct XlaRecvFromHost {
     pub Toutput: ::std::option::Option<crate::DataType>,
     pub shape: ::std::option::Option<crate::Shape>,
     pub key: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for XlaRecvFromHost {
+    fn default() -> Self {
+        Self {
+            Toutput: None,
+            shape: None,
+            key: None,
+        }
+    }
+}
 impl XlaRecvFromHost {
     /// Creates a new `XlaRecvFromHost`.
     pub fn new() -> Self {
@@ -105063,12 +115221,19 @@ pub fn xla_recv_from_host_with_args(
 }
 
 /// XlaSendToHost
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct XlaSendToHost {
     pub Tinput: ::std::option::Option<crate::DataType>,
     pub key: ::std::option::Option<::std::string::String>,
 }
-
+impl ::std::default::Default for XlaSendToHost {
+    fn default() -> Self {
+        Self {
+            Tinput: None,
+            key: None,
+        }
+    }
+}
 impl XlaSendToHost {
     /// Creates a new `XlaSendToHost`.
     pub fn new() -> Self {
@@ -105121,11 +115286,15 @@ pub fn xla_send_to_host_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Xlog1py
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Xlog1py {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Xlog1py {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Xlog1py {
     /// Creates a new `Xlog1py`.
     pub fn new() -> Self {
@@ -105181,11 +115350,15 @@ pub fn xlog1py_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>
 }
 
 /// Xlogy
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Xlogy {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Xlogy {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Xlogy {
     /// Creates a new `Xlogy`.
     pub fn new() -> Self {
@@ -105241,11 +115414,15 @@ pub fn xlogy_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// ZerosLike
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ZerosLike {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for ZerosLike {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl ZerosLike {
     /// Creates a new `ZerosLike`.
     pub fn new() -> Self {
@@ -105296,11 +115473,15 @@ pub fn zeros_like_with_args<T0: crate::eager::ToHandle>(
 }
 
 /// Zeta
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct Zeta {
     pub T: ::std::option::Option<crate::DataType>,
 }
-
+impl ::std::default::Default for Zeta {
+    fn default() -> Self {
+        Self { T: None }
+    }
+}
 impl Zeta {
     /// Creates a new `Zeta`.
     pub fn new() -> Self {
@@ -105356,13 +115537,21 @@ pub fn zeta_with_args<T0: crate::eager::ToHandle, T1: crate::eager::ToHandle>(
 }
 
 /// ZipDataset
-#[derive(::std::fmt::Debug, ::std::default::Default)]
+#[derive(::std::fmt::Debug)]
 pub struct ZipDataset {
     pub output_types: ::std::option::Option<::std::vec::Vec<crate::DataType>>,
     pub output_shapes: ::std::option::Option<::std::vec::Vec<crate::Shape>>,
     pub N: ::std::option::Option<i64>,
 }
-
+impl ::std::default::Default for ZipDataset {
+    fn default() -> Self {
+        Self {
+            output_types: None,
+            output_shapes: None,
+            N: None,
+        }
+    }
+}
 impl ZipDataset {
     /// Creates a new `ZipDataset`.
     pub fn new() -> Self {

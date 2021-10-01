@@ -12,11 +12,15 @@ use std::result::Result;
 use tensorflow_op_codegen::parser;
 use tensorflow_op_codegen::protos::OpDef;
 
+use ::protobuf::ProtobufEnum;
+use tensorflow_op_codegen::protos::AttrValue_oneof_value;
+
 #[derive(Clone)]
 struct Attr {
     rust_name: String,
     attr_type: String,
     c_name: String,
+    default_value: Option<AttrValue_oneof_value>,
 }
 
 fn write_set_attr<W: Write>(w: &mut W, attr: &Attr) -> Result<(), io::Error> {
@@ -269,23 +273,149 @@ fn define_op<W: Write>(
                 ))
             }
         };
+        let default_value = match attr.default_value.as_ref() {
+            Some(t) => t.value.to_owned(),
+            _ => None,
+        };
         attrs.push(Attr {
             rust_name: attr_escaper.escape(&attr.name),
             attr_type: rust_type.to_string(),
             c_name: attr.name.clone(),
+            default_value,
         });
     }
     write!(w, "/// {} \n", name)?;
-    write!(w, "#[derive(::std::fmt::Debug, ::std::default::Default)]\n")?;
+    write!(w, "#[derive(::std::fmt::Debug)]\n")?;
     write!(w, "pub struct {} {{\n", name)?;
     for attr in &attrs {
         write_attr(w, &attr)?;
     }
+    write!(w, "}}\n")?;
+
+    write!(w, "impl ::std::default::Default for {} {{\n", name)?;
+    write!(w, "    fn default() -> Self {{\n")?;
+    write!(w, "        Self {{\n")?;
+    for attr in &attrs {
+        write!(w, "            {}: ", attr.rust_name)?;
+        match &attr.default_value {
+            Some(AttrValue_oneof_value::s(s)) => {
+                if s.len() == 0 {
+                    write!(w, "None")?;
+                } else {
+                    let msg = std::str::from_utf8(s).expect("Failed to decode as utf-8");
+                    write!(w, "Some(::std::string::String::from(\"{}\"))", msg)?;
+                }
+            }
+            Some(AttrValue_oneof_value::i(i)) => write!(w, "Some({}i64)", i)?,
+            Some(AttrValue_oneof_value::f(f)) => {
+                if f == &f32::INFINITY {
+                    write!(w, "Some(f32::INFINITY)")?;
+                } else if f == &f32::NEG_INFINITY {
+                    write!(w, "Some(f32::NEG_INFINITY)")?;
+                } else if f == &f32::NAN {
+                    write!(w, "Some(f32::NAN)")?;
+                } else {
+                    write!(w, "Some({}f32)", f)?;
+                }
+            }
+            Some(AttrValue_oneof_value::b(b)) => write!(w, "Some({})", b)?,
+            Some(AttrValue_oneof_value::field_type(t)) => match t.descriptor().name() {
+                "DT_FLOAT" => write!(w, "Some(crate::DataType::Float)")?,
+                "DT_DOUBLE" => write!(w, "Some(crate::DataType::Double)")?,
+                "DT_INT32" => write!(w, "Some(crate::DataType::Int32)")?,
+                "DT_UINT8" => write!(w, "Some(crate::DataType::UInt8)")?,
+                "DT_INT16" => write!(w, "Some(crate::DataType::Int16)")?,
+                "DT_INT8" => write!(w, "Some(crate::DataType::Int8)")?,
+                "DT_STRING" => write!(w, "Some(crate::DataType::String)")?,
+                "DT_COMPLEX64" => write!(w, "Some(crate::DataType::Complex64)")?,
+                "DT_INT64" => write!(w, "Some(crate::DataType::Int64)")?,
+                "DT_BOOL" => write!(w, "Some(crate::DataType::Bool)")?,
+                "DT_QINT8" => write!(w, "Some(crate::DataType::QInt8)")?,
+                "DT_QUINT8" => write!(w, "Some(crate::DataType::QUInt8)")?,
+                "DT_QINT32" => write!(w, "Some(crate::DataType::QInt32)")?,
+                "DT_BFLOAT16" => write!(w, "Some(crate::DataType::BFloat16)")?,
+                "DT_QINT16" => write!(w, "Some(crate::DataType::QInt16)")?,
+                "DT_QUINT16" => write!(w, "Some(crate::DataType::QUInt16)")?,
+                "DT_UINT16" => write!(w, "Some(crate::DataType::UInt16)")?,
+                "DT_COMPLEX128" => write!(w, "Some(crate::DataType::Complex128)")?,
+                "DT_HAFL" => write!(w, "Some(crate::DataType::Hafl)")?,
+                "DT_UINT32" => write!(w, "Some(crate::DataType::UInt32)")?,
+                "DT_UINT64" => write!(w, "Some(crate::DataType::UInt64)")?,
+                _ => panic!("{} is not supported", t.descriptor().name()),
+            },
+            Some(AttrValue_oneof_value::shape(shape)) => {
+                let dims: Vec<_> = shape
+                    .get_dim()
+                    .iter()
+                    .map(|x| format!("{}", x.get_size()))
+                    .collect();
+                if dims.len() == 0 {
+                    write!(w, "None")?;
+                } else {
+                    write!(w, "Some(crate::Shape::from(&[{}])", dims.join(", "))?;
+                }
+            }
+            Some(AttrValue_oneof_value::tensor(tensor)) => {
+                dbg!(tensor);
+                write!(w, "None")?;
+                eprintln!("tensor is not supported")
+            }
+            Some(AttrValue_oneof_value::list(list)) => {
+                match attr.attr_type.as_str() {
+                    "::std::vec::Vec<i64>" => {
+                        write!(w, "Some(vec!{:?})", list.i)?;
+                    }
+                    "::std::vec::Vec<f32>" => {
+                        write!(w, "Some(vec!{:?})", list.f)?;
+                    }
+                    "::std::vec::Vec<bool>" => {
+                        write!(w, "Some(vec!{:?})", list.b)?;
+                    }
+                    "::std::vec::Vec<::std::string::String>" => {
+                        let msgs: Vec<_> = list
+                            .s
+                            .iter()
+                            .map(|buf| std::str::from_utf8(buf).expect("Failed to decode as utf-8"))
+                            .collect();
+                        write!(w, "Some(vec![{}])", msgs.join(", "))?;
+                    }
+                    "::std::vec::Vec<crate::Shape>" => {
+                        dbg!(&list.shape);
+                        eprintln!("{} is not supported.", attr.attr_type);
+                        write!(w, "None")?;
+                    }
+                    "::std::vec::Vec<crate::DataType>" => {
+                        dbg!(&list.field_type);
+                        eprintln!("{} is not supported.", attr.attr_type);
+                        write!(w, "None")?;
+                    }
+                    _ => {
+                        eprintln!("{} is not supported.", attr.attr_type);
+                        write!(w, "None")?;
+                    }
+                };
+            }
+            Some(AttrValue_oneof_value::func(func)) => {
+                dbg!(func);
+                eprintln!("func is not supported");
+                write!(w, "None")?;
+            }
+            Some(AttrValue_oneof_value::placeholder(placeholder)) => {
+                dbg!(placeholder);
+                eprintln!("placeholder is not supported");
+                write!(w, "None")?;
+            }
+            _ => write!(w, "None")?,
+        }
+        write!(w, ",\n")?;
+    }
+    write!(w, "        }}\n")?;
+    write!(w, "    }}\n")?;
+    write!(w, "}}\n")?;
+
     write!(
         w,
-        r#"}}
-
-impl {name} {{
+        r#"impl {name} {{
     /// Creates a new `{name}`.
     pub fn new() -> Self {{
         Self::default()
