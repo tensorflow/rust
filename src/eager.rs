@@ -16,8 +16,7 @@ use tensorflow_sys as tf;
 
 use crate::{AnyTensor, DataType, Device, Result, Status, Tensor, TensorType};
 
-mod raw_ops;
-pub use raw_ops::*;
+pub mod raw_ops;
 
 use once_cell::sync::Lazy;
 
@@ -655,28 +654,28 @@ mod test {
         x[0] = 2i32;
         let y = x.clone();
 
-        let h = add(x, y).unwrap();
+        let h = raw_ops::add(x, y).unwrap();
         let z: Result<Tensor<i32>> = h.resolve();
         assert!(z.is_ok());
         let z = z.unwrap();
         assert_eq!(z[0], 4i32);
 
-        let h = add(z.clone(), z.clone()).unwrap();
+        let h = raw_ops::add(z.clone(), z.clone()).unwrap();
         let z: Tensor<i32> = h.resolve().unwrap();
         assert_eq!(z[0], 8i32);
 
         let h1 = z.clone().to_handle().unwrap();
         let h2 = z.clone().to_handle().unwrap();
-        let h = add(h1, h2).unwrap();
+        let h = raw_ops::add(h1, h2).unwrap();
         let z: Tensor<i32> = h.resolve().unwrap();
         assert_eq!(z[0], 16i32);
 
         let h1 = z.clone().to_handle().unwrap();
         let h2 = z.clone().to_handle().unwrap();
-        let h = add(h1, h2).unwrap();
+        let h = raw_ops::add(h1, h2).unwrap();
 
         let h1 = z.clone().to_handle().unwrap();
-        let h = add(h1, h).unwrap();
+        let h = raw_ops::add(h1, h).unwrap();
         let z: Tensor<i32> = h.resolve().unwrap();
 
         assert_eq!(z[0], 48i32);
@@ -687,7 +686,7 @@ mod test {
         let filename: Tensor<String> =
             Tensor::from(String::from("test_resources/io/sample_text.txt"));
 
-        let h = read_file(filename).unwrap();
+        let h = raw_ops::read_file(filename).unwrap();
         let z: Tensor<String> = h.resolve().unwrap();
         assert_eq!(z.len(), 1);
         assert_eq!(z[0].len(), 32);
@@ -698,12 +697,12 @@ mod test {
     fn decode_png_test() {
         let filename: Tensor<String> = Tensor::from(String::from("test_resources/sample.png"));
 
-        let h = read_file(filename).unwrap();
-        let args = DecodePng {
+        let h = raw_ops::read_file(filename).unwrap();
+        let args = raw_ops::DecodePng {
             channels: Some(3),
             dtype: Some(DataType::UInt8),
         };
-        let h = decode_png_with_args(h, &args).unwrap();
+        let h = raw_ops::decode_png_with_args(h, &args).unwrap();
         let z: Tensor<u8> = h.resolve().unwrap();
         assert_eq!(z.len(), 224 * 224 * 3);
     }
