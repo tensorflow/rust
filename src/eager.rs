@@ -708,6 +708,42 @@ mod test {
     }
 
     #[test]
+    fn top_kv2_test() {
+        // 2 rows x 10 cols
+        let mut t: Tensor<i64> = Tensor::new(&[2, 10]);
+        for i in 0..20 {
+            t[i] = i as i64;
+        }
+        let k: Tensor<i32> = Tensor::new(&[]).with_values(&[3]).unwrap();
+        let args = raw_ops::TopKV2 {
+            sorted: Some(true),
+            ..Default::default()
+        };
+
+        let [values, indices] = raw_ops::top_kv2_with_args(t, k.clone(), &args).unwrap();
+        let values: Tensor<i64> = values.resolve().unwrap();
+        let indices: Tensor<i32> = indices.resolve().unwrap();
+
+        // 1st row
+        assert_eq!(values[0], 9);
+        assert_eq!(values[1], 8);
+        assert_eq!(values[2], 7);
+
+        assert_eq!(indices[0], 9);
+        assert_eq!(indices[1], 8);
+        assert_eq!(indices[2], 7);
+
+        // 2nd row
+        assert_eq!(values[3], 19);
+        assert_eq!(values[4], 18);
+        assert_eq!(values[5], 17);
+
+        assert_eq!(indices[3], 9);
+        assert_eq!(indices[4], 8);
+        assert_eq!(indices[5], 7);
+    }
+
+    #[test]
     fn context() {
         let opts = ContextOptions::new();
         let ctx = Context::new(opts).unwrap();
