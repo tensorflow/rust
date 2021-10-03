@@ -13,14 +13,17 @@ fn main() -> Result<()> {
 
     let images = raw_ops::expand_dims(img, Tensor::from(&[0]))?;
     let size = Tensor::from([224, 224]);
-    let cast = raw_ops::Cast::new().DstT(DataType::Float);
-    let scale = raw_ops::div(cast.call(size.clone())?, Tensor::from([600.0f32, 800.0f32]))?;
+    let cast_to_float = raw_ops::Cast::new().DstT(DataType::Float);
+    let scale = raw_ops::div(
+        cast_to_float.call(size.clone())?,
+        Tensor::from([600.0f32, 800.0f32]),
+    )?;
     let translation = Tensor::from([0f32, 0f32]);
     let smalls = raw_ops::scale_and_translate(images, size, scale, translation)?;
 
     let img = raw_ops::squeeze(smalls)?;
-    let cast = raw_ops::Cast::new().DstT(DataType::UInt8);
-    let img = cast.call(img)?;
+    let cast_to_uint8 = raw_ops::Cast::new().DstT(DataType::UInt8);
+    let img = cast_to_uint8.call(img)?;
     let buf = raw_ops::encode_png(img)?;
     raw_ops::write_file(Tensor::from(String::from("small.png")), buf)?;
 
