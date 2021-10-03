@@ -51,7 +51,7 @@ fn write_set_attr<W: Write>(w: &mut W, attr: &Attr) -> Result<(), io::Error> {
     };
     write!(
         w,
-        "    if let ::std::option::Option::Some(value) = &__args.{} {{\n",
+        "    if let ::std::option::Option::Some(value) = &self.{} {{\n",
         rust_name
     )?;
     write!(w, "        {};\n", setter)?;
@@ -93,13 +93,149 @@ fn write_short_fn<W: Write>(
     };
     write!(w, ">\n")?;
     write!(w, "{{\n")?;
-    write!(w, "    let __args = {}::new();\n", name)?;
-    write!(w, "    {}_with_args(", fn_name)?;
-    for arg in escaped_args {
-        write!(w, "{}, ", arg)?;
-    }
-    write!(w, "&__args")?;
+    write!(w, "    let op = {}::new();\n", name)?;
+    write!(w, "    op.call(")?;
+    write!(w, "{}", escaped_args.join(", "))?;
     write!(w, ")\n")?;
+    write!(w, "}}\n\n")?;
+    Ok(())
+}
+
+fn write_attr_setter<W: Write>(w: &mut W, attr: &Attr) -> Result<(), io::Error> {
+    write!(w, "\n")?;
+    write!(w, "    /// Sets the `{}` attribute.\n", &attr.c_name)?;
+    let rust_name = &attr.rust_name;
+    let attr_type = &attr.attr_type;
+    let mut value = "value.into()".to_string();
+    if attr_type == "crate::Tensor" {
+        value = format!(
+            "(::std::boxed::Box::new({}) as ::std::boxed::Box<dyn crate::AnyTensor>)",
+            value
+        );
+        write!(
+            w,
+            "    pub fn {}<T: crate::TensorType, ArgType: ::std::convert::Into<crate::Tensor<T>>>(mut self, value: ArgType) -> Self {{\n",
+            rust_name
+        )?;
+    } else {
+        write!(
+            w,
+            "    pub fn {}<ArgType: ::std::convert::Into<{}>>(mut self, value: ArgType) -> Self {{\n",
+            rust_name, attr_type
+        )?;
+    }
+    write!(
+        w,
+        "        self.{} = ::std::option::Option::Some({});\n",
+        rust_name, value
+    )?;
+    write!(w, "        self\n")?;
+    write!(w, "    }}\n")?;
+    Ok(())
+}
+
+fn write_call_fn<W: Write>(
+    w: &mut W,
+    name: &str,
+    fn_name: &str,
+    input_args: &[String],
+    output_args: &[String],
+    attrs: &[Attr],
+    keywords: &HashSet<String>,
+) -> Result<(), io::Error> {
+    let mut escaper = Escaper::new(keywords);
+    let escaped_args: Vec<_> = input_args.iter().map(|arg| escaper.escape(&arg)).collect();
+    write!(w, "/// Execute {}.\n", fn_name)?;
+    write!(w, "    pub fn call<")?;
+    for i in 0..input_args.len() {
+        if i > 0 {
+            write!(w, ", ")?;
+        }
+        write!(w, "T{}: crate::eager::ToHandle", i)?;
+    }
+    write!(w, ">(self, ")?;
+    let args_list: Vec<_> = escaped_args
+        .iter()
+        .enumerate()
+        .map(|(i, arg)| format!("{}: T{}", arg, i))
+        .collect();
+    let joined = args_list.join(", ");
+    write!(w, "{}", joined)?;
+    if args_list.len() > 0 {
+        write!(w, ", ")?;
+    }
+    write!(w, ") -> crate::Result<")?;
+    match output_args.len() {
+        0 => write!(w, "()")?,
+        1 => write!(w, "crate::eager::TensorHandle")?,
+        n => write!(w, "[crate::eager::TensorHandle; {}]", n)?,
+    };
+    write!(w, ">\n")?;
+    write!(w, "{{\n")?;
+    write!(w, "    let status = crate::Status::new();\n")?;
+    write!(w, "\n")?;
+    write!(w, "    // Define Op\n")?;
+    let op_mut = if escaped_args.len() + attrs.len() > 0 {
+        "mut"
+    } else {
+        ""
+    };
+    write!(
+        w,
+        "    let {} op = crate::eager::Op::new(&crate::eager::CONTEXT, \"{}\")?;\n",
+        op_mut, name
+    )?;
+    write!(w, "\n")?;
+    write!(w, "    // Required input arguments\n")?;
+    for arg in escaped_args {
+        write!(w, "    op.add_input(&{}.to_handle()?)?;\n", arg)?;
+    }
+    write!(w, "\n")?;
+    write!(w, "    // Attributes\n")?;
+    for attr in attrs {
+        write_set_attr(w, attr)?;
+    }
+    write!(w, "\n")?;
+    write!(w, "    // Execute Op\n")?;
+    write!(w, "    let mut num_output = {};\n", output_args.len())?;
+    write!(
+        w,
+        "    let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>(); {}];\n",
+        output_args.len()
+    )?;
+    write!(w, "    unsafe {{\n")?;
+    write!(w, "        tf::TFE_Execute(op.inner, res.as_mut_ptr(), (&mut num_output) as *mut i32, status.inner,);\n")?;
+    write!(w, "    }};\n")?;
+    write!(w, "    if status.is_ok() {{\n")?;
+    match output_args.len() {
+        0 => {
+            write!(w, "        return Ok(());\n")?;
+        }
+        1 => {
+            write!(w, "        let ret = unsafe {{ \n")?;
+            write!(
+                w,
+                "            crate::eager::TensorHandle::from_tensor_handle(res[0])\n",
+            )?;
+            write!(w, "        }};\n")?;
+            write!(w, "        return Ok(ret);\n")?;
+        }
+        n => {
+            write!(w, "        let ret = unsafe {{ [\n")?;
+            for i in 0..n {
+                write!(
+                    w,
+                    "            crate::eager::TensorHandle::from_tensor_handle(res[{}]),\n",
+                    i
+                )?;
+            }
+            write!(w, "        ] }};\n")?;
+            write!(w, "        return Ok(ret);\n")?;
+        }
+    };
+
+    write!(w, "    }}\n")?;
+    write!(w, "    Err(status)\n")?;
     write!(w, "}}\n\n")?;
     Ok(())
 }
@@ -423,10 +559,11 @@ fn define_op<W: Write>(
 "#,
         name = name
     )?;
-    write!(w, "}}\n")?;
+    for attr in &attrs {
+        write_attr_setter(w, attr)?;
+    }
     write!(w, "\n")?;
-    write_short_fn(w, &name, &fn_name, &input_args, &output_args, &keywords)?;
-    write_fn_with_args(
+    write_call_fn(
         w,
         &name,
         &fn_name,
@@ -435,6 +572,9 @@ fn define_op<W: Write>(
         &attrs,
         &keywords,
     )?;
+    write!(w, "}}\n")?;
+    write!(w, "\n")?;
+    write_short_fn(w, &name, &fn_name, &input_args, &output_args, &keywords)?;
     Ok(())
 }
 

@@ -698,11 +698,11 @@ mod test {
         let filename: Tensor<String> = Tensor::from(String::from("test_resources/sample.png"));
 
         let h = raw_ops::read_file(filename).unwrap();
-        let args = raw_ops::DecodePng {
-            channels: Some(3),
-            dtype: Some(DataType::UInt8),
-        };
-        let h = raw_ops::decode_png_with_args(h, &args).unwrap();
+        let h = raw_ops::DecodePng::new()
+            .channels(3)
+            .dtype(DataType::UInt8)
+            .call(h)
+            .unwrap();
         let z: Tensor<u8> = h.resolve().unwrap();
         assert_eq!(z.len(), 224 * 224 * 3);
     }
@@ -715,12 +715,10 @@ mod test {
             t[i] = i as i64;
         }
         let k: Tensor<i32> = Tensor::new(&[]).with_values(&[3]).unwrap();
-        let args = raw_ops::TopKV2 {
-            sorted: Some(true),
-            ..Default::default()
-        };
-
-        let [values, indices] = raw_ops::top_kv2_with_args(t, k.clone(), &args).unwrap();
+        let [values, indices] = raw_ops::TopKV2::new()
+            .sorted(true)
+            .call(t, k.clone())
+            .unwrap();
         let values: Tensor<i64> = values.resolve().unwrap();
         let indices: Tensor<i32> = indices.resolve().unwrap();
 
