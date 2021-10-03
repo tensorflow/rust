@@ -612,6 +612,7 @@ impl Drop for Op {
         unsafe { tf::TFE_DeleteOp(self.inner) };
     }
 }
+
 ///
 pub trait ToHandle<'a> {
     ///
