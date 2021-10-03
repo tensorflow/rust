@@ -153,7 +153,7 @@ fn write_call_fn<W: Write>(
         }
         write!(w, "T{}: crate::eager::ToHandle", i)?;
     }
-    write!(w, ">(self, ")?;
+    write!(w, ">(&self, ")?;
     let args_list: Vec<_> = escaped_args
         .iter()
         .enumerate()
@@ -200,11 +200,11 @@ fn write_call_fn<W: Write>(
     write!(w, "    let mut num_output = {};\n", output_args.len())?;
     write!(
         w,
-        "    let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>(); {}];\n",
+        "    let mut res = [std::ptr::null_mut::<tensorflow_sys::TFE_TensorHandle>(); {}];\n",
         output_args.len()
     )?;
     write!(w, "    unsafe {{\n")?;
-    write!(w, "        tf::TFE_Execute(op.inner, res.as_mut_ptr(), (&mut num_output) as *mut i32, status.inner,);\n")?;
+    write!(w, "        tensorflow_sys::TFE_Execute(op.inner, res.as_mut_ptr(), (&mut num_output) as *mut i32, status.inner);\n")?;
     write!(w, "    }};\n")?;
     write!(w, "    if status.is_ok() {{\n")?;
     match output_args.len() {
@@ -237,114 +237,6 @@ fn write_call_fn<W: Write>(
     write!(w, "    }}\n")?;
     write!(w, "    Err(status)\n")?;
     write!(w, "}}\n\n")?;
-    Ok(())
-}
-
-fn write_fn_with_args<W: Write>(
-    w: &mut W,
-    name: &str,
-    fn_name: &str,
-    input_args: &[String],
-    output_args: &[String],
-    attrs: &[Attr],
-    keywords: &HashSet<String>,
-) -> Result<(), io::Error> {
-    let mut escaper = Escaper::new(keywords);
-    let escaped_args: Vec<_> = input_args.iter().map(|arg| escaper.escape(&arg)).collect();
-    write!(w, "/// {} with options.\n", fn_name)?;
-    write!(w, "pub fn {}_with_args<", fn_name)?;
-    for i in 0..input_args.len() {
-        if i > 0 {
-            write!(w, ", ")?;
-        }
-        write!(w, "T{}: crate::eager::ToHandle", i)?;
-    }
-    write!(w, ">(")?;
-    let args_list: Vec<_> = escaped_args
-        .iter()
-        .enumerate()
-        .map(|(i, arg)| format!("{}: T{}", arg, i))
-        .collect();
-    let joined = args_list.join(", ");
-    write!(w, "{}", joined)?;
-    if args_list.len() > 0 {
-        write!(w, ", ")?;
-    }
-    write!(w, "__args: &{}", name)?;
-    write!(w, ") -> crate::Result<")?;
-    match output_args.len() {
-        0 => write!(w, "()")?,
-        1 => write!(w, "crate::eager::TensorHandle")?,
-        n => write!(w, "[crate::eager::TensorHandle; {}]", n)?,
-    };
-    write!(w, ">\n")?;
-    write!(w, "{{\n")?;
-    write!(w, "    let status = crate::Status::new();\n")?;
-    write!(w, "\n")?;
-    write!(w, "    // Define Op\n")?;
-    let op_mut = if escaped_args.len() + attrs.len() > 0 {
-        "mut"
-    } else {
-        ""
-    };
-    write!(
-        w,
-        "    let {} op = crate::eager::Op::new(&crate::eager::CONTEXT, \"{}\")?;\n",
-        op_mut, name
-    )?;
-    write!(w, "\n")?;
-    write!(w, "    // Required input arguments\n")?;
-    for arg in escaped_args {
-        write!(w, "    op.add_input(&{}.to_handle()?)?;\n", arg)?;
-    }
-    write!(w, "\n")?;
-    write!(w, "    // Attributes\n")?;
-    for attr in attrs {
-        write_set_attr(w, attr)?;
-    }
-    write!(w, "\n")?;
-    write!(w, "    // Execute Op\n")?;
-    write!(w, "    let mut num_output = {};\n", output_args.len())?;
-    write!(
-        w,
-        "    let mut res = [std::ptr::null_mut::<tf::TFE_TensorHandle>(); {}];\n",
-        output_args.len()
-    )?;
-    write!(w, "    unsafe {{\n")?;
-    write!(w, "        tf::TFE_Execute(op.inner, res.as_mut_ptr(), (&mut num_output) as *mut i32, status.inner,);\n")?;
-    write!(w, "    }};\n")?;
-    write!(w, "    if status.is_ok() {{\n")?;
-    match output_args.len() {
-        0 => {
-            write!(w, "        return Ok(());\n")?;
-        }
-        1 => {
-            write!(w, "        let ret = unsafe {{ \n")?;
-            write!(
-                w,
-                "            crate::eager::TensorHandle::from_tensor_handle(res[0])\n",
-            )?;
-            write!(w, "        }};\n")?;
-            write!(w, "        return Ok(ret);\n")?;
-        }
-        n => {
-            write!(w, "        let ret = unsafe {{ [\n")?;
-            for i in 0..n {
-                write!(
-                    w,
-                    "            crate::eager::TensorHandle::from_tensor_handle(res[{}]),\n",
-                    i
-                )?;
-            }
-            write!(w, "        ] }};\n")?;
-            write!(w, "        return Ok(ret);\n")?;
-        }
-    };
-
-    write!(w, "    }}\n")?;
-    write!(w, "    Err(status)\n")?;
-    write!(w, "}}\n\n")?;
-
     Ok(())
 }
 
@@ -358,7 +250,7 @@ fn write_attr<W: Write>(w: &mut W, attr: &Attr) -> Result<(), io::Error> {
     } else {
         write!(
             w,
-            "    pub {}: ::std::option::Option<{}>,\n",
+            "    {}: ::std::option::Option<{}>,\n",
             attr.rust_name, attr.attr_type
         )?;
     }
@@ -657,9 +549,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         // has been shadowed by something else, so we treat them as keywords.
         "bool", "char", "f32", "f64", "i8", "i16", "i32", "i64", "i128", "isize", "str", "u8",
         "u16", "u32", "u64", "u128", "usize",
-        // new is not keywords, but it still
-        // can't be used because they would clash with methods we're providing.
-        "new", "__args",
     ]
     .iter()
     .map(|s| s.to_string())
@@ -677,9 +566,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     unused_parens,
     unused_qualifications
 )]
-
-use tensorflow_sys as tf;
-
+use tensorflow_sys;
 "#
     )?;
     let mut fn_escaper = Escaper::new(&keywords);

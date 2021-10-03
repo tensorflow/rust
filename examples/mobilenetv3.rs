@@ -32,11 +32,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     // 1. load the image file
     let filename: Tensor<String> = Tensor::from(String::from("examples/mobilenetv3/sample.png"));
     let buf = raw_ops::read_file(filename).unwrap();
-    let args = raw_ops::DecodePng {
-        channels: Some(3),
-        ..Default::default()
-    };
-    let img = raw_ops::decode_png_with_args(buf, &args).unwrap();
+    let decode_png = raw_ops::DecodePng::new().channels(3);
+    let img = decode_png.call(buf).unwrap();
 
     // 2. shrink the image with antialias, which requires ScaleAndTranslate op instead of Resize op.
     let img_height = img.dim(0).unwrap();
@@ -47,14 +44,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         size[1] as f32 / img_width as f32,
     ]);
     let translation = Tensor::from(&[0.0f32, 0.0f32]); // no translation
-    let args = raw_ops::ScaleAndTranslate {
-        kernel_type: Some("triangle".into()),
-        ..Default::default()
-    };
-    let dim = Tensor::from([0]); // ScaleAndTranslate requires 4D Tensor (batch, height, width, channel)
+    let scale_and_translate = raw_ops::ScaleAndTranslate::new().kernel_type("triangle");
+    let dim = Tensor::from(0); // ScaleAndTranslate requires 4D Tensor (batch, height, width, channel)
     let images = raw_ops::expand_dims(img, dim).unwrap();
-    let h =
-        raw_ops::scale_and_translate_with_args(images, size, scale, translation, &args).unwrap();
+    let h = scale_and_translate
+        .call(images, size, scale, translation)
+        .unwrap();
 
     // 3. get 224x224 image as usual Tensor
     let x: Tensor<f32> = h.resolve().unwrap();
