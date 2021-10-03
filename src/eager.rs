@@ -18,13 +18,6 @@ use crate::{AnyTensor, DataType, Device, Result, Status, Tensor, TensorType};
 
 pub mod raw_ops;
 
-use once_cell::sync::Lazy;
-
-static CONTEXT: Lazy<Context> = Lazy::new(|| {
-    let opts = ContextOptions::new();
-    Context::new(opts).unwrap()
-});
-
 /// Options that can be passed during context creation.
 #[derive(Debug)]
 pub struct ContextOptions {
@@ -142,21 +135,28 @@ unsafe impl std::marker::Sync for Context {}
 
 /// A handle to a tensor on a device.
 #[derive(Debug)]
-pub struct TensorHandle {
+pub struct TensorHandle<'a> {
     inner: *mut tf::TFE_TensorHandle,
+    ctx: &'a Context,
 }
-impl_drop!(TensorHandle, TFE_DeleteTensorHandle);
+impl<'a> Drop for TensorHandle<'a> {
+    fn drop(&mut self) {
+        unsafe {
+            tf::TFE_DeleteTensorHandle(self.inner);
+        }
+    }
+}
 
-impl TensorHandle {
+impl<'a> TensorHandle<'a> {
     /// Crate a TensorHandle from Tensor
-    pub fn new<T: TensorType>(t: &Tensor<T>) -> Result<TensorHandle> {
+    pub fn new<T: TensorType>(ctx: &'a Context, t: &Tensor<T>) -> Result<TensorHandle<'a>> {
         let status = Status::new();
         let inner = unsafe { tf::TFE_NewTensorHandle(t.inner().unwrap(), status.inner) };
 
         if inner.is_null() {
             Err(status)
         } else {
-            Ok(TensorHandle { inner })
+            Ok(TensorHandle { inner, ctx })
         }
     }
 
@@ -242,7 +242,10 @@ impl TensorHandle {
         let inner = unsafe { tf::TFE_TensorHandleCopySharingTensor(self.inner, status.inner) };
         if status.is_ok() {
             // todo: UTF8 check
-            Ok(Self { inner })
+            Ok(Self {
+                inner,
+                ctx: self.ctx,
+            })
         } else {
             Err(status)
         }
@@ -283,8 +286,11 @@ impl TensorHandle {
     }
 
     ///
-    pub(crate) unsafe fn from_tensor_handle(h: *mut tf::TFE_TensorHandle) -> Self {
-        Self { inner: h }
+    pub(crate) unsafe fn from_tensor_handle(
+        ctx: &'a Context,
+        h: *mut tf::TFE_TensorHandle,
+    ) -> Self {
+        Self { inner: h, ctx }
     }
 }
 
@@ -607,22 +613,22 @@ impl Drop for Op {
     }
 }
 ///
-pub trait ToHandle {
+pub trait ToHandle<'a> {
     ///
-    fn to_handle(&self) -> Result<TensorHandle>;
+    fn to_handle(&self, ctx: &'a Context) -> Result<TensorHandle<'a>>;
 }
 
-impl<T> ToHandle for Tensor<T>
+impl<'a, T> ToHandle<'a> for Tensor<T>
 where
     T: TensorType,
 {
-    fn to_handle(&self) -> Result<TensorHandle> {
-        TensorHandle::new(self)
+    fn to_handle(&self, ctx: &'a Context) -> Result<TensorHandle<'a>> {
+        TensorHandle::new(ctx, self)
     }
 }
 
-impl ToHandle for TensorHandle {
-    fn to_handle(&self) -> Result<TensorHandle> {
+impl<'a> ToHandle<'a> for TensorHandle<'a> {
+    fn to_handle(&self, _: &'a Context) -> Result<TensorHandle<'a>> {
         self.copy_sharing_tensor()
     }
 }
@@ -634,10 +640,13 @@ mod test {
 
     #[test]
     fn create() {
+        let opts = ContextOptions::new();
+        let ctx = Context::new(opts).unwrap();
+
         let mut x = Tensor::new(&[1]);
         x[0] = 2i32;
 
-        let x_handle = x.to_handle().unwrap();
+        let x_handle = x.to_handle(&ctx).unwrap();
 
         let y = unsafe {
             let status = Status::new();
@@ -650,32 +659,34 @@ mod test {
 
     #[test]
     fn add_test() {
-        let mut x = Tensor::new(&[1]);
-        x[0] = 2i32;
+        let opts = ContextOptions::new();
+        let ctx = Context::new(opts).unwrap();
+
+        let x = Tensor::from(2);
         let y = x.clone();
 
-        let h = raw_ops::add(x, y).unwrap();
+        let h = raw_ops::add(&ctx, x, y).unwrap();
         let z: Result<Tensor<i32>> = h.resolve();
         assert!(z.is_ok());
         let z = z.unwrap();
         assert_eq!(z[0], 4i32);
 
-        let h = raw_ops::add(z.clone(), z.clone()).unwrap();
+        let h = raw_ops::add(&ctx, z.clone(), z.clone()).unwrap();
         let z: Tensor<i32> = h.resolve().unwrap();
         assert_eq!(z[0], 8i32);
 
-        let h1 = z.clone().to_handle().unwrap();
-        let h2 = z.clone().to_handle().unwrap();
-        let h = raw_ops::add(h1, h2).unwrap();
+        let h1 = z.clone().to_handle(&ctx).unwrap();
+        let h2 = z.clone().to_handle(&ctx).unwrap();
+        let h = raw_ops::add(&ctx, h1, h2).unwrap();
         let z: Tensor<i32> = h.resolve().unwrap();
         assert_eq!(z[0], 16i32);
 
-        let h1 = z.clone().to_handle().unwrap();
-        let h2 = z.clone().to_handle().unwrap();
-        let h = raw_ops::add(h1, h2).unwrap();
+        let h1 = z.clone().to_handle(&ctx).unwrap();
+        let h2 = z.clone().to_handle(&ctx).unwrap();
+        let h = raw_ops::add(&ctx, h1, h2).unwrap();
 
-        let h1 = z.clone().to_handle().unwrap();
-        let h = raw_ops::add(h1, h).unwrap();
+        let h1 = z.clone().to_handle(&ctx).unwrap();
+        let h = raw_ops::add(&ctx, h1, h).unwrap();
         let z: Tensor<i32> = h.resolve().unwrap();
 
         assert_eq!(z[0], 48i32);
@@ -683,10 +694,13 @@ mod test {
 
     #[test]
     fn read_file_test() {
+        let opts = ContextOptions::new();
+        let ctx = Context::new(opts).unwrap();
+
         let filename: Tensor<String> =
             Tensor::from(String::from("test_resources/io/sample_text.txt"));
 
-        let h = raw_ops::read_file(filename).unwrap();
+        let h = raw_ops::read_file(&ctx, filename).unwrap();
         let z: Tensor<String> = h.resolve().unwrap();
         assert_eq!(z.len(), 1);
         assert_eq!(z[0].len(), 32);
@@ -695,13 +709,16 @@ mod test {
 
     #[test]
     fn decode_png_test() {
+        let opts = ContextOptions::new();
+        let ctx = Context::new(opts).unwrap();
+
         let filename: Tensor<String> = Tensor::from(String::from("test_resources/sample.png"));
 
-        let h = raw_ops::read_file(filename).unwrap();
+        let h = raw_ops::read_file(&ctx, filename).unwrap();
         let h = raw_ops::DecodePng::new()
             .channels(3)
             .dtype(DataType::UInt8)
-            .call(h)
+            .call(&ctx, h)
             .unwrap();
         let z: Tensor<u8> = h.resolve().unwrap();
         assert_eq!(z.len(), 224 * 224 * 3);
@@ -709,15 +726,18 @@ mod test {
 
     #[test]
     fn top_kv2_test() {
+        let opts = ContextOptions::new();
+        let ctx = Context::new(opts).unwrap();
+
         // 2 rows x 10 cols
         let mut t: Tensor<i64> = Tensor::new(&[2, 10]);
         for i in 0..20 {
             t[i] = i as i64;
         }
-        let k: Tensor<i32> = Tensor::new(&[]).with_values(&[3]).unwrap();
+        let k = Tensor::from(3);
         let [values, indices] = raw_ops::TopKV2::new()
             .sorted(true)
-            .call(t, k.clone())
+            .call(&ctx, t, k.clone())
             .unwrap();
         let values: Tensor<i64> = values.resolve().unwrap();
         let indices: Tensor<i32> = indices.resolve().unwrap();
@@ -742,7 +762,7 @@ mod test {
     }
 
     #[test]
-    fn context() {
+    fn context_test() {
         let opts = ContextOptions::new();
         let ctx = Context::new(opts).unwrap();
 

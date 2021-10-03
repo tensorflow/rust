@@ -70,21 +70,14 @@ fn write_short_fn<W: Write>(
     let mut escaper = Escaper::new(keywords);
     let escaped_args: Vec<_> = input_args.iter().map(|arg| escaper.escape(&arg)).collect();
     write!(w, "/// {} with default options.\n", fn_name)?;
-    write!(w, "pub fn {}<", fn_name)?;
+    write!(w, "pub fn {}<'a", fn_name)?;
     for i in 0..escaped_args.len() {
-        if i > 0 {
-            write!(w, ", ")?;
-        }
-        write!(w, "T{}: crate::eager::ToHandle", i)?;
+        write!(w, ", T{}: crate::eager::ToHandle<'a>", i)?;
     }
-    write!(w, ">(")?;
-    let args_list: Vec<_> = escaped_args
-        .iter()
-        .enumerate()
-        .map(|(i, arg)| format!("{}: T{}", arg, i))
-        .collect();
-    let joined = args_list.join(", ");
-    write!(w, "{}", joined)?;
+    write!(w, ">(ctx: &'a crate::eager::Context")?;
+    for (i, arg) in escaped_args.iter().enumerate() {
+        write!(w, ", {}: T{}", arg, i)?;
+    }
     write!(w, ") -> crate::Result<")?;
     match output_args.len() {
         0 => write!(w, "()")?,
@@ -94,8 +87,10 @@ fn write_short_fn<W: Write>(
     write!(w, ">\n")?;
     write!(w, "{{\n")?;
     write!(w, "    let op = {}::new();\n", name)?;
-    write!(w, "    op.call(")?;
-    write!(w, "{}", escaped_args.join(", "))?;
+    write!(w, "    op.call(ctx")?;
+    for arg in escaped_args {
+        write!(w, ", {}", arg)?;
+    }
     write!(w, ")\n")?;
     write!(w, "}}\n\n")?;
     Ok(())
@@ -146,14 +141,11 @@ fn write_call_fn<W: Write>(
     let mut escaper = Escaper::new(keywords);
     let escaped_args: Vec<_> = input_args.iter().map(|arg| escaper.escape(&arg)).collect();
     write!(w, "/// Execute {}.\n", fn_name)?;
-    write!(w, "    pub fn call<")?;
-    for i in 0..input_args.len() {
-        if i > 0 {
-            write!(w, ", ")?;
-        }
-        write!(w, "T{}: crate::eager::ToHandle", i)?;
+    write!(w, "    pub fn call<'a")?;
+    for i in 0..escaped_args.len() {
+        write!(w, ", T{}: crate::eager::ToHandle<'a>", i)?;
     }
-    write!(w, ">(&self, ")?;
+    write!(w, ">(&self, ctx: &'a crate::eager::Context, ")?;
     let args_list: Vec<_> = escaped_args
         .iter()
         .enumerate()
@@ -161,14 +153,11 @@ fn write_call_fn<W: Write>(
         .collect();
     let joined = args_list.join(", ");
     write!(w, "{}", joined)?;
-    if args_list.len() > 0 {
-        write!(w, ", ")?;
-    }
     write!(w, ") -> crate::Result<")?;
     match output_args.len() {
         0 => write!(w, "()")?,
-        1 => write!(w, "crate::eager::TensorHandle")?,
-        n => write!(w, "[crate::eager::TensorHandle; {}]", n)?,
+        1 => write!(w, "crate::eager::TensorHandle<'a>")?,
+        n => write!(w, "[crate::eager::TensorHandle<'a>; {}]", n)?,
     };
     write!(w, ">\n")?;
     write!(w, "{{\n")?;
@@ -182,13 +171,13 @@ fn write_call_fn<W: Write>(
     };
     write!(
         w,
-        "    let {} op = crate::eager::Op::new(&crate::eager::CONTEXT, \"{}\")?;\n",
+        "    let {} op = crate::eager::Op::new(&ctx, \"{}\")?;\n",
         op_mut, name
     )?;
     write!(w, "\n")?;
     write!(w, "    // Required input arguments\n")?;
     for arg in escaped_args {
-        write!(w, "    op.add_input(&{}.to_handle()?)?;\n", arg)?;
+        write!(w, "    op.add_input(&{}.to_handle(&ctx)?)?;\n", arg)?;
     }
     write!(w, "\n")?;
     write!(w, "    // Attributes\n")?;
@@ -215,7 +204,7 @@ fn write_call_fn<W: Write>(
             write!(w, "        let ret = unsafe {{ \n")?;
             write!(
                 w,
-                "            crate::eager::TensorHandle::from_tensor_handle(res[0])\n",
+                "            crate::eager::TensorHandle::from_tensor_handle(&ctx, res[0])\n",
             )?;
             write!(w, "        }};\n")?;
             write!(w, "        return Ok(ret);\n")?;
@@ -225,7 +214,7 @@ fn write_call_fn<W: Write>(
             for i in 0..n {
                 write!(
                     w,
-                    "            crate::eager::TensorHandle::from_tensor_handle(res[{}]),\n",
+                    "            crate::eager::TensorHandle::from_tensor_handle(&ctx, res[{}]),\n",
                     i
                 )?;
             }
@@ -549,6 +538,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         // has been shadowed by something else, so we treat them as keywords.
         "bool", "char", "f32", "f64", "i8", "i16", "i32", "i64", "i128", "isize", "str", "u8",
         "u16", "u32", "u64", "u128", "usize",
+        // new and call aren't keywords, but they still can't be used because they would clash
+        // with methods we're providing.
+        "new", "call",
     ]
     .iter()
     .map(|s| s.to_string())
