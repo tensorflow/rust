@@ -1,6 +1,7 @@
 use std::error::Error;
 use std::path::PathBuf;
 use std::result::Result;
+use tensorflow::eager::{raw_ops, Context, ContextOptions};
 use tensorflow::Code;
 use tensorflow::Graph;
 use tensorflow::SavedModelBundle;
@@ -10,10 +11,10 @@ use tensorflow::Status;
 use tensorflow::Tensor;
 use tensorflow::DEFAULT_SERVING_SIGNATURE_DEF_KEY;
 
-use image::io::Reader as ImageReader;
-use image::GenericImageView;
-
 fn main() -> Result<(), Box<dyn Error>> {
+    let opts = ContextOptions::new();
+    let ctx = &Context::new(opts).unwrap();
+
     let export_dir = "examples/mobilenetv3";
     let model_file: PathBuf = [export_dir, "saved_model.pb"].iter().collect();
     if !model_file.exists() {
@@ -31,13 +32,30 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     // Create input variables for our addition
-    let mut x = Tensor::new(&[1, 224, 224, 3]);
-    let img = ImageReader::open("examples/mobilenetv3/sample.png")?.decode()?;
-    for (i, (_, _, pixel)) in img.pixels().enumerate() {
-        x[3 * i] = pixel.0[0] as f32;
-        x[3 * i + 1] = pixel.0[1] as f32;
-        x[3 * i + 2] = pixel.0[2] as f32;
-    }
+    // 1. load the image file
+    let filename: Tensor<String> = Tensor::from(String::from("examples/mobilenetv3/sample.png"));
+    let buf = raw_ops::read_file(ctx, filename).unwrap();
+    let decode_png = raw_ops::DecodePng::new().channels(3);
+    let img = decode_png.call(ctx, buf).unwrap();
+
+    // 2. shrink the image with antialias, which requires ScaleAndTranslate op instead of Resize op.
+    let img_height = img.dim(0).unwrap();
+    let img_width = img.dim(1).unwrap();
+    let size = Tensor::from(&[224, 224]); // desired size
+    let scale = Tensor::from(&[
+        size[0] as f32 / img_height as f32,
+        size[1] as f32 / img_width as f32,
+    ]);
+    let translation = Tensor::from(&[0.0f32, 0.0f32]); // no translation
+    let scale_and_translate = raw_ops::ScaleAndTranslate::new().kernel_type("triangle");
+    let dim = Tensor::from(0); // ScaleAndTranslate requires 4D Tensor (batch, height, width, channel)
+    let images = raw_ops::expand_dims(ctx, img, dim).unwrap();
+    let h = scale_and_translate
+        .call(ctx, images, size, scale, translation)
+        .unwrap();
+
+    // 3. get 224x224 image as usual Tensor
+    let x: Tensor<f32> = h.resolve().unwrap();
 
     // Load the saved model exported by zenn_savedmodel.py.
     let mut graph = Graph::new();

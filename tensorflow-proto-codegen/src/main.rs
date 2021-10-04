@@ -20,6 +20,10 @@ fn main() -> Result<(), Box<dyn Error>> {
                 tensorflow_folder
             ),
             &format!(
+                "{}/tensorflow/core/framework/full_type.proto",
+                tensorflow_folder
+            ),
+            &format!(
                 "{}/tensorflow/core/framework/function.proto",
                 tensorflow_folder
             ),
@@ -94,6 +98,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         input: &[
             &format!(
                 "{}/tensorflow/core/framework/attr_value.proto",
+                tensorflow_folder
+            ),
+            &format!(
+                "{}/tensorflow/core/framework/full_type.proto",
                 tensorflow_folder
             ),
             &format!(

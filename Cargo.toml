@@ -35,11 +35,11 @@ rustversion = "1.0.5"
 [dev-dependencies]
 random = "0.12.2"
 serial_test = "0.5.1"
-image = "0.23.14"
 
 [features]
 tensorflow_gpu = ["tensorflow-sys/tensorflow_gpu"]
 tensorflow_unstable = []
+eager = ["tensorflow-sys/eager"]
 # This is for testing purposes; users should not use this.
 examples_system_alloc = ["tensorflow-sys/examples_system_alloc"]
 private-docs-rs = [] # DO NOT RELY ON THIS
@@ -67,3 +67,8 @@ name = "xor"
 
 [[example]]
 name = "mobilenetv3"
+required-features = ["eager"]
+
+[[example]]
+name = "eager_resize"
+required-features = ["eager"]
