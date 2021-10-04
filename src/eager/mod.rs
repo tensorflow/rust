@@ -10,6 +10,7 @@ use libc::c_int;
 use libc::c_uchar;
 use libc::c_void;
 use libc::size_t;
+use std::marker::PhantomData;
 use std::os::raw::c_void as std_c_void;
 
 use tensorflow_sys as tf;
@@ -134,10 +135,42 @@ unsafe impl std::marker::Send for Context {}
 unsafe impl std::marker::Sync for Context {}
 
 /// A handle to a tensor on a device.
+///
+/// Constructing a TensorHandle requires a reference to an execute context so that the
+/// generated handle will not out live the context.
+/// ```
+/// # use tensorflow::Tensor;
+/// use tensorflow::eager::{ContextOptions, Context, ToHandle};
+///
+/// let opts = ContextOptions::new();
+/// let ctx = Context::new(opts).unwrap();
+///
+/// let t = Tensor::from(3i32);                // <- Tensor
+/// let h = t.to_handle(&ctx).unwrap();        // <- TensorHandle
+/// let v: Tensor<i32> = h.resolve().unwrap(); // <- Tensor
+/// assert_eq!(v[0], 3i32);
+/// ```
+///
+/// Since TensorHandle cannot be alive beyond the lifetime of the context, the following
+/// code will not compile.
+/// ```compile_fail
+/// # use tensorflow::Tensor;
+/// use tensorflow::eager::{ContextOptions, Context, ToHandle};
+///
+/// let h = {
+///     let opts = ContextOptions::new();
+///     let ctx = Context::new(opts).unwrap();
+///
+///     let t = Tensor::from(3);
+///     let h = t.to_handle(&ctx).unwrap();
+///     h
+/// };
+/// ```
 #[derive(Debug)]
 pub struct TensorHandle<'a> {
     inner: *mut tf::TFE_TensorHandle,
-    ctx: &'a Context,
+    // TensorHandle should not live longer than a given context.
+    ctx: PhantomData<&'a Context>,
 }
 impl<'a> Drop for TensorHandle<'a> {
     fn drop(&mut self) {
@@ -149,14 +182,17 @@ impl<'a> Drop for TensorHandle<'a> {
 
 impl<'a> TensorHandle<'a> {
     /// Crate a TensorHandle from Tensor
-    pub fn new<T: TensorType>(ctx: &'a Context, t: &Tensor<T>) -> Result<TensorHandle<'a>> {
+    pub fn new<T: TensorType>(_ctx: &'a Context, t: &Tensor<T>) -> Result<TensorHandle<'a>> {
         let status = Status::new();
         let inner = unsafe { tf::TFE_NewTensorHandle(t.inner().unwrap(), status.inner) };
 
         if inner.is_null() {
             Err(status)
         } else {
-            Ok(TensorHandle { inner, ctx })
+            Ok(TensorHandle {
+                inner,
+                ctx: PhantomData,
+            })
         }
     }
 
@@ -263,10 +299,13 @@ impl<'a> TensorHandle<'a> {
             return Err(status);
         }
         if self.data_type() != T::data_type() {
-            status.set_lossy(
-                crate::Code::InvalidArgument,
-                "The expected data type and underlying data type did not match.",
+            let msg = format!(
+                "The expected data type ({}) and underlying data type ({}) did not match.",
+                T::data_type(),
+                self.data_type()
             );
+
+            status.set_lossy(crate::Code::InvalidArgument, &msg);
             return Err(status);
         }
 
@@ -287,10 +326,13 @@ impl<'a> TensorHandle<'a> {
 
     ///
     pub(crate) unsafe fn from_tensor_handle(
-        ctx: &'a Context,
+        _ctx: &'a Context,
         h: *mut tf::TFE_TensorHandle,
     ) -> Self {
-        Self { inner: h, ctx }
+        Self {
+            inner: h,
+            ctx: PhantomData,
+        }
     }
 }
 
@@ -328,13 +370,11 @@ impl DebugInfo {
     }
 }
 
-///
 struct Op {
     inner: *mut tf::TFE_Op,
 }
 
 impl Op {
-    ///
     fn new(ctx: &Context, op_or_function_name: &str) -> Result<Op> {
         let status = Status::new();
 
@@ -346,7 +386,7 @@ impl Op {
         Ok(Self { inner })
     }
 
-    ///
+    #[allow(dead_code)]
     fn get_name(&self) -> Result<&str> {
         let status = Status::new();
 
@@ -361,6 +401,7 @@ impl Op {
     }
 
     /// Context may not be outlive over the lifetime of `op'
+    #[allow(dead_code)]
     fn get_context(&self) -> &Context {
         unimplemented!()
     }
@@ -378,6 +419,7 @@ impl Op {
     }
 
     /// Adds multiple inputs to this operation.
+    #[allow(dead_code)]
     fn add_input_list(&mut self, inputs: &[TensorHandle]) -> Result<()> {
         let status = Status::new();
         unsafe {
@@ -480,6 +522,7 @@ impl Op {
     }
 
     /// Sets an attribute which holds an array of booleans.
+    #[allow(dead_code)]
     fn set_attr_bool_list(&mut self, attr_name: &str, value: &[bool]) {
         let c_attr_name = CString::new(attr_name).unwrap();
         let c_value: Vec<c_uchar> = value.iter().map(|x| if *x { 1 } else { 0 }).collect();
@@ -771,6 +814,22 @@ mod test {
         assert!(devices.len() > 0);
         for d in devices.iter() {
             assert_ne!(String::from(""), d.name);
+        }
+    }
+
+    #[test]
+    fn type_mismatch_test() {
+        let opts = ContextOptions::new();
+        let ctx = Context::new(opts).unwrap();
+
+        let t = Tensor::from(0);
+        let h = t.to_handle(&ctx).unwrap();
+        let v: Result<Tensor<f32>> = h.resolve();
+        assert!(v.is_err());
+        if let Err(status) = v {
+            eprintln!("{}", status);
+        } else {
+            assert!(false);
         }
     }
 }
