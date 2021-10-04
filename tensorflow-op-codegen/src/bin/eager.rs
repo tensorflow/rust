@@ -81,8 +81,8 @@ fn write_short_fn<W: Write>(
     write!(w, ") -> crate::Result<")?;
     match output_args.len() {
         0 => write!(w, "()")?,
-        1 => write!(w, "crate::eager::TensorHandle")?,
-        n => write!(w, "[crate::eager::TensorHandle; {}]", n)?,
+        1 => write!(w, "crate::eager::TensorHandle<'a>")?,
+        n => write!(w, "[crate::eager::TensorHandle<'a>; {}]", n)?,
     };
     write!(w, ">\n")?;
     write!(w, "{{\n")?;
@@ -171,13 +171,13 @@ fn write_call_fn<W: Write>(
     };
     write!(
         w,
-        "    let {} op = crate::eager::Op::new(&ctx, \"{}\")?;\n",
+        "    let {} op = crate::eager::Op::new(ctx, \"{}\")?;\n",
         op_mut, name
     )?;
     write!(w, "\n")?;
     write!(w, "    // Required input arguments\n")?;
     for arg in escaped_args {
-        write!(w, "    op.add_input(&{}.to_handle(&ctx)?)?;\n", arg)?;
+        write!(w, "    op.add_input(&{}.to_handle(ctx)?)?;\n", arg)?;
     }
     write!(w, "\n")?;
     write!(w, "    // Attributes\n")?;
@@ -204,7 +204,7 @@ fn write_call_fn<W: Write>(
             write!(w, "        let ret = unsafe {{ \n")?;
             write!(
                 w,
-                "            crate::eager::TensorHandle::from_tensor_handle(&ctx, res[0])\n",
+                "            crate::eager::TensorHandle::from_tensor_handle(ctx, res[0])\n",
             )?;
             write!(w, "        }};\n")?;
             write!(w, "        return Ok(ret);\n")?;
@@ -214,7 +214,7 @@ fn write_call_fn<W: Write>(
             for i in 0..n {
                 write!(
                     w,
-                    "            crate::eager::TensorHandle::from_tensor_handle(&ctx, res[{}]),\n",
+                    "            crate::eager::TensorHandle::from_tensor_handle(ctx, res[{}]),\n",
                     i
                 )?;
             }
@@ -619,7 +619,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     non_snake_case,
     trivial_casts,
     unused_parens,
-    unused_qualifications
+    unused_qualifications,
+    clippy::too_many_arguments,
+    clippy::needless_lifetimes
 )]
 use tensorflow_sys;
 "#
