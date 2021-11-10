@@ -7,12 +7,14 @@ if ! which bindgen > /dev/null; then
     exit 1
 fi
 
-# See https://github.com/servo/rust-bindgen/issues/550 as to why
-# this is blacklisted.
-bindgen_options="--blacklist-type max_align_t --size_t-is-usize --default-enum-style=rust --generate-inline-functions"
-# TODO: revert
 include_dir="$HOME/git/tensorflow"
 
-cmd="bindgen ${bindgen_options} ${include_dir}/tensorflow/c/c_api.h --output src/bindgen.rs --  -I ${include_dir}"
+bindgen_options_c_api="--allowlist-function TF_.+ --allowlist-type TF_.+ --allowlist-var TF_.+ --size_t-is-usize --default-enum-style=rust --generate-inline-functions"
+cmd="bindgen ${bindgen_options_c_api} ${include_dir}/tensorflow/c/c_api.h --output src/c_api.rs --  -I ${include_dir}"
+echo ${cmd}
+${cmd}
+
+bindgen_options_eager="--allowlist-function TFE_.+ --allowlist-type TFE_.+ --allowlist-var TFE_.+ --blocklist-type TF_.+ --size_t-is-usize --default-enum-style=rust --generate-inline-functions"
+cmd="bindgen ${bindgen_options_eager} ${include_dir}/tensorflow/c/eager/c_api.h --output src/eager/c_api.rs --  -I ${include_dir}"
 echo ${cmd}
 ${cmd}
