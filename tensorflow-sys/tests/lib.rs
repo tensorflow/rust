@@ -32,6 +32,14 @@ fn tfe_tensor_handle() {
         );
         let status = ffi::TF_NewStatus();
         let tfe_handle = ffi::TFE_NewTensorHandle(tf_tensor, status);
+        if ffi::TF_GetCode(status) != ffi::TF_OK {
+            panic!(
+                "{}",
+                std::ffi::CStr::from_ptr(ffi::TF_Message(status))
+                    .to_string_lossy()
+                    .into_owned()
+            );
+        }
 
         ffi::TF_DeleteStatus(status);
         ffi::TFE_DeleteTensorHandle(tfe_handle);
