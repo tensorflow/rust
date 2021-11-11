@@ -712,7 +712,6 @@ mod test {
 
         let h = raw_ops::add(&ctx, x, y).unwrap();
         let z: Result<Tensor<i32>> = h.resolve();
-        assert!(z.is_ok());
         let z = z.unwrap();
         assert_eq!(z[0], 4i32);
 
@@ -720,17 +719,17 @@ mod test {
         let z: Tensor<i32> = h.resolve().unwrap();
         assert_eq!(z[0], 8i32);
 
-        let h1 = z.clone().to_handle(&ctx).unwrap();
-        let h2 = z.clone().to_handle(&ctx).unwrap();
+        let h1 = z.to_handle(&ctx).unwrap();
+        let h2 = z.to_handle(&ctx).unwrap();
         let h = raw_ops::add(&ctx, h1, h2).unwrap();
         let z: Tensor<i32> = h.resolve().unwrap();
         assert_eq!(z[0], 16i32);
 
-        let h1 = z.clone().to_handle(&ctx).unwrap();
-        let h2 = z.clone().to_handle(&ctx).unwrap();
+        let h1 = z.to_handle(&ctx).unwrap();
+        let h2 = z.to_handle(&ctx).unwrap();
         let h = raw_ops::add(&ctx, h1, h2).unwrap();
 
-        let h1 = z.clone().to_handle(&ctx).unwrap();
+        let h1 = z.to_handle(&ctx).unwrap();
         let h = raw_ops::add(&ctx, h1, h).unwrap();
         let z: Tensor<i32> = h.resolve().unwrap();
 
@@ -747,9 +746,7 @@ mod test {
 
         let h = raw_ops::read_file(&ctx, filename).unwrap();
         let z: Tensor<String> = h.resolve().unwrap();
-        assert_eq!(z.len(), 1);
-        assert_eq!(z[0].len(), 32);
-        assert_eq!(z[0], "This a sample text for unittest.")
+        assert_eq!(&z[..], &["This is a sample text for unittest.".to_string()]);
     }
 
     #[test]
@@ -813,7 +810,7 @@ mod test {
 
         let devices = ctx.device_list().unwrap();
         assert!(devices.len() > 0);
-        for d in devices.iter() {
+        for d in &devices {
             assert_ne!(String::from(""), d.name);
         }
     }
@@ -826,7 +823,7 @@ mod test {
         let t = Tensor::from(0);
         let h = t.to_handle(&ctx).unwrap();
         let v: Result<Tensor<f32>> = h.resolve();
-        assert!(v.is_err());
+
         if let Err(status) = v {
             eprintln!("{}", status);
         } else {
