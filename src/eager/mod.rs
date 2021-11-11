@@ -46,11 +46,7 @@ impl ContextOptions {
                 status.inner(),
             );
         }
-        if status.is_ok() {
-            Ok(())
-        } else {
-            Err(status)
-        }
+        status.into_result()
     }
 
     /// Sets the default execution mode (sync/async).
@@ -246,8 +242,7 @@ impl<'a> TensorHandle<'a> {
         unsafe {
             let device_name = tf::TFE_TensorHandleDeviceName(self.inner, status.inner);
             if status.is_ok() {
-                // todo: UTF8 check
-                Ok(CStr::from_ptr(device_name).to_str().unwrap().to_string())
+                Ok(CStr::from_ptr(device_name).to_str()?.to_string())
             } else {
                 Err(status)
             }
@@ -262,8 +257,7 @@ impl<'a> TensorHandle<'a> {
         unsafe {
             let device_name = tf::TFE_TensorHandleBackingDeviceName(self.inner, status.inner);
             if status.is_ok() {
-                // todo: UTF8 check
-                Ok(CStr::from_ptr(device_name).to_str().unwrap().to_string())
+                Ok(CStr::from_ptr(device_name).to_str()?.to_string())
             } else {
                 Err(status)
             }
@@ -277,7 +271,6 @@ impl<'a> TensorHandle<'a> {
         let status = Status::new();
         let inner = unsafe { tf::TFE_TensorHandleCopySharingTensor(self.inner, status.inner) };
         if status.is_ok() {
-            // todo: UTF8 check
             Ok(Self {
                 inner,
                 ctx: self.ctx,
