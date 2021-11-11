@@ -220,7 +220,7 @@ impl<'a> TensorHandle<'a> {
         }
     }
 
-    /// Return a number elements for a given dim_index.
+    /// Return the number of elements for a given dim_index.
     /// This function will block till the operation that produces the TensorHandle has completed.
     pub fn dim(&self, dim_index: i32) -> Result<i64> {
         let status = Status::new();
