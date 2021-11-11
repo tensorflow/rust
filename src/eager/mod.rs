@@ -201,7 +201,7 @@ impl<'a> TensorHandle<'a> {
         unsafe { DataType::from_c(tf::TFE_TensorHandleDataType(self.inner)) }
     }
 
-    /// Return a number of dimensions.
+    /// Return the number of dimensions.
     /// This function will block till the operation that produces the TensorHandle has completed.
     pub fn num_dims(&self) -> Result<i32> {
         let status = Status::new();
@@ -213,7 +213,7 @@ impl<'a> TensorHandle<'a> {
         }
     }
 
-    /// Return a number of elements
+    /// Return the number of elements
     pub fn num_elements(&self) -> Result<i64> {
         let status = Status::new();
         let num_dims = unsafe { tf::TFE_TensorHandleNumElements(self.inner, status.inner) };
@@ -224,7 +224,7 @@ impl<'a> TensorHandle<'a> {
         }
     }
 
-    /// Return a number elements for a givin dim_index.
+    /// Return a number elements for a given dim_index.
     /// This function will block till the operation that produces the TensorHandle has completed.
     pub fn dim(&self, dim_index: i32) -> Result<i64> {
         let status = Status::new();
@@ -676,6 +676,7 @@ impl<'a> ToHandle<'a> for TensorHandle<'a> {
         self.copy_sharing_tensor()
     }
 }
+
 #[cfg(test)]
 mod test {
 
