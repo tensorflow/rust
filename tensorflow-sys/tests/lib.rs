@@ -16,7 +16,7 @@ fn linkage() {
 fn tfe_tensor_handle() {
     let data = vec![0.0f32; 100];
     let shape = [1, 10, 10];
-    let num_elements = shape.iter().fold(1, |t, x| t * x) as usize;
+    let num_elements = shape.iter().product::<i64>() as usize;
 
     unsafe {
         let tf_tensor = ffi::TF_AllocateTensor(
