@@ -405,10 +405,7 @@ impl Op {
         unsafe {
             tf::TFE_OpAddInput(self.inner, input.inner, status.inner);
         };
-        if status.is_ok() {
-            return Ok(());
-        }
-        Err(status)
+        status.into_result()
     }
 
     /// Adds multiple inputs to this operation.
@@ -425,10 +422,7 @@ impl Op {
                 status.inner,
             );
         };
-        if status.is_ok() {
-            return Ok(());
-        }
-        Err(status)
+        status.into_result()
     }
 
     /// Sets the value of a string attribute.
@@ -577,10 +571,7 @@ impl Op {
                 }
             }
         }
-        if status.is_ok() {
-            return Ok(());
-        }
-        Err(status)
+        status.into_result()
     }
 
     /// Sets an attribute which holds an array of shapes.
@@ -620,11 +611,7 @@ impl Op {
                 status.inner,
             );
         }
-
-        if status.is_ok() {
-            return Ok(());
-        }
-        Err(status)
+        status.into_result()
     }
 
     /// Sets a tensor-valued attribute.
@@ -689,6 +676,9 @@ mod test {
         let y = unsafe {
             let status = Status::new();
             let tf_tensor = tf::TFE_TensorHandleResolve(x_handle.inner, status.inner);
+            // check the status
+            status.into_result().unwrap();
+
             Tensor::<i32>::from_tf_tensor(tf_tensor).unwrap()
         };
 
