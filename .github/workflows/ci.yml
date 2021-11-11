@@ -1,0 +1,48 @@
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+name: Continuous integration
+
+env:
+  CARGO_TERM_COLOR: always
+  TF_RUST_BUILD_FROM_SRC: false
+  # RUSTFLAGS: "-D warnings"  # it needs some works to enable this flag
+
+jobs:
+  tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+          components: rustfmt
+      - name: Execute test-all
+        run: ./test-all
+        shell: bash
+#  clippy:
+#    runs-on: ubuntu-latest
+#    strategy:
+#      matrix:
+#        rust:
+#          - beta
+#    steps:
+#      - uses: actions/checkout@v2
+#      - uses: actions-rs/toolchain@v1
+#        with:
+#          profile: minimal
+#          toolchain: ${{ matrix.rust }}
+#          override: true
+#          components: clippy
+#      - run: cargo clippy
