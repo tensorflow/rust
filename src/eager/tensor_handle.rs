@@ -1,4 +1,4 @@
-use std::ffi::CStr;
+use std::ffi::{CStr, CString};
 use std::marker::PhantomData;
 
 use tensorflow_sys as tf;
@@ -177,6 +177,38 @@ impl<'a> TensorHandle<'a> {
         // Safely unwrap since data_type was checked beforehand.
         unsafe { Ok(Tensor::from_tf_tensor(tf_tensor).unwrap()) }
     }
+
+    /// Create a new TensorHandle with the same contents as 'h' but placed
+    /// in the memory of the device name 'device_name'.
+    /// If source and destination are the same device, then this creates a new handle
+    /// that shares the underlying buffer. Otherwise, it currently requires at least
+    /// one of the source or destination devices to be CPU (i.e., for the source or
+    /// destination tensor to be placed in host memory).
+    /// If async execution is enabled, the copy may be enqueued and the call will
+    /// return "non-ready" handle. Else, this function returns after the copy has
+    /// been done.
+    pub fn copy_to_device(&self, ctx: &Context, device_name: &str) -> Result<Self> {
+        let status = Status::new();
+
+        let device_name = CString::new(device_name)?;
+        unsafe {
+            let inner = tf::TFE_TensorHandleCopyToDevice(
+                self.inner,
+                ctx.inner,
+                device_name.as_ptr(),
+                status.inner,
+            );
+
+            if status.is_ok() {
+                Ok(Self {
+                    inner,
+                    ctx: PhantomData,
+                })
+            } else {
+                Err(status)
+            }
+        }
+    }
 }
 
 #[cfg(test)]
@@ -215,6 +247,24 @@ mod tests {
 
         // t and t2 may share the same memory, but it's difficuly to check
         // since the `resolve` does not guarantee that.
+        assert_eq!(&t[..], &t2[..]);
+    }
+
+    #[cfg(feature = "tensorflow_gpu")]
+    #[test]
+    fn test_copy_to_device() {
+        let opts = ContextOptions::new();
+        let ctx = Context::new(opts).unwrap();
+        let devices = ctx.device_list().unwrap();
+        assert!(devices.iter().any(|d| d.device_type == "GPU"));
+
+        let t = Tensor::new(&[2, 2]).with_values(&[0_i32, 1, 2, 3]).unwrap();
+        let h = TensorHandle::new(&ctx, &t).unwrap();
+        let target_device = "/job:localhost/replica:0/task:0/device:GPU:0";
+        let h_gpu = h.copy_to_device(&ctx, target_device).unwrap();
+        assert_eq!(h_gpu.device_name().unwrap(), target_device);
+        let t2 = h_gpu.resolve::<i32>().unwrap();
+
         assert_eq!(&t[..], &t2[..]);
     }
 }

@@ -45,7 +45,7 @@ impl ContextOptions {
 /// Context under which operations/functions are executed.
 #[derive(Debug)]
 pub struct Context {
-    inner: *mut tf::TFE_Context,
+    pub(crate) inner: *mut tf::TFE_Context,
 }
 impl_drop!(Context, TFE_DeleteContext);
 
