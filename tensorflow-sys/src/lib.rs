@@ -2,7 +2,12 @@
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
 
-include!("bindgen.rs");
+#[cfg(feature = "eager")]
+mod eager;
+#[cfg(feature = "eager")]
+pub use eager::*;
+
+include!("c_api.rs");
 
 pub use crate::TF_AttrType::*;
 pub use crate::TF_Code::*;
