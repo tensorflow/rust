@@ -1,6 +1,6 @@
 # <img alt="SIG Rust TensorFlow" src="https://github.com/tensorflow/community/blob/master/sigs/logos/SIGRust.png" width="340"/>
 [![Version](https://img.shields.io/crates/v/tensorflow.svg)](https://crates.io/crates/tensorflow)
-[![Status](https://travis-ci.org/tensorflow/rust.svg?branch=master)](https://travis-ci.org/tensorflow/rust)
+[![Build status](https://github.com/tensorflow/rust/actions/workflows/ci.yml/badge.svg)](https://github.com/tensorflow/rust/actions/workflows/ci.yml)
 
 TensorFlow Rust provides idiomatic [Rust](https://www.rust-lang.org) language
 bindings for [TensorFlow](https://www.tensorflow.org).
