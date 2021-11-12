@@ -204,6 +204,9 @@ pub mod train;
 mod saved_model;
 pub use saved_model::*;
 
+#[cfg(feature = "eager")]
+pub mod eager;
+
 ////////////////////////
 
 c_enum!("Error values that can be returned.", TF_Code, Code {
