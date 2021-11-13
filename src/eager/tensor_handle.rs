@@ -256,7 +256,10 @@ mod tests {
         let opts = ContextOptions::new();
         let ctx = Context::new(opts).unwrap();
         let devices = ctx.device_list().unwrap();
-        assert!(devices.iter().any(|d| d.device_type == "GPU"));
+        if !(devices.iter().any(|d| d.device_type == "GPU")) {
+            eprintln!("Skipping test_copy_to_device because no GPU device is found");
+            return;
+        }
 
         let t = Tensor::new(&[2, 2]).with_values(&[0_i32, 1, 2, 3]).unwrap();
         let h = TensorHandle::new(&ctx, &t).unwrap();

@@ -16,7 +16,15 @@ fn main() -> Result<(), Box<dyn Error>> {
             .ok_or("Unable to format output path for main crate")?,
         input: &[
             &format!(
+                "{}/tensorflow/core/framework/allocation_description.proto",
+                tensorflow_folder
+            ),
+            &format!(
                 "{}/tensorflow/core/framework/attr_value.proto",
+                tensorflow_folder
+            ),
+            &format!(
+                "{}/tensorflow/core/framework/cost_graph.proto",
                 tensorflow_folder
             ),
             &format!(
@@ -52,6 +60,14 @@ fn main() -> Result<(), Box<dyn Error>> {
                 tensorflow_folder
             ),
             &format!(
+                "{}/tensorflow/core/framework/step_stats.proto",
+                tensorflow_folder
+            ),
+            &format!(
+                "{}/tensorflow/core/framework/tensor_description.proto",
+                tensorflow_folder
+            ),
+            &format!(
                 "{}/tensorflow/core/protobuf/struct.proto",
                 tensorflow_folder
             ),
@@ -84,6 +100,23 @@ fn main() -> Result<(), Box<dyn Error>> {
                 tensorflow_folder
             ),
             &format!("{}/tensorflow/core/protobuf/saver.proto", tensorflow_folder),
+            &format!(
+                "{}/tensorflow/core/protobuf/cluster.proto",
+                tensorflow_folder
+            ),
+            &format!(
+                "{}/tensorflow/core/protobuf/config.proto",
+                tensorflow_folder
+            ),
+            &format!("{}/tensorflow/core/protobuf/debug.proto", tensorflow_folder),
+            &format!(
+                "{}/tensorflow/core/protobuf/rewriter_config.proto",
+                tensorflow_folder
+            ),
+            &format!(
+                "{}/tensorflow/core/protobuf/verifier_config.proto",
+                tensorflow_folder
+            ),
         ],
         includes: &[tensorflow_folder],
         customize: protoc_rust::Customize {

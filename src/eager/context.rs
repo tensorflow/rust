@@ -139,6 +139,30 @@ mod test {
     }
 
     #[test]
+    fn test_context_set_config() {
+        use crate::protos::config::{ConfigProto, GPUOptions};
+        use protobuf::Message;
+
+        let gpu_options = GPUOptions {
+            per_process_gpu_memory_fraction: 0.5,
+            allow_growth: true,
+            ..Default::default()
+        };
+        let mut config = ConfigProto::new();
+        config.set_gpu_options(gpu_options);
+
+        let mut buf = vec![];
+        config.write_to_writer(&mut buf).unwrap();
+
+        let mut opts = ContextOptions::new();
+        opts.set_config(&buf).unwrap();
+        match Context::new(opts) {
+            Ok(ctx) => ctx,
+            Err(status) => panic!("Creating context failed with status: {}", status),
+        };
+    }
+
+    #[test]
     fn test_device_list() {
         let opts = ContextOptions::new();
         let ctx = Context::new(opts).unwrap();
