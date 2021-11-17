@@ -122,20 +122,14 @@ mod test {
     #[test]
     fn test_create_context() {
         let opts = ContextOptions::new();
-        match Context::new(opts) {
-            Ok(_) => (),
-            Err(status) => panic!("Creating context failed with status: {}", status),
-        };
+        Context::new(opts).unwrap();
     }
 
     #[test]
     fn test_create_async_context() {
         let mut opts = ContextOptions::new();
         opts.set_async(true);
-        match Context::new(opts) {
-            Ok(_) => (),
-            Err(status) => panic!("Creating async context failed with status: {}", status),
-        };
+        Context::new(opts).unwrap();
     }
 
     #[test]
@@ -156,10 +150,7 @@ mod test {
 
         let mut opts = ContextOptions::new();
         opts.set_config(&buf).unwrap();
-        match Context::new(opts) {
-            Ok(ctx) => ctx,
-            Err(status) => panic!("Creating context failed with status: {}", status),
-        };
+        Context::new(opts).unwrap();
     }
 
     #[test]
