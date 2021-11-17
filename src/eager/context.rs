@@ -105,7 +105,7 @@ impl Context {
     }
 
     /// Clears the internal caches in the context.
-    pub fn clear_cashes(&mut self) {
+    pub fn clear_caches(&mut self) {
         unsafe {
             tf::TFE_ContextClearCaches(self.inner);
         }
