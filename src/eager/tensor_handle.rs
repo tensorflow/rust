@@ -186,7 +186,7 @@ impl<'a> TensorHandle<'a> {
         unsafe { Ok(Tensor::from_tf_tensor(tf_tensor).unwrap()) }
     }
 
-    /// Create a new TensorHandle with the same contents as the current TensorHandle but placed
+    /// Create a new TensorHandle with the same contents as `h` but placed
     /// in the memory of the device name 'device_name'.
     /// If source and destination are the same device, then this creates a new handle
     /// that shares the underlying buffer. Otherwise, it currently requires at least
