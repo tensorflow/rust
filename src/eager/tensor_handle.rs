@@ -54,7 +54,7 @@ impl<'a> Drop for TensorHandle<'a> {
 }
 
 impl<'a> TensorHandle<'a> {
-    /// Crate a TensorHandle from Tensor
+    /// Crate a TensorHandle from the input Tensor
     pub fn new<T: TensorType>(_ctx: &'a Context, t: &Tensor<T>) -> Result<TensorHandle<'a>> {
         let status = Status::new();
         let inner = unsafe { tf::TFE_NewTensorHandle(t.inner()?, status.inner) };
@@ -75,6 +75,7 @@ impl<'a> TensorHandle<'a> {
     }
 
     /// Return the number of dimensions.
+    ///
     /// This function will block till the operation that produces the TensorHandle has completed.
     pub fn num_dims(&self) -> Result<usize> {
         let status = Status::new();
@@ -100,6 +101,7 @@ impl<'a> TensorHandle<'a> {
     }
 
     /// Return the number of elements for a given dim_index.
+    ///
     /// This function will block till the operation that produces the TensorHandle has completed.
     pub fn dim(&self, dim_index: i32) -> Result<u64> {
         let status = Status::new();
@@ -112,11 +114,13 @@ impl<'a> TensorHandle<'a> {
         }
     }
 
-    /// Return the device of the operation that produced `h`. If `h` was produced by
-    /// a copy, returns the destination device of the copy. Note that the returned
-    /// device name is not always the device holding the tensor handle's memory. If
-    /// you want the latter, use backing_device_name. This function will block till
-    /// the operation that produces `h` has completed.
+    /// Return the device of the operation that produced the current TensorHandle.
+    ///
+    /// If the TensorHandle was produced by a copy, returns the destination device of the copy.
+    /// Note that the returned device name is not always the device holding the tensor handle's memory.
+    /// If you want the latter, use backing_device_name.
+    ///
+    /// This function will block till the operation that produces the current TensorHandle has completed.
     pub fn device_name(&self) -> Result<String> {
         let status = Status::new();
         unsafe {
@@ -129,8 +133,9 @@ impl<'a> TensorHandle<'a> {
         }
     }
 
-    /// Returns the name of the device in whose memory `h` resides.
-    /// This function will block till the operation that produces `h` has completed.
+    /// Returns the name of the device in whose memory underlying the current TensorHandle resides.
+    ///
+    /// This function will block till the operation that produces the current TensorHandle has completed.
     pub fn backing_device_name(&self) -> Result<String> {
         let status = Status::new();
         unsafe {
@@ -143,7 +148,7 @@ impl<'a> TensorHandle<'a> {
         }
     }
 
-    /// Return a new TensorHandle that shares the underlying tensor with `h`.
+    /// Return a new TensorHandle that shares the underlying tensor with the current TensorHandle.
     pub fn copy_sharing_tensor(&self) -> Result<Self> {
         let status = Status::new();
         let inner = unsafe { tf::TFE_TensorHandleCopySharingTensor(self.inner, status.inner) };
@@ -157,9 +162,9 @@ impl<'a> TensorHandle<'a> {
         }
     }
 
-    /// This function will block till the operation that produces `h` has
-    /// completed. The memory returned might alias the internal memory used by
-    /// TensorFlow. Hence, callers should not mutate this memory.
+    /// This function will block till the operation that produces the current TensorHandle has completed.
+    /// The memory returned might alias the internal memory used by TensorFlow.
+    /// Hence, callers should not mutate this memory.
     pub fn resolve<T: TensorType>(&self) -> Result<Tensor<T>> {
         let mut status = Status::new();
         let tf_tensor = unsafe { tf::TFE_TensorHandleResolve(self.inner, status.inner) };
@@ -181,14 +186,14 @@ impl<'a> TensorHandle<'a> {
         unsafe { Ok(Tensor::from_tf_tensor(tf_tensor).unwrap()) }
     }
 
-    /// Create a new TensorHandle with the same contents as 'h' but placed
+    /// Create a new TensorHandle with the same contents as the current TensorHandle but placed
     /// in the memory of the device name 'device_name'.
     /// If source and destination are the same device, then this creates a new handle
     /// that shares the underlying buffer. Otherwise, it currently requires at least
     /// one of the source or destination devices to be CPU (i.e., for the source or
     /// destination tensor to be placed in host memory).
     /// If async execution is enabled, the copy may be enqueued and the call will
-    /// return "non-ready" handle. Else, this function returns after the copy has
+    /// return "non-ready" TensorHandle. Else, this function returns after the copy has
     /// been done.
     pub fn copy_to_device(&self, ctx: &Context, device_name: &str) -> Result<Self> {
         let status = Status::new();
