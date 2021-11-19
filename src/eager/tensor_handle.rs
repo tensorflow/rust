@@ -195,13 +195,13 @@ impl<'a> TensorHandle<'a> {
     /// If async execution is enabled, the copy may be enqueued and the call will
     /// return "non-ready" TensorHandle. Else, this function returns after the copy has
     /// been done.
-    pub fn copy_to_device(&self, ctx: &Context, device_name: &str) -> Result<Self> {
+    pub fn copy_to_device(h: &TensorHandle, ctx: &'a Context, device_name: &str) -> Result<Self> {
         let status = Status::new();
 
         let device_name = CString::new(device_name)?;
         unsafe {
             let inner = tf::TFE_TensorHandleCopyToDevice(
-                self.inner,
+                h.inner,
                 ctx.inner,
                 device_name.as_ptr(),
                 status.inner,
@@ -272,10 +272,42 @@ mod tests {
         let t = Tensor::new(&[2, 2]).with_values(&[0_i32, 1, 2, 3]).unwrap();
         let h = TensorHandle::new(&ctx, &t).unwrap();
         let target_device = "/job:localhost/replica:0/task:0/device:GPU:0";
-        let h_gpu = h.copy_to_device(&ctx, target_device).unwrap();
+        let h_gpu = TensorHandle::copy_to_device(&h, &ctx, target_device).unwrap();
         assert_eq!(h_gpu.device_name().unwrap(), target_device);
         let t2 = h_gpu.resolve::<i32>().unwrap();
 
         assert_eq!(&t[..], &t2[..]);
+    }
+
+    #[cfg(feature = "tensorflow_gpu")]
+    #[test]
+    fn test_copy_to_device_lifetime() {
+        let values = [0_i32, 1, 2, 3];
+        let target_device = "/job:localhost/replica:0/task:0/device:GPU:0";
+
+        let opts = ContextOptions::new();
+        let ctx = Context::new(opts).unwrap();
+        let devices = ctx.device_list().unwrap();
+        if !(devices.iter().any(|d| d.device_type == "GPU")) {
+            eprintln!("Skipping test_copy_to_device because no GPU device is found");
+            return;
+        }
+
+        let h_gpu = {
+            // Create a temporal Context
+            let opts = ContextOptions::new();
+            let ctx2 = Context::new(opts).unwrap();
+            let t = Tensor::new(&[2, 2]).with_values(&values).unwrap();
+
+            // Create a TensorHandle managed by the context `ctx2`.
+            let h = TensorHandle::new(&ctx2, &t).unwrap();
+
+            // Copy to GPU. This creates a new handle managed by the context `ctx`.
+            TensorHandle::copy_to_device(&h, &ctx, target_device).unwrap()
+        };
+        assert_eq!(h_gpu.device_name().unwrap(), target_device);
+        let t2 = h_gpu.resolve::<i32>().unwrap();
+
+        assert_eq!(&values[..], &t2[..]);
     }
 }
