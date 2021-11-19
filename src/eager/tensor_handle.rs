@@ -76,22 +76,24 @@ impl<'a> TensorHandle<'a> {
 
     /// Return the number of dimensions.
     /// This function will block till the operation that produces the TensorHandle has completed.
-    pub fn num_dims(&self) -> Result<i32> {
+    pub fn num_dims(&self) -> Result<usize> {
         let status = Status::new();
         let num_dims = unsafe { tf::TFE_TensorHandleNumDims(self.inner, status.inner) };
         if status.is_ok() {
-            Ok(num_dims)
+            // num_dims >= 0 when the status is ok, so we can safely cast it to u64.
+            Ok(num_dims as usize)
         } else {
             Err(status)
         }
     }
 
     /// Return the number of elements
-    pub fn num_elements(&self) -> Result<i64> {
+    pub fn num_elements(&self) -> Result<u64> {
         let status = Status::new();
-        let num_dims = unsafe { tf::TFE_TensorHandleNumElements(self.inner, status.inner) };
+        let num_elements = unsafe { tf::TFE_TensorHandleNumElements(self.inner, status.inner) };
         if status.is_ok() {
-            Ok(num_dims)
+            // num_elements >= 0 when the status is ok, so we can safely cast it to u64.
+            Ok(num_elements as u64)
         } else {
             Err(status)
         }
@@ -99,11 +101,12 @@ impl<'a> TensorHandle<'a> {
 
     /// Return the number of elements for a given dim_index.
     /// This function will block till the operation that produces the TensorHandle has completed.
-    pub fn dim(&self, dim_index: i32) -> Result<i64> {
+    pub fn dim(&self, dim_index: i32) -> Result<u64> {
         let status = Status::new();
-        let num_dims = unsafe { tf::TFE_TensorHandleDim(self.inner, dim_index, status.inner) };
+        let dim = unsafe { tf::TFE_TensorHandleDim(self.inner, dim_index, status.inner) };
         if status.is_ok() {
-            Ok(num_dims)
+            // dim >= 0 when the status is ok, so we can safely cast it to u64.
+            Ok(dim as u64)
         } else {
             Err(status)
         }
