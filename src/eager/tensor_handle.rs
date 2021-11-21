@@ -265,17 +265,19 @@ mod tests {
     #[cfg(feature = "tensorflow_gpu")]
     #[test]
     fn test_copy_to_device() {
+        let values = [0_i32, 1, 2, 3];
+        let target_device = "/job:localhost/replica:0/task:0/device:GPU:0";
+
         let opts = ContextOptions::new();
         let ctx = Context::new(opts).unwrap();
         let devices = ctx.device_list().unwrap();
-        if !(devices.iter().any(|d| d.device_type == "GPU")) {
-            eprintln!("Skipping test_copy_to_device because no GPU device is found");
-            return;
-        }
+        assert!(
+            devices.iter().any(|d| d.device_type == "GPU"),
+            "Skip test_copy_to_device because no GPU device was found"
+        );
 
-        let t = Tensor::new(&[2, 2]).with_values(&[0_i32, 1, 2, 3]).unwrap();
+        let t = Tensor::new(&[2, 2]).with_values(&values).unwrap();
         let h = TensorHandle::new(&ctx, &t).unwrap();
-        let target_device = "/job:localhost/replica:0/task:0/device:GPU:0";
         let h_gpu = TensorHandle::copy_to_device(&h, &ctx, target_device).unwrap();
         assert_eq!(h_gpu.device_name().unwrap(), target_device);
         let t2 = h_gpu.resolve::<i32>().unwrap();
@@ -294,7 +296,7 @@ mod tests {
         let devices = ctx.device_list().unwrap();
         assert!(
             devices.iter().any(|d| d.device_type == "GPU"),
-            "Skipp test_copy_to_device because no GPU device was found"
+            "Skip test_copy_to_device because no GPU device was found"
         );
 
         let h_gpu = {
