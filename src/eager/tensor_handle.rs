@@ -221,6 +221,15 @@ impl<'a> TensorHandle<'a> {
             }
         }
     }
+
+    /// Convert the raw TFE_TensorHandle* into a TensorHandle.
+    #[allow(dead_code)] // until raw_ops are implemented
+    pub(super) fn from_tensor_handle(_ctx: &'a Context, inner: *mut tf::TFE_TensorHandle) -> Self {
+        Self {
+            inner,
+            ctx: PhantomData,
+        }
+    }
 }
 
 #[cfg(test)]

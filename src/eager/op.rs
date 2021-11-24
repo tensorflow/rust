@@ -291,3 +291,109 @@ impl Op {
         status.into_result()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::eager::{Context, ContextOptions, TensorHandle};
+    use crate::Tensor;
+
+    // Tentative implementation of raw_ops for unit testing.
+    mod raw_ops {
+        use super::*;
+        use crate::eager::TensorHandle;
+
+        /// Add
+        #[derive(::std::fmt::Debug)]
+        pub struct Add {
+            T: ::std::option::Option<crate::DataType>,
+        }
+
+        impl ::std::default::Default for Add {
+            fn default() -> Self {
+                Self { T: None }
+            }
+        }
+
+        impl Add {
+            /// Creates a new `Add`.
+            pub fn new() -> Self {
+                Self::default()
+            }
+
+            /// Sets the `T` attribute.
+            pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(
+                mut self,
+                value: ArgType,
+            ) -> Self {
+                self.T = ::std::option::Option::Some(value.into());
+                self
+            }
+
+            /// Execute add.
+            pub fn call<'a>(
+                &self,
+                ctx: &'a crate::eager::Context,
+                x: &TensorHandle,
+                y: &TensorHandle,
+            ) -> Result<TensorHandle<'a>> {
+                let status = crate::Status::new();
+
+                // Define Op
+
+                let op_name = "Add";
+                let mut op = Op::new(ctx, op_name)?;
+
+                // Required input arguments
+                op.add_input(&x)?;
+                op.add_input(&y)?;
+
+                // Attributes
+                if let ::std::option::Option::Some(value) = &self.T {
+                    let attr_name = "T";
+                    op.set_attr_type(attr_name, *value)?;
+                }
+
+                // Execute Op
+                let mut num_output = 1;
+                let mut res = [std::ptr::null_mut::<tensorflow_sys::TFE_TensorHandle>(); 1];
+                unsafe {
+                    tf::TFE_Execute(
+                        op.inner,
+                        res.as_mut_ptr(),
+                        (&mut num_output) as *mut i32,
+                        status.inner,
+                    );
+                };
+                if status.is_ok() {
+                    let ret = TensorHandle::from_tensor_handle(ctx, res[0]);
+                    return Ok(ret);
+                }
+                Err(status)
+            }
+        }
+
+        /// add with default options.
+        pub fn add<'a>(
+            ctx: &'a crate::eager::Context,
+            x: &TensorHandle,
+            y: &TensorHandle,
+        ) -> Result<TensorHandle<'a>> {
+            let op = Add::new();
+            op.call(ctx, x, y)
+        }
+    }
+
+    #[test]
+    fn test_add() {
+        use raw_ops::add;
+
+        let ctx = Context::new(ContextOptions::new()).unwrap();
+        let x = Tensor::new(&[2, 2]).with_values(&[1i32, 2, 3, 4]).unwrap();
+        let h_x = TensorHandle::new(&ctx, &x).unwrap();
+        let h_y = h_x.copy_sharing_tensor().unwrap();
+        let h_z = add(&ctx, &h_x, &h_y).unwrap();
+        let z: crate::Tensor<i32> = h_z.resolve().unwrap();
+        assert_eq!(&z[..], &[2i32, 4, 6, 8]);
+    }
+}
