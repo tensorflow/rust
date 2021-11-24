@@ -331,11 +331,15 @@ mod tests {
         #[derive(::std::fmt::Debug)]
         pub struct Add {
             T: ::std::option::Option<crate::DataType>,
+            device_name: ::std::option::Option<String>,
         }
 
         impl ::std::default::Default for Add {
             fn default() -> Self {
-                Self { T: None }
+                Self {
+                    T: None,
+                    device_name: None,
+                }
             }
         }
 
@@ -352,6 +356,10 @@ mod tests {
             ) -> Self {
                 self.T = ::std::option::Option::Some(value.into());
                 self
+            }
+
+            pub fn set_device(&mut self, device_name: &str) {
+                self.device_name = ::std::option::Option::Some(device_name.to_string());
             }
 
             /// Execute add.
@@ -376,6 +384,11 @@ mod tests {
                 if let ::std::option::Option::Some(value) = &self.T {
                     let attr_name = "T";
                     op.set_attr_type(attr_name, *value)?;
+                }
+
+                // Device
+                if let ::std::option::Option::Some(device_name) = &self.device_name {
+                    op.set_device(device_name)?;
                 }
 
                 // Execute Op
@@ -419,5 +432,39 @@ mod tests {
         let h_z = add(&ctx, &h_x, &h_y).unwrap();
         let z: crate::Tensor<i32> = h_z.resolve().unwrap();
         assert_eq!(&z[..], &[2i32, 4, 6, 8]);
+    }
+
+    #[cfg(feature = "tensorflow_gpu")]
+    #[test]
+    fn test_add_gpu() {
+        use raw_ops::Add;
+
+        let target_device = "/job:localhost/replica:0/task:0/device:GPU:0";
+
+        let ctx = Context::new(ContextOptions::new()).unwrap();
+        let devices = ctx.device_list().unwrap();
+        assert!(
+            devices.iter().any(|d| d.device_type == "GPU"),
+            "Skip test_copy_to_device because no GPU device was found"
+        );
+
+        let x = Tensor::new(&[2, 2])
+            .with_values(&[1.0f32, 2.0, 3.0, 4.0])
+            .unwrap();
+        let h = TensorHandle::new(&ctx, &x).unwrap();
+        // Copy to GPU. This creates a new handle managed by the context `ctx`.
+        let h_gpu = h.copy_to_device(&ctx, target_device).unwrap();
+
+        let mut add = Add::new();
+        add.set_device(target_device);
+
+        let h_z_gpu = add.call(&ctx, &h, &h_gpu).unwrap();
+        assert!(h_z_gpu.device_name().unwrap() == target_device);
+
+        let z: crate::Tensor<f32> = h_z_gpu.resolve().unwrap();
+        let expected = [2.0f32, 4.0, 6.0, 8.0];
+        for (v0, v1) in z.iter().zip(&expected) {
+            assert!((v0 - v1).abs() < f32::EPSILON);
+        }
     }
 }
