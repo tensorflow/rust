@@ -61,6 +61,30 @@ impl Op {
         status.into_result()
     }
 
+    /// Set the device where this operation is computed.
+    fn set_device(&mut self, device_name: &str) -> Result<()> {
+        let status = Status::new();
+        let c_device_name = CString::new(device_name)?;
+        unsafe {
+            tf::TFE_OpSetDevice(self.inner, c_device_name.as_ptr(), status.inner);
+        }
+        status.into_result()
+    }
+
+    /// Get the device where this operation is computed.
+    fn get_device(&self) -> Result<&str> {
+        let status = Status::new();
+        let device_name = unsafe {
+            // The returned string remains valid throughout the lifetime of 'op'.
+            let device_name = tf::TFE_OpGetDevice(self.inner, status.inner);
+            CStr::from_ptr(device_name)
+        };
+        if status.is_ok() {
+            return Ok(device_name.to_str()?);
+        }
+        Err(status)
+    }
+
     /// Adds multiple inputs to this operation.
     #[allow(dead_code)]
     fn add_input_list(&mut self, inputs: &[TensorHandle]) -> Result<()> {
