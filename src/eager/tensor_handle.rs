@@ -40,7 +40,7 @@ use crate::{AnyTensor, DataType, Result, Status, Tensor, TensorType};
 /// ```
 #[derive(Debug)]
 pub struct TensorHandle<'a> {
-    inner: *mut tf::TFE_TensorHandle,
+    pub(super) inner: *mut tf::TFE_TensorHandle,
     // TensorHandle should not live longer than a given context.
     ctx: PhantomData<&'a Context>,
 }
