@@ -150,7 +150,7 @@ fn extract_zip<P: AsRef<Path>, P2: AsRef<Path>>(archive_path: P, extract_to: P2)
     let mut archive = ZipArchive::new(file).unwrap();
     for i in 0..archive.len() {
         let mut zipfile = archive.by_index(i).unwrap();
-        let output_path = extract_to.as_ref().join(zipfile.sanitized_name());
+        let output_path = extract_to.as_ref().join(zipfile.mangled_name());
         if zipfile.name().starts_with("lib") {
             if zipfile.is_dir() {
                 fs::create_dir_all(&output_path)
