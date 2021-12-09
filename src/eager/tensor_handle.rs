@@ -277,20 +277,20 @@ mod tests {
         #[ignore]
         fn test_copy_to_device() {
             let values = [0_i32, 1, 2, 3];
-            let target_device = "/job:localhost/replica:0/task:0/device:GPU:0";
 
             let opts = ContextOptions::new();
             let ctx = Context::new(opts).unwrap();
             let devices = ctx.device_list().unwrap();
-            assert!(
-                devices.iter().any(|d| d.device_type == "GPU"),
-                "Skip test_copy_to_device because no GPU device was found"
-            );
+            let gpu_device = devices
+                .iter()
+                .find(|d| d.device_type == "GPU")
+                .expect("No GPU device was found.");
+            let target_device = &gpu_device.name;
 
             let t = Tensor::new(&[2, 2]).with_values(&values).unwrap();
             let h = TensorHandle::new(&ctx, &t).unwrap();
             let h_gpu = TensorHandle::copy_to_device(&h, &ctx, target_device).unwrap();
-            assert_eq!(h_gpu.device_name().unwrap(), target_device);
+            assert_eq!(&h_gpu.device_name().unwrap(), target_device);
             let t2 = h_gpu.resolve::<i32>().unwrap();
 
             assert_eq!(&t[..], &t2[..]);
@@ -300,15 +300,15 @@ mod tests {
         #[ignore]
         fn test_copy_to_device_lifetime() {
             let values = [0_i32, 1, 2, 3];
-            let target_device = "/job:localhost/replica:0/task:0/device:GPU:0";
 
             let opts = ContextOptions::new();
             let ctx = Context::new(opts).unwrap();
             let devices = ctx.device_list().unwrap();
-            assert!(
-                devices.iter().any(|d| d.device_type == "GPU"),
-                "Skip test_copy_to_device because no GPU device was found"
-            );
+            let gpu_device = devices
+                .iter()
+                .find(|d| d.device_type == "GPU")
+                .expect("No GPU device was found.");
+            let target_device = &gpu_device.name;
 
             let h_gpu = {
                 // Create a temporal Context
@@ -322,7 +322,7 @@ mod tests {
                 // Copy to GPU. This creates a new handle managed by the context `ctx`.
                 h.copy_to_device(&ctx, target_device).unwrap()
             };
-            assert_eq!(h_gpu.device_name().unwrap(), target_device);
+            assert_eq!(&h_gpu.device_name().unwrap(), target_device);
             let t2 = h_gpu.resolve::<i32>().unwrap();
 
             assert_eq!(&values[..], &t2[..]);
