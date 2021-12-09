@@ -54,7 +54,7 @@ impl<'a> Drop for TensorHandle<'a> {
 }
 
 impl<'a> TensorHandle<'a> {
-    /// Crate a TensorHandle from the input Tensor
+    /// Create a TensorHandle from the input Tensor
     pub fn new<T: TensorType>(_ctx: &'a Context, t: &Tensor<T>) -> Result<TensorHandle<'a>> {
         let status = Status::new();
         let inner = unsafe { tf::TFE_NewTensorHandle(t.inner()?, status.inner) };
