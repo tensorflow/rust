@@ -264,7 +264,7 @@ mod tests {
 
     /// Following tests are disabled by default because it requires a GPU and some setup.
     ///
-    /// To run this test, you need to pass the `-- --ignored` arguumnet to cargo test.
+    /// To run this test, you need to pass the `-- --ignored` argument to cargo test.
     /// ```sh
     /// cargo test --features "eager tensorflow_gpu" -- --ignored
     /// ```
