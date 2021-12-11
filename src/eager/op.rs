@@ -6,6 +6,7 @@ use libc::c_uchar;
 use libc::c_void;
 use libc::size_t;
 use std::ffi::{CStr, CString};
+use std::marker::PhantomData;
 use std::os::raw::c_void as std_c_void;
 use std::ptr;
 
@@ -14,22 +15,38 @@ use crate::{AnyTensor, DataType, Result, Shape, Status};
 
 use tensorflow_sys as tf;
 
-/// Description of the TensorFlow op to execute.
-struct Op {
+/// Description of the TensorFlow op to execute, for the eager execution.
+///
+/// The lifetime of this Op is bounded by the provided 'ctx'. This requirement
+/// comes from the underlying C-API implementation.
+#[derive(Debug)]
+struct Op<'a> {
     inner: *mut tf::TFE_Op,
+    ctx: PhantomData<&'a Context>,
 }
-impl_drop!(Op, TFE_DeleteOp);
 
-impl Op {
-    fn new(ctx: &Context, op_or_function_name: &str) -> Result<Op> {
+impl<'a> Drop for Op<'a> {
+    fn drop(&mut self) {
+        unsafe {
+            tf::TFE_DeleteOp(self.inner);
+        }
+    }
+}
+
+impl<'a> Op<'a> {
+    fn new(ctx: &'a Context, op_or_function_name: &str) -> Result<Self> {
         let status = Status::new();
 
-        let op_or_function_name = CString::new(op_or_function_name)?;
-        let inner = unsafe { tf::TFE_NewOp(ctx.inner, op_or_function_name.as_ptr(), status.inner) };
-        if inner.is_null() {
+        let c_op_or_function_name = CString::new(op_or_function_name)?;
+        let inner =
+            unsafe { tf::TFE_NewOp(ctx.inner, c_op_or_function_name.as_ptr(), status.inner) };
+        if inner.is_null() || !status.is_ok() {
             return Err(status);
         }
-        Ok(Self { inner })
+        Ok(Self {
+            inner,
+            ctx: PhantomData,
+        })
     }
 
     #[allow(dead_code)]
@@ -46,9 +63,10 @@ impl Op {
         Err(status)
     }
 
-    /// Context may not be outlive over the lifetime of `op'
+    /// Return the context in which this op will be executed.
     #[allow(dead_code)]
-    fn get_context(&self) -> &Context {
+    fn get_context(&self) -> Result<&'a Context> {
+        // We need some work to get the context.
         unimplemented!()
     }
 
@@ -436,17 +454,18 @@ mod tests {
 
     #[cfg(feature = "tensorflow_gpu")]
     #[test]
+    #[ignore]
     fn test_add_gpu() {
         use raw_ops::Add;
 
-        let target_device = "/job:localhost/replica:0/task:0/device:GPU:0";
-
-        let ctx = Context::new(ContextOptions::new()).unwrap();
+        let opts = ContextOptions::new();
+        let ctx = Context::new(opts).unwrap();
         let devices = ctx.device_list().unwrap();
-        assert!(
-            devices.iter().any(|d| d.device_type == "GPU"),
-            "Skip test_copy_to_device because no GPU device was found"
-        );
+        let gpu_device = devices
+            .iter()
+            .find(|d| d.device_type == "GPU")
+            .expect("No GPU device was found.");
+        let target_device = &gpu_device.name;
 
         let x = Tensor::new(&[2, 2])
             .with_values(&[1.0f32, 2.0, 3.0, 4.0])
@@ -459,7 +478,7 @@ mod tests {
         add.set_device(target_device);
 
         let h_z_gpu = add.call(&ctx, &h, &h_gpu).unwrap();
-        assert!(h_z_gpu.device_name().unwrap() == target_device);
+        assert!(&h_z_gpu.device_name().unwrap() == target_device);
 
         let z: crate::Tensor<f32> = h_z_gpu.resolve().unwrap();
         let expected = [2.0f32, 4.0, 6.0, 8.0];
