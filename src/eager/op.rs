@@ -7,6 +7,7 @@ use libc::c_void;
 use libc::size_t;
 use std::ffi::{CStr, CString};
 use std::marker::PhantomData;
+use std::mem::ManuallyDrop;
 use std::os::raw::c_void as std_c_void;
 use std::ptr;
 
@@ -33,6 +34,16 @@ impl<'a> Drop for Op<'a> {
     }
 }
 
+/// Thin wrapper around a Context obtained from eager::Op.
+///
+/// Since the context taken from the Op is just a reference to the Context
+/// under which the Op was created, this wrapper is needed to ensure that the
+/// Context is not dropped here.
+struct OpContext<'a> {
+    ctx: ManuallyDrop<Context>,
+    lifetime: PhantomData<&'a Context>,
+}
+
 impl<'a> Op<'a> {
     fn new(ctx: &'a Context, op_or_function_name: &str) -> Result<Self> {
         let status = Status::new();
@@ -49,7 +60,6 @@ impl<'a> Op<'a> {
         })
     }
 
-    #[allow(dead_code)]
     fn get_name(&self) -> Result<&str> {
         let status = Status::new();
 
@@ -64,10 +74,17 @@ impl<'a> Op<'a> {
     }
 
     /// Return the context in which this op will be executed.
-    #[allow(dead_code)]
-    fn get_context(&self) -> Result<&'a Context> {
-        // We need some work to get the context.
-        unimplemented!()
+    fn get_context(&self) -> Result<OpContext<'a>> {
+        let status = Status::new();
+        let inner = unsafe { tf::TFE_OpGetContext(self.inner, status.inner) };
+        if status.is_ok() {
+            let ctx = ManuallyDrop::new(Context { inner });
+            return Ok(OpContext {
+                ctx,
+                lifetime: PhantomData,
+            });
+        }
+        Err(status)
     }
 
     /// Adds an input to this operation.
