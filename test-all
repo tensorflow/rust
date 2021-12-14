@@ -46,6 +46,7 @@ fi
 
 run cargo fmt --all -- --check
 run cargo test -vv -j 2
+run cargo test -vv -j 2 --features eager
 run cargo test -vv -j 2 --features tensorflow_unstable
 run cargo test -vv -j 2 --features ndarray
 run cargo run --example regression
