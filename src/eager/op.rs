@@ -434,18 +434,61 @@ impl<'a> Op<'a> {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::eager::raw_ops::add;
     use crate::eager::{Context, ContextOptions, TensorHandle};
     use crate::Tensor;
 
     #[test]
-    fn test_add() {
+    fn test_add_op() {
         let ctx = Context::new(ContextOptions::new()).unwrap();
         let x = Tensor::new(&[2, 2]).with_values(&[1i32, 2, 3, 4]).unwrap();
         let h_x = TensorHandle::new(&ctx, &x).unwrap();
         let h_y = h_x.copy_sharing_tensor().unwrap();
+
+        let op_name = "Add";
+        let mut op = Op::new(&ctx, op_name).unwrap();
+
+        // Required input arguments
+        op.add_input(&h_x).unwrap();
+        op.add_input(&h_y).unwrap();
+
+        // Execute Op
+        const NUMBER_OF_OUTPUTS: usize = 1;
+        let [h] = op.execute::<NUMBER_OF_OUTPUTS>(&ctx).unwrap();
+        let z: Tensor<i32> = h.resolve().unwrap();
+        assert_eq!(&z[..], &[2i32, 4, 6, 8]);
+    }
+
+    #[test]
+    fn test_invalid_add() {
+        let ctx = Context::new(ContextOptions::new()).unwrap();
+        let x = Tensor::new(&[2, 2]).with_values(&[1i32, 2, 3, 4]).unwrap();
+        let h_x = TensorHandle::new(&ctx, &x).unwrap();
+        let h_y = h_x.copy_sharing_tensor().unwrap();
+
+        let op_name = "Add";
+        let mut op = Op::new(&ctx, op_name).unwrap();
+
+        // Required input arguments
+        op.add_input(&h_x).unwrap();
+        op.add_input(&h_y).unwrap();
+
+        // Execute Op
+        const WRONG_NUMBER_OF_OUTPUTS: usize = 2;
+        let res = op.execute::<WRONG_NUMBER_OF_OUTPUTS>(&ctx);
+        assert!(res.is_err());
+    }
+
+    #[test]
+    fn test_raw_ops_add() {
+        let ctx = Context::new(ContextOptions::new()).unwrap();
+        let x = Tensor::new(&[2, 2]).with_values(&[1i32, 2, 3, 4]).unwrap();
+        let h_x = TensorHandle::new(&ctx, &x).unwrap();
+        let h_y = h_x.copy_sharing_tensor().unwrap();
+
         let h_z = add(&ctx, &h_x, &h_y).unwrap();
-        let z: crate::Tensor<i32> = h_z.resolve().unwrap();
+        let z: Tensor<i32> = h_z.resolve().unwrap();
         assert_eq!(&z[..], &[2i32, 4, 6, 8]);
     }
 
@@ -453,8 +496,6 @@ mod tests {
     #[test]
     #[ignore]
     fn test_add_gpu() {
-        use raw_ops::Add;
-
         let opts = ContextOptions::new();
         let ctx = Context::new(opts).unwrap();
         let devices = ctx.device_list().unwrap();
@@ -471,10 +512,15 @@ mod tests {
         // Copy to GPU. This creates a new handle managed by the context `ctx`.
         let h_gpu = h.copy_to_device(&ctx, target_device).unwrap();
 
-        let mut add = Add::new();
-        add.set_device(target_device);
+        let op_name = "Add";
+        let mut op = Op::new(&ctx, op_name).unwrap();
 
-        let h_z_gpu = add.call(&ctx, &h, &h_gpu).unwrap();
+        // Required input arguments
+        op.add_input(&h).unwrap();
+        op.add_input(&h_gpu).unwrap();
+        op.set_device(target_device).unwrap();
+
+        let [h_z_gpu] = op.execute(&ctx).unwrap();
         assert!(&h_z_gpu.device_name().unwrap() == target_device);
 
         let z: crate::Tensor<f32> = h_z_gpu.resolve().unwrap();
