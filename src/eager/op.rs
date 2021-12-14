@@ -21,8 +21,8 @@ use tensorflow_sys as tf;
 /// The lifetime of this Op is bounded by the provided 'ctx'. This requirement
 /// comes from the underlying C-API implementation.
 #[derive(Debug)]
-struct Op<'a> {
-    inner: *mut tf::TFE_Op,
+pub(super) struct Op<'a> {
+    pub(super) inner: *mut tf::TFE_Op,
     ctx: PhantomData<&'a Context>,
 }
 
@@ -39,13 +39,13 @@ impl<'a> Drop for Op<'a> {
 /// Since the context taken from the Op is just a reference to the Context
 /// under which the Op was created, this wrapper is needed to ensure that the
 /// Context is not dropped here.
-struct OpContext<'a> {
+pub(super) struct OpContext<'a> {
     ctx: ManuallyDrop<Context>,
     lifetime: PhantomData<&'a Context>,
 }
 
 impl<'a> Op<'a> {
-    fn new(ctx: &'a Context, op_or_function_name: &str) -> Result<Self> {
+    pub(super) fn new(ctx: &'a Context, op_or_function_name: &str) -> Result<Self> {
         let status = Status::new();
 
         let c_op_or_function_name = CString::new(op_or_function_name)?;
@@ -60,7 +60,7 @@ impl<'a> Op<'a> {
         })
     }
 
-    fn get_name(&self) -> Result<&str> {
+    pub(super) fn get_name(&self) -> Result<&str> {
         let status = Status::new();
 
         let name = unsafe {
@@ -74,7 +74,7 @@ impl<'a> Op<'a> {
     }
 
     /// Return the context in which this op will be executed.
-    fn get_context(&self) -> Result<OpContext<'a>> {
+    pub(super) fn get_context(&self) -> Result<OpContext<'a>> {
         let status = Status::new();
         let inner = unsafe { tf::TFE_OpGetContext(self.inner, status.inner) };
         if status.is_ok() {
@@ -88,7 +88,7 @@ impl<'a> Op<'a> {
     }
 
     /// Adds an input to this operation.
-    fn add_input(&mut self, input: &TensorHandle) -> Result<()> {
+    pub(super) fn add_input(&mut self, input: &TensorHandle) -> Result<()> {
         let status = Status::new();
         unsafe {
             tf::TFE_OpAddInput(self.inner, input.inner, status.inner);
@@ -97,7 +97,7 @@ impl<'a> Op<'a> {
     }
 
     /// Set the device where this operation is computed.
-    fn set_device(&mut self, device_name: &str) -> Result<()> {
+    pub(super) fn set_device(&mut self, device_name: &str) -> Result<()> {
         let status = Status::new();
         let c_device_name = CString::new(device_name)?;
         unsafe {
@@ -107,7 +107,7 @@ impl<'a> Op<'a> {
     }
 
     /// Get the device where this operation is computed.
-    fn get_device(&self) -> Result<&str> {
+    pub(super) fn get_device(&self) -> Result<&str> {
         let status = Status::new();
         let device_name = unsafe {
             // The returned string remains valid throughout the lifetime of 'op'.
@@ -121,8 +121,7 @@ impl<'a> Op<'a> {
     }
 
     /// Adds multiple inputs to this operation.
-    #[allow(dead_code)]
-    fn add_input_list(&mut self, inputs: &[TensorHandle]) -> Result<()> {
+    pub(super) fn add_input_list(&mut self, inputs: &[TensorHandle]) -> Result<()> {
         let status = Status::new();
         unsafe {
             let mut inputs: Vec<*mut tf::TFE_TensorHandle> =
@@ -138,7 +137,7 @@ impl<'a> Op<'a> {
     }
 
     /// Sets the value of a string attribute.
-    fn set_attr_string(&mut self, attr_name: &str, value: &str) -> Result<()> {
+    pub(super) fn set_attr_string(&mut self, attr_name: &str, value: &str) -> Result<()> {
         let attr_name = CString::new(attr_name)?;
         let c_value = value.as_bytes();
         unsafe {
@@ -153,7 +152,11 @@ impl<'a> Op<'a> {
     }
 
     /// Sets the value of an attribute which holds a list of strings.
-    fn set_attr_string_list<S: AsRef<str>>(&mut self, attr_name: &str, values: &[S]) -> Result<()> {
+    pub(super) fn set_attr_string_list<S: AsRef<str>>(
+        &mut self,
+        attr_name: &str,
+        values: &[S],
+    ) -> Result<()> {
         let c_attr_name = CString::new(attr_name)?;
         let bytes: Vec<&[u8]> = values.iter().map(|x| x.as_ref().as_bytes()).collect();
         let ptrs: Vec<*const c_void> = bytes.iter().map(|x| x.as_ptr() as *const c_void).collect();
@@ -171,7 +174,7 @@ impl<'a> Op<'a> {
     }
 
     /// Sets an int-valued attribute.
-    fn set_attr_int(&mut self, attr_name: &str, value: i64) -> Result<()> {
+    pub(super) fn set_attr_int(&mut self, attr_name: &str, value: i64) -> Result<()> {
         let c_attr_name = CString::new(attr_name)?;
         unsafe {
             tf::TFE_OpSetAttrInt(self.inner, c_attr_name.as_ptr(), value);
@@ -180,7 +183,7 @@ impl<'a> Op<'a> {
     }
 
     /// Sets an attribute which holds an array of ints.
-    fn set_attr_int_list(&mut self, attr_name: &str, value: &[i64]) -> Result<()> {
+    pub(super) fn set_attr_int_list(&mut self, attr_name: &str, value: &[i64]) -> Result<()> {
         let c_attr_name = CString::new(attr_name)?;
         unsafe {
             tf::TFE_OpSetAttrIntList(
@@ -194,7 +197,7 @@ impl<'a> Op<'a> {
     }
 
     /// Sets a float-valued attribute.
-    fn set_attr_float(&mut self, attr_name: &str, value: f32) -> Result<()> {
+    pub(super) fn set_attr_float(&mut self, attr_name: &str, value: f32) -> Result<()> {
         let c_attr_name = CString::new(attr_name)?;
         unsafe {
             tf::TFE_OpSetAttrFloat(self.inner, c_attr_name.as_ptr(), value);
@@ -203,7 +206,7 @@ impl<'a> Op<'a> {
     }
 
     /// Sets an attribute which holds an array of floats.
-    fn set_attr_float_list(&mut self, attr_name: &str, value: &[f32]) -> Result<()> {
+    pub(super) fn set_attr_float_list(&mut self, attr_name: &str, value: &[f32]) -> Result<()> {
         let c_attr_name = CString::new(attr_name)?;
         // Allow trivial_numeric_casts here because f32 is not necessarily equal to c_float.
         let c_value: Vec<c_float> = value.iter().map(|x| *x as c_float).collect();
@@ -219,7 +222,7 @@ impl<'a> Op<'a> {
     }
 
     /// Sets a boolean-valued attribute.
-    fn set_attr_bool(&mut self, attr_name: &str, value: bool) -> Result<()> {
+    pub(super) fn set_attr_bool(&mut self, attr_name: &str, value: bool) -> Result<()> {
         let c_attr_name = CString::new(attr_name)?;
         unsafe {
             tf::TFE_OpSetAttrBool(self.inner, c_attr_name.as_ptr(), if value { 1 } else { 0 });
@@ -228,7 +231,7 @@ impl<'a> Op<'a> {
     }
 
     /// Sets an attribute which holds an array of booleans.
-    fn set_attr_bool_list(&mut self, attr_name: &str, value: &[bool]) -> Result<()> {
+    pub(super) fn set_attr_bool_list(&mut self, attr_name: &str, value: &[bool]) -> Result<()> {
         let c_attr_name = CString::new(attr_name)?;
         let c_value: Vec<c_uchar> = value.iter().map(|x| if *x { 1 } else { 0 }).collect();
         unsafe {
@@ -243,7 +246,7 @@ impl<'a> Op<'a> {
     }
 
     /// Sets a type-valued attribute.
-    fn set_attr_type(&mut self, attr_name: &str, value: DataType) -> Result<()> {
+    pub(super) fn set_attr_type(&mut self, attr_name: &str, value: DataType) -> Result<()> {
         let c_attr_name = CString::new(attr_name)?;
         unsafe {
             tf::TFE_OpSetAttrType(self.inner, c_attr_name.as_ptr(), value.to_c());
@@ -252,7 +255,7 @@ impl<'a> Op<'a> {
     }
 
     /// Sets an attribute which holds an array of types.
-    fn set_attr_type_list(&mut self, attr_name: &str, value: &[DataType]) -> Result<()> {
+    pub(super) fn set_attr_type_list(&mut self, attr_name: &str, value: &[DataType]) -> Result<()> {
         let c_attr_name = CString::new(attr_name)?;
         let c_value: Vec<tf::TF_DataType> = value.iter().map(|x| x.to_c()).collect();
         unsafe {
@@ -267,7 +270,7 @@ impl<'a> Op<'a> {
     }
 
     /// Sets a shape-valued attribute.
-    fn set_attr_shape(&mut self, attr_name: &str, value: &Shape) -> Result<()> {
+    pub(super) fn set_attr_shape(&mut self, attr_name: &str, value: &Shape) -> Result<()> {
         let status = Status::new();
 
         let c_attr_name = CString::new(attr_name)?;
@@ -296,7 +299,7 @@ impl<'a> Op<'a> {
     }
 
     /// Sets an attribute which holds an array of shapes.
-    fn set_attr_shape_list(&mut self, attr_name: &str, value: &[Shape]) -> Result<()> {
+    pub(super) fn set_attr_shape_list(&mut self, attr_name: &str, value: &[Shape]) -> Result<()> {
         let status = Status::new();
 
         let c_attr_name = CString::new(attr_name)?;
@@ -336,7 +339,11 @@ impl<'a> Op<'a> {
     }
 
     /// Sets a tensor-valued attribute.
-    fn set_attr_any_tensor(&mut self, attr_name: &str, value: &dyn AnyTensor) -> Result<()> {
+    pub(super) fn set_attr_any_tensor(
+        &mut self,
+        attr_name: &str,
+        value: &dyn AnyTensor,
+    ) -> Result<()> {
         let c_attr_name = CString::new(attr_name)?;
         let mut status = Status::new();
         unsafe {
@@ -353,113 +360,12 @@ impl<'a> Op<'a> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use crate::eager::raw_ops::add;
     use crate::eager::{Context, ContextOptions, TensorHandle};
     use crate::Tensor;
 
-    // Tentative implementation of raw_ops for unit testing.
-    mod raw_ops {
-        use super::*;
-        use crate::eager::TensorHandle;
-
-        /// Add
-        #[derive(::std::fmt::Debug)]
-        pub struct Add {
-            T: ::std::option::Option<crate::DataType>,
-            device_name: ::std::option::Option<String>,
-        }
-
-        impl ::std::default::Default for Add {
-            fn default() -> Self {
-                Self {
-                    T: None,
-                    device_name: None,
-                }
-            }
-        }
-
-        impl Add {
-            /// Creates a new `Add`.
-            pub fn new() -> Self {
-                Self::default()
-            }
-
-            /// Sets the `T` attribute.
-            pub fn T<ArgType: ::std::convert::Into<crate::DataType>>(
-                mut self,
-                value: ArgType,
-            ) -> Self {
-                self.T = ::std::option::Option::Some(value.into());
-                self
-            }
-
-            pub fn set_device(&mut self, device_name: &str) {
-                self.device_name = ::std::option::Option::Some(device_name.to_string());
-            }
-
-            /// Execute add.
-            pub fn call<'a>(
-                &self,
-                ctx: &'a crate::eager::Context,
-                x: &TensorHandle,
-                y: &TensorHandle,
-            ) -> Result<TensorHandle<'a>> {
-                let status = crate::Status::new();
-
-                // Define Op
-
-                let op_name = "Add";
-                let mut op = Op::new(ctx, op_name)?;
-
-                // Required input arguments
-                op.add_input(&x)?;
-                op.add_input(&y)?;
-
-                // Attributes
-                if let ::std::option::Option::Some(value) = &self.T {
-                    let attr_name = "T";
-                    op.set_attr_type(attr_name, *value)?;
-                }
-
-                // Device
-                if let ::std::option::Option::Some(device_name) = &self.device_name {
-                    op.set_device(device_name)?;
-                }
-
-                // Execute Op
-                let mut num_output = 1;
-                let mut res = [std::ptr::null_mut::<tensorflow_sys::TFE_TensorHandle>(); 1];
-                unsafe {
-                    tf::TFE_Execute(
-                        op.inner,
-                        res.as_mut_ptr(),
-                        (&mut num_output) as *mut i32,
-                        status.inner,
-                    );
-                };
-                if status.is_ok() {
-                    let ret = TensorHandle::from_tensor_handle(ctx, res[0]);
-                    return Ok(ret);
-                }
-                Err(status)
-            }
-        }
-
-        /// add with default options.
-        pub fn add<'a>(
-            ctx: &'a crate::eager::Context,
-            x: &TensorHandle,
-            y: &TensorHandle,
-        ) -> Result<TensorHandle<'a>> {
-            let op = Add::new();
-            op.call(ctx, x, y)
-        }
-    }
-
     #[test]
     fn test_add() {
-        use raw_ops::add;
-
         let ctx = Context::new(ContextOptions::new()).unwrap();
         let x = Tensor::new(&[2, 2]).with_values(&[1i32, 2, 3, 4]).unwrap();
         let h_x = TensorHandle::new(&ctx, &x).unwrap();
