@@ -7,12 +7,12 @@ use libc::c_void;
 use libc::size_t;
 use std::ffi::{CStr, CString};
 use std::marker::PhantomData;
-use std::mem::ManuallyDrop;
+use std::mem::{self, ManuallyDrop};
 use std::os::raw::c_void as std_c_void;
 use std::ptr;
 
 use crate::eager::{Context, TensorHandle};
-use crate::{AnyTensor, DataType, Result, Shape, Status};
+use crate::{AnyTensor, Code, DataType, Result, Shape, Status};
 
 use tensorflow_sys as tf;
 
@@ -355,6 +355,63 @@ impl<'a> Op<'a> {
             );
         }
         status.into_result()
+    }
+
+    /// Execute the operation defined by the `Op` and return hadndles to computed
+    /// tensors.
+    ///
+    /// If async execution is enabled, the call may simply enqueue the execution
+    /// and return "non-ready" handles. Note that any handles contained in the `Op`
+    /// should not be mutated till the kernel execution actually finishes.
+    ///
+    /// For sync execution, if any of the inputs to `op` are not ready, this call
+    /// will block till they become ready and then return when the kernel execution
+    /// is done.
+    pub(super) fn execute<const N: usize>(self, ctx: &'a Context) -> Result<[TensorHandle; N]> {
+        let mut status = Status::new();
+
+        let mut num_retvals = N as i32;
+        let mut retvals: [*mut tf::TFE_TensorHandle; N] = [ptr::null_mut(); N];
+        unsafe {
+            // 'retvals' must point to a pre-allocated array of TFE_TensorHandle* and
+            // '*num_retvals' should be set to the size of this array. It is an error if
+            // the size of 'retvals' is less than the number of outputs.
+            //
+            // This call will update the *num_retvals to the number of outputs without raising an
+            // error if it is larger than the number of outputs. However, here we treat that such
+            // cases as errors and return an error status.
+            tf::TFE_Execute(
+                self.inner,
+                retvals.as_mut_ptr(),
+                &mut num_retvals,
+                status.inner,
+            );
+        }
+        if num_retvals != N as i32 {
+            status.set_lossy(Code::InvalidArgument, "Invalid number of outputs");
+            return Err(status);
+        }
+        if status.is_ok() {
+            let mut handles_uninit: [mem::MaybeUninit<TensorHandle>; N] =
+                unsafe { mem::MaybeUninit::uninit().assume_init() };
+
+            for i in 0..N {
+                let t = TensorHandle::from_tensor_handle(ctx, retvals[i]);
+                handles_uninit[i].write(t);
+            }
+            // Transmute uninitialized handles to initialized handles. Ideally, we would use
+            // `mem::transmute` here, but it is not stable yet for generic sized arrays.
+            // ref : https://github.com/rust-lang/rust/issues/61956
+            //
+            // Following is a workaround for this issue:
+            // Using &mut as an assertion of unique "ownership"
+            let ptr = &mut handles_uninit as *mut _ as *mut [TensorHandle; N];
+            let handles: [TensorHandle; N] = unsafe { ptr.read() };
+            mem::forget(handles_uninit);
+
+            return Ok(handles);
+        }
+        Err(status)
     }
 }
 

@@ -45,8 +45,6 @@ impl Add {
         x: &TensorHandle,
         y: &TensorHandle,
     ) -> Result<TensorHandle<'a>> {
-        let status = crate::Status::new();
-
         // Define Op
 
         let op_name = "Add";
@@ -68,21 +66,8 @@ impl Add {
         }
 
         // Execute Op
-        let mut num_output = 1;
-        let mut res = [std::ptr::null_mut::<tensorflow_sys::TFE_TensorHandle>(); 1];
-        unsafe {
-            tf::TFE_Execute(
-                op.inner,
-                res.as_mut_ptr(),
-                (&mut num_output) as *mut i32,
-                status.inner,
-            );
-        };
-        if status.is_ok() {
-            let ret = TensorHandle::from_tensor_handle(ctx, res[0]);
-            return Ok(ret);
-        }
-        Err(status)
+        let [h] = op.execute::<1>(ctx)?;
+        Ok(h)
     }
 }
 
