@@ -400,6 +400,11 @@ impl<'a> Op<'a> {
             );
         }
         if num_retvals != N as i32 {
+            for i in 0..num_retvals as usize {
+                unsafe {
+                    tf::TFE_DeleteTensorHandle(retvals[i]);
+                }
+            }
             status.set_lossy(Code::InvalidArgument, "Invalid number of outputs");
             return Err(status);
         }
