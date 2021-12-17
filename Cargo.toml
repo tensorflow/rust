@@ -43,7 +43,7 @@ tensorflow_unstable = []
 eager = ["tensorflow-sys/eager"]
 # This is for testing purposes; users should not use this.
 examples_system_alloc = ["tensorflow-sys/examples_system_alloc"]
-private-docs-rs = [] # DO NOT RELY ON THIS
+private-docs-rs = ["tensorflow-sys/private-docs-rs"] # DO NOT RELY ON THIS
 
 [workspace]
 
