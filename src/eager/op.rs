@@ -402,27 +402,27 @@ impl<'a> Op<'a> {
             status.set_lossy(Code::InvalidArgument, "Invalid number of outputs");
             return Err(status);
         }
-        if status.is_ok() {
-            let mut handles_uninit: [mem::MaybeUninit<TensorHandle>; N] =
-                unsafe { mem::MaybeUninit::uninit().assume_init() };
+        status.into_result()?;
 
-            for i in 0..N {
-                let t = unsafe { TensorHandle::from_tensor_handle(ctx, retvals[i]) };
-                handles_uninit[i].write(t);
-            }
-            // Transmute uninitialized handles to initialized handles. Ideally, we would use
-            // `mem::transmute` here, but it is not stable yet for generic sized arrays.
-            // ref : https://github.com/rust-lang/rust/issues/61956
-            //
-            // Following is a workaround for this issue:
-            // Using &mut as an assertion of unique "ownership"
-            let ptr = &mut handles_uninit as *mut _ as *mut [TensorHandle; N];
-            let handles: [TensorHandle; N] = unsafe { ptr.read() };
-            mem::forget(handles_uninit);
+        let mut handles_uninit: [mem::MaybeUninit<TensorHandle>; N] =
+            unsafe { mem::MaybeUninit::uninit().assume_init() };
 
-            return Ok(handles);
+        for i in 0..N {
+            let t = unsafe { TensorHandle::from_tensor_handle(ctx, retvals[i]) };
+            handles_uninit[i].write(t);
         }
-        Err(status)
+
+        // Transmute uninitialized handles to initialized handles. Ideally, we would use
+        // `mem::transmute` here, but it is not stable yet for generic sized arrays.
+        // ref : https://github.com/rust-lang/rust/issues/61956
+        //
+        // Following is a workaround for this issue:
+        // Using &mut as an assertion of unique "ownership"
+        let ptr = &mut handles_uninit as *mut _ as *mut [TensorHandle; N];
+        let handles: [TensorHandle; N] = unsafe { ptr.read() };
+        mem::forget(handles_uninit);
+
+        Ok(handles)
     }
 }
 
