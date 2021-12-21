@@ -11,4 +11,4 @@ pub use tensor_handle::*;
 
 mod op;
 
-pub mod raw_ops;
+pub use op::raw_ops;

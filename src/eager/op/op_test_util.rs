@@ -1,9 +1,9 @@
-/// Tentative implementation of raw_ops for unit testing.
+#![allow(non_snake_case)]
+/// Code for Op's ut that mimics raw_opw.
 use crate::eager::TensorHandle;
 use crate::Result;
-use tensorflow_sys as tf;
 
-use super::op::Op;
+use super::Op;
 
 /// Add
 #[derive(::std::fmt::Debug)]

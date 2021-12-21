@@ -16,6 +16,11 @@ use crate::{AnyTensor, Code, DataType, Result, Shape, Status};
 
 use tensorflow_sys as tf;
 
+#[cfg(test)]
+mod op_test_util;
+
+pub mod raw_ops;
+
 /// Description of the TensorFlow op to execute, for the eager execution.
 ///
 /// The lifetime of this Op is bounded by the provided 'ctx'. This requirement
@@ -434,9 +439,9 @@ impl<'a> Op<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::eager::raw_ops::add;
     use crate::eager::{Context, ContextOptions, TensorHandle};
     use crate::Tensor;
+    use op_test_util::add;
 
     #[test]
     fn test_add_op() {
