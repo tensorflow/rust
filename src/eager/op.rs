@@ -60,9 +60,11 @@ impl<'a> Op<'a> {
         })
     }
 
+    /// Returns the op or function name that this op will execute.
     pub(super) fn get_name(&self) -> Result<&str> {
         let status = Status::new();
 
+        // The returned string remains valid throughout the lifetime of 'op'.
         let c_name = unsafe { tf::TFE_OpGetName(self.inner, status.inner) };
         status.into_result()?;
 
