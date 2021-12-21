@@ -63,28 +63,24 @@ impl<'a> Op<'a> {
     pub(super) fn get_name(&self) -> Result<&str> {
         let status = Status::new();
 
-        let name = unsafe {
-            let name = tf::TFE_OpGetName(self.inner, status.inner);
-            CStr::from_ptr(name)
-        };
-        if status.is_ok() {
-            return Ok(name.to_str()?);
-        }
-        Err(status)
+        let c_name = unsafe { tf::TFE_OpGetName(self.inner, status.inner) };
+        status.into_result()?;
+
+        let name = unsafe { CStr::from_ptr(c_name).to_str()? };
+        Ok(name)
     }
 
     /// Return the context in which this op will be executed.
     pub(super) fn get_context(&self) -> Result<OpContext<'a>> {
         let status = Status::new();
         let inner = unsafe { tf::TFE_OpGetContext(self.inner, status.inner) };
-        if status.is_ok() {
-            let ctx = ManuallyDrop::new(Context { inner });
-            return Ok(OpContext {
-                ctx,
-                lifetime: PhantomData,
-            });
-        }
-        Err(status)
+        status.into_result()?;
+
+        let ctx = ManuallyDrop::new(Context { inner });
+        Ok(OpContext {
+            ctx,
+            lifetime: PhantomData,
+        })
     }
 
     /// Adds an input to this operation.
@@ -109,15 +105,11 @@ impl<'a> Op<'a> {
     /// Get the device where this operation is computed.
     pub(super) fn get_device(&self) -> Result<&str> {
         let status = Status::new();
-        let device_name = unsafe {
-            // The returned string remains valid throughout the lifetime of 'op'.
-            let device_name = tf::TFE_OpGetDevice(self.inner, status.inner);
-            CStr::from_ptr(device_name)
-        };
-        if status.is_ok() {
-            return Ok(device_name.to_str()?);
-        }
-        Err(status)
+        // The returned string remains valid throughout the lifetime of 'op'.
+        let c_device_name = unsafe { tf::TFE_OpGetDevice(self.inner, status.inner) };
+        status.into_result()?;
+        let device_name = unsafe { CStr::from_ptr(c_device_name).to_str()? };
+        Ok(device_name)
     }
 
     /// Adds multiple inputs to this operation.
