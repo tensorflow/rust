@@ -26,8 +26,8 @@ pub mod raw_ops;
 /// The lifetime of this Op is bounded by the provided 'ctx'. This requirement
 /// comes from the underlying C-API implementation.
 #[derive(Debug)]
-pub(super) struct Op<'a> {
-    pub(super) inner: *mut tf::TFE_Op,
+struct Op<'a> {
+    inner: *mut tf::TFE_Op,
     ctx: PhantomData<&'a Context>,
 }
 
@@ -44,13 +44,13 @@ impl<'a> Drop for Op<'a> {
 /// Since the context taken from the Op is just a reference to the Context
 /// under which the Op was created, this wrapper is needed to ensure that the
 /// Context is not dropped here.
-pub(super) struct OpContext<'a> {
+struct OpContext<'a> {
     ctx: ManuallyDrop<Context>,
     lifetime: PhantomData<&'a Context>,
 }
 
 impl<'a> Op<'a> {
-    pub(super) fn new(ctx: &'a Context, op_or_function_name: &str) -> Result<Self> {
+    fn new(ctx: &'a Context, op_or_function_name: &str) -> Result<Self> {
         let status = Status::new();
 
         let c_op_or_function_name = CString::new(op_or_function_name)?;
@@ -66,7 +66,7 @@ impl<'a> Op<'a> {
     }
 
     /// Returns the op or function name that this op will execute.
-    pub(super) fn get_name(&self) -> Result<&str> {
+    fn get_name(&self) -> Result<&str> {
         let status = Status::new();
 
         // The returned string remains valid throughout the lifetime of 'op'.
@@ -78,7 +78,7 @@ impl<'a> Op<'a> {
     }
 
     /// Return the context in which this op will be executed.
-    pub(super) fn get_context(&self) -> Result<OpContext<'a>> {
+    fn get_context(&self) -> Result<OpContext<'a>> {
         let status = Status::new();
         let inner = unsafe { tf::TFE_OpGetContext(self.inner, status.inner) };
         status.into_result()?;
@@ -91,7 +91,7 @@ impl<'a> Op<'a> {
     }
 
     /// Adds an input to this operation.
-    pub(super) fn add_input(&mut self, input: &TensorHandle) -> Result<()> {
+    fn add_input(&mut self, input: &TensorHandle) -> Result<()> {
         let status = Status::new();
         unsafe {
             tf::TFE_OpAddInput(self.inner, input.inner, status.inner);
@@ -100,7 +100,7 @@ impl<'a> Op<'a> {
     }
 
     /// Set the device where this operation is computed.
-    pub(super) fn set_device(&mut self, device_name: &str) -> Result<()> {
+    fn set_device(&mut self, device_name: &str) -> Result<()> {
         let status = Status::new();
         let c_device_name = CString::new(device_name)?;
         unsafe {
@@ -110,7 +110,7 @@ impl<'a> Op<'a> {
     }
 
     /// Get the device where this operation is computed.
-    pub(super) fn get_device(&self) -> Result<&str> {
+    fn get_device(&self) -> Result<&str> {
         let status = Status::new();
         // The returned string remains valid throughout the lifetime of 'op'.
         let c_device_name = unsafe { tf::TFE_OpGetDevice(self.inner, status.inner) };
@@ -120,7 +120,7 @@ impl<'a> Op<'a> {
     }
 
     /// Adds multiple inputs to this operation.
-    pub(super) fn add_input_list(&mut self, inputs: &[TensorHandle]) -> Result<()> {
+    fn add_input_list(&mut self, inputs: &[TensorHandle]) -> Result<()> {
         let status = Status::new();
         unsafe {
             let mut inputs: Vec<*mut tf::TFE_TensorHandle> =
@@ -136,7 +136,7 @@ impl<'a> Op<'a> {
     }
 
     /// Sets the value of a string attribute.
-    pub(super) fn set_attr_string(&mut self, attr_name: &str, value: &str) -> Result<()> {
+    fn set_attr_string(&mut self, attr_name: &str, value: &str) -> Result<()> {
         let attr_name = CString::new(attr_name)?;
         let c_value = value.as_bytes();
         unsafe {
@@ -151,11 +151,7 @@ impl<'a> Op<'a> {
     }
 
     /// Sets the value of an attribute which holds a list of strings.
-    pub(super) fn set_attr_string_list<S: AsRef<str>>(
-        &mut self,
-        attr_name: &str,
-        values: &[S],
-    ) -> Result<()> {
+    fn set_attr_string_list<S: AsRef<str>>(&mut self, attr_name: &str, values: &[S]) -> Result<()> {
         let c_attr_name = CString::new(attr_name)?;
         let bytes: Vec<&[u8]> = values.iter().map(|x| x.as_ref().as_bytes()).collect();
         let ptrs: Vec<*const c_void> = bytes.iter().map(|x| x.as_ptr() as *const c_void).collect();
@@ -173,7 +169,7 @@ impl<'a> Op<'a> {
     }
 
     /// Sets an int-valued attribute.
-    pub(super) fn set_attr_int(&mut self, attr_name: &str, value: i64) -> Result<()> {
+    fn set_attr_int(&mut self, attr_name: &str, value: i64) -> Result<()> {
         let c_attr_name = CString::new(attr_name)?;
         unsafe {
             tf::TFE_OpSetAttrInt(self.inner, c_attr_name.as_ptr(), value);
@@ -182,7 +178,7 @@ impl<'a> Op<'a> {
     }
 
     /// Sets an attribute which holds an array of ints.
-    pub(super) fn set_attr_int_list(&mut self, attr_name: &str, value: &[i64]) -> Result<()> {
+    fn set_attr_int_list(&mut self, attr_name: &str, value: &[i64]) -> Result<()> {
         let c_attr_name = CString::new(attr_name)?;
         unsafe {
             tf::TFE_OpSetAttrIntList(
@@ -196,7 +192,7 @@ impl<'a> Op<'a> {
     }
 
     /// Sets a float-valued attribute.
-    pub(super) fn set_attr_float(&mut self, attr_name: &str, value: f32) -> Result<()> {
+    fn set_attr_float(&mut self, attr_name: &str, value: f32) -> Result<()> {
         let c_attr_name = CString::new(attr_name)?;
         unsafe {
             tf::TFE_OpSetAttrFloat(self.inner, c_attr_name.as_ptr(), value);
@@ -205,7 +201,7 @@ impl<'a> Op<'a> {
     }
 
     /// Sets an attribute which holds an array of floats.
-    pub(super) fn set_attr_float_list(&mut self, attr_name: &str, value: &[f32]) -> Result<()> {
+    fn set_attr_float_list(&mut self, attr_name: &str, value: &[f32]) -> Result<()> {
         let c_attr_name = CString::new(attr_name)?;
         // Allow trivial_numeric_casts here because f32 is not necessarily equal to c_float.
         let c_value: Vec<c_float> = value.iter().map(|x| *x as c_float).collect();
@@ -221,7 +217,7 @@ impl<'a> Op<'a> {
     }
 
     /// Sets a boolean-valued attribute.
-    pub(super) fn set_attr_bool(&mut self, attr_name: &str, value: bool) -> Result<()> {
+    fn set_attr_bool(&mut self, attr_name: &str, value: bool) -> Result<()> {
         let c_attr_name = CString::new(attr_name)?;
         unsafe {
             tf::TFE_OpSetAttrBool(self.inner, c_attr_name.as_ptr(), if value { 1 } else { 0 });
@@ -230,7 +226,7 @@ impl<'a> Op<'a> {
     }
 
     /// Sets an attribute which holds an array of booleans.
-    pub(super) fn set_attr_bool_list(&mut self, attr_name: &str, value: &[bool]) -> Result<()> {
+    fn set_attr_bool_list(&mut self, attr_name: &str, value: &[bool]) -> Result<()> {
         let c_attr_name = CString::new(attr_name)?;
         let c_value: Vec<c_uchar> = value.iter().map(|x| if *x { 1 } else { 0 }).collect();
         unsafe {
@@ -245,7 +241,7 @@ impl<'a> Op<'a> {
     }
 
     /// Sets a type-valued attribute.
-    pub(super) fn set_attr_type(&mut self, attr_name: &str, value: DataType) -> Result<()> {
+    fn set_attr_type(&mut self, attr_name: &str, value: DataType) -> Result<()> {
         let c_attr_name = CString::new(attr_name)?;
         unsafe {
             tf::TFE_OpSetAttrType(self.inner, c_attr_name.as_ptr(), value.to_c());
@@ -254,7 +250,7 @@ impl<'a> Op<'a> {
     }
 
     /// Sets an attribute which holds an array of types.
-    pub(super) fn set_attr_type_list(&mut self, attr_name: &str, value: &[DataType]) -> Result<()> {
+    fn set_attr_type_list(&mut self, attr_name: &str, value: &[DataType]) -> Result<()> {
         let c_attr_name = CString::new(attr_name)?;
         let c_value: Vec<tf::TF_DataType> = value.iter().map(|x| x.to_c()).collect();
         unsafe {
@@ -269,7 +265,7 @@ impl<'a> Op<'a> {
     }
 
     /// Sets a shape-valued attribute.
-    pub(super) fn set_attr_shape(&mut self, attr_name: &str, value: &Shape) -> Result<()> {
+    fn set_attr_shape(&mut self, attr_name: &str, value: &Shape) -> Result<()> {
         let status = Status::new();
 
         let c_attr_name = CString::new(attr_name)?;
@@ -298,7 +294,7 @@ impl<'a> Op<'a> {
     }
 
     /// Sets an attribute which holds an array of shapes.
-    pub(super) fn set_attr_shape_list(&mut self, attr_name: &str, value: &[Shape]) -> Result<()> {
+    fn set_attr_shape_list(&mut self, attr_name: &str, value: &[Shape]) -> Result<()> {
         let status = Status::new();
 
         let c_attr_name = CString::new(attr_name)?;
@@ -338,11 +334,7 @@ impl<'a> Op<'a> {
     }
 
     /// Sets a tensor-valued attribute.
-    pub(super) fn set_attr_any_tensor(
-        &mut self,
-        attr_name: &str,
-        value: &dyn AnyTensor,
-    ) -> Result<()> {
+    fn set_attr_any_tensor(&mut self, attr_name: &str, value: &dyn AnyTensor) -> Result<()> {
         let c_attr_name = CString::new(attr_name)?;
         let mut status = Status::new();
         unsafe {
@@ -378,7 +370,7 @@ impl<'a> Op<'a> {
     /// For sync execution, if any of the inputs to `op` are not ready, this call
     /// will block till they become ready and then return when the kernel execution
     /// is done.
-    pub(super) fn execute<const N: usize>(self, ctx: &'a Context) -> Result<[TensorHandle; N]> {
+    fn execute<const N: usize>(self, ctx: &'a Context) -> Result<[TensorHandle; N]> {
         let status = Status::new();
 
         let mut num_retvals = N as i32;
