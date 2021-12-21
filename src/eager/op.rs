@@ -407,7 +407,7 @@ impl<'a> Op<'a> {
                 unsafe { mem::MaybeUninit::uninit().assume_init() };
 
             for i in 0..N {
-                let t = TensorHandle::from_tensor_handle(ctx, retvals[i]);
+                let t = unsafe { TensorHandle::from_tensor_handle(ctx, retvals[i]) };
                 handles_uninit[i].write(t);
             }
             // Transmute uninitialized handles to initialized handles. Ideally, we would use
