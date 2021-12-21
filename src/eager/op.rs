@@ -374,7 +374,7 @@ impl<'a> Op<'a> {
     /// will block till they become ready and then return when the kernel execution
     /// is done.
     pub(super) fn execute<const N: usize>(self, ctx: &'a Context) -> Result<[TensorHandle; N]> {
-        let mut status = Status::new();
+        let status = Status::new();
 
         let mut num_retvals = N as i32;
         let mut retvals: [*mut tf::TFE_TensorHandle; N] = [ptr::null_mut(); N];
@@ -393,16 +393,21 @@ impl<'a> Op<'a> {
                 status.inner,
             );
         }
+        status.into_result()?;
+
+        // If the 'num_retvals' was updated, we treat that as an error. See comment above.
         if num_retvals != N as i32 {
             for i in 0..num_retvals as usize {
                 unsafe {
                     tf::TFE_DeleteTensorHandle(retvals[i]);
                 }
             }
-            status.set_lossy(Code::InvalidArgument, "Invalid number of outputs");
+            let status = Status::new_set_lossy(
+                Code::InvalidArgument,
+                &format!("Expected {} outputs, got {}", N, num_retvals),
+            );
             return Err(status);
         }
-        status.into_result()?;
 
         let mut handles_uninit: [mem::MaybeUninit<TensorHandle>; N] =
             unsafe { mem::MaybeUninit::uninit().assume_init() };
