@@ -348,18 +348,6 @@ impl<'a> Op<'a> {
         status.into_result()
     }
 
-    /// May be useful for debug, but not sure how to use it now.
-    fn get_output_length(&self) -> usize {
-        unimplemented!();
-        // unsafe { tf::TFE_OpGetOutputLength(self.inner) }
-    }
-
-    /// May be useful for debug, but not sure how to use it now.
-    fn get_input_length(&self) -> usize {
-        unimplemented!();
-        // unsafe { tf::TFE_OpGetInputLength(self.inner) }
-    }
-
     /// Execute the operation defined by the `Op` and return hadndles to computed
     /// tensors.
     ///
