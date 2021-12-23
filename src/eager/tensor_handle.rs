@@ -40,7 +40,7 @@ use crate::{AnyTensor, DataType, Result, Status, Tensor, TensorType};
 /// ```
 #[derive(Debug)]
 pub struct TensorHandle<'a> {
-    inner: *mut tf::TFE_TensorHandle,
+    pub(super) inner: *mut tf::TFE_TensorHandle,
     // TensorHandle should not live longer than a given context.
     ctx: PhantomData<&'a Context>,
 }
@@ -219,6 +219,17 @@ impl<'a> TensorHandle<'a> {
             } else {
                 Err(status)
             }
+        }
+    }
+
+    /// Convert the raw TFE_TensorHandle* into a TensorHandle.
+    pub(super) unsafe fn from_tensor_handle(
+        _ctx: &'a Context,
+        inner: *mut tf::TFE_TensorHandle,
+    ) -> Self {
+        Self {
+            inner,
+            ctx: PhantomData,
         }
     }
 }
