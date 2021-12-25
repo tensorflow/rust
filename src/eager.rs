@@ -15,6 +15,9 @@ pub use op::raw_ops;
 
 use crate::{Result, Tensor, TensorType};
 
+#[cfg(feature = "ndarray")]
+use ndarray::{ArrayBase, Data, Dimension};
+
 /// Simple helper trait to convert a Tensor into a TensorHandle for use in eager
 /// execution.
 pub trait ToTensorHandle<'a> {
@@ -60,11 +63,31 @@ impl<'a, T: TensorType> ToTensorHandle<'a> for [T] {
     }
 }
 
+#[cfg(feature = "ndarray")]
+/// Convert any ndarray::ArrayBase type into a TensorHandle
+impl<'a, T, S, D> ToTensorHandle<'a> for ArrayBase<S, D>
+where
+    T: TensorType,
+    S: Data<Elem = T>,
+    D: Dimension,
+{
+    fn to_handle(&self, ctx: &'a Context) -> Result<TensorHandle<'a>> {
+        let dims: Vec<u64> = self.shape().iter().map(|x| *x as u64).collect();
+        let mut tensor: Tensor<T> = Tensor::new(&dims);
+        for (e, v) in tensor.iter_mut().zip(self.iter()) {
+            e.clone_from(v);
+        }
+        TensorHandle::new(ctx, &tensor)
+    }
+}
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::eager::{Context, ContextOptions};
     use crate::Tensor;
+
+    #[cfg(feature = "ndarray")]
+    use ndarray::array;
 
     #[test]
     fn tensor_to_handle() {
@@ -142,5 +165,19 @@ mod tests {
         let handle = v.to_handle(&ctx).unwrap();
         let tensor: Tensor<f64> = handle.resolve().unwrap();
         assert_eq!(&v, &tensor[..]);
+    }
+
+    #[cfg(feature = "ndarray")]
+    #[test]
+    fn ndarray_to_handle() {
+        let a = array![[1i32, 2], [3, 4]];
+
+        let ctx = Context::new(ContextOptions::new()).unwrap();
+        let handle = a.to_handle(&ctx).unwrap();
+        let tensor: Tensor<i32> = handle.resolve().unwrap();
+        assert_eq!(a.as_slice().unwrap(), &tensor[..]);
+
+        let at = Tensor::from(a);
+        assert_eq!(at, tensor);
     }
 }
