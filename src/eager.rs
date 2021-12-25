@@ -18,15 +18,16 @@ use crate::{Result, Tensor, TensorType};
 #[cfg(feature = "ndarray")]
 use ndarray::{ArrayBase, Data, Dimension};
 
-/// Simple helper trait to convert a Tensor into a TensorHandle for use in eager
-/// execution.
+/// A helper trait to convert a Tensor or some other types into a TensorHandle
+/// for use in eager execution.
 pub trait ToTensorHandle<'a> {
-    /// Convert the Tensor or TensorHandle into a new TensorHandle.
+    /// Convert a Tensor or values into a new TensorHandle.
     ///
     /// _Warning_ : This function may create multiple handles to the same
     /// underlying tensor. Users should be careful not to modify the tensor
-    /// after converting it to a handle. Also, users should be careful not
-    /// to modify the tensor obtained via the TensorHandle's `resolve` method.
+    /// after converting it to a TensorHandle. Also, users should be careful
+    /// not to modify the Tensor generated from the TensorHandle's `resolve`
+    /// method.
     fn to_handle(&self, ctx: &'a Context) -> Result<TensorHandle<'a>>;
 }
 
