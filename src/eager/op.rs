@@ -467,8 +467,9 @@ mod tests {
 
     #[test]
     fn test_raw_ops_add() {
+        let values = [1i32, 2, 3, 4];
         let ctx = Context::new(ContextOptions::new()).unwrap();
-        let x = Tensor::new(&[2, 2]).with_values(&[1i32, 2, 3, 4]).unwrap();
+        let x = Tensor::new(&[2, 2]).with_values(&values).unwrap();
         let h_x = TensorHandle::new(&ctx, &x).unwrap();
         let h_y = h_x.copy_sharing_tensor().unwrap();
         let expected = Tensor::new(&[2, 2]).with_values(&[2i32, 4, 6, 8]).unwrap();
@@ -492,6 +493,19 @@ mod tests {
         let h_z = add(&ctx, &h_x, &h_y).unwrap();
         let z: Tensor<i32> = h_z.resolve().unwrap();
         assert_eq!(z, expected);
+
+        // handle and scaler
+        let expected2 = Tensor::new(&[2, 2]).with_values(&[2i32, 3, 4, 5]).unwrap();
+        let h_z = add(&ctx, &h_x, &1i32).unwrap();
+        let z: Tensor<i32> = h_z.resolve().unwrap();
+        assert_eq!(z, expected2);
+
+        // tensor and array
+        let expected3 = Tensor::new(&[4]).with_values(&[2i32, 4, 6, 8]).unwrap();
+        let x = Tensor::new(&[4]).with_values(&values).unwrap();
+        let h_z = add(&ctx, &x, &values).unwrap();
+        let z: Tensor<i32> = h_z.resolve().unwrap();
+        assert_eq!(z, expected3);
     }
 
     #[cfg(feature = "tensorflow_gpu")]
