@@ -1,6 +1,6 @@
 #![allow(non_snake_case)]
 /// Code for Op's ut that mimics raw_opw.
-use crate::eager::TensorHandle;
+use crate::eager::{TensorHandle, ToTensorHandle};
 use crate::Result;
 
 use super::Op;
@@ -39,20 +39,24 @@ impl Add {
     }
 
     /// Execute add.
-    pub fn call<'a>(
+    pub fn call<'a, T0, T1>(
         &self,
         ctx: &'a crate::eager::Context,
-        x: &TensorHandle,
-        y: &TensorHandle,
-    ) -> Result<TensorHandle<'a>> {
+        x: &T0,
+        y: &T1,
+    ) -> Result<TensorHandle<'a>>
+    where
+        T0: ToTensorHandle<'a>,
+        T1: ToTensorHandle<'a>,
+    {
         // Define Op
 
         let op_name = "Add";
         let mut op = Op::new(ctx, op_name)?;
 
         // Required input arguments
-        op.add_input(&x)?;
-        op.add_input(&y)?;
+        op.add_input(&x.to_handle(ctx)?)?;
+        op.add_input(&y.to_handle(ctx)?)?;
 
         // Attributes
         if let ::std::option::Option::Some(value) = &self.T {
@@ -72,11 +76,11 @@ impl Add {
 }
 
 /// add with default options.
-pub fn add<'a>(
-    ctx: &'a crate::eager::Context,
-    x: &TensorHandle,
-    y: &TensorHandle,
-) -> Result<TensorHandle<'a>> {
+pub fn add<'a, T0, T1>(ctx: &'a crate::eager::Context, x: &T0, y: &T1) -> Result<TensorHandle<'a>>
+where
+    T0: ToTensorHandle<'a>,
+    T1: ToTensorHandle<'a>,
+{
     let op = Add::new();
     op.call(ctx, x, y)
 }
