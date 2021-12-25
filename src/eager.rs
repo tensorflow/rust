@@ -63,6 +63,13 @@ impl<'a, T: TensorType> ToTensorHandle<'a> for [T] {
     }
 }
 
+impl<'a, T: TensorType, const N: usize> ToTensorHandle<'a> for [T; N] {
+    fn to_handle(&self, ctx: &'a Context) -> Result<TensorHandle<'a>> {
+        let tensor = Tensor::from(&self[..]);
+        TensorHandle::new(ctx, &tensor)
+    }
+}
+
 #[cfg(feature = "ndarray")]
 /// Convert any ndarray::ArrayBase type into a TensorHandle
 impl<'a, T, S, D> ToTensorHandle<'a> for ArrayBase<S, D>
