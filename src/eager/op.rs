@@ -441,7 +441,8 @@ mod tests {
         const NUMBER_OF_OUTPUTS: usize = 1;
         let [h] = op.execute::<NUMBER_OF_OUTPUTS>(&ctx).unwrap();
         let z: Tensor<i32> = h.resolve().unwrap();
-        assert_eq!(&z[..], &[2i32, 4, 6, 8]);
+        let expected = Tensor::new(&[2, 2]).with_values(&[2i32, 4, 6, 8]).unwrap();
+        assert_eq!(z, expected);
     }
 
     #[test]
@@ -470,10 +471,27 @@ mod tests {
         let x = Tensor::new(&[2, 2]).with_values(&[1i32, 2, 3, 4]).unwrap();
         let h_x = TensorHandle::new(&ctx, &x).unwrap();
         let h_y = h_x.copy_sharing_tensor().unwrap();
+        let expected = Tensor::new(&[2, 2]).with_values(&[2i32, 4, 6, 8]).unwrap();
 
+        // tensor and tensor
+        let h_z = add(&ctx, &x, &x).unwrap();
+        let z: Tensor<i32> = h_z.resolve().unwrap();
+        assert_eq!(z, expected);
+
+        // tensor and handle
+        let h_z = add(&ctx, &x, &h_y).unwrap();
+        let z: Tensor<i32> = h_z.resolve().unwrap();
+        assert_eq!(z, expected);
+
+        // handle and tensor
+        let h_z = add(&ctx, &h_x, &x).unwrap();
+        let z: Tensor<i32> = h_z.resolve().unwrap();
+        assert_eq!(z, expected);
+
+        // handle and handle
         let h_z = add(&ctx, &h_x, &h_y).unwrap();
         let z: Tensor<i32> = h_z.resolve().unwrap();
-        assert_eq!(&z[..], &[2i32, 4, 6, 8]);
+        assert_eq!(z, expected);
     }
 
     #[cfg(feature = "tensorflow_gpu")]
