@@ -88,6 +88,7 @@ where
         TensorHandle::new(ctx, &tensor)
     }
 }
+
 #[cfg(test)]
 mod tests {
     use super::*;
