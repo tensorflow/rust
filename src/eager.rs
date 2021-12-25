@@ -42,6 +42,24 @@ impl<'a> ToTensorHandle<'a> for TensorHandle<'a> {
     }
 }
 
+impl<'a, T: TensorType> ToTensorHandle<'a> for T {
+    fn to_handle(&self, ctx: &'a Context) -> Result<TensorHandle<'a>> {
+        let mut tensor = Tensor::<T>::new(&[]);
+        tensor[0] = self.clone();
+        TensorHandle::new(ctx, &tensor)
+    }
+}
+
+impl<'a, T: TensorType> ToTensorHandle<'a> for [T] {
+    fn to_handle(&self, ctx: &'a Context) -> Result<TensorHandle<'a>> {
+        let mut tensor = Tensor::<T>::new(&[self.len() as u64]);
+        for (e, v) in tensor.iter_mut().zip(self) {
+            e.clone_from(v);
+        }
+        TensorHandle::new(ctx, &tensor)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -76,5 +94,53 @@ mod tests {
         let handle2 = handle.to_handle(&ctx).unwrap();
         let tensor2: Tensor<i32> = handle2.resolve().unwrap();
         assert_eq!(&tensor[..], &tensor2[..]);
+    }
+
+    #[test]
+    fn tensortype_to_handle() {
+        let ctx = Context::new(ContextOptions::new()).unwrap();
+        let v = 1i32;
+        let handle = v.to_handle(&ctx).unwrap();
+        let tensor: Tensor<i32> = handle.resolve().unwrap();
+        assert_eq!(&[v], &tensor[..]);
+
+        let v = 1i64;
+        let handle = v.to_handle(&ctx).unwrap();
+        let tensor: Tensor<i64> = handle.resolve().unwrap();
+        assert_eq!(&[v], &tensor[..]);
+
+        let v = 1f32;
+        let handle = v.to_handle(&ctx).unwrap();
+        let tensor: Tensor<f32> = handle.resolve().unwrap();
+        assert_eq!(&[v], &tensor[..]);
+
+        let v = 1f64;
+        let handle = v.to_handle(&ctx).unwrap();
+        let tensor: Tensor<f64> = handle.resolve().unwrap();
+        assert_eq!(&[v], &tensor[..]);
+    }
+
+    #[test]
+    fn tarray_to_handle() {
+        let ctx = Context::new(ContextOptions::new()).unwrap();
+        let v = [1i32, 2, 3, 4];
+        let handle = v.to_handle(&ctx).unwrap();
+        let tensor: Tensor<i32> = handle.resolve().unwrap();
+        assert_eq!(&v, &tensor[..]);
+
+        let v = [1i64, 2, 3, 4];
+        let handle = v.to_handle(&ctx).unwrap();
+        let tensor: Tensor<i64> = handle.resolve().unwrap();
+        assert_eq!(&v, &tensor[..]);
+
+        let v = [1f32, 2.0, 3.0, 4.0];
+        let handle = v.to_handle(&ctx).unwrap();
+        let tensor: Tensor<f32> = handle.resolve().unwrap();
+        assert_eq!(&v, &tensor[..]);
+
+        let v = [1f64, 2.0, 3.0, 4.0];
+        let handle = v.to_handle(&ctx).unwrap();
+        let tensor: Tensor<f64> = handle.resolve().unwrap();
+        assert_eq!(&v, &tensor[..]);
     }
 }
