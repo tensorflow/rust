@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 use std::env;
 use std::error::Error;
 use std::fs;
@@ -27,7 +27,6 @@ struct Attr {
 #[derive(Clone)]
 struct InputArg {
     pub name: String,
-    pub c_name: String,
     number_attr: String,
     _type_attr: String,
 }
@@ -86,7 +85,6 @@ fn write_short_fn<W: Write>(
         .iter()
         .map(|arg| InputArg {
             name: escaper.escape(&arg.name),
-            c_name: arg.name.clone(),
             number_attr: arg.number_attr.clone(),
             _type_attr: arg.type_attr.clone(),
         })
@@ -177,7 +175,6 @@ fn write_call_fn<W: Write>(
         .iter()
         .map(|arg| InputArg {
             name: escaper.escape(&arg.name),
-            c_name: arg.name.clone(),
             number_attr: arg.number_attr.clone(),
             _type_attr: arg.type_attr.clone(),
         })
@@ -495,14 +492,13 @@ fn define_op<W: Write>(
     writeln!(w, "    }}")?;
     writeln!(w, "}}")?;
 
-    write!(
+    writeln!(
         w,
         r#"impl {name} {{
     /// Creates a new `{name}`.
     pub fn new() -> Self {{
         Self::default()
-    }}
-"#,
+    }}"#,
         name = name
     )?;
     for attr in &attrs {
