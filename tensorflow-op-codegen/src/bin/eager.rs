@@ -92,6 +92,11 @@ fn write_short_fn<W: Write>(
         })
         .collect();
     writeln!(w, "/// {} with default options.", fn_name)?;
+    writeln!(
+        w,
+        "/// See : https://www.tensorflow.org/api_docs/python/tf/raw_ops/{}",
+        name
+    )?;
     write!(w, "pub fn {}<'a", fn_name)?;
     for i in 0..escaped_args.len() {
         write!(w, ", T{}: crate::eager::ToTensorHandle<'a>", i)?;
@@ -166,7 +171,6 @@ fn write_call_fn<W: Write>(
     output_args: &[String],
     attrs: &[Attr],
     keywords: &HashSet<String>,
-    arg_with_number_attr: &HashSet<String>,
 ) -> Result<(), io::Error> {
     let mut escaper = Escaper::new(keywords);
     let escaped_args: Vec<InputArg> = input_args
@@ -243,11 +247,10 @@ fn write_call_fn<W: Write>(
     writeln!(w)?;
     writeln!(w, "    // Attributes")?;
     for attr in attrs {
-        if arg_with_number_attr.contains(&attr.c_name) {
-            writeln!(w, "    op.set_attr_int(\"N\", input_list.len() as i64)?;")?;
-        } else {
-            write_set_attr(w, attr)?;
+        if added_attr.contains(&attr.c_name) {
+            continue;
         }
+        write_set_attr(w, attr)?;
     }
     writeln!(w)?;
     writeln!(w, "    // Execute Op")?;
@@ -353,6 +356,11 @@ fn define_op<W: Write>(
         });
     }
     writeln!(w, "/// {} ", name)?;
+    writeln!(
+        w,
+        "/// See : https://www.tensorflow.org/api_docs/python/tf/raw_ops/{}",
+        name
+    )?;
     writeln!(w, "#[derive(::std::fmt::Debug)]")?;
     writeln!(w, "pub struct {} {{", name)?;
     for attr in &attrs {
@@ -512,7 +520,6 @@ fn define_op<W: Write>(
         &output_args,
         &attrs,
         &keywords,
-        &arg_with_number_attr,
     )?;
     writeln!(w, "}}")?;
     writeln!(w)?;
