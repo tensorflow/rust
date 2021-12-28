@@ -227,6 +227,8 @@ fn write_call_fn<W: Write>(
                 arg_list = arg_list
             )?;
             if added_attr.contains(&arg.number_attr) {
+                // do we need to add assertion here whether args sharing the same number_attr
+                // has the same inputs length?
                 continue;
             }
             writeln!(
