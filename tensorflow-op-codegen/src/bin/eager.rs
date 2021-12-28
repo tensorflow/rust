@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::env;
 use std::error::Error;
 use std::fs;
@@ -27,6 +27,7 @@ struct Attr {
 #[derive(Clone)]
 struct InputArg {
     pub name: String,
+    pub c_name: String,
     number_attr: String,
     _type_attr: String,
 }
@@ -85,6 +86,7 @@ fn write_short_fn<W: Write>(
         .iter()
         .map(|arg| InputArg {
             name: escaper.escape(&arg.name),
+            c_name: arg.name.clone(),
             number_attr: arg.number_attr.clone(),
             _type_attr: arg.type_attr.clone(),
         })
@@ -164,12 +166,14 @@ fn write_call_fn<W: Write>(
     output_args: &[String],
     attrs: &[Attr],
     keywords: &HashSet<String>,
+    arg_with_number_attr: &HashSet<String>,
 ) -> Result<(), io::Error> {
     let mut escaper = Escaper::new(keywords);
     let escaped_args: Vec<InputArg> = input_args
         .iter()
         .map(|arg| InputArg {
             name: escaper.escape(&arg.name),
+            c_name: arg.name.clone(),
             number_attr: arg.number_attr.clone(),
             _type_attr: arg.type_attr.clone(),
         })
@@ -206,25 +210,38 @@ fn write_call_fn<W: Write>(
     )?;
     writeln!(w)?;
     writeln!(w, "    // Required input arguments")?;
+    let mut added_attr = HashSet::new();
     for arg in escaped_args {
-        let arg_str = if arg.has_number_attr() {
-            format!("    op.add_input(&{}.to_handle(ctx)?)?;\n", arg.name)
+        if arg.has_number_attr() {
+            write!(w, "    op.add_input(&{}.to_handle(ctx)?)?;\n", arg.name)?;
         } else {
-            format!(
-                "    let mut input_list = Vec::new();\n
-    for t in {} {{
-        input_list.push(t.to_handle(ctx)?);
+            let arg_list = format!("{}_list", arg.name);
+            writeln!(
+                w,
+                "    let mut {arg_list} = Vec::new();\n
+    for t in {name} {{
+       {arg_list}.push(t.to_handle(ctx)?);
     }}\n
-    op.add_input_list(&input_list)?;\n",
-                arg.name
-            )
+    op.add_input_list(&{arg_list})?;",
+                name = arg.name,
+                arg_list = arg_list
+            )?;
+            if added_attr.contains(&arg.number_attr) {
+                continue;
+            }
+            writeln!(
+                w,
+                "    op.set_attr_int(\"{attr_name}\", {arg_list}.len() as i64)?;",
+                attr_name = arg.number_attr,
+                arg_list = arg_list
+            )?;
+            added_attr.insert(arg.number_attr.clone());
         };
-        write!(w, "{}", arg_str)?;
     }
     writeln!(w)?;
     writeln!(w, "    // Attributes")?;
     for attr in attrs {
-        if attr.c_name == "N" {
+        if arg_with_number_attr.contains(&attr.c_name) {
             writeln!(w, "    op.set_attr_int(\"N\", input_list.len() as i64)?;")?;
         } else {
             write_set_attr(w, attr)?;
@@ -280,6 +297,15 @@ fn define_op<W: Write>(
     let name = struct_escaper.escape(&op.name);
     let op_name = op.name.clone();
     let input_args: Vec<_> = op.input_arg.iter().collect();
+
+    // c_name that has number_attr
+    let arg_with_number_attr: HashSet<String> = op
+        .input_arg
+        .iter()
+        .filter(|arg| !arg.number_attr.is_empty())
+        .map(|arg| (arg.name.clone()))
+        .collect();
+    // dbg!(&arg_with_number_attr);
     let output_args: Vec<_> = op.output_arg.iter().map(|arg| arg.name.clone()).collect();
     let mut attrs = Vec::new();
     let mut attr_escaper = Escaper::new(keywords);
@@ -328,7 +354,7 @@ fn define_op<W: Write>(
     writeln!(w, "#[derive(::std::fmt::Debug)]")?;
     writeln!(w, "pub struct {} {{", name)?;
     for attr in &attrs {
-        if attr.c_name == "N" {
+        if arg_with_number_attr.contains(&attr.c_name) {
             continue;
         }
         write_attr(w, attr)?;
@@ -339,7 +365,7 @@ fn define_op<W: Write>(
     writeln!(w, "    fn default() -> Self {{")?;
     writeln!(w, "        Self {{")?;
     for attr in &attrs {
-        if attr.c_name == "N" {
+        if arg_with_number_attr.contains(&attr.c_name) {
             continue;
         }
         write!(w, "            {}: ", attr.rust_name)?;
@@ -470,7 +496,7 @@ fn define_op<W: Write>(
         name = name
     )?;
     for attr in &attrs {
-        if attr.c_name == "N" {
+        if arg_with_number_attr.contains(&attr.c_name) {
             continue;
         }
         write_attr_setter(w, attr)?;
@@ -484,6 +510,7 @@ fn define_op<W: Write>(
         &output_args,
         &attrs,
         &keywords,
+        &arg_with_number_attr,
     )?;
     writeln!(w, "}}")?;
     writeln!(w)?;
