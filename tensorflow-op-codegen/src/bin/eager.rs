@@ -199,16 +199,7 @@ fn write_call_fn<W: Write>(
     write!(w, ") -> crate::Result<{}>", return_type(output_args.len()))?;
     writeln!(w, "{{")?;
     writeln!(w, "    // Define Op")?;
-    let op_mut = if escaped_args.len() + attrs.len() > 0 {
-        "mut"
-    } else {
-        ""
-    };
-    writeln!(
-        w,
-        "    let {} op = super::Op::new(ctx, \"{}\")?;",
-        op_mut, name
-    )?;
+    writeln!(w, "    let mut op = super::Op::new(ctx, \"{}\")?;", name)?;
     writeln!(w)?;
     writeln!(w, "    // Required input arguments")?;
     let mut added_attr = HashSet::new();
@@ -250,6 +241,17 @@ fn write_call_fn<W: Write>(
         write_set_attr(w, attr)?;
     }
     writeln!(w)?;
+
+    writeln!(
+        w,
+        "    // Set the device name where this Op will be executed"
+    )?;
+    writeln!(
+        w,
+        "    if let ::std::option::Option::Some(value) = &self.target_device_name {{"
+    )?;
+    writeln!(w, "        op.set_device(value)?;")?;
+    writeln!(w, "    }}")?;
     writeln!(w, "    // Execute Op")?;
 
     match output_args.len() {
@@ -358,7 +360,18 @@ fn define_op<W: Write>(
         "/// See : https://www.tensorflow.org/api_docs/python/tf/raw_ops/{}",
         name
     )?;
-    writeln!(w, "#[derive(::std::fmt::Debug)]")?;
+    let target_device_name_attr = Attr {
+        rust_name: "target_device_name".into(),
+        attr_type: "::std::string::String".into(),
+        c_name: "".into(),
+        default_value: None,
+    };
+    // derive clone if possible
+    if attrs.iter().any(|attr| attr.attr_type == "crate::Tensor") {
+        writeln!(w, "#[derive(::std::fmt::Debug)]")?;
+    } else {
+        writeln!(w, "#[derive(::std::fmt::Debug, ::std::clone::Clone)]")?;
+    }
     writeln!(w, "pub struct {} {{", name)?;
     for attr in &attrs {
         if arg_with_number_attr.contains(&attr.c_name) {
@@ -366,6 +379,11 @@ fn define_op<W: Write>(
         }
         write_attr(w, attr)?;
     }
+    writeln!(
+        w,
+        "    /// (Rust wrapper specific) A device name where this op will be executed"
+    )?;
+    write_attr(w, &target_device_name_attr)?;
     writeln!(w, "}}")?;
 
     writeln!(w, "impl ::std::default::Default for {} {{", name)?;
@@ -488,6 +506,7 @@ fn define_op<W: Write>(
         }
         writeln!(w, ",")?;
     }
+    writeln!(w, "    {}: None,", target_device_name_attr.rust_name)?;
     writeln!(w, "        }}")?;
     writeln!(w, "    }}")?;
     writeln!(w, "}}")?;
@@ -507,6 +526,7 @@ fn define_op<W: Write>(
         }
         write_attr_setter(w, attr)?;
     }
+    write_attr_setter(w, &target_device_name_attr)?;
     writeln!(w)?;
     write_call_fn(
         w,
@@ -592,19 +612,83 @@ fn main() -> Result<(), Box<dyn Error>> {
         e
     })?;
     let keywords: HashSet<String> = [
-        "abstract", "as", "async", "await", "become", "box", "break", "const", "continue", "crate",
-        "do", "dyn", "else", "enum", "extern", "false", "final", "fn", "for", "if", "impl", "in",
-        "let", "loop", "macro", "match", "mod", "move", "mut", "override", "priv", "pub", "ref",
-        "return", "self", "Self", "static", "struct", "super", "trait", "true", "try", "type",
-        "typeof", "unsafe", "unsized", "use", "virtual", "where", "while", "yield",
+        "abstract",
+        "as",
+        "async",
+        "await",
+        "become",
+        "box",
+        "break",
+        "const",
+        "continue",
+        "crate",
+        "do",
+        "dyn",
+        "else",
+        "enum",
+        "extern",
+        "false",
+        "final",
+        "fn",
+        "for",
+        "if",
+        "impl",
+        "in",
+        "let",
+        "loop",
+        "macro",
+        "match",
+        "mod",
+        "move",
+        "mut",
+        "override",
+        "priv",
+        "pub",
+        "ref",
+        "return",
+        "self",
+        "Self",
+        "static",
+        "struct",
+        "super",
+        "trait",
+        "true",
+        "try",
+        "type",
+        "typeof",
+        "unsafe",
+        "unsized",
+        "use",
+        "virtual",
+        "where",
+        "while",
+        "yield",
         // These aren't technically keywords, but there doesn't appear to be a
         // way to refer to these types (e.g. qualified type names) if the name
         // has been shadowed by something else, so we treat them as keywords.
-        "bool", "char", "f32", "f64", "i8", "i16", "i32", "i64", "i128", "isize", "str", "u8",
-        "u16", "u32", "u64", "u128", "usize",
+        "bool",
+        "char",
+        "f32",
+        "f64",
+        "i8",
+        "i16",
+        "i32",
+        "i64",
+        "i128",
+        "isize",
+        "str",
+        "u8",
+        "u16",
+        "u32",
+        "u64",
+        "u128",
+        "usize",
         // new and call aren't keywords, but they still can't be used because they
         // would clash with methods we're providing.
-        "new", "call", "ctx",
+        "new",
+        "call",
+        "ctx",
+        "target_device_name",
     ]
     .iter()
     .map(|s| s.to_string())
