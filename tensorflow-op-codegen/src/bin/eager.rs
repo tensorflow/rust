@@ -24,6 +24,18 @@ struct Attr {
     default_value: Option<AttrValue_oneof_value>,
 }
 
+#[derive(Clone)]
+struct InputArg {
+    pub name: String,
+    number_attr: String,
+    _type_attr: String,
+}
+impl InputArg {
+    fn has_number_attr(&self) -> bool {
+        self.number_attr.is_empty()
+    }
+}
+
 fn write_set_attr<W: Write>(w: &mut W, attr: &Attr) -> Result<(), io::Error> {
     let c_name = &attr.c_name;
     let rust_name = &attr.rust_name;
@@ -50,13 +62,13 @@ fn write_set_attr<W: Write>(w: &mut W, attr: &Attr) -> Result<(), io::Error> {
         }
         ty => panic!("Unrecognized attribute type for {}: {}", attr.rust_name, ty),
     };
-    write!(
+    writeln!(
         w,
-        "    if let ::std::option::Option::Some(value) = &self.{} {{\n",
+        "    if let ::std::option::Option::Some(value) = &self.{} {{",
         rust_name
     )?;
-    write!(w, "        {};\n", setter)?;
-    write!(w, "    }}\n")?;
+    writeln!(w, "        {};", setter)?;
+    writeln!(w, "    }}")?;
     Ok(())
 }
 
@@ -69,44 +81,43 @@ fn write_short_fn<W: Write>(
     keywords: &HashSet<String>,
 ) -> Result<(), io::Error> {
     let mut escaper = Escaper::new(keywords);
-    let escaped_args: Vec<_> = input_args
+    let escaped_args: Vec<InputArg> = input_args
         .iter()
-        .map(|arg| (escaper.escape(&arg.name), &arg.number_attr == ""))
+        .map(|arg| InputArg {
+            name: escaper.escape(&arg.name),
+            number_attr: arg.number_attr.clone(),
+            _type_attr: arg.type_attr.clone(),
+        })
         .collect();
-    write!(w, "/// {} with default options.\n", fn_name)?;
+    writeln!(w, "/// {} with default options.", fn_name)?;
     write!(w, "pub fn {}<'a", fn_name)?;
     for i in 0..escaped_args.len() {
         write!(w, ", T{}: crate::eager::ToTensorHandle<'a>", i)?;
     }
     write!(w, ">(ctx: &'a crate::eager::Context")?;
     for (i, arg) in escaped_args.iter().enumerate() {
-        if arg.1 {
-            write!(w, ", {}: T{}", arg.0, i)?;
+        if arg.has_number_attr() {
+            write!(w, ", {}: T{}", arg.name, i)?;
         } else {
-            write!(w, ", {}: &[&T{}]", arg.0, i)?;
+            write!(w, ", {}: &[&T{}]", arg.name, i)?;
         };
     }
-    write!(w, ") -> crate::Result<")?;
-    match output_args.len() {
-        0 => write!(w, "()")?,
-        1 => write!(w, "crate::eager::TensorHandle<'a>")?,
-        n => write!(w, "[crate::eager::TensorHandle<'a>; {}]", n)?,
-    };
-    write!(w, ">\n")?;
-    write!(w, "{{\n")?;
-    write!(w, "    let op = {}::new();\n", name)?;
+    write!(w, ") -> crate::Result<{}>", return_type(output_args.len()))?;
+    writeln!(w, "{{")?;
+    writeln!(w, "    let op = {}::new();", name)?;
     write!(w, "    op.call(ctx")?;
     for arg in escaped_args {
-        write!(w, ", {}", arg.0)?;
+        write!(w, ", {}", arg.name)?;
     }
-    write!(w, ")\n")?;
-    write!(w, "}}\n\n")?;
+    writeln!(w, ")")?;
+    writeln!(w, "}}")?;
+    writeln!(w)?;
     Ok(())
 }
 
 fn write_attr_setter<W: Write>(w: &mut W, attr: &Attr) -> Result<(), io::Error> {
-    write!(w, "\n")?;
-    write!(w, "    /// Sets the `{}` attribute.\n", &attr.c_name)?;
+    writeln!(w)?;
+    writeln!(w, "    /// Sets the `{}` attribute.", &attr.c_name)?;
     let rust_name = &attr.rust_name;
     let attr_type = &attr.attr_type;
     let mut value = "value.into()".to_string();
@@ -115,26 +126,34 @@ fn write_attr_setter<W: Write>(w: &mut W, attr: &Attr) -> Result<(), io::Error> 
             "(::std::boxed::Box::new({}) as ::std::boxed::Box<dyn crate::AnyTensor>)",
             value
         );
-        write!(
+        writeln!(
             w,
-            "    pub fn {}<T: crate::TensorType, ArgType: ::std::convert::Into<crate::Tensor<T>>>(mut self, value: ArgType) -> Self {{\n",
+            "    pub fn {}<T: crate::TensorType, ArgType: ::std::convert::Into<crate::Tensor<T>>>(mut self, value: ArgType) -> Self {{",
             rust_name
         )?;
     } else {
-        write!(
+        writeln!(
             w,
-            "    pub fn {}<ArgType: ::std::convert::Into<{}>>(mut self, value: ArgType) -> Self {{\n",
+            "    pub fn {}<ArgType: ::std::convert::Into<{}>>(mut self, value: ArgType) -> Self {{",
             rust_name, attr_type
         )?;
     }
-    write!(
+    writeln!(
         w,
-        "        self.{} = ::std::option::Option::Some({});\n",
+        "        self.{} = ::std::option::Option::Some({});",
         rust_name, value
     )?;
-    write!(w, "        self\n")?;
-    write!(w, "    }}\n")?;
+    writeln!(w, "        self")?;
+    writeln!(w, "    }}")?;
     Ok(())
+}
+
+fn return_type(num_outputs: usize) -> String {
+    match num_outputs {
+        0 => "()".to_string(),
+        1 => "crate::eager::TensorHandle<'a>".to_string(),
+        n => format!("[crate::eager::TensorHandle<'a>; {}]", n),
+    }
 }
 
 fn write_call_fn<W: Write>(
@@ -147,11 +166,15 @@ fn write_call_fn<W: Write>(
     keywords: &HashSet<String>,
 ) -> Result<(), io::Error> {
     let mut escaper = Escaper::new(keywords);
-    let escaped_args: Vec<_> = input_args
+    let escaped_args: Vec<InputArg> = input_args
         .iter()
-        .map(|arg| (escaper.escape(&arg.name), &arg.number_attr == ""))
+        .map(|arg| InputArg {
+            name: escaper.escape(&arg.name),
+            number_attr: arg.number_attr.clone(),
+            _type_attr: arg.type_attr.clone(),
+        })
         .collect();
-    write!(w, "/// Execute {}.\n", fn_name)?;
+    writeln!(w, "/// Execute {}.", fn_name)?;
     write!(w, "    pub fn call<'a")?;
     for i in 0..escaped_args.len() {
         write!(w, ", T{}: crate::eager::ToTensorHandle<'a>", i)?;
@@ -159,39 +182,33 @@ fn write_call_fn<W: Write>(
     write!(w, ">(&self, ctx: &'a crate::eager::Context, ")?;
     let mut args_list = Vec::new();
     for (i, arg) in escaped_args.iter().enumerate() {
-        let arg_str = if arg.1 {
-            format!("{}: T{}", arg.0, i)
+        let arg_str = if arg.has_number_attr() {
+            format!("{}: T{}", arg.name, i)
         } else {
-            format!("{}: &[&T{}]", arg.0, i)
+            format!("{}: &[&T{}]", arg.name, i)
         };
         args_list.push(arg_str);
     }
     let joined = args_list.join(", ");
     write!(w, "{}", joined)?;
-    write!(w, ") -> crate::Result<")?;
-    match output_args.len() {
-        0 => write!(w, "()")?,
-        1 => write!(w, "crate::eager::TensorHandle<'a>")?,
-        n => write!(w, "[crate::eager::TensorHandle<'a>; {}]", n)?,
-    };
-    write!(w, ">\n")?;
-    write!(w, "{{\n")?;
-    write!(w, "    // Define Op\n")?;
+    write!(w, ") -> crate::Result<{}>", return_type(output_args.len()))?;
+    writeln!(w, "{{")?;
+    writeln!(w, "    // Define Op")?;
     let op_mut = if escaped_args.len() + attrs.len() > 0 {
         "mut"
     } else {
         ""
     };
-    write!(
+    writeln!(
         w,
-        "    let {} op = super::Op::new(ctx, \"{}\")?;\n",
+        "    let {} op = super::Op::new(ctx, \"{}\")?;",
         op_mut, name
     )?;
-    write!(w, "\n")?;
-    write!(w, "    // Required input arguments\n")?;
+    writeln!(w)?;
+    writeln!(w, "    // Required input arguments")?;
     for arg in escaped_args {
-        let arg_str = if arg.1 {
-            format!("    op.add_input(&{}.to_handle(ctx)?)?;\n", arg.0)
+        let arg_str = if arg.has_number_attr() {
+            format!("    op.add_input(&{}.to_handle(ctx)?)?;\n", arg.name)
         } else {
             format!(
                 "    let mut input_list = Vec::new();\n
@@ -199,52 +216,53 @@ fn write_call_fn<W: Write>(
         input_list.push(t.to_handle(ctx)?);
     }}\n
     op.add_input_list(&input_list)?;\n",
-                arg.0
+                arg.name
             )
         };
         write!(w, "{}", arg_str)?;
     }
-    write!(w, "\n")?;
-    write!(w, "    // Attributes\n")?;
+    writeln!(w)?;
+    writeln!(w, "    // Attributes")?;
     for attr in attrs {
         if attr.c_name == "N" {
-            write!(w, "    op.set_attr_int(\"N\", input_list.len() as i64)?;\n")?;
+            writeln!(w, "    op.set_attr_int(\"N\", input_list.len() as i64)?;")?;
         } else {
             write_set_attr(w, attr)?;
         }
     }
-    write!(w, "\n")?;
-    write!(w, "    // Execute Op\n")?;
+    writeln!(w)?;
+    writeln!(w, "    // Execute Op")?;
 
     match output_args.len() {
         0 => {
-            write!(w, "    let _ = op.execute::<0>(ctx)?;\n")?;
-            write!(w, "    Ok(())\n")?;
+            writeln!(w, "    let _ = op.execute::<0>(ctx)?;")?;
+            writeln!(w, "    Ok(())")?;
         }
         1 => {
-            write!(w, "    let [h] = op.execute::<1>(ctx)?;\n")?;
-            write!(w, "    Ok(h)\n")?;
+            writeln!(w, "    let [h] = op.execute::<1>(ctx)?;")?;
+            writeln!(w, "    Ok(h)")?;
         }
         n => {
-            write!(w, "    let handles = op.execute::<{}>(ctx)?;\n", n)?;
-            write!(w, "    Ok(handles)\n")?;
+            writeln!(w, "    let handles = op.execute::<{}>(ctx)?;", n)?;
+            writeln!(w, "    Ok(handles)")?;
         }
     }
-    write!(w, "}}\n\n")?;
+    writeln!(w, "}}")?;
+    writeln!(w)?;
     Ok(())
 }
 
 fn write_attr<W: Write>(w: &mut W, attr: &Attr) -> Result<(), io::Error> {
     if attr.attr_type == "crate::Tensor" {
-        write!(
+        writeln!(
             w,
-            "    {}: ::std::option::Option<::std::boxed::Box<dyn crate::AnyTensor>>,\n",
+            "    {}: ::std::option::Option<::std::boxed::Box<dyn crate::AnyTensor>>,",
             attr.rust_name
         )?;
     } else {
-        write!(
+        writeln!(
             w,
-            "    {}: ::std::option::Option<{}>,\n",
+            "    {}: ::std::option::Option<{}>,",
             attr.rust_name, attr.attr_type
         )?;
     }
@@ -306,20 +324,20 @@ fn define_op<W: Write>(
             default_value,
         });
     }
-    write!(w, "/// {} \n", name)?;
-    write!(w, "#[derive(::std::fmt::Debug)]\n")?;
-    write!(w, "pub struct {} {{\n", name)?;
+    writeln!(w, "/// {} ", name)?;
+    writeln!(w, "#[derive(::std::fmt::Debug)]")?;
+    writeln!(w, "pub struct {} {{", name)?;
     for attr in &attrs {
         if attr.c_name == "N" {
             continue;
         }
-        write_attr(w, &attr)?;
+        write_attr(w, attr)?;
     }
-    write!(w, "}}\n")?;
+    writeln!(w, "}}")?;
 
-    write!(w, "impl ::std::default::Default for {} {{\n", name)?;
-    write!(w, "    fn default() -> Self {{\n")?;
-    write!(w, "        Self {{\n")?;
+    writeln!(w, "impl ::std::default::Default for {} {{", name)?;
+    writeln!(w, "    fn default() -> Self {{")?;
+    writeln!(w, "        Self {{")?;
     for attr in &attrs {
         if attr.c_name == "N" {
             continue;
@@ -327,7 +345,7 @@ fn define_op<W: Write>(
         write!(w, "            {}: ", attr.rust_name)?;
         match &attr.default_value {
             Some(AttrValue_oneof_value::s(s)) => {
-                if s.len() == 0 {
+                if s.is_empty() {
                     write!(w, "None")?;
                 } else {
                     let msg = std::str::from_utf8(s).expect("Failed to decode as utf-8");
@@ -377,7 +395,7 @@ fn define_op<W: Write>(
                     .iter()
                     .map(|x| format!("{}", x.get_size()))
                     .collect();
-                if dims.len() == 0 {
+                if dims.is_empty() {
                     write!(w, "None")?;
                 } else {
                     write!(w, "Some(crate::Shape::from(&[{}])", dims.join(", "))?;
@@ -435,11 +453,11 @@ fn define_op<W: Write>(
             }
             _ => write!(w, "None")?,
         }
-        write!(w, ",\n")?;
+        writeln!(w, ",")?;
     }
-    write!(w, "        }}\n")?;
-    write!(w, "    }}\n")?;
-    write!(w, "}}\n")?;
+    writeln!(w, "        }}")?;
+    writeln!(w, "    }}")?;
+    writeln!(w, "}}")?;
 
     write!(
         w,
@@ -457,7 +475,7 @@ fn define_op<W: Write>(
         }
         write_attr_setter(w, attr)?;
     }
-    write!(w, "\n")?;
+    writeln!(w)?;
     write_call_fn(
         w,
         &name,
@@ -467,8 +485,8 @@ fn define_op<W: Write>(
         &attrs,
         &keywords,
     )?;
-    write!(w, "}}\n")?;
-    write!(w, "\n")?;
+    writeln!(w, "}}")?;
+    writeln!(w)?;
     write_short_fn(w, &name, &fn_name, &input_args, &output_args, &keywords)?;
     Ok(())
 }
@@ -554,7 +572,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         "u16", "u32", "u64", "u128", "usize",
         // new and call aren't keywords, but they still can't be used because they
         // would clash with methods we're providing.
-        "new", "call",
+        "new", "call", "ctx",
     ]
     .iter()
     .map(|s| s.to_string())
