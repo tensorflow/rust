@@ -309,11 +309,24 @@ fn define_op<W: Write>(
         .filter(|arg| !arg.number_attr.is_empty())
         .map(|arg| (arg.name.clone()))
         .collect();
+    // Collect type attributes that do not affect execution results.
+    let type_attrs: HashSet<String> = op
+        .input_arg
+        .iter()
+        .chain(op.output_arg.iter())
+        .filter(|arg| !arg.type_attr.is_empty())
+        .map(|arg| (arg.type_attr.clone()))
+        .collect();
     // dbg!(&arg_with_number_attr);
     let output_args: Vec<_> = op.output_arg.iter().map(|arg| arg.name.clone()).collect();
     let mut attrs = Vec::new();
     let mut attr_escaper = Escaper::new(keywords);
     for attr in op.attr.iter() {
+        // skip if the attr is for type annotation
+        if type_attrs.contains(attr.get_name()) {
+            continue;
+        }
+
         let rust_type = match &attr.field_type as &str {
             // See OpDef.AttrDef.type in $TENSORFLOW/tensorflow/core/framework/op_def.proto
             // and AttrValue in $TENSORFLOW/tensorflow/core/framework/attr_value.proto
