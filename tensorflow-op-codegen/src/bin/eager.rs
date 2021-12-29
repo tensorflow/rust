@@ -20,7 +20,7 @@ use tensorflow_op_codegen::protos::OpDef_ArgDef;
 struct Attr {
     rust_name: String,
     attr_type: String,
-    c_name: String,
+    pub c_name: String,
     default_value: Option<AttrValue_oneof_value>,
 }
 
@@ -468,7 +468,7 @@ fn define_op<W: Write>(
             Some(AttrValue_oneof_value::tensor(tensor)) => {
                 dbg!(tensor);
                 write!(w, "None")?;
-                eprintln!("tensor is not supported")
+                eprintln!("default value for tensor is not supported")
             }
             Some(AttrValue_oneof_value::list(list)) => {
                 match attr.attr_type.as_str() {
@@ -490,17 +490,25 @@ fn define_op<W: Write>(
                         write!(w, "Some(vec![{}])", msgs.join(", "))?;
                     }
                     "::std::vec::Vec<crate::Shape>" => {
-                        dbg!(&list.shape);
-                        eprintln!("{} is not supported.", attr.attr_type);
-                        write!(w, "None")?;
+                        if list.shape.is_empty() {
+                            write!(w, "Some(vec![])")?;
+                        } else {
+                            dbg!(&list.shape);
+                            eprintln!("default value for {} is not supported.", attr.attr_type);
+                            write!(w, "None")?;
+                        }
                     }
                     "::std::vec::Vec<crate::DataType>" => {
-                        dbg!(&list.field_type);
-                        eprintln!("{} is not supported.", attr.attr_type);
-                        write!(w, "None")?;
+                        if list.field_type.is_empty() {
+                            write!(w, "Some(vec![])")?;
+                        } else {
+                            dbg!(&list.field_type);
+                            eprintln!("default value for {} is not supported.", attr.attr_type);
+                            write!(w, "None")?;
+                        }
                     }
                     _ => {
-                        eprintln!("{} is not supported.", attr.attr_type);
+                        eprintln!("default value for {} is not supported.", attr.attr_type);
                         write!(w, "None")?;
                     }
                 };
