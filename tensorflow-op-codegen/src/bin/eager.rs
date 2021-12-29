@@ -310,6 +310,7 @@ fn define_op<W: Write>(
         .map(|arg| (arg.name.clone()))
         .collect();
     // Collect type attributes that do not affect execution results.
+    // This type attr is useful when we make a better documentation for each Op.
     let type_attrs: HashSet<String> = op
         .input_arg
         .iter()
