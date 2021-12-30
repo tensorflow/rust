@@ -314,7 +314,6 @@ fn define_op<W: Write>(
     let type_attrs: HashSet<String> = op
         .input_arg
         .iter()
-        .chain(op.output_arg.iter())
         .filter(|arg| !arg.type_attr.is_empty())
         .map(|arg| (arg.type_attr.clone()))
         .collect();
