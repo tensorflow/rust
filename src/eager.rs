@@ -99,6 +99,29 @@ mod tests {
     use ndarray::array;
 
     #[test]
+    fn underlying_memories() {
+        // This test is to ensure that the eager execution API does not
+        // break the Rust's memory design.
+
+        let ctx = Context::new(ContextOptions::new()).unwrap();
+
+        // Create a tensor with a single element
+        let t: Tensor<i32> = Tensor::from(0);
+
+        // Create a handle to the tensor
+        let h = t.to_handle(&ctx).unwrap();
+
+        // Get a tensor as mutable from the handle
+        let mut t2: Tensor<i32> = h.resolve().unwrap();
+
+        // According to the Rust's memory design, the following assignment should affect only the tensor `t2`.
+        t2[0] = 1;
+
+        // Since the tensor `t` is immutable and expected not to be modified, `t` and `t2` should not be equal.
+        assert_ne!(t[0], t2[0]);
+    }
+
+    #[test]
     fn tensor_to_handle() {
         let ctx = Context::new(ContextOptions::new()).unwrap();
         let tensor = Tensor::<i32>::new(&[1, 2, 3, 4]);
