@@ -6,6 +6,9 @@
 mod context;
 pub use context::*;
 
+mod readonly_tensor;
+pub use readonly_tensor::*;
+
 mod tensor_handle;
 pub use tensor_handle::*;
 
@@ -14,6 +17,16 @@ mod op;
 pub use op::raw_ops;
 
 use crate::{Result, Tensor, TensorType};
+
+impl<T: TensorType> Tensor<T> {
+    /// Convert a Tensor to a readonly Tensor for use in eager execution.
+    pub fn freeze(self) -> ReadonlyTensor<T> {
+        ReadonlyTensor {
+            inner: self.inner,
+            dims: self.dims,
+        }
+    }
+}
 
 /// A helper trait to convert a Tensor or some other types into a TensorHandle
 /// for use in eager execution.
@@ -28,7 +41,7 @@ pub trait ToTensorHandle<'a> {
     fn to_handle(&self, ctx: &'a Context) -> Result<TensorHandle<'a>>;
 }
 
-impl<'a, T> ToTensorHandle<'a> for Tensor<T>
+impl<'a, T> ToTensorHandle<'a> for ReadonlyTensor<T>
 where
     T: TensorType,
 {
@@ -53,32 +66,9 @@ mod tests {
     use ndarray::array;
 
     #[test]
-    fn underlying_memories() {
-        // This test is to ensure that the eager execution API does not
-        // break the Rust's memory design.
-
-        let ctx = Context::new(ContextOptions::new()).unwrap();
-
-        // Create a tensor with a single element
-        let t: Tensor<i32> = Tensor::from(0);
-
-        // Create a handle to the tensor
-        let h = t.to_handle(&ctx).unwrap();
-
-        // Get a tensor as mutable from the handle
-        let mut t2: Tensor<i32> = h.resolve().unwrap();
-
-        // According to the Rust's memory design, the following assignment should affect only the tensor `t2`.
-        t2[0] = 1;
-
-        // Since the tensor `t` is immutable and expected not to be modified, `t` and `t2` should not be equal.
-        assert_ne!(t[0], t2[0]);
-    }
-
-    #[test]
     fn tensor_to_handle() {
         let ctx = Context::new(ContextOptions::new()).unwrap();
-        let tensor = Tensor::<i32>::new(&[1, 2, 3, 4]);
+        let tensor = Tensor::<i32>::new(&[1, 2, 3, 4]).freeze();
         let handle = tensor.to_handle(&ctx).unwrap();
         assert_eq!(handle.num_dims().unwrap(), 4);
         assert_eq!(handle.dim(0).unwrap(), 1);
@@ -86,7 +76,7 @@ mod tests {
         assert_eq!(handle.dim(2).unwrap(), 3);
         assert_eq!(handle.dim(3).unwrap(), 4);
 
-        let tensor = Tensor::<i32>::new(&[1, 2, 3, 4]);
+        let tensor = Tensor::<i32>::new(&[1, 2, 3, 4]).freeze();
         let handle = &tensor.to_handle(&ctx).unwrap();
         assert_eq!(handle.num_dims().unwrap(), 4);
         assert_eq!(handle.dim(0).unwrap(), 1);
@@ -98,11 +88,11 @@ mod tests {
     #[test]
     fn handle_to_handle() {
         let ctx = Context::new(ContextOptions::new()).unwrap();
-        let tensor = Tensor::<i32>::new(&[1, 2, 3, 4]);
+        let tensor = Tensor::<i32>::new(&[1, 2, 3, 4]).freeze();
         let handle = tensor.to_handle(&ctx).unwrap();
         let handle2 = handle.to_handle(&ctx).unwrap();
-        let tensor2: Tensor<i32> = handle2.resolve().unwrap();
-        assert_eq!(&tensor[..], &tensor2[..]);
+        let tensor2 = handle2.resolve::<i32>().unwrap();
+        assert_eq!(tensor, tensor2);
     }
 
     #[cfg(feature = "ndarray")]
