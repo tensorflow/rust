@@ -102,7 +102,7 @@ mod tests {
         let handle = tensor.to_handle(&ctx).unwrap();
         let handle2 = handle.to_handle(&ctx).unwrap();
         let tensor2 = handle2.resolve::<i32>().unwrap();
-        let mut tensor2 = unsafe {tensor2.into_tensor()};
+        let mut tensor2 = unsafe { tensor2.into_tensor() };
         assert_eq!(tensor, tensor2);
 
         // Check that tensor and tensro2 share the same underlying data.
