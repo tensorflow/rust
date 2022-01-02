@@ -26,6 +26,11 @@ impl<T: TensorType> Tensor<T> {
             dims: self.dims,
         }
     }
+
+    /// Convert a Tensor to a TensorHandle for use in eager execution.
+    pub fn into_handle<'a>(self, ctx: &'a Context) -> Result<TensorHandle<'a>> {
+        self.freeze().to_handle(ctx)
+    }
 }
 
 /// A helper trait to convert a Tensor or some other types into a TensorHandle
@@ -56,12 +61,11 @@ mod tests {
     use crate::eager::{Context, ContextOptions};
     use crate::Tensor;
 
-    #[cfg(feature = "ndarray")]
-    use ndarray::array;
-
     #[test]
     fn tensor_to_handle() {
         let ctx = Context::new(ContextOptions::new()).unwrap();
+
+        // Create a read-only tensor.
         let tensor = Tensor::<i32>::new(&[1, 2, 3, 4]).freeze();
         let handle = tensor.to_handle(&ctx).unwrap();
         assert_eq!(handle.num_dims().unwrap(), 4);
@@ -70,8 +74,10 @@ mod tests {
         assert_eq!(handle.dim(2).unwrap(), 3);
         assert_eq!(handle.dim(3).unwrap(), 4);
 
-        let tensor = Tensor::<i32>::new(&[1, 2, 3, 4]).freeze();
-        let handle = &tensor.to_handle(&ctx).unwrap();
+        // Create a TensorHandle directly from a Tensor.
+        // It takes ownership of the Tensor.
+        let tensor = Tensor::<i32>::new(&[1, 2, 3, 4]);
+        let handle = tensor.into_handle(&ctx).unwrap();
         assert_eq!(handle.num_dims().unwrap(), 4);
         assert_eq!(handle.dim(0).unwrap(), 1);
         assert_eq!(handle.dim(1).unwrap(), 2);
@@ -89,17 +95,19 @@ mod tests {
         assert_eq!(tensor, tensor2);
     }
 
-    #[cfg(feature = "ndarray")]
     #[test]
-    fn ndarray_to_handle() {
-        let a = array![[1i32, 2], [3, 4]];
-
+    fn handle_to_handle_unsafe() {
         let ctx = Context::new(ContextOptions::new()).unwrap();
-        let handle = a.to_handle(&ctx).unwrap();
-        let tensor: Tensor<i32> = handle.resolve().unwrap();
-        assert_eq!(a.as_slice().unwrap(), &tensor[..]);
+        let tensor = Tensor::<i32>::new(&[1, 2, 3, 4]).freeze();
+        let handle = tensor.to_handle(&ctx).unwrap();
+        let handle2 = handle.to_handle(&ctx).unwrap();
+        let tensor2 = handle2.resolve::<i32>().unwrap();
+        let mut tensor2 = unsafe {tensor2.into_tensor()};
+        assert_eq!(tensor, tensor2);
 
-        let at = Tensor::from(a);
-        assert_eq!(at, tensor);
+        // Check that tensor and tensro2 share the same underlying data.
+        // This is why we need to use unsafe.
+        tensor2[0] = 5;
+        assert_eq!(tensor[0], 5);
     }
 }
