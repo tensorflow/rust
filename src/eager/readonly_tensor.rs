@@ -6,8 +6,7 @@ use crate::{AnyTensor, DataType, Result, Shape, Tensor, TensorInner, TensorType}
 
 /// A read-only tensor.
 ///
-/// This ReadonlyTensor is a wrapper around a `Tensor` that is read-only.
-/// Some operations that mutate the underlying Tensor are not supported.
+/// ReadonlyTensor is a [`Tensor`](Tensor) that does not support mutation.
 #[derive(Debug, Clone, Eq)]
 pub struct ReadonlyTensor<T: TensorType> {
     pub(super) inner: T::InnerType,
@@ -54,7 +53,7 @@ impl<T: TensorType> ReadonlyTensor<T> {
     /// let mut a = Tensor::<i32>::new(&[2, 3, 5]);
     ///
     /// a[1*15 + 1*5 + 1] = 5;
-    /// let a = a.freeze();
+    /// let a: ReadonlyTensor<_> = a.freeze();
     /// assert_eq!(a.get(&[1, 1, 1]), 5);
     /// ```
     pub fn get(&self, indices: &[u64]) -> T {
@@ -67,7 +66,7 @@ impl<T: TensorType> ReadonlyTensor<T> {
     /// ```
     /// # use tensorflow::Tensor;
     /// # use tensorflow::eager::ReadonlyTensor;
-    /// let a = Tensor::<f32>::new(&[3, 3, 3]).freeze();
+    /// let a: ReadonlyTensor<_> = Tensor::<f32>::new(&[3, 3, 3]).freeze();
     ///
     /// assert_eq!(a.get_index(&[2, 2, 2]), 26);
     /// assert_eq!(a.get_index(&[1, 2, 2]), 17);
