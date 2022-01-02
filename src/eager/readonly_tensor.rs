@@ -111,24 +111,35 @@ impl<T: TensorType> ReadonlyTensor<T> {
 
     /// Convert back to a Tensor.
     ///
-    /// Safety: This is unsafe because modifying the returned Tensor will modify the underlying memory,
+    /// # Safety
+    ///
+    /// This is unsafe because modifying the returned Tensor will modify the underlying memory,
     /// which may affect other Tensors that share the same memory.
     ///
     /// ```
     /// # use tensorflow::{Tensor, Result};
     /// # use tensorflow::eager::*;
     /// # fn main() -> Result<()> {
-    /// let ctx = Context::new(ContextOptions::new())?;
+    /// let ctx = Context::new(ContextOptions::new()).unwrap();
+    /// let tensor = Tensor::from(0i32).freeze();
+    /// let h = tensor.to_handle(&ctx).unwrap();
     ///
-    /// let a_readonly = Tensor::<i32>::new(&[2, 3, 5]).freeze();
-    /// let h = a_readonly.to_handle(&ctx)?;
-    /// let b_readonly = h.resolve::<i32>()?;
+    /// let t0 = h.resolve::<i32>().unwrap();
+    /// assert_eq!(t0[0], 0i32);
     ///
-    /// let mut b = unsafe { b_readonly.into_tensor() };
-    /// b[1*15 + 1*5 + 1] = 5;
+    /// // Manipulating the Tensor will affect the Tensor that shares underlying buffer.
+    /// {
+    ///     // Getting multiple times should return the same Tensor.
+    ///     let t1 = h.resolve::<i32>().unwrap();
     ///
-    /// // Since a and b share the same memory, modifying b will also modify a.
-    /// assert_eq!(a_readonly, b);
+    ///     // Convert back from a TensorHandle to a Tensor.
+    ///     let mut t1 = unsafe { t1.into_tensor() };
+    ///     t1[0] = 5;
+    /// }
+    ///
+    /// // Check that t0 shares the same underlying buffer with t1.
+    /// // This is why we need to use unsafe.
+    /// assert_eq!(t0[0], 5);
     /// # Ok(())
     /// # }
     /// ```
