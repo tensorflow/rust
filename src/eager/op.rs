@@ -19,6 +19,8 @@ use tensorflow_sys as tf;
 #[cfg(test)]
 mod op_test_util;
 
+#[allow(non_snake_case, unused_parens, unused_qualifications)]
+/// This module contains raw_ops that correspond to [`tf.raw_ops`](https://www.tensorflow.org/api_docs/python/tf/raw_ops).
 pub mod raw_ops;
 
 /// Description of the TensorFlow op to execute, for the eager execution.
