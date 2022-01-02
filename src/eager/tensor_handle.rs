@@ -25,6 +25,24 @@ use crate::{AnyTensor, DataType, Result, Status, TensorType};
 /// # }
 /// ```
 ///
+/// TensorHandle manages the same buffer of the tensor. Users can destruct the Tensor
+/// while leaving the TensorHandle. This is a valid use case for TensorHandle.
+/// ```
+/// # use tensorflow::{Result, Tensor};
+/// use tensorflow::eager::*;
+///
+/// # fn main() -> Result<()> {
+/// let opts = ContextOptions::new();
+/// let ctx = Context::new(opts)?;
+/// let h = {
+///     let t = Tensor::from(&[3i32]).freeze();
+///     TensorHandle::new(&ctx, &t)?
+/// };
+/// // At this point, the buffer is managed only by the handle.
+/// # Ok(())
+/// # }
+/// ```
+///
 /// Since TensorHandle cannot be alive beyond the lifetime of the context, the following
 /// code will not compile.
 /// ```compile_fail
@@ -37,12 +55,12 @@ use crate::{AnyTensor, DataType, Result, Status, TensorType};
 ///     let ctx = Context::new(opts)?;
 ///
 ///     let t = Tensor::from(&[3i32]).freeze();
-///     let h = TensorHandle::new(&ctx, &t)?;
-///     h
+///     TensorHandle::new(&ctx, &t)?
 /// };
 /// # Ok(())
 /// # }
 /// ```
+///
 #[derive(Debug)]
 pub struct TensorHandle<'a> {
     pub(super) inner: *mut tf::TFE_TensorHandle,
