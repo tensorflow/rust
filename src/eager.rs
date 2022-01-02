@@ -96,18 +96,26 @@ mod tests {
     }
 
     #[test]
-    fn handle_to_handle_unsafe() {
+    fn handle_to_tensor_unsafe() {
         let ctx = Context::new(ContextOptions::new()).unwrap();
-        let tensor = Tensor::<i32>::new(&[1, 2, 3, 4]).freeze();
-        let handle = tensor.to_handle(&ctx).unwrap();
-        let handle2 = handle.to_handle(&ctx).unwrap();
-        let tensor2 = handle2.resolve::<i32>().unwrap();
-        let mut tensor2 = unsafe { tensor2.into_tensor() };
-        assert_eq!(tensor, tensor2);
+        let tensor = Tensor::from(0i32).freeze();
+        let h = tensor.to_handle(&ctx).unwrap();
 
-        // Check that tensor and tensro2 share the same underlying data.
+        // Getting multiple times should return the same Tensor.
+        let t0 = h.resolve::<i32>().unwrap();
+        assert_eq!(t0[0], 0i32);
+
+        // Manipulating the Tensor will affect the Tensor that shares underlying buffer.
+        {
+            let t1 = h.resolve::<i32>().unwrap();
+
+            // Convert back from a TensorHandle to a Tensor.
+            let mut t1 = unsafe { t1.into_tensor() };
+            t1[0] = 5;
+        }
+
+        // Check that t0 shares the same underlying buffer with t1.
         // This is why we need to use unsafe.
-        tensor2[0] = 5;
-        assert_eq!(tensor[0], 5);
+        assert_eq!(t0[0], 5);
     }
 }
