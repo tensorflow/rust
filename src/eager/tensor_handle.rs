@@ -327,7 +327,7 @@ mod tests {
                 .expect("No GPU device was found.");
             let target_device = &gpu_device.name;
 
-            let t = Tensor::new(&[2, 2]).with_values(&values).unwrap();
+            let t = Tensor::new(&[2, 2]).with_values(&values).unwrap().freeze();
             let h = TensorHandle::new(&ctx, &t).unwrap();
             let h_gpu = TensorHandle::copy_to_device(&h, &ctx, target_device).unwrap();
             assert_eq!(&h_gpu.device_name().unwrap(), target_device);
@@ -354,7 +354,7 @@ mod tests {
                 // Create a temporal Context
                 let opts = ContextOptions::new();
                 let ctx2 = Context::new(opts).unwrap();
-                let t = Tensor::new(&[2, 2]).with_values(&values).unwrap();
+                let t = Tensor::new(&[2, 2]).with_values(&values).unwrap().freeze();
 
                 // Create a TensorHandle managed by the context `ctx2`.
                 let h = TensorHandle::new(&ctx2, &t).unwrap();
