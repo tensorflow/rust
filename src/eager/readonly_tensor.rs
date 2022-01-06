@@ -92,7 +92,7 @@ impl<T: TensorType> ReadonlyTensor<T> {
 
     /// Returns the tensor's dimensions as a Shape.
     pub fn shape(&self) -> Shape {
-        Shape(Some(self.dims.iter().map(|d| Some(*d as i64)).collect()))
+        Shape::from(&self.dims[..])
     }
 
     // Wraps a TF_Tensor. Returns None if types don't match.
