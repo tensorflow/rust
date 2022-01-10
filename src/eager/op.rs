@@ -428,7 +428,8 @@ mod tests {
     use super::*;
     use crate::eager::{Context, ContextOptions, TensorHandle};
     use crate::Tensor;
-    use op_test_util::add;
+    use op_test_util::add as add_ut;
+    use raw_ops::add;
 
     #[test]
     fn test_add_op() {
@@ -476,6 +477,36 @@ mod tests {
         const WRONG_NUMBER_OF_OUTPUTS: usize = 2;
         let res = op.execute::<WRONG_NUMBER_OF_OUTPUTS>(&ctx);
         assert!(res.is_err());
+    }
+
+    #[test]
+    fn test_add_ut() {
+        let values = [1i32, 2, 3, 4];
+        let ctx = Context::new(ContextOptions::new()).unwrap();
+        let x = Tensor::new(&[2, 2]).with_values(&values).unwrap().freeze();
+        let h_x = TensorHandle::new(&ctx, &x).unwrap();
+        let h_y = h_x.copy_sharing_tensor().unwrap();
+        let expected = Tensor::new(&[2, 2]).with_values(&[2i32, 4, 6, 8]).unwrap();
+
+        // tensor and tensor
+        let h_z = add_ut(&ctx, &x, &x).unwrap();
+        let z = h_z.resolve::<i32>().unwrap();
+        assert_eq!(z, expected);
+
+        // tensor and handle
+        let h_z = add_ut(&ctx, &x, &h_y).unwrap();
+        let z = h_z.resolve::<i32>().unwrap();
+        assert_eq!(z, expected);
+
+        // handle and tensor
+        let h_z = add_ut(&ctx, &h_x, &x).unwrap();
+        let z = h_z.resolve::<i32>().unwrap();
+        assert_eq!(z, expected);
+
+        // handle and handle
+        let h_z = add_ut(&ctx, &h_x, &h_y).unwrap();
+        let z = h_z.resolve::<i32>().unwrap();
+        assert_eq!(z, expected);
     }
 
     #[test]
