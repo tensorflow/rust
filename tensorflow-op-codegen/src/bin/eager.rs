@@ -89,7 +89,11 @@ fn write_short_fn<W: Write>(
             _type_attr: arg.type_attr.clone(),
         })
         .collect();
-    writeln!(w, "/// {} with default options.", fn_name)?;
+    write!(w, "/// Shorthand for `{}::new().call(&ctx", name)?;
+    for arg in &escaped_args {
+        write!(w, ", &{}", arg.name)?;
+    }
+    writeln!(w, ")`.")?;
     writeln!(w, "///")?;
     writeln!(
         w,
@@ -103,7 +107,7 @@ fn write_short_fn<W: Write>(
     write!(w, ">(ctx: &'a crate::eager::Context")?;
     for (i, arg) in escaped_args.iter().enumerate() {
         if arg.has_number_attr() {
-            write!(w, ", {}: T{}", arg.name, i)?;
+            write!(w, ", {}: &T{}", arg.name, i)?;
         } else {
             write!(w, ", {}: &[&T{}]", arg.name, i)?;
         };
@@ -189,7 +193,7 @@ fn write_call_fn<W: Write>(
     let mut args_list = Vec::new();
     for (i, arg) in escaped_args.iter().enumerate() {
         let arg_str = if arg.has_number_attr() {
-            format!("{}: T{}", arg.name, i)
+            format!("{}: &T{}", arg.name, i)
         } else {
             format!("{}: &[&T{}]", arg.name, i)
         };
@@ -550,7 +554,11 @@ fn define_op<W: Write>(
         }
         writeln!(w, ",")?;
     }
-    writeln!(w, "            {}: None,", target_device_name_attr.rust_name)?;
+    writeln!(
+        w,
+        "            {}: None,",
+        target_device_name_attr.rust_name
+    )?;
     writeln!(w, "        }}")?;
     writeln!(w, "    }}")?;
     writeln!(w, "}}")?;
