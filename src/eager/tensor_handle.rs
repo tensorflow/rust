@@ -3,41 +3,64 @@ use std::marker::PhantomData;
 
 use tensorflow_sys as tf;
 
-use crate::eager::Context;
-use crate::{AnyTensor, DataType, Result, Status, Tensor, TensorType};
+use crate::eager::{Context, ReadonlyTensor};
+use crate::{AnyTensor, DataType, Result, Status, TensorType};
 
 /// A handle to a tensor on a device.
 ///
 /// Constructing a TensorHandle requires a reference to an execute context so that the
 /// generated handle will not out live the context.
 /// ```
-/// # use tensorflow::Tensor;
-/// use tensorflow::eager::{ContextOptions, Context, TensorHandle};
-///
+/// # use tensorflow::{Result, Tensor};
+/// use tensorflow::eager::*;
+/// # fn main() -> Result<()> {
 /// let opts = ContextOptions::new();
-/// let ctx = Context::new(opts).unwrap();
+/// let ctx = Context::new(opts)?;
 ///
-/// let t = Tensor::from(&[3i32]);
-/// let h = TensorHandle::new(&ctx, &t).unwrap();
-/// let v: Tensor<i32> = h.resolve().unwrap();
+/// let t = Tensor::from(&[3i32]).freeze();
+/// let h = TensorHandle::new(&ctx, &t)?;
+/// let v = h.resolve::<i32>()?;
 /// assert_eq!(&v[..], &[3i32]);
+/// # Ok(())
+/// # }
+/// ```
+///
+/// TensorHandle manages the same buffer of the tensor. Users can destruct the Tensor
+/// while leaving the TensorHandle. This is a valid use case for TensorHandle.
+/// ```
+/// # use tensorflow::{Result, Tensor};
+/// use tensorflow::eager::*;
+///
+/// # fn main() -> Result<()> {
+/// let opts = ContextOptions::new();
+/// let ctx = Context::new(opts)?;
+/// let h = {
+///     let t = Tensor::from(&[3i32]).freeze();
+///     TensorHandle::new(&ctx, &t)?
+/// };
+/// // At this point, the buffer is managed only by the handle.
+/// # Ok(())
+/// # }
 /// ```
 ///
 /// Since TensorHandle cannot be alive beyond the lifetime of the context, the following
 /// code will not compile.
 /// ```compile_fail
-/// # use tensorflow::Tensor;
-/// use tensorflow::eager::{ContextOptions, Context, TensorHandle};
+/// # use tensorflow::{Result, Tensor};
+/// use tensorflow::eager::*;
 ///
+/// # fn main() -> Result<()> {
 /// let h = {
 ///     let opts = ContextOptions::new();
-///     let ctx = Context::new(opts).unwrap();
+///     let ctx = Context::new(opts)?;
 ///
-///     let t = Tensor::from(&[3i32]);
-///     let h = TensorHandle::new(&ctx, &t).unwrap();
-///     h
+///     let t = Tensor::from(&[3i32]).freeze();
+///     TensorHandle::new(&ctx, &t)?
 /// };
+/// # Ok(())
+/// # }
 /// ```
+///
 #[derive(Debug)]
 pub struct TensorHandle<'a> {
     pub(super) inner: *mut tf::TFE_TensorHandle,
@@ -55,7 +78,10 @@ impl<'a> Drop for TensorHandle<'a> {
 
 impl<'a> TensorHandle<'a> {
     /// Create a TensorHandle from the input Tensor
-    pub fn new<T: TensorType>(_ctx: &'a Context, t: &Tensor<T>) -> Result<TensorHandle<'a>> {
+    pub fn new<T: TensorType>(
+        _ctx: &'a Context,
+        t: &ReadonlyTensor<T>,
+    ) -> Result<TensorHandle<'a>> {
         let status = Status::new();
         let inner = unsafe { tf::TFE_NewTensorHandle(t.inner()?, status.inner) };
 
@@ -165,7 +191,7 @@ impl<'a> TensorHandle<'a> {
     /// This function will block till the operation that produces the current TensorHandle has completed.
     /// The memory returned might alias the internal memory used by TensorFlow.
     /// Hence, callers should not mutate this memory.
-    pub fn resolve<T: TensorType>(&self) -> Result<Tensor<T>> {
+    pub fn resolve<T: TensorType>(&self) -> Result<ReadonlyTensor<T>> {
         let mut status = Status::new();
         let tf_tensor = unsafe { tf::TFE_TensorHandleResolve(self.inner, status.inner) };
         if !status.is_ok() {
@@ -183,7 +209,7 @@ impl<'a> TensorHandle<'a> {
         }
 
         // Safely unwrap since data_type was checked beforehand.
-        unsafe { Ok(Tensor::from_tf_tensor(tf_tensor).unwrap()) }
+        unsafe { Ok(ReadonlyTensor::from_tf_tensor(tf_tensor).unwrap()) }
     }
 
     /// Create a new TensorHandle with the same contents as the current TensorHandle but placed
@@ -238,6 +264,7 @@ impl<'a> TensorHandle<'a> {
 mod tests {
     use super::*;
     use crate::eager::ContextOptions;
+    use crate::Tensor;
 
     #[test]
     fn test_tensor_handle() {
@@ -246,7 +273,8 @@ mod tests {
 
         let t = Tensor::new(&[2, 3])
             .with_values(&[0_i32, 1, 2, 3, 4, 5])
-            .unwrap();
+            .unwrap()
+            .freeze();
         let h = TensorHandle::new(&ctx, &t).unwrap();
 
         assert_eq!(h.data_type(), DataType::Int32);
@@ -263,14 +291,15 @@ mod tests {
 
         let t = Tensor::new(&[2, 3])
             .with_values(&[0_i32, 1, 2, 3, 4, 5])
-            .unwrap();
+            .unwrap()
+            .freeze();
         let h = TensorHandle::new(&ctx, &t).unwrap();
         let h_copy = h.copy_sharing_tensor().unwrap();
         let t2 = h_copy.resolve::<i32>().unwrap();
 
         // t and t2 may share the same memory, but it's difficuly to check
         // since the `resolve` does not guarantee that.
-        assert_eq!(&t[..], &t2[..]);
+        assert_eq!(t, t2);
     }
 
     /// Following tests are disabled by default because it requires a GPU and some setup.
@@ -298,7 +327,7 @@ mod tests {
                 .expect("No GPU device was found.");
             let target_device = &gpu_device.name;
 
-            let t = Tensor::new(&[2, 2]).with_values(&values).unwrap();
+            let t = Tensor::new(&[2, 2]).with_values(&values).unwrap().freeze();
             let h = TensorHandle::new(&ctx, &t).unwrap();
             let h_gpu = TensorHandle::copy_to_device(&h, &ctx, target_device).unwrap();
             assert_eq!(&h_gpu.device_name().unwrap(), target_device);
@@ -325,7 +354,7 @@ mod tests {
                 // Create a temporal Context
                 let opts = ContextOptions::new();
                 let ctx2 = Context::new(opts).unwrap();
-                let t = Tensor::new(&[2, 2]).with_values(&values).unwrap();
+                let t = Tensor::new(&[2, 2]).with_values(&values).unwrap().freeze();
 
                 // Create a TensorHandle managed by the context `ctx2`.
                 let h = TensorHandle::new(&ctx2, &t).unwrap();

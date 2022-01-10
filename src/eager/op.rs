@@ -426,7 +426,10 @@ mod tests {
     #[test]
     fn test_add_op() {
         let ctx = Context::new(ContextOptions::new()).unwrap();
-        let x = Tensor::new(&[2, 2]).with_values(&[1i32, 2, 3, 4]).unwrap();
+        let x = Tensor::new(&[2, 2])
+            .with_values(&[1i32, 2, 3, 4])
+            .unwrap()
+            .freeze();
         let h_x = TensorHandle::new(&ctx, &x).unwrap();
         let h_y = h_x.copy_sharing_tensor().unwrap();
 
@@ -440,14 +443,18 @@ mod tests {
         // Execute Op
         const NUMBER_OF_OUTPUTS: usize = 1;
         let [h] = op.execute::<NUMBER_OF_OUTPUTS>(&ctx).unwrap();
-        let z: Tensor<i32> = h.resolve().unwrap();
-        assert_eq!(&z[..], &[2i32, 4, 6, 8]);
+        let z = h.resolve::<i32>().unwrap();
+        let expected = Tensor::new(&[2, 2]).with_values(&[2i32, 4, 6, 8]).unwrap();
+        assert_eq!(z, expected);
     }
 
     #[test]
     fn test_invalid_add() {
         let ctx = Context::new(ContextOptions::new()).unwrap();
-        let x = Tensor::new(&[2, 2]).with_values(&[1i32, 2, 3, 4]).unwrap();
+        let x = Tensor::new(&[2, 2])
+            .with_values(&[1i32, 2, 3, 4])
+            .unwrap()
+            .freeze();
         let h_x = TensorHandle::new(&ctx, &x).unwrap();
         let h_y = h_x.copy_sharing_tensor().unwrap();
 
@@ -466,14 +473,32 @@ mod tests {
 
     #[test]
     fn test_raw_ops_add() {
+        let values = [1i32, 2, 3, 4];
         let ctx = Context::new(ContextOptions::new()).unwrap();
-        let x = Tensor::new(&[2, 2]).with_values(&[1i32, 2, 3, 4]).unwrap();
+        let x = Tensor::new(&[2, 2]).with_values(&values).unwrap().freeze();
         let h_x = TensorHandle::new(&ctx, &x).unwrap();
         let h_y = h_x.copy_sharing_tensor().unwrap();
+        let expected = Tensor::new(&[2, 2]).with_values(&[2i32, 4, 6, 8]).unwrap();
 
+        // tensor and tensor
+        let h_z = add(&ctx, &x, &x).unwrap();
+        let z = h_z.resolve::<i32>().unwrap();
+        assert_eq!(z, expected);
+
+        // tensor and handle
+        let h_z = add(&ctx, &x, &h_y).unwrap();
+        let z = h_z.resolve::<i32>().unwrap();
+        assert_eq!(z, expected);
+
+        // handle and tensor
+        let h_z = add(&ctx, &h_x, &x).unwrap();
+        let z = h_z.resolve::<i32>().unwrap();
+        assert_eq!(z, expected);
+
+        // handle and handle
         let h_z = add(&ctx, &h_x, &h_y).unwrap();
-        let z: Tensor<i32> = h_z.resolve().unwrap();
-        assert_eq!(&z[..], &[2i32, 4, 6, 8]);
+        let z = h_z.resolve::<i32>().unwrap();
+        assert_eq!(z, expected);
     }
 
     #[cfg(feature = "tensorflow_gpu")]
@@ -491,7 +516,8 @@ mod tests {
 
         let x = Tensor::new(&[2, 2])
             .with_values(&[1.0f32, 2.0, 3.0, 4.0])
-            .unwrap();
+            .unwrap()
+            .freeze();
         let h = TensorHandle::new(&ctx, &x).unwrap();
         // Copy to GPU. This creates a new handle managed by the context `ctx`.
         let h_gpu = h.copy_to_device(&ctx, target_device).unwrap();
@@ -507,7 +533,7 @@ mod tests {
         let [h_z_gpu] = op.execute(&ctx).unwrap();
         assert!(&h_z_gpu.device_name().unwrap() == target_device);
 
-        let z: crate::Tensor<f32> = h_z_gpu.resolve().unwrap();
+        let z = h_z_gpu.resolve::<f32>().unwrap();
         let expected = [2.0f32, 4.0, 6.0, 8.0];
         for (v0, v1) in z.iter().zip(&expected) {
             assert!((v0 - v1).abs() < f32::EPSILON);
