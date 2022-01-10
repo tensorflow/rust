@@ -19,7 +19,12 @@ use tensorflow_sys as tf;
 #[cfg(test)]
 mod op_test_util;
 
-#[allow(non_snake_case, unused_parens, unused_qualifications)]
+#[allow(
+    non_snake_case,
+    clippy::too_many_arguments,
+    clippy::derivable_impls,
+    clippy::needless_lifetimes
+)]
 /// This module contains raw_ops that correspond to [`tf.raw_ops`](https://www.tensorflow.org/api_docs/python/tf/raw_ops).
 pub mod raw_ops;
 
