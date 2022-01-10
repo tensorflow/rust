@@ -129,7 +129,7 @@ fn write_attr_setter<W: Write>(w: &mut W, attr: &Attr) -> Result<(), io::Error> 
     let mut value = "value.into()".to_string();
     if attr_type == "crate::Tensor" {
         value = format!(
-            "(::std::boxed::Box::new({}) as ::std::boxed::Box<dyn crate::AnyTensor>)",
+            "::std::boxed::Box::new({}) as ::std::boxed::Box<dyn crate::AnyTensor>",
             value
         );
         writeln!(
