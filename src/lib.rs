@@ -1438,7 +1438,27 @@ impl<'a, T: TensorType, const N: usize> From<&[T; N]> for Tensor<T> {
 }
 
 #[cfg(feature = "ndarray")]
+/// Convert any &ndarray::ArrayBase type into a tensorflow::Tensor
+impl<T, S, D> From<&ArrayBase<S, D>> for Tensor<T>
+where
+    T: TensorType,
+    S: Data<Elem = T>,
+    D: Dimension,
+{
+    fn from(value: &ArrayBase<S, D>) -> Self {
+        let dims: Vec<u64> = value.shape().iter().map(|x| *x as u64).collect();
+        let mut tensor: Tensor<T> = Self::new(&dims);
+        for (e, v) in tensor.iter_mut().zip(value.iter()) {
+            e.clone_from(v);
+        }
+        tensor
+    }
+}
+
+#[cfg(feature = "ndarray")]
 /// Convert any ndarray::ArrayBase type into a tensorflow::Tensor
+///
+/// Delegates to the From<&ArrayBase> implementation.
 impl<T, S, D> From<ArrayBase<S, D>> for Tensor<T>
 where
     T: TensorType,
@@ -1446,12 +1466,7 @@ where
     D: Dimension,
 {
     fn from(value: ArrayBase<S, D>) -> Self {
-        let dims: Vec<u64> = value.shape().iter().map(|x| *x as u64).collect();
-        let mut tensor: Tensor<T> = Self::new(&dims);
-        for (e, v) in tensor.iter_mut().zip(value.iter()) {
-            e.clone_from(v);
-        }
-        tensor
+        Tensor::from(&value)
     }
 }
 

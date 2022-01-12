@@ -90,12 +90,7 @@ where
     D: Dimension,
 {
     fn to_handle(&self, ctx: &'a Context) -> Result<TensorHandle<'a>> {
-        let dims: Vec<u64> = self.shape().iter().map(|x| *x as u64).collect();
-        let mut tensor: Tensor<T> = Tensor::new(&dims);
-        for (e, v) in tensor.iter_mut().zip(self.iter()) {
-            e.clone_from(v);
-        }
-        tensor.into_handle(ctx)
+        Tensor::from(self).into_handle(ctx)
     }
 }
 
