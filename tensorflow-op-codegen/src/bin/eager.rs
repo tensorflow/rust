@@ -32,7 +32,7 @@ struct InputArg {
 }
 impl InputArg {
     fn has_number_attr(&self) -> bool {
-        self.number_attr.is_empty()
+        !self.number_attr.is_empty()
     }
 }
 
@@ -106,7 +106,7 @@ fn write_short_fn<W: Write>(
     }
     write!(w, ">(ctx: &'a crate::eager::Context")?;
     for (i, arg) in escaped_args.iter().enumerate() {
-        if arg.has_number_attr() {
+        if !arg.has_number_attr() {
             write!(w, ", {}: &T{}", arg.name, i)?;
         } else {
             write!(w, ", {}: &[&T{}]", arg.name, i)?;
@@ -192,7 +192,7 @@ fn write_call_fn<W: Write>(
     write!(w, ">(&self, ctx: &'a crate::eager::Context, ")?;
     let mut args_list = Vec::new();
     for (i, arg) in escaped_args.iter().enumerate() {
-        let arg_str = if arg.has_number_attr() {
+        let arg_str = if !arg.has_number_attr() {
             format!("{}: &T{}", arg.name, i)
         } else {
             format!("{}: &[&T{}]", arg.name, i)
@@ -207,9 +207,9 @@ fn write_call_fn<W: Write>(
     writeln!(w, "    let mut op = super::Op::new(ctx, \"{}\")?;", name)?;
     writeln!(w)?;
     writeln!(w, "    // Required input arguments")?;
-    let mut added_attr = HashSet::new();
+    let mut number_attrs = HashSet::new();
     for arg in escaped_args {
-        if arg.has_number_attr() {
+        if !arg.has_number_attr() {
             write!(w, "    op.add_input(&{}.to_handle(ctx)?)?;\n", arg.name)?;
         } else {
             let arg_list = format!("{}_list", arg.name);
@@ -223,24 +223,13 @@ fn write_call_fn<W: Write>(
                 name = arg.name,
                 arg_list = arg_list
             )?;
-            if added_attr.contains(&arg.number_attr) {
-                // do we need to add assertion here whether args sharing the same number_attr
-                // has the same inputs length?
-                continue;
-            }
-            writeln!(
-                w,
-                "    op.set_attr_int(\"{attr_name}\", {arg_list}.len() as i64)?;",
-                attr_name = arg.number_attr,
-                arg_list = arg_list
-            )?;
-            added_attr.insert(arg.number_attr.clone());
+            number_attrs.insert(arg.number_attr.clone());
         };
     }
     writeln!(w)?;
     writeln!(w, "    // Attributes")?;
     for attr in attrs {
-        if added_attr.contains(&attr.c_name) {
+        if number_attrs.contains(&attr.c_name) {
             continue;
         }
         write_set_attr(w, attr)?;
