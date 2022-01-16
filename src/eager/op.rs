@@ -429,7 +429,7 @@ mod tests {
     use crate::eager::{Context, ContextOptions, TensorHandle};
     use crate::Tensor;
     use op_test_util::add as add_ut;
-    use raw_ops::add;
+    use raw_ops::{add, concat_v2};
 
     #[test]
     fn test_add_op() {
@@ -536,6 +536,43 @@ mod tests {
         // handle and handle
         let h_z = add(&ctx, &h_x, &h_y).unwrap();
         let z = h_z.resolve::<i32>().unwrap();
+        assert_eq!(z, expected);
+    }
+
+    #[test]
+    fn test_raw_ops_concat() {
+        let values = [1i32, 2, 3, 4];
+        let ctx = Context::new(ContextOptions::new()).unwrap();
+        // [[1, 2],
+        //  [3, 4]]
+        let h = Tensor::new(&[2, 2])
+            .with_values(&values)
+            .unwrap()
+            .into_handle(&ctx)
+            .unwrap();
+
+        // concat along axis 0
+        let h_z = concat_v2(&ctx, &[&h, &h], &Tensor::from(0i32).freeze()).unwrap();
+        // [[1, 2],
+        //  [3, 4],
+        //  [1, 2],
+        //  [3, 4]]
+        let z = h_z.resolve::<i32>().unwrap();
+
+        let expected = Tensor::new(&[4, 2])
+            .with_values(&[1i32, 2, 3, 4, 1, 2, 3, 4])
+            .unwrap();
+        assert_eq!(z, expected);
+
+        // concat along axis 1
+        let h_z = concat_v2(&ctx, &[&h, &h], &Tensor::from(1i32).freeze()).unwrap();
+        // [[1, 2, 1, 2],
+        //  [3, 4, 3, 4]]
+        let z = h_z.resolve::<i32>().unwrap();
+
+        let expected = Tensor::new(&[2, 4])
+            .with_values(&[1i32, 2, 1, 2, 3, 4, 3, 4])
+            .unwrap();
         assert_eq!(z, expected);
     }
 
