@@ -423,6 +423,9 @@ mod tests {
     use crate::Tensor;
     use op_test_util::add;
 
+    #[cfg(feature = "ndarray")]
+    use ndarray::array;
+
     #[test]
     fn test_add_op() {
         let ctx = Context::new(ContextOptions::new()).unwrap();
@@ -498,6 +501,83 @@ mod tests {
         // handle and handle
         let h_z = add(&ctx, &h_x, &h_y).unwrap();
         let z = h_z.resolve::<i32>().unwrap();
+        assert_eq!(z, expected);
+    }
+
+    #[test]
+    fn test_add_tensor_and_others() {
+        let values = [1i32, 2, 3, 4];
+        let ctx = Context::new(ContextOptions::new()).unwrap();
+
+        // h = [[1, 2],
+        //      [3, 4]]
+        let h = Tensor::new(&[2, 2])
+            .with_values(&values)
+            .unwrap()
+            .into_handle(&ctx)
+            .unwrap();
+
+        // tensor and scalar, braodcast
+        //  [[2, 3],  = [[1, 2],  + 1
+        //   [4, 5]]     [3, 4]]
+        let h_z = add(&ctx, &h, &1).unwrap();
+        let z = h_z.resolve::<i32>().unwrap();
+        let expected = Tensor::new(&[2, 2]).with_values(&[2i32, 3, 4, 5]).unwrap();
+        assert_eq!(z, expected);
+
+        // tensor and array, broadcast
+        //  [[2, 3],  = [[1, 2],  + 1
+        //   [4, 5]]     [3, 4]]
+        let h_z = add(&ctx, &h, &[1]).unwrap();
+        let z = h_z.resolve::<i32>().unwrap();
+        let expected = Tensor::new(&[2, 2]).with_values(&[2i32, 3, 4, 5]).unwrap();
+        assert_eq!(z, expected);
+
+        // handle and array (horizontal vector), broadcst
+        //  [[2, 4],  = [[1, 2],  + [1, 2]
+        //   [4, 6]]     [3, 4]]
+        let h_z = add(&ctx, &h, &[1, 2]).unwrap();
+        let z = h_z.resolve::<i32>().unwrap();
+        let expected = Tensor::new(&[2, 2]).with_values(&[2i32, 4, 4, 6]).unwrap();
+        assert_eq!(z, expected);
+    }
+
+    #[cfg(feature = "ndarray")]
+    #[test]
+    fn test_add_tensor_and_ndarray() {
+        let values = [1i32, 2, 3, 4];
+        let ctx = Context::new(ContextOptions::new()).unwrap();
+
+        // h = [[1, 2],
+        //      [3, 4]]
+        let h = Tensor::new(&[2, 2])
+            .with_values(&values)
+            .unwrap()
+            .into_handle(&ctx)
+            .unwrap();
+
+        // tensor and scalar, braodcast
+        //  [[2, 3],  = [[1, 2],  + 1
+        //   [4, 5]]     [3, 4]]
+        let h_z = add(&ctx, &h, &array![1]).unwrap();
+        let z = h_z.resolve::<i32>().unwrap();
+        let expected = Tensor::new(&[2, 2]).with_values(&[2i32, 3, 4, 5]).unwrap();
+        assert_eq!(z, expected);
+
+        // tensor and array, broadcast
+        //  [[2, 3],  = [[1, 2],  + 1
+        //   [4, 5]]     [3, 4]]
+        let h_z = add(&ctx, &h, &array![[1]]).unwrap();
+        let z = h_z.resolve::<i32>().unwrap();
+        let expected = Tensor::new(&[2, 2]).with_values(&[2i32, 3, 4, 5]).unwrap();
+        assert_eq!(z, expected);
+
+        // handle and array (horizontal vector), broadcst
+        //  [[2, 4],  = [[1, 2],  + [1, 2]
+        //   [4, 6]]     [3, 4]]
+        let h_z = add(&ctx, &h, &array![1, 2]).unwrap();
+        let z = h_z.resolve::<i32>().unwrap();
+        let expected = Tensor::new(&[2, 2]).with_values(&[2i32, 4, 4, 6]).unwrap();
         assert_eq!(z, expected);
     }
 
