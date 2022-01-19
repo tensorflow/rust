@@ -17,6 +17,8 @@ mod op;
 pub use op::raw_ops;
 
 use crate::{Result, Tensor, TensorType};
+#[cfg(feature = "ndarray")]
+use ndarray::{ArrayBase, Data, Dimension};
 
 impl<T: TensorType> Tensor<T> {
     /// Convert a Tensor to a readonly Tensor for use in eager execution.
@@ -52,6 +54,43 @@ where
 impl<'a> ToTensorHandle<'a> for TensorHandle<'a> {
     fn to_handle(&self, _: &'a Context) -> Result<TensorHandle<'a>> {
         self.copy_sharing_tensor()
+    }
+}
+
+impl<'a, T: TensorType> ToTensorHandle<'a> for T {
+    fn to_handle(&self, ctx: &'a Context) -> Result<TensorHandle<'a>> {
+        Tensor::from(self.clone()).into_handle(ctx)
+    }
+}
+
+impl<'a> ToTensorHandle<'a> for str {
+    fn to_handle(&self, ctx: &'a Context) -> Result<TensorHandle<'a>> {
+        Tensor::from(self.to_string()).into_handle(ctx)
+    }
+}
+
+impl<'a, T: TensorType> ToTensorHandle<'a> for [T] {
+    fn to_handle(&self, ctx: &'a Context) -> Result<TensorHandle<'a>> {
+        Tensor::from(self).into_handle(ctx)
+    }
+}
+
+impl<'a, T: TensorType, const N: usize> ToTensorHandle<'a> for [T; N] {
+    fn to_handle(&self, ctx: &'a Context) -> Result<TensorHandle<'a>> {
+        Tensor::from(self).into_handle(ctx)
+    }
+}
+
+#[cfg(feature = "ndarray")]
+/// Convert any ndarray::ArrayBase type into a tensorflow::Tensor
+impl<'a, T, S, D> ToTensorHandle<'a> for ArrayBase<S, D>
+where
+    T: TensorType,
+    S: Data<Elem = T>,
+    D: Dimension,
+{
+    fn to_handle(&self, ctx: &'a Context) -> Result<TensorHandle<'a>> {
+        Tensor::from(self).into_handle(ctx)
     }
 }
 
