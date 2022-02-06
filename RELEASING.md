@@ -22,6 +22,10 @@ Note that any crate not mentioned here (e.g. tensorflow-proto-codegen, tensorflo
    1. Bump the version in `tensorflow-sys/Cargo.toml`
    1. Bump the version in `tensorflow-sys/README.md`
    1. Bump the version for `tensorflow-sys` in the root `Cargo.toml`
+1. Bump version number of `tensorflow-internal-macros` if necessary
+   1. Run `git log v${PREVIOUS_VERSION}..HEAD tensorflow-internal-macros` and see if there were any changes. If not, skip.
+   1. Bump the version in `tensorflow-internal-macros/Cargo.toml`
+   1. Bump the version for `tensorflow-internal-macros` in the root `Cargo.toml`
 1. Bump the version number in `Cargo.toml`
 1. Bump the version number in `README.md`
 1. Run `./test-all`
