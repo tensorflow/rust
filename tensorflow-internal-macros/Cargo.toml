@@ -1,6 +1,6 @@
 [package]
 name = "tensorflow-internal-macros"
-version = "0.0.1"
+version = "0.0.2"
 license = "Apache-2.0"
 authors = [
   "Adam Crume <acrume@google.com>",

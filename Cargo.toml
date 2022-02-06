@@ -21,7 +21,7 @@ features = ["private-docs-rs"]
 [dependencies]
 libc = "0.2.98"
 num-complex = { version = "0.4.0", default-features = false }
-tensorflow-internal-macros = { version = "=0.0.1", path = "tensorflow-internal-macros" }
+tensorflow-internal-macros = { version = "=0.0.2", path = "tensorflow-internal-macros" }
 tensorflow-sys = { version = "0.20.0", path = "tensorflow-sys" }
 byteorder = "1.4.3"
 crc = "2.0.0"
