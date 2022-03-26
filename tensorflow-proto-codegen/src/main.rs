@@ -96,6 +96,10 @@ fn main() -> Result<(), Box<dyn Error>> {
                 tensorflow_folder
             ),
             &format!(
+                "{}/tensorflow/core/protobuf/coordination_config.proto",
+                tensorflow_folder
+            ),
+            &format!(
                 "{}/tensorflow/core/protobuf/meta_graph.proto",
                 tensorflow_folder
             ),
