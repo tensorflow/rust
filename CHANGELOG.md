@@ -1,5 +1,23 @@
 # Changelog
 
+## Release 0.18.0
+
+### Additions
+
+- Added eager API support (Big thanks to dskkato!)
+- Add pre-trained Keras model use example
+
+### Changes
+
+- Upgrade to TensorFlow 2.8
+- Update addition and regression_savedmodel examples' python code for tf2.5
+- Migrate CI from Travis to GitHub Actions
+
+### Fixes
+
+- Codegen cleanup
+- Fixed rustfmt on Windows
+
 ## Release 0.17.0
 
 ### Additions
