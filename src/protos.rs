@@ -2,6 +2,7 @@ pub mod allocation_description;
 pub mod attr_value;
 pub mod cluster;
 pub mod config;
+pub mod coordination_config;
 pub mod cost_graph;
 pub mod debug;
 pub mod full_type;
