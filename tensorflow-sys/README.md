@@ -60,6 +60,9 @@ compiled library will be picked up.
 **macOS Note**: Via [Homebrew](https://brew.sh/), you can just run
 `brew install libtensorflow`.
 
+To statically link Tensorflow, set the environment variable
+`TENSORFLOW_LIB_STATIC` to the directory containing `libtensorflow.a`
+
 ## Resources
 
 [bazel]: http://www.bazel.io

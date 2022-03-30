@@ -44,6 +44,11 @@ fn main() {
         return;
     }
 
+    if check_static_link() {
+        log!("Returing early because {} is being statically linked", LIBRARY);
+        return;
+    }
+
     if check_windows_lib() {
         log!("Returning early because {} was already found", LIBRARY);
         return;
@@ -468,4 +473,21 @@ fn check_bazel() -> Result<(), Box<dyn Error>> {
         return Err("Did not find version number in `bazel version` output.".into());
     }
     Ok(())
+}
+
+fn check_static_link() -> bool {
+    if let Ok(path) = env::var("TENSORFLOW_LIB_STATIC") {
+        println!("cargo:rustc-link-search=native={}", path);
+        println!("cargo:rustc-link-lib=static={}", LIBRARY);
+        #[cfg(target_os = "linux")]
+        println!("cargo:rustc-link-lib=dylib=stdc++");
+        #[cfg(target_os = "macos")]
+        {
+            println!("cargo:rustc-link-lib=c++");
+            println!("cargo:rustc-link-lib=framework=foundation");
+        }
+        true
+    } else {
+        false
+    }
 }
