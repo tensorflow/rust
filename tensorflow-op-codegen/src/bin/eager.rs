@@ -332,7 +332,6 @@ fn define_op<W: Write>(
         skip_attrs
     };
 
-    // dbg!(&arg_with_number_attr);
     let output_args: Vec<_> = op.output_arg.iter().map(|arg| arg.name.clone()).collect();
     let mut attrs = Vec::new();
     let mut attr_escaper = Escaper::new(keywords);
@@ -481,8 +480,7 @@ fn define_op<W: Write>(
                     write!(w, "Some(crate::Shape::from(&[{}])", dims.join(", "))?;
                 }
             }
-            Some(AttrValue_oneof_value::tensor(tensor)) => {
-                dbg!(tensor);
+            Some(AttrValue_oneof_value::tensor(_tensor)) => {
                 write!(w, "None")?;
                 eprintln!("default value for tensor is not supported")
             }
@@ -509,7 +507,6 @@ fn define_op<W: Write>(
                         if list.shape.is_empty() {
                             write!(w, "Some(vec![])")?;
                         } else {
-                            dbg!(&list.shape);
                             eprintln!("default value for {} is not supported.", attr.attr_type);
                             write!(w, "None")?;
                         }
@@ -518,7 +515,6 @@ fn define_op<W: Write>(
                         if list.field_type.is_empty() {
                             write!(w, "Some(vec![])")?;
                         } else {
-                            dbg!(&list.field_type);
                             eprintln!("default value for {} is not supported.", attr.attr_type);
                             write!(w, "None")?;
                         }
@@ -529,14 +525,12 @@ fn define_op<W: Write>(
                     }
                 };
             }
-            Some(AttrValue_oneof_value::func(func)) => {
-                dbg!(func);
-                eprintln!("func is not supported");
+            Some(AttrValue_oneof_value::func(_func)) => {
+                eprintln!("default value for func is not supported");
                 write!(w, "None")?;
             }
-            Some(AttrValue_oneof_value::placeholder(placeholder)) => {
-                dbg!(placeholder);
-                eprintln!("placeholder is not supported");
+            Some(AttrValue_oneof_value::placeholder(_placeholder)) => {
+                eprintln!("default value for placeholder is not supported");
                 write!(w, "None")?;
             }
             _ => write!(w, "None")?,
