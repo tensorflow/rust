@@ -19,6 +19,13 @@ use tensorflow_sys as tf;
 #[cfg(test)]
 mod op_test_util;
 
+#[allow(
+    non_snake_case,
+    clippy::too_many_arguments,
+    clippy::derivable_impls,
+    clippy::needless_lifetimes
+)]
+/// This module contains raw_ops that correspond to [`tf.raw_ops`](https://www.tensorflow.org/api_docs/python/tf/raw_ops).
 pub mod raw_ops;
 
 /// Description of the TensorFlow op to execute, for the eager execution.
@@ -421,7 +428,8 @@ mod tests {
     use super::*;
     use crate::eager::{Context, ContextOptions, TensorHandle};
     use crate::Tensor;
-    use op_test_util::add;
+    use op_test_util::add as add_ut;
+    use raw_ops::{add, concat_v2};
 
     #[cfg(feature = "ndarray")]
     use ndarray::array;
@@ -475,6 +483,36 @@ mod tests {
     }
 
     #[test]
+    fn test_add_ut() {
+        let values = [1i32, 2, 3, 4];
+        let ctx = Context::new(ContextOptions::new()).unwrap();
+        let x = Tensor::new(&[2, 2]).with_values(&values).unwrap().freeze();
+        let h_x = TensorHandle::new(&ctx, &x).unwrap();
+        let h_y = h_x.copy_sharing_tensor().unwrap();
+        let expected = Tensor::new(&[2, 2]).with_values(&[2i32, 4, 6, 8]).unwrap();
+
+        // tensor and tensor
+        let h_z = add_ut(&ctx, &x, &x).unwrap();
+        let z = h_z.resolve::<i32>().unwrap();
+        assert_eq!(z, expected);
+
+        // tensor and handle
+        let h_z = add_ut(&ctx, &x, &h_y).unwrap();
+        let z = h_z.resolve::<i32>().unwrap();
+        assert_eq!(z, expected);
+
+        // handle and tensor
+        let h_z = add_ut(&ctx, &h_x, &x).unwrap();
+        let z = h_z.resolve::<i32>().unwrap();
+        assert_eq!(z, expected);
+
+        // handle and handle
+        let h_z = add_ut(&ctx, &h_x, &h_y).unwrap();
+        let z = h_z.resolve::<i32>().unwrap();
+        assert_eq!(z, expected);
+    }
+
+    #[test]
     fn test_raw_ops_add() {
         let values = [1i32, 2, 3, 4];
         let ctx = Context::new(ContextOptions::new()).unwrap();
@@ -505,6 +543,42 @@ mod tests {
     }
 
     #[test]
+    fn test_raw_ops_concat() {
+        let values = [1i32, 2, 3, 4];
+        let ctx = Context::new(ContextOptions::new()).unwrap();
+        // h = [[1, 2],
+        //      [3, 4]]
+        let h = Tensor::new(&[2, 2])
+            .with_values(&values)
+            .unwrap()
+            .into_handle(&ctx)
+            .unwrap();
+
+        // concat along axis 0
+        let h_z = concat_v2(&ctx, &[&h, &h], &Tensor::from(0i32).freeze()).unwrap();
+        // [[1, 2],
+        //  [3, 4],
+        //  [1, 2],
+        //  [3, 4]]
+        let z = h_z.resolve::<i32>().unwrap();
+
+        let expected = Tensor::new(&[4, 2])
+            .with_values(&[1i32, 2, 3, 4, 1, 2, 3, 4])
+            .unwrap();
+        assert_eq!(z, expected);
+
+        // concat along axis 1
+        let h_z = concat_v2(&ctx, &[&h, &h], &Tensor::from(1i32).freeze()).unwrap();
+        // [[1, 2, 1, 2],
+        //  [3, 4, 3, 4]]
+        let z = h_z.resolve::<i32>().unwrap();
+
+        let expected = Tensor::new(&[2, 4])
+            .with_values(&[1i32, 2, 1, 2, 3, 4, 3, 4])
+            .unwrap();
+        assert_eq!(z, expected);
+    }
+
     fn test_add_tensor_and_others() {
         let values = [1i32, 2, 3, 4];
         let ctx = Context::new(ContextOptions::new()).unwrap();
@@ -526,7 +600,7 @@ mod tests {
         assert_eq!(z, expected);
 
         // tensor and array, broadcast
-        //  [[2, 3],  = [[1, 2],  + 1
+        //  [[2, 3],  = [[1, 2],  + [1]
         //   [4, 5]]     [3, 4]]
         let h_z = add(&ctx, &h, &[1]).unwrap();
         let z = h_z.resolve::<i32>().unwrap();
