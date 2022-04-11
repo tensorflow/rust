@@ -20,6 +20,10 @@ features = ["private-docs-rs"]
 
 [dependencies]
 libc = "0.2.98"
+lazy_static = { version = "1.4", optional = true }
+libloading = { version = "0.7", optional = true }
+cfg-if = { version = "1.0", optional = true }
+log = { version = "0.4", optional = true }
 
 [build-dependencies]
 curl = "0.4.38"
@@ -32,6 +36,7 @@ zip = "0.5.13"
 [features]
 tensorflow_gpu = []
 eager = []
+runtime_linking = ["lazy_static", "libloading", "cfg-if", "log"]
 # This is for testing purposes; users should not use this.
 examples_system_alloc = []
 private-docs-rs = [] # DO NOT RELY ON THIS

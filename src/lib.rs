@@ -207,6 +207,9 @@ pub use saved_model::*;
 #[cfg(feature = "eager")]
 pub mod eager;
 
+#[cfg(feature = "tensorflow_runtime_linking")]
+pub use tf::library;
+
 ////////////////////////
 
 c_enum!("Error values that can be returned.", TF_Code, Code {

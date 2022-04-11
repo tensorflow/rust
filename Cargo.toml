@@ -40,6 +40,7 @@ image = "0.23.14"
 [features]
 tensorflow_gpu = ["tensorflow-sys/tensorflow_gpu"]
 tensorflow_unstable = []
+tensorflow_runtime_linking = ["tensorflow-sys/runtime_linking"]
 eager = ["tensorflow-sys/eager"]
 # This is for testing purposes; users should not use this.
 examples_system_alloc = ["tensorflow-sys/examples_system_alloc"]

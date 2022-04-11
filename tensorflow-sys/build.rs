@@ -38,6 +38,10 @@ macro_rules! log {
 macro_rules! log_var(($var:ident) => (log!(concat!(stringify!($var), " = {:?}"), $var)));
 
 fn main() {
+    // If we are doing runtime linking, just return.
+    #[cfg(feature = "runtime_linking")]
+    return;
+
     // DO NOT RELY ON THIS
     if cfg!(feature = "private-docs-rs") {
         log!("Returning early because private-docs-rs feature was enabled");
@@ -55,6 +59,8 @@ fn main() {
         log!("Returning early because {} was already found", LIBRARY);
         return;
     }
+
+
 
     let force_src = match env::var("TF_RUST_BUILD_FROM_SRC") {
         Ok(s) => s == "true",

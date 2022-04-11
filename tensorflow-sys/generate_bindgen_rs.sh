@@ -18,3 +18,16 @@ bindgen_options_eager="--allowlist-function TFE_.+ --allowlist-type TFE_.+ --all
 cmd="bindgen ${bindgen_options_eager} ${include_dir}/tensorflow/c/eager/c_api.h --output src/eager/c_api.rs --  -I ${include_dir}"
 echo ${cmd}
 ${cmd}
+
+bindgen_options_runtime_functions="--allowlist-function TF_.+ --blocklist-type *.+ --blocklist-function TF_GraphToFunction --blocklist-function TF_GraphToFunctionWithControlOutputs --size_t-is-usize --default-enum-style=rust --generate-inline-functions"
+cmd="bindgen ${bindgen_options_runtime_functions} ${include_dir}/tensorflow/c/c_api.h --output src/runtime_linking/c_api.rs --  -I ${include_dir}"
+echo ${cmd}
+${cmd}
+
+bindgen_options_runtime_types="--allowlist-type TF_.+ --blocklist-function *.+ --size_t-is-usize --default-enum-style=rust --generate-inline-functions"
+cmd="bindgen ${bindgen_options_runtime_types} ${include_dir}/tensorflow/c/c_api.h --output src/runtime_linking/types.rs --  -I ${include_dir}"
+echo ${cmd}
+${cmd}
+
+echo "link! {\n$(cat src/runtime_linking/c_api.rs)" > src/runtime_linking/c_api.rs
+echo } >> src/runtime_linking/c_api.rs
