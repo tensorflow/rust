@@ -16,7 +16,7 @@ doctest = false
 
 # Prevent downloading or building TensorFlow when building docs on docs.rs.
 [package.metadata.docs.rs]
-features = ["private-docs-rs"]
+features = ["private-docs-rs", "tensorflow_unstable", "ndarray", "eager"]
 
 [dependencies]
 libc = "0.2.98"

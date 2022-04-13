@@ -2,6 +2,13 @@
 //!
 //! WARNING: The underlying C-API for the eager execution is not guaranteed to be
 //! stable and can be changed without notice, which could result in breaking.
+//!
+//! This API requires the `eager` feature to be enabled as follows:
+//!
+//! ```
+//! [dependencies]
+//! tensorflow = { version = "0.18", features = ["eager"] }
+//! ```
 
 mod context;
 pub use context::*;
