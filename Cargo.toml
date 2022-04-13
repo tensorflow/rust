@@ -16,7 +16,7 @@ doctest = false
 
 # Prevent downloading or building TensorFlow when building docs on docs.rs.
 [package.metadata.docs.rs]
-features = ["private-docs-rs"]
+features = ["private-docs-rs", "tensorflow_unstable", "ndarray", "eager"]
 
 [dependencies]
 libc = "0.2.98"
@@ -35,7 +35,6 @@ rustversion = "1.0.5"
 [dev-dependencies]
 random = "0.12.2"
 serial_test = "0.5.1"
-image = "0.23.14"
 
 [features]
 tensorflow_gpu = ["tensorflow-sys/tensorflow_gpu"]
@@ -69,3 +68,5 @@ name = "xor"
 
 [[example]]
 name = "mobilenetv3"
+required-features = ["eager"]
+

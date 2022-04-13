@@ -10,8 +10,7 @@ use tensorflow::Status;
 use tensorflow::Tensor;
 use tensorflow::DEFAULT_SERVING_SIGNATURE_DEF_KEY;
 
-use image::io::Reader as ImageReader;
-use image::GenericImageView;
+use tensorflow::eager::{self, raw_ops, ToTensorHandle};
 
 fn main() -> Result<(), Box<dyn Error>> {
     let export_dir = "examples/mobilenetv3";
@@ -30,16 +29,23 @@ fn main() -> Result<(), Box<dyn Error>> {
         ));
     }
 
-    // Create input variables for our addition
-    let mut x = Tensor::new(&[1, 224, 224, 3]);
-    let img = ImageReader::open("examples/mobilenetv3/sample.png")?.decode()?;
-    for (i, (_, _, pixel)) in img.pixels().enumerate() {
-        x[3 * i] = pixel.0[0] as f32;
-        x[3 * i + 1] = pixel.0[1] as f32;
-        x[3 * i + 2] = pixel.0[2] as f32;
-    }
+    // Create an eager execution context
+    let opts = eager::ContextOptions::new();
+    let ctx = eager::Context::new(opts)?;
 
-    // Load the saved model exported by zenn_savedmodel.py.
+    // Load an input image.
+    let fname = "examples/mobilenetv3/sample.png".to_handle(&ctx)?;
+    let buf = raw_ops::read_file(&ctx, &fname)?;
+    let img = raw_ops::decode_image(&ctx, &buf)?;
+    let cast2float = raw_ops::Cast::new().DstT(tensorflow::DataType::Float);
+    let img = cast2float.call(&ctx, &img)?;
+    let batch = raw_ops::expand_dims(&ctx, &img, &0)?; // add batch dim
+    let readonly_x = batch.resolve()?;
+
+    // The current eager API implementation requires unsafe block to feed the tensor into a graph.
+    let x: Tensor<f32> = unsafe { readonly_x.into_tensor() };
+
+    // Load the model.
     let mut graph = Graph::new();
     let bundle =
         SavedModelBundle::load(&SessionOptions::new(), &["serve"], &mut graph, export_dir)?;

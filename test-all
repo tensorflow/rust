@@ -52,8 +52,8 @@ run cargo test -vv -j 2 --features ndarray
 run cargo run --example regression
 run cargo run --example xor
 run cargo run --features tensorflow_unstable --example expressions
-run cargo doc -vv --features tensorflow_unstable
-run cargo doc -vv --features tensorflow_unstable,private-docs-rs
+run cargo doc -vv --features tensorflow_unstable,ndarray,eager
+run cargo doc -vv --features tensorflow_unstable,ndarray,eager,private-docs-rs
 # TODO(#66): Re-enable: (cd tensorflow-sys && cargo test -vv -j 1)
 (cd tensorflow-sys && run cargo run --example multiplication)
 (cd tensorflow-sys && run cargo run --example tf_version)
