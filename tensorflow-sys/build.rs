@@ -45,7 +45,10 @@ fn main() {
     }
 
     if check_static_link() {
-        log!("Returing early because {} is being statically linked", LIBRARY);
+        log!(
+            "Returing early because {} is being statically linked",
+            LIBRARY
+        );
         return;
     }
 
