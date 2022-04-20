@@ -60,8 +60,6 @@ fn main() {
         return;
     }
 
-
-
     let force_src = match env::var("TF_RUST_BUILD_FROM_SRC") {
         Ok(s) => s == "true",
         Err(_) => false,
