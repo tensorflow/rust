@@ -69,4 +69,3 @@ name = "xor"
 [[example]]
 name = "mobilenetv3"
 required-features = ["eager"]
-
