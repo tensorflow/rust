@@ -188,7 +188,7 @@ impl Scope {
     /// Return a unique name, using default_name if an op name has not been
     /// specified.
     pub fn get_unique_name_for_op(&self, default_name: &str) -> String {
-        let name = if self.op_name == "" {
+        let name = if self.op_name.is_empty() {
             default_name
         } else {
             &self.op_name
@@ -316,7 +316,7 @@ impl Scope {
             nd.set_attr_string("_XlaCluster", &self.xla_cluster)?;
         }
         f(&mut nd)?;
-        Ok(nd.finish()?)
+        nd.finish()
     }
 
     /// Returns the graph being built by the scope.

@@ -80,7 +80,7 @@ macro_rules! impl_new {
                 unsafe {
                     let inner = tf::$call();
                     assert!(!inner.is_null());
-                    $name { inner: inner }
+                    $name { inner }
                 }
             }
         }
@@ -127,15 +127,15 @@ macro_rules! c_enum {
       }
 
       #[allow(dead_code)]
-      fn to_int(&self) -> c_uint {
+      fn to_int(self) -> c_uint {
         match self {
-          $enum_name::UnrecognizedEnumValue(c) => *c,
+          $enum_name::UnrecognizedEnumValue(c) => c,
           $($enum_name::$name => $num),*
         }
       }
 
       #[allow(dead_code)]
-      fn to_c(&self) -> tf::$c_name {
+      fn to_c(self) -> tf::$c_name {
         unsafe {
           ::std::mem::transmute(self.to_int())
         }
@@ -371,7 +371,7 @@ c_enum!("Type of a single tensor element.", TF_DataType, DataType {
   /// Float32 truncated to 16 bits.  Only for cast ops.
   /// Note that this is not the same as Half.  BFloat16 is not an IEEE-754
   /// 16-bit float.  See
-  /// https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/framework/bfloat16.h
+  /// <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/framework/bfloat16.h>
   /// for details.
   value BFloat16 = 14,
 
@@ -518,10 +518,9 @@ impl Display for Status {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "{}: ", self.code())?;
         let msg = unsafe {
-            match CStr::from_ptr(tf::TF_Message(self.inner)).to_str() {
-                Ok(s) => s,
-                Err(_) => "<invalid UTF-8 in message>",
-            }
+            CStr::from_ptr(tf::TF_Message(self.inner))
+                .to_str()
+                .unwrap_or("<invalid UTF-8 in message>")
         };
         f.write_str(msg)
     }
@@ -532,10 +531,9 @@ impl Debug for Status {
         write!(f, "{{inner:{:?}, ", self.inner)?;
         write!(f, "{}: ", self.code())?;
         let msg = unsafe {
-            match CStr::from_ptr(tf::TF_Message(self.inner)).to_str() {
-                Ok(s) => s,
-                Err(_) => "<invalid UTF-8 in message>",
-            }
+            CStr::from_ptr(tf::TF_Message(self.inner))
+                .to_str()
+                .unwrap_or("<invalid UTF-8 in message>")
         };
         f.write_str(msg)?;
         write!(f, "}}")?;
@@ -791,7 +789,7 @@ q_type!(i32,
 /// BFloat16 provides a Rust type for BFloat16.
 /// Note that this is not the same as half::f16.  BFloat16 is not an IEEE-754
 /// 16-bit float.  See
-/// https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/framework/bfloat16.h
+/// <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/framework/bfloat16.h>
 /// for details.
 #[derive(Debug, Clone, Copy, Default)]
 pub struct BFloat16(u16);
@@ -803,11 +801,11 @@ impl Display for BFloat16 {
     }
 }
 
-impl Into<f32> for BFloat16 {
-    fn into(self) -> f32 {
+impl From<BFloat16> for f32 {
+    fn from(bfloat: BFloat16) -> f32 {
         // Assumes that the architecture uses IEEE-754 natively for floats
         // and twos-complement for integers.
-        f32::from_bits((self.0 as u32) << 16)
+        f32::from_bits((bfloat.0 as u32) << 16)
     }
 }
 
@@ -858,8 +856,8 @@ unsafe extern "C" fn string_deallocator(
     });
     let count = length / size;
     let tstrings = slice::from_raw_parts_mut(data as *mut tf::TF_TString, count);
-    for i in 0..count {
-        tf::TF_StringDealloc(&mut tstrings[i]);
+    for tstring in tstrings {
+        tf::TF_StringDealloc(&mut *tstring);
     }
     alloc::dealloc(data as *mut _, layout);
 }
@@ -887,11 +885,11 @@ impl TensorType for String {
         let tstrings =
             unsafe { slice::from_raw_parts(data.as_ptr() as *const tf::TF_TString, count) };
         let mut out = Vec::with_capacity(count);
-        for i in 0..count {
+        for tstring in tstrings {
             let byte_slice = unsafe {
                 slice::from_raw_parts(
-                    tf::TF_StringGetDataPointer(&tstrings[i]) as *const u8,
-                    tf::TF_StringGetSize(&tstrings[i]),
+                    tf::TF_StringGetDataPointer(tstring) as *const u8,
+                    tf::TF_StringGetSize(tstring),
                 )
             };
             out.push(std::str::from_utf8(byte_slice)?.to_string());
@@ -1539,7 +1537,6 @@ impl<T: TensorType> Display for Tensor<T> {
 #[allow(missing_copy_implementations)]
 #[derive(Debug)]
 pub struct Library {
-    inner: *mut tf::TF_Library,
     op_list: OpList,
 }
 
@@ -1569,7 +1566,7 @@ impl Library {
                 })?;
 
             let op_list = OpList::from_proto(&op_proto)?;
-            Ok(Library { inner, op_list })
+            Ok(Library { op_list })
         }
     }
 
@@ -1602,7 +1599,7 @@ impl OpList {
         let ops = proto
             .get_op()
             .iter()
-            .map(|op| OpDef::from_proto(op))
+            .map(OpDef::from_proto)
             .collect::<Result<Vec<OpDef>>>()?;
         Ok(Self(ops))
     }
@@ -1614,9 +1611,9 @@ impl From<Vec<OpDef>> for OpList {
     }
 }
 
-impl Into<Vec<OpDef>> for OpList {
-    fn into(self) -> Vec<OpDef> {
-        self.0
+impl From<OpList> for Vec<OpDef> {
+    fn from(op_list: OpList) -> Vec<OpDef> {
+        op_list.0
     }
 }
 
@@ -1717,17 +1714,17 @@ impl OpDef {
         let input_arg = proto
             .get_input_arg()
             .iter()
-            .map(|arg| OpArgDef::from_proto(arg))
+            .map(OpArgDef::from_proto)
             .collect::<Result<Vec<OpArgDef>>>()?;
         let output_arg = proto
             .get_output_arg()
             .iter()
-            .map(|arg| OpArgDef::from_proto(arg))
+            .map(OpArgDef::from_proto)
             .collect::<Result<Vec<OpArgDef>>>()?;
         let attr = proto
             .get_attr()
             .iter()
-            .map(|attr| OpAttrDef::from_proto(attr))
+            .map(OpAttrDef::from_proto)
             .collect::<Result<Vec<OpAttrDef>>>()?;
         Ok(Self {
             name: proto.get_name().to_string(),
@@ -1949,10 +1946,7 @@ impl Shape {
                 for in_dim in v {
                     shape.mut_dim().push({
                         let mut out_dim = protos::tensor_shape::TensorShapeProto_Dim::new();
-                        out_dim.set_size(match in_dim {
-                            None => -1,
-                            Some(d) => d,
-                        });
+                        out_dim.set_size(in_dim.unwrap_or(-1));
                         out_dim
                     });
                 }
@@ -2013,6 +2007,7 @@ impl From<&[u64]> for Shape {
     }
 }
 
+#[rustversion::not(since(1.51))]
 macro_rules! shape_from_array {
     ($N:expr) => {
         impl From<[i32; $N]> for Shape {
@@ -2138,9 +2133,9 @@ impl<const N: usize> From<&[u64; N]> for Shape {
     }
 }
 
-impl Into<Option<Vec<Option<i64>>>> for Shape {
-    fn into(self) -> Option<Vec<Option<i64>>> {
-        self.0
+impl From<Shape> for Option<Vec<Option<i64>>> {
+    fn from(shape: Shape) -> Option<Vec<Option<i64>>> {
+        shape.0
     }
 }
 

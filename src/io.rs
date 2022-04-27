@@ -54,7 +54,7 @@ where
         let mut len_crc32_bytes = [0u8; 4];
         (&mut len_crc32_bytes[..]).write_u32::<LittleEndian>(masked_len_crc32c)?;
 
-        let masked_bytes_crc32c = mask_crc(CASTAGNOLI.checksum(&bytes));
+        let masked_bytes_crc32c = mask_crc(CASTAGNOLI.checksum(bytes));
         let mut bytes_crc32_bytes = [0u8; 4];
         (&mut bytes_crc32_bytes[..]).write_u32::<LittleEndian>(masked_bytes_crc32c)?;
 
@@ -140,7 +140,7 @@ where
     }
 
     fn checksum(&mut self, bytes: &[u8]) -> Result<bool, RecordReadError> {
-        let actual_bytes_crc32 = mask_crc(CASTAGNOLI.checksum(&bytes));
+        let actual_bytes_crc32 = mask_crc(CASTAGNOLI.checksum(bytes));
         let expected_bytes_crc32 = self.reader.read_u32::<LittleEndian>()?;
         if actual_bytes_crc32 != expected_bytes_crc32 {
             return Ok(false);

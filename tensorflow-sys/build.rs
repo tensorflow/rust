@@ -150,7 +150,9 @@ fn extract_zip<P: AsRef<Path>, P2: AsRef<Path>>(archive_path: P, extract_to: P2)
     let mut archive = ZipArchive::new(file).unwrap();
     for i in 0..archive.len() {
         let mut zipfile = archive.by_index(i).unwrap();
-        let output_path = extract_to.as_ref().join(zipfile.sanitized_name());
+        let output_path = extract_to
+            .as_ref()
+            .join(zipfile.enclosed_name().expect("Bad path found in archive"));
         if zipfile.name().starts_with("lib") {
             if zipfile.is_dir() {
                 fs::create_dir_all(&output_path)
@@ -331,9 +333,9 @@ fn build_from_src() {
             );
             process::exit(1);
         }
-        let framework_target_path = &format!("{}.2", framework_target.replace(":", "/"));
+        let framework_target_path = &format!("{}.2", framework_target.replace(':', "/"));
         log_var!(framework_target_path);
-        let target_path = &format!("{}.so", TARGET.replace(":", "/"));
+        let target_path = &format!("{}.so", TARGET.replace(':', "/"));
         log_var!(target_path);
         if !Path::new(&source.join(".git")).exists() {
             run("git", |command| {

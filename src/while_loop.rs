@@ -34,6 +34,7 @@ pub struct WhileBuilder<'a> {
     graph: &'a mut Graph,
     inner: CWhileParams,
     name: Option<CString>,
+    #[allow(dead_code)]
     c_inputs: Vec<tf::TF_Output>, // must live until TF_FinishWhile
 }
 

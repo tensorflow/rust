@@ -380,10 +380,10 @@ impl<'a, T: TensorType> From<&'a Vec<T>> for Buffer<T> {
     }
 }
 
-impl<T: TensorType> Into<Vec<T>> for Buffer<T> {
-    fn into(self) -> Vec<T> {
-        let mut vec = Vec::with_capacity(self.len());
-        vec.extend_from_slice(&self);
+impl<T: TensorType> From<Buffer<T>> for Vec<T> {
+    fn from(buffer: Buffer<T>) -> Vec<T> {
+        let mut vec = Vec::with_capacity(buffer.len());
+        vec.extend_from_slice(&buffer);
         vec
     }
 }

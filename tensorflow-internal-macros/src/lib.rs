@@ -95,6 +95,7 @@ struct DefineOpInput {
     fn_name: Ident,
     name: Ident,
     op_name: LitStr,
+    deprecation_message: LitStr,
     args: Vec<Arg>,
     attrs: Vec<Attr>,
 }
@@ -106,6 +107,8 @@ impl Parse for DefineOpInput {
         let name = input.parse()?;
         input.parse::<Token![,]>()?;
         let op_name = input.parse()?;
+        input.parse::<Token![,]>()?;
+        let deprecation_message = input.parse()?;
         let mut args = Vec::new();
         let mut attrs = Vec::new();
         loop {
@@ -129,6 +132,7 @@ impl Parse for DefineOpInput {
             fn_name,
             name,
             op_name,
+            deprecation_message,
             args,
             attrs,
         })
@@ -271,7 +275,7 @@ impl<'a> ToTokens for BuildFn<'a> {
         let build_fn_generics = BuildFnGenerics {
             arg_count: self.args.len(),
         };
-        let build_fn_args = BuildFnArgs { args: &self.args };
+        let build_fn_args = BuildFnArgs { args: self.args };
         let arg_names = self.args.iter().map(|arg| &arg.name);
         let set_attrs = self.attrs.iter().map(|attr| SetAttr { attr });
         tokens.extend(quote! {
@@ -298,6 +302,7 @@ impl<'a> ToTokens for BuildFn<'a> {
 struct ShortFn<'a> {
     name: &'a Ident,
     fn_name: &'a Ident,
+    deprecation_message: &'a LitStr,
     args: &'a [Arg],
 }
 
@@ -308,7 +313,7 @@ impl<'a> ToTokens for ShortFn<'a> {
         let build_fn_generics = BuildFnGenerics {
             arg_count: self.args.len(),
         };
-        let build_fn_args = BuildFnArgs { args: &self.args };
+        let build_fn_args = BuildFnArgs { args: self.args };
         let arg_names = self.args.iter().map(|arg| &arg.name);
         let mut docs = format!("Shorthand for `{}::new().build(scope)", name);
         for arg in self.args {
@@ -316,8 +321,11 @@ impl<'a> ToTokens for ShortFn<'a> {
             docs.push_str(&arg.name.to_string());
         }
         docs.push_str(")`.");
+        let deprecation_message = &self.deprecation_message;
         tokens.extend(quote! {
             #[doc = #docs]
+            #[allow(deprecated)]
+            #[deprecated(note = #deprecation_message, since = "0.15.0")]
             pub fn #fn_name#build_fn_generics(#build_fn_args scope: &mut crate::Scope) -> crate::Result<crate::Operation> {
                 #name::new().build(#(#arg_names, )* scope)
             }
@@ -333,6 +341,7 @@ pub fn define_op(input: TokenStream) -> TokenStream {
     let op_name = input.op_name;
     let name_str = name.to_string();
     let name_str_plus_period = name_str + ".";
+    let deprecation_message = input.deprecation_message;
     let attr_defs = AttrDefs(&input.attrs);
     let attr_setters = AttrSetters(&input.attrs);
     let build_fn = BuildFn {
@@ -343,6 +352,7 @@ pub fn define_op(input: TokenStream) -> TokenStream {
     let short_fn = ShortFn {
         name: &name,
         fn_name: &fn_name,
+        deprecation_message: &deprecation_message,
         args: &input.args,
     };
     let stream = quote! {
@@ -350,11 +360,14 @@ pub fn define_op(input: TokenStream) -> TokenStream {
         #[doc = #op_name]
         #[doc = "` operation."]
         #[derive(Debug,Default)]
+        #[deprecated(note = #deprecation_message, since = "0.15.0")]
+        #[allow(deprecated)]
         pub struct #name {
             #attr_defs
             control_inputs: Vec<crate::Operation>,
         }
 
+        #[allow(deprecated)]
         impl #name {
             #[doc = "Creates a new"]
             #[doc = #name_str_plus_period]

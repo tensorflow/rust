@@ -48,8 +48,6 @@ pub(crate) fn any_constant(value: &dyn AnyTensor, scope: &mut Scope) -> Result<O
     c.finish()
 }
 
-#[deprecated(note = "Use mul instead.", since = "0.15.0")]
-define_op!(multiply, Multiply, "Mul", args { a, b });
+define_op!(multiply, Multiply, "Mul", "Use mul instead.", args { a, b });
 
-#[deprecated(note = "Use sub instead.", since = "0.15.0")]
-define_op!(subtract, Subtract, "Sub", args { a, b });
+define_op!(subtract, Subtract, "Sub", "Use sub instead.", args { a, b });
