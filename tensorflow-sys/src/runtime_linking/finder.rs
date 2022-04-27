@@ -17,27 +17,25 @@ pub fn find(library_name: &str) -> Option<PathBuf> {
     // We search for the library in various different places and early-return if we find it.
     macro_rules! check_and_return {
         ($path: expr) => {
-            log::debug!("Searching in: {}", $path.display());
-            if $path.is_file() {
-                log::info!("Found library at path: {}", $path.display());
-                return Some($path);
+            let path = $path;
+            log::debug!("Searching in: {}", path.display());
+            if path.is_file() {
+                log::info!("Found library at path: {}", path.display());
+                return Some(path);
             }
         };
     }
 
     // Search using the `TENSORFLOW_DIR` environment variable, this may be set by users.
     if let Some(install_dir) = env::var_os(ENV_TENSORFLOW_DIR) {
-        let install_dir = PathBuf::from(install_dir);
-        check_and_return!(install_dir);
+        check_and_return!(PathBuf::from(install_dir).join(&file));
     }
 
     // Search in the OS library path (i.e. `LD_LIBRARY_PATH` on Linux, `PATH` on Windows, and
-    // `DYLD_LIBRARY_PATH` on MacOS). See
-    // https://docs.openvinotoolkit.org/latest/openvino_docs_IE_DG_Deep_Learning_Inference_Engine_DevGuide.html
+    // `DYLD_LIBRARY_PATH` on MacOS).
     if let Some(path) = env::var_os(ENV_LIBRARY_PATH) {
         for lib_dir in env::split_paths(&path) {
-            let search_path = lib_dir.join(&file);
-            check_and_return!(search_path);
+            check_and_return!(lib_dir.join(&file));
         }
     }
 
@@ -47,7 +45,7 @@ pub fn find(library_name: &str) -> Option<PathBuf> {
         .map(PathBuf::from)
         .filter(|d| d.is_dir())
     {
-        check_and_return!(default_dir);
+        check_and_return!(default_dir.join(&file));
     }
 
     None

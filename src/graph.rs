@@ -640,7 +640,6 @@ impl Graph {
     /// # Returns
     ///
     ///  A newly created `Function` instance.
-    #[cfg(not(feature = "tensorflow_runtime_linking"))]
     pub fn to_function<S: AsRef<str>>(
         &self,
         fn_name: &str,

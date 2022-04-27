@@ -868,6 +868,43 @@ extern "C" {
     );
 }
 extern "C" {
+    pub fn TF_GraphToFunction(
+        fn_body: *const TF_Graph,
+        fn_name: *const ::std::os::raw::c_char,
+        append_hash_to_fn_name: ::std::os::raw::c_uchar,
+        num_opers: ::std::os::raw::c_int,
+        opers: *const *const TF_Operation,
+        ninputs: ::std::os::raw::c_int,
+        inputs: *const TF_Output,
+        noutputs: ::std::os::raw::c_int,
+        outputs: *const TF_Output,
+        output_names: *const *const ::std::os::raw::c_char,
+        opts: *const TF_FunctionOptions,
+        description: *const ::std::os::raw::c_char,
+        status: *mut TF_Status,
+    ) -> *mut TF_Function;
+}
+extern "C" {
+    pub fn TF_GraphToFunctionWithControlOutputs(
+        fn_body: *const TF_Graph,
+        fn_name: *const ::std::os::raw::c_char,
+        append_hash_to_fn_name: ::std::os::raw::c_uchar,
+        num_opers: ::std::os::raw::c_int,
+        opers: *const *const TF_Operation,
+        ninputs: ::std::os::raw::c_int,
+        inputs: *const TF_Output,
+        noutputs: ::std::os::raw::c_int,
+        outputs: *const TF_Output,
+        output_names: *const *const ::std::os::raw::c_char,
+        ncontrol_outputs: ::std::os::raw::c_int,
+        control_outputs: *const *const TF_Operation,
+        control_output_names: *const *const ::std::os::raw::c_char,
+        opts: *const TF_FunctionOptions,
+        description: *const ::std::os::raw::c_char,
+        status: *mut TF_Status,
+    ) -> *mut TF_Function;
+}
+extern "C" {
     pub fn TF_FunctionName(func: *mut TF_Function) -> *const ::std::os::raw::c_char;
 }
 extern "C" {

@@ -19,12 +19,12 @@ cmd="bindgen ${bindgen_options_eager} ${include_dir}/tensorflow/c/eager/c_api.h 
 echo ${cmd}
 ${cmd}
 
-bindgen_options_runtime_functions="--allowlist-function TF_.+ --blocklist-type *.+ --blocklist-function TF_GraphToFunction --blocklist-function TF_GraphToFunctionWithControlOutputs --size_t-is-usize --default-enum-style=rust --generate-inline-functions"
+bindgen_options_runtime_functions="--allowlist-function TF_.+ --blocklist-type .+ --size_t-is-usize --default-enum-style=rust --generate-inline-functions"
 cmd="bindgen ${bindgen_options_runtime_functions} ${include_dir}/tensorflow/c/c_api.h --output src/runtime_linking/c_api.rs --  -I ${include_dir}"
 echo ${cmd}
 ${cmd}
 
-bindgen_options_runtime_types="--allowlist-type TF_.+ --blocklist-function *.+ --size_t-is-usize --default-enum-style=rust --generate-inline-functions"
+bindgen_options_runtime_types="--allowlist-type TF_.+ --blocklist-function .+ --size_t-is-usize --default-enum-style=rust --generate-inline-functions"
 cmd="bindgen ${bindgen_options_runtime_types} ${include_dir}/tensorflow/c/c_api.h --output src/runtime_linking/types.rs --  -I ${include_dir}"
 echo ${cmd}
 ${cmd}
