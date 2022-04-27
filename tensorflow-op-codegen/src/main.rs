@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::collections::HashSet;
 use std::env;
 use std::error::Error;
@@ -17,6 +18,55 @@ struct Attr {
     rust_name: String,
     attr_type: String,
     c_name: String,
+}
+#[derive(Clone)]
+struct Output {
+    rust_name: String,
+    number_attr: Option<String>,
+    c_name: String,
+}
+
+#[derive(Clone)]
+struct Input {
+    rust_name: String,
+    number_attr: Option<String>,
+    c_name: String,
+}
+/// Input and Output shared behaviour
+trait Edge {
+    fn rust_name(&self) -> &str;
+    fn number_attr(&self) -> Option<&str>;
+    fn edge_type(&self) -> &str;
+}
+impl Edge for &Input {
+    fn rust_name(&self) -> &str {
+        &self.rust_name
+    }
+    fn number_attr(&self) -> Option<&str> {
+        if let Some(ref number_attr) = self.number_attr {
+            Some(number_attr)
+        } else {
+            None
+        }
+    }
+    fn edge_type(&self) -> &str {
+        "Input"
+    }
+}
+impl Edge for &Output {
+    fn rust_name(&self) -> &str {
+        &self.rust_name
+    }
+    fn number_attr(&self) -> Option<&str> {
+        if let Some(ref number_attr) = self.number_attr {
+            Some(number_attr)
+        } else {
+            None
+        }
+    }
+    fn edge_type(&self) -> &str {
+        "Output"
+    }
 }
 
 fn write_set_attr<W: Write>(w: &mut W, attr: &Attr, node_var: &str) -> Result<(), io::Error> {
@@ -221,6 +271,264 @@ fn write_attr<W: Write>(w: &mut W, attr: &Attr) -> Result<(), io::Error> {
     Ok(())
 }
 
+fn write_build_operation_struct<W: Write>(w: &mut W, op_name: &str) -> Result<(), io::Error> {
+    write!(
+        w,
+        "/// An instance of '{}' Operation with it's Outputs and Inputs exposed as methods.\n",
+        op_name
+    )?;
+    write!(w, "#[derive(Debug, Clone)]\n")?;
+    write!(w, "pub struct {}Inst", op_name)?;
+    write!(w, " {{\n")?;
+    write!(
+        w,
+        "    /// An instance of a fully built {} Operation in a Tensorflow graph.\n",
+        op_name
+    )?;
+    write!(w, "    pub op: crate::Operation,\n")?;
+    write!(w, "}}\n")?;
+
+    Ok(())
+}
+
+///Takes a vector of dynamic_offset strings for inputs and outputs and returns a concatenated
+///string of scalar_offsets to calculate the index of inputs and offsets by extracting the sum with
+///the distributive property.
+fn scalar_offsets(dynamic_offset: &Vec<String>, i: usize) -> String {
+    let scalar_offsets = dynamic_offset
+        .iter()
+        .fold(HashMap::new(), |mut counts, string| {
+            *counts.entry(string).or_insert(0) += 1;
+            counts
+        })
+        .iter()
+        .fold(String::new(), |mut scalar_offset, (string, count)| {
+            //identity property
+            if count > &1 {
+                scalar_offset.push_str(&format!("{}*{}+", count, string));
+            } else {
+                scalar_offset.push_str(&format!("{}+", string));
+            }
+            scalar_offset
+        });
+    if scalar_offsets.is_empty() {
+        format!("{}", i)
+    } else {
+        format!("{}{}", scalar_offsets, i)
+    }
+}
+
+fn write_build_instance_fn<W: Write>(
+    w: &mut W,
+    op_name: &str,
+    attrs: &[Attr],
+    inputs: Vec<Input>,
+    outputs: Vec<Output>,
+    keywords: &HashSet<String>,
+) -> Result<(), io::Error> {
+    let mut escaper = Escaper::new(keywords);
+    write!(w, "    /// Builds a new instance of '{}' Operation with it's Outputs and Inputs exposed as methods.\n", op_name)?;
+    write!(w, "    pub fn build_instance(&self, ")?;
+    let mut seen_number_attr = HashMap::new();
+    for input in &inputs {
+        if input.number_attr.is_some() {
+            write!(w, "{}: Vec<crate::Output>, ", input.clone().rust_name)?;
+            if !seen_number_attr.contains_key(&input.clone().number_attr.unwrap()) {
+                seen_number_attr.insert(input.clone().number_attr.unwrap(), input.clone());
+            }
+        } else {
+            write!(w, "{}: crate::Output, ", input.rust_name)?;
+        }
+    }
+    let scope_var = escaper.escape("scope");
+    write!(
+        w,
+        r#"scope: &mut crate::Scope) -> crate::Result<{op_name}Inst> {{
+        let op = scope.new_operation({op_name:?}, |builder| {{
+"#,
+        op_name = op_name,
+    )?;
+    for input in &inputs {
+        if input.number_attr.is_some() {
+            //TODO: how are multiple lists handled here? may be an error with lower level protobuff
+            //      bindings in OperationDescription. Is this ordered parameter wise internally?
+            write!(
+                w,
+                "            builder.add_input_list(&{input});\n",
+                input = input.rust_name,
+            )?;
+        } else {
+            write!(w, "            builder.add_input({});\n", input.rust_name)?;
+        }
+    }
+
+    for attr in attrs {
+        if seen_number_attr.contains_key(&attr.rust_name) {
+            write!(
+                w,
+                "            builder.set_attr_int(\"{}\", {}.clone().len() as i64)?;\n",
+                attr.rust_name,
+                seen_number_attr.get(&attr.rust_name).unwrap().rust_name
+            )?;
+        } else {
+            write_set_attr(w, attr, "builder")?;
+        }
+    }
+    write!(w, "            ::std::result::Result::Ok(())\n")?;
+    write!(w, "        }})?;\n")?;
+    write!(w, "        Ok({}Inst{{op}})\n", op_name)?;
+    write!(w, "    }}\n")?;
+    Ok(())
+}
+
+fn write_edge_method<T: Edge + Clone>(
+    w: &mut impl Write,
+    op_name: String,
+    edge: T,
+    i: usize,
+    dynamic_offset: &mut Vec<String>,
+) -> Result<(), io::Error> {
+    let scalar_offsets = scalar_offsets(dynamic_offset, i);
+    let edge_type = edge.edge_type();
+    let rust_name = edge.rust_name();
+
+    let mut op = "self.op.clone()";
+    if edge_type == "Input" {
+        op = "&self.op";
+    }
+    if let Some(number_attr) = &edge.number_attr() {
+        //create a Vec<Edge> for this index
+        write!(
+            w,
+            "    /// Returns a Vector of {} for '{}' {} of this {} operation.\n",
+            rust_name, rust_name, edge_type, op_name
+        )?;
+        write!(
+            w,
+            "    pub fn {}(&self) -> crate::Result<Vec<crate::{}>>{{\n",
+            rust_name, edge_type
+        )?;
+        if scalar_offsets.contains("self") {
+            write!(
+                w,
+                "        let dynamic_offset = ({}) as i32;\n",
+                scalar_offsets
+            )?;
+        }
+        write!(w, "        let mut {}s = vec![];\n", edge_type)?;
+        if dynamic_offset.is_empty() {
+            write!(
+                w,
+                "        for i in {}..self.op.get_attr_int({:?})? as i32{{\n",
+                i, number_attr
+            )?;
+            write!(
+                w,
+                "            {edge_type}s.push(crate::{edge_type} {{\n",
+                edge_type = edge_type
+            )?;
+            write!(w, "                operation: {},\n", op)?;
+            write!(w, "                index: i\n")?;
+            write!(w, "            }});\n")?;
+            write!(w, "        }}\n")?;
+        } else {
+            write!(
+                w,
+                "        for i in dynamic_offset..dynamic_offset+self.op.get_attr_int(\"{}\")? as i32{{\n",
+                number_attr
+            )?;
+            write!(
+                w,
+                "            {edge_type}s.push(crate::{edge_type} {{\n",
+                edge_type = edge_type
+            )?;
+            write!(w, "                operation: {},\n", op)?;
+            write!(w, "                index: i\n")?;
+            write!(w, "            }});\n")?;
+            write!(w, "        }}\n")?;
+        }
+        write!(w, "        Ok({}s)\n", edge_type)?;
+        write!(w, "    }}\n")?;
+        //add the current self.op.get_attr_int(number_attr) to dynamic_offset to keep the current index into the Operations edges
+        dynamic_offset.push(format!("self.op.get_attr_int(\"{}\")?", number_attr));
+    } else {
+        //create a single edge at the current dynamic_offset index
+        write!(
+            w,
+            "    /// Returns the '{}' {} of this '{}' operation.\n",
+            rust_name, edge_type, op_name
+        )?;
+        //if scalar_offsets is just the i value, we dont return a result since this is statically indexed
+        if scalar_offsets == format!("{}", i) {
+            write!(
+                w,
+                "    pub fn {}(&self) -> crate::{} {{\n",
+                rust_name, edge_type
+            )?;
+            write!(w, "        crate::{} {{\n", edge_type)?;
+            write!(w, "            operation: {},\n", op)?;
+            write!(w, "            index: {}\n", i)?;
+            write!(w, "        }}\n")?;
+            write!(w, "    }}\n")?;
+        } else {
+            write!(
+                w,
+                "   pub fn {}(&self) -> crate::Result<crate::{}> {{\n",
+                rust_name, edge_type
+            )?;
+            if scalar_offsets.contains("self") {
+                write!(
+                    w,
+                    "        let dynamic_offset = ({}) as i32;\n",
+                    scalar_offsets
+                )?;
+            }
+            write!(w, "        Ok(crate::{} {{\n", edge_type)?;
+            write!(w, "            operation: {},\n", op)?;
+            write!(w, "            index: dynamic_offset\n")?;
+            write!(w, "        }})\n")?;
+            write!(w, "    }}\n")?;
+        }
+    }
+    Ok(())
+}
+
+///writes the impl for the output struct that includes slicing implementations for Outputs that have output.number_attr set
+fn write_build_instance_struct_impl<W: Write>(
+    w: &mut W,
+    op_name: &str,
+    attrs: &[Attr],
+    args: &[String],
+    outputs: Vec<Output>,
+    inputs: Vec<Input>,
+    keywords: &HashSet<String>,
+) -> Result<(), io::Error> {
+    let mut escaper = Escaper::new(keywords);
+    let escaped_args: Vec<_> = args.iter().map(|arg| escaper.escape(&arg)).collect();
+
+    write!(w, "impl {}Inst {{\n", op_name)?;
+
+    let mut dynamic_offset: Vec<String> = vec![];
+    //write methods for outputs
+    for (i, output) in outputs.iter().enumerate() {
+        write_edge_method(w, op_name.to_string(), output, i, &mut dynamic_offset)?;
+    }
+    //write methods for inputs
+    let mut dynamic_offset: Vec<String> = vec![];
+    for (i, input) in inputs.iter().enumerate() {
+        write_edge_method(w, op_name.to_string(), input, i, &mut dynamic_offset)?;
+    }
+
+    write!(w, "}}\n")?;
+    write!(w, "impl Into<crate::Operation> for {}Inst{{\n", op_name)?;
+    write!(w, "    fn into(self) -> crate::Operation {{\n")?;
+    write!(w, "        self.op\n")?;
+    write!(w, "    }}\n")?;
+    write!(w, "}}\n")?;
+
+    Ok(())
+}
+
 fn define_op<W: Write>(
     w: &mut W,
     keywords: &HashSet<String>,
@@ -231,9 +539,13 @@ fn define_op<W: Write>(
     let fn_name = fn_escaper.escape(&snake_name(&op.name));
     let name = struct_escaper.escape(&op.name);
     let op_name = op.name.clone();
+    let mut op_outputs = vec![];
+    let mut op_inputs = vec![];
     let args: Vec<_> = op.input_arg.iter().map(|arg| arg.name.clone()).collect();
     let mut attrs = Vec::new();
     let mut attr_escaper = Escaper::new(keywords);
+    let mut output_escaper = Escaper::new(keywords);
+    let mut input_escaper = Escaper::new(keywords);
     for attr in op.attr.iter() {
         let rust_type = match &attr.field_type as &str {
             // See OpDef.AttrDef.type in $TENSORFLOW/tensorflow/core/framework/op_def.proto
@@ -270,6 +582,32 @@ fn define_op<W: Write>(
             c_name: attr.name.clone(),
         });
     }
+
+    for output in op.output_arg.iter() {
+        let number_attr_opt = if output.number_attr.is_empty() {
+            None
+        } else {
+            Some(output.number_attr.clone())
+        };
+        op_outputs.push(Output {
+            rust_name: output_escaper.escape(&output.name),
+            number_attr: number_attr_opt,
+            c_name: output.name.clone(),
+        });
+    }
+    for input in op.input_arg.iter() {
+        let number_attr_opt = if input.number_attr.is_empty() {
+            None
+        } else {
+            Some(input.number_attr.clone())
+        };
+        op_inputs.push(Input {
+            rust_name: input_escaper.escape(&input.name),
+            number_attr: number_attr_opt,
+            c_name: input.name.clone(),
+        });
+    }
+
     write!(w, "/// Builder for the `{}` operation.\n", op_name)?;
     write!(w, "#[derive(::std::fmt::Debug, ::std::default::Default)]\n")?;
     write!(w, "pub struct {} {{\n", name)?;
@@ -280,7 +618,13 @@ fn define_op<W: Write>(
         w,
         r#"    control_inputs: ::std::vec::Vec<crate::Operation>,
 }}
+"#
+    );
+    write_build_operation_struct(w, &op_name)?;
 
+    write!(
+        w,
+        r#"
 impl {name} {{
     /// Creates a new `{name}`.
     pub fn new() -> Self {{
@@ -304,11 +648,20 @@ impl {name} {{
 "#
     )?;
     write_build_fn(w, &op_name, &args, &keywords)?;
-    write!(w, "\n")?;
     write_build_impl_fn(w, &op_name, &args, &attrs, &keywords)?;
-    write!(w, "}}\n")?;
     write!(w, "\n")?;
+    write_build_instance_fn(
+        w,
+        &op_name,
+        &attrs,
+        op_inputs.clone(),
+        op_outputs.clone(),
+        &keywords,
+    )?;
+    write!(w, "}}\n")?;
+    write_build_instance_struct_impl(w, &op_name, &attrs, &args, op_outputs, op_inputs, &keywords)?;
     write_short_fn(w, &name, &fn_name, &args, &keywords)?;
+    write!(w, "\n")?;
     Ok(())
 }
 
