@@ -14,7 +14,6 @@ use libc::c_uchar;
 use libc::c_uint;
 use libc::c_void;
 use libc::size_t;
-use std;
 use std::cmp;
 use std::ffi::CStr;
 use std::ffi::CString;
@@ -22,6 +21,7 @@ use std::ffi::NulError;
 use std::fmt;
 use std::fmt::Display;
 use std::fmt::Formatter;
+use std::mem::MaybeUninit;
 use std::os::raw::c_void as std_c_void;
 use std::ptr;
 use std::slice;
@@ -29,9 +29,6 @@ use std::str::FromStr;
 use std::str::Utf8Error;
 use std::sync::Arc;
 use tensorflow_sys as tf;
-
-#[derive(Debug)]
-struct GraphLifetime;
 
 #[derive(Debug)]
 struct GraphImpl {
@@ -284,7 +281,6 @@ impl_drop!(ImportGraphDefResults, TF_DeleteImportGraphDefResults);
 #[derive(Debug)]
 pub struct Graph {
     gimpl: Arc<GraphImpl>,
-    lifetime: GraphLifetime,
 }
 
 impl Default for Graph {
@@ -302,7 +298,6 @@ impl Graph {
                     inner: tf::TF_NewGraph(),
                     owned: true,
                 }),
-                lifetime: GraphLifetime,
             }
         }
     }
@@ -522,23 +517,23 @@ impl Graph {
         let buf = Buffer::from(graph_def);
         let mut status = Status::new();
         let n = options.num_return_outputs();
-        let mut c_return_outputs = Vec::with_capacity(n);
+        let mut c_return_outputs: Vec<MaybeUninit<tf::TF_Output>> = Vec::with_capacity(n);
         unsafe {
             c_return_outputs.set_len(n);
             tf::TF_GraphImportGraphDefWithReturnOutputs(
                 self.gimpl.inner,
                 buf.inner(),
                 options.inner,
-                c_return_outputs.as_mut_ptr(),
+                c_return_outputs.as_mut_ptr() as *mut tf::TF_Output,
                 n as c_int,
                 status.inner(),
             );
+            status.into_result()?;
+            Ok(c_return_outputs
+                .iter()
+                .map(|x| Output::from_c(self, &x.assume_init()))
+                .collect())
         }
-        status.into_result()?;
-        Ok(c_return_outputs
-            .iter()
-            .map(|x| Output::from_c(self, x))
-            .collect())
     }
 
     /// Adds a copy of function `func` and optionally its gradient function
@@ -676,10 +671,8 @@ impl Graph {
         };
         // Don't use Option::map because the CStrings need to outlive the
         // pointers and Option::map consumes the Option.
-        let output_names_ptrs: Option<Vec<*const c_char>> = match &output_names_cstrs {
-            None => None,
-            Some(ref slice) => Some(slice.iter().map(|s| s.as_ptr()).collect()),
-        };
+        let output_names_ptrs: Option<Vec<*const c_char>> =
+            output_names_cstrs.map(|slice| slice.iter().map(|s| s.as_ptr()).collect());
         let output_names_ptrs_ptr = match &output_names_ptrs {
             None => ptr::null(),
             Some(ref v) => v.as_ptr(),
@@ -810,7 +803,7 @@ impl Graph {
     ///
     /// WARNING: This function does not yet support all the gradients that
     /// python supports. See
-    /// https://www.tensorflow.org/code/tensorflow/cc/gradients/README.md
+    /// <https://www.tensorflow.org/code/tensorflow/cc/gradients/README.md>
     /// for instructions on how to add C++ more gradients.
     pub fn add_gradients(
         &mut self,
@@ -880,7 +873,6 @@ impl Graph {
                 inner,
                 owned: false,
             }),
-            lifetime: GraphLifetime,
         }
     }
 }
@@ -1217,7 +1209,7 @@ impl Operation {
             if !status.is_ok() {
                 return Err(status);
             }
-            let mut v: Vec<u8> = Vec::with_capacity(metadata.total_size as usize);
+            let mut v: Vec<MaybeUninit<u8>> = Vec::with_capacity(metadata.total_size as usize);
             v.set_len(metadata.total_size as usize);
             tf::TF_OperationGetAttrString(
                 self.inner,
@@ -1229,7 +1221,12 @@ impl Operation {
             if !status.is_ok() {
                 return Err(status);
             }
-            Ok(CString::new(v)?.into_string()?)
+            Ok(CString::new(
+                v.into_iter()
+                    .map(|x| MaybeUninit::assume_init(x))
+                    .collect::<Vec<_>>(),
+            )?
+            .into_string()?)
         }
     }
 
@@ -1243,7 +1240,8 @@ impl Operation {
             if !status.is_ok() {
                 return Err(status);
             }
-            let mut storage: Vec<u8> = Vec::with_capacity(metadata.total_size as usize);
+            let mut storage: Vec<MaybeUninit<u8>> =
+                Vec::with_capacity(metadata.total_size as usize);
             storage.set_len(metadata.total_size as usize);
             let mut values: Vec<*const std::os::raw::c_char> =
                 Vec::with_capacity(metadata.list_size as usize);
@@ -1301,19 +1299,22 @@ impl Operation {
             if !status.is_ok() {
                 return Err(status);
             }
-            let mut values: Vec<i64> = Vec::with_capacity(metadata.list_size as usize);
+            let mut values: Vec<MaybeUninit<i64>> = Vec::with_capacity(metadata.list_size as usize);
             values.set_len(metadata.list_size as usize);
             tf::TF_OperationGetAttrIntList(
                 self.inner,
                 c_attr_name.as_ptr(),
-                values.as_mut_ptr(),
+                values.as_mut_ptr() as *mut i64,
                 metadata.list_size as c_int,
                 status.inner(),
             );
             if !status.is_ok() {
                 return Err(status);
             }
-            Ok(values)
+            Ok(values
+                .into_iter()
+                .map(|x| MaybeUninit::assume_init(x))
+                .collect())
         }
     }
 
@@ -1347,12 +1348,13 @@ impl Operation {
             if !status.is_ok() {
                 return Err(status);
             }
-            let mut values: Vec<c_float> = Vec::with_capacity(metadata.list_size as usize);
+            let mut values: Vec<MaybeUninit<c_float>> =
+                Vec::with_capacity(metadata.list_size as usize);
             values.set_len(metadata.list_size as usize);
             tf::TF_OperationGetAttrFloatList(
                 self.inner,
                 c_attr_name.as_ptr(),
-                values.as_mut_ptr(),
+                values.as_mut_ptr() as *mut c_float,
                 metadata.list_size as c_int,
                 status.inner(),
             );
@@ -1360,7 +1362,7 @@ impl Operation {
                 return Err(status);
             }
             #[allow(trivial_numeric_casts)]
-            Ok(values.iter().map(|f| *f as f32).collect())
+            Ok(values.iter().map(|f| f.assume_init() as f32).collect())
         }
     }
 
@@ -1393,12 +1395,13 @@ impl Operation {
             if !status.is_ok() {
                 return Err(status);
             }
-            let mut values: Vec<c_uchar> = Vec::with_capacity(metadata.list_size as usize);
+            let mut values: Vec<MaybeUninit<c_uchar>> =
+                Vec::with_capacity(metadata.list_size as usize);
             values.set_len(metadata.list_size as usize);
             tf::TF_OperationGetAttrBoolList(
                 self.inner,
                 c_attr_name.as_ptr(),
-                values.as_mut_ptr(),
+                values.as_mut_ptr() as *mut c_uchar,
                 metadata.list_size as c_int,
                 status.inner(),
             );
@@ -1406,7 +1409,7 @@ impl Operation {
                 return Err(status);
             }
             #[allow(trivial_numeric_casts)]
-            Ok(values.iter().map(|f| *f != 0).collect())
+            Ok(values.iter().map(|f| f.assume_init() != 0).collect())
         }
     }
 
@@ -1439,19 +1442,23 @@ impl Operation {
             if !status.is_ok() {
                 return Err(status);
             }
-            let mut values: Vec<tf::TF_DataType> = Vec::with_capacity(metadata.list_size as usize);
+            let mut values: Vec<MaybeUninit<tf::TF_DataType>> =
+                Vec::with_capacity(metadata.list_size as usize);
             values.set_len(metadata.list_size as usize);
             tf::TF_OperationGetAttrTypeList(
                 self.inner,
                 c_attr_name.as_ptr(),
-                values.as_mut_ptr(),
+                values.as_mut_ptr() as *mut tf::TF_DataType,
                 metadata.list_size as c_int,
                 status.inner(),
             );
             if !status.is_ok() {
                 return Err(status);
             }
-            Ok(values.iter().map(|x| DataType::from_c(*x)).collect())
+            Ok(values
+                .iter()
+                .map(|x| DataType::from_c(x.assume_init()))
+                .collect())
         }
     }
 
@@ -1468,12 +1475,12 @@ impl Operation {
             if metadata.total_size == -1 {
                 return Ok(Shape(None));
             }
-            let mut v: Vec<i64> = Vec::with_capacity(metadata.total_size as usize);
+            let mut v: Vec<MaybeUninit<i64>> = Vec::with_capacity(metadata.total_size as usize);
             v.set_len(metadata.total_size as usize);
             tf::TF_OperationGetAttrShape(
                 self.inner,
                 c_attr_name.as_ptr(),
-                v.as_mut_ptr(),
+                v.as_mut_ptr() as *mut i64,
                 metadata.total_size as c_int,
                 status.inner(),
             );
@@ -1482,7 +1489,14 @@ impl Operation {
             }
             Ok(Shape(Some(
                 v.iter()
-                    .map(|x| if *x < 0 { None } else { Some(*x) })
+                    .map(|x| {
+                        let x = x.assume_init();
+                        if x < 0 {
+                            None
+                        } else {
+                            Some(x)
+                        }
+                    })
                     .collect(),
             )))
         }
@@ -1498,7 +1512,8 @@ impl Operation {
             if !status.is_ok() {
                 return Err(status);
             }
-            let mut storage: Vec<i64> = Vec::with_capacity(metadata.total_size as usize);
+            let mut storage: Vec<MaybeUninit<i64>> =
+                Vec::with_capacity(metadata.total_size as usize);
             storage.set_len(metadata.total_size as usize);
             let mut dims: Vec<*mut i64> = Vec::with_capacity(metadata.list_size as usize);
             let mut num_dims: Vec<c_int> = Vec::with_capacity(metadata.list_size as usize);
@@ -1508,7 +1523,7 @@ impl Operation {
                 dims.as_mut_ptr(),
                 num_dims.as_mut_ptr(),
                 metadata.list_size as i32,
-                storage.as_mut_ptr(),
+                storage.as_mut_ptr() as *mut i64,
                 metadata.total_size as c_int,
                 status.inner(),
             );
@@ -1671,11 +1686,11 @@ impl Operation {
     }
 }
 
-impl Into<Output> for Operation {
+impl From<Operation> for Output {
     /// Creates an Output for index 0.
-    fn into(self) -> Output {
+    fn from(operation: Operation) -> Output {
         Output {
-            operation: self,
+            operation,
             index: 0,
         }
     }
@@ -1767,10 +1782,12 @@ impl FromStr for OutputName {
         let index = match splits.len() {
             2 => splits[1].parse::<c_int>()?,
             1 => 0,
-            _ => Err(Status::new_set_lossy(
-                Code::InvalidArgument,
-                "Name contains more than one colon (':')",
-            ))?,
+            _ => {
+                return Err(Status::new_set_lossy(
+                    Code::InvalidArgument,
+                    "Name contains more than one colon (':')",
+                ))
+            }
         };
         Ok(Self {
             name: splits[0].to_string(),
@@ -2072,13 +2089,7 @@ impl<'a> OperationDescription<'a> {
             match value.0 {
                 None => tf::TF_SetAttrShape(self.inner, c_attr_name.as_ptr(), ptr::null(), -1),
                 Some(ref dims) => {
-                    let c_dims: Vec<i64> = dims
-                        .iter()
-                        .map(|x| match *x {
-                            Some(d) => d,
-                            None => -1,
-                        })
-                        .collect();
+                    let c_dims: Vec<i64> = dims.iter().map(|x| (*x).unwrap_or(-1)).collect();
                     tf::TF_SetAttrShape(
                         self.inner,
                         c_attr_name.as_ptr(),
@@ -2101,16 +2112,9 @@ impl<'a> OperationDescription<'a> {
         // Convert Option<i64> in each shape to i64 with None becoming -1.
         let c_dims: Vec<Option<Vec<i64>>> = value
             .iter()
-            .map(|x| match x.0 {
-                None => None,
-                Some(ref dims) => Some(
-                    dims.iter()
-                        .map(|x| match *x {
-                            None => -1,
-                            Some(d) => d,
-                        })
-                        .collect(),
-                ),
+            .map(|x| {
+                x.0.as_ref()
+                    .map(|dims| dims.iter().map(|x| (*x).unwrap_or(-1)).collect())
             })
             .collect();
         let ptrs: Vec<*const i64> = c_dims

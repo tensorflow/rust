@@ -41,6 +41,7 @@ Note that any crate not mentioned here (e.g. tensorflow-proto-codegen, tensorflo
 1. Run `./run-valgrind`
 1. Commit and push the changes. (Push before publishing to ensure that the changes being published are up to date.)
 1. If the version of tensorflow-sys was bumped, run `cargo publish` for tensorflow-sys. (Publish before tagging in case there are problems publishing and we need to add commits to fix them.)
+1. If the version of tensorflow-internal-macros was bumped, run `cargo publish` for tensorflow-internal-macros. (Publish before tagging in case there are problems publishing and we need to add commits to fix them.)
 1. Run `cargo publish`. (Publish before tagging in case there are problems publishing and we need to add commits to fix them.)
 1. Add a `v${VERSION}` tag and push it
 1. Run `./update-docs`

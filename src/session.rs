@@ -77,6 +77,7 @@ impl SavedModelBundle {
             Err(status)
         } else {
             let session = Session { inner };
+            #[allow(deprecated)]
             Ok(SavedModelBundle {
                 session,
                 meta_graph_def: Vec::from(meta.as_ref()),
@@ -648,6 +649,7 @@ mod tests {
         let y_hat_op = graph.operation_by_name_required("y_hat").unwrap();
         let _train_op = graph.operation_by_name_required("train").unwrap();
 
+        #[allow(deprecated)]
         let SavedModelBundle {
             session,
             meta_graph_def,
