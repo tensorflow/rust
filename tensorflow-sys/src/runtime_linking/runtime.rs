@@ -75,7 +75,8 @@ macro_rules! link {
             }
         }
         fn load_from(path: PathBuf) -> Result<(), String> {
-            let library = Arc::new(SharedLibrary::load(path)?);
+            let lib_path = SharedLibrary::load(path)?;
+            let library = Arc::new(lib_path);
             *LIBRARY.write().unwrap() = Some(library);
             Ok(())
         }
@@ -88,15 +89,14 @@ macro_rules! link {
                             path.display(),
                             e,
                         )
-                    });
+                    })?;
 
-                    let mut library = SharedLibrary::new(library?, path);
+                    let mut library = SharedLibrary::new(library, path);
                     $(load::$name(&mut library);)+
                     Ok(library)
                 }
             }
         }
-
         // For each loaded function, we redefine them to proxy their call through the SharedLibrary
         // on the local thread and into the loaded shared library implementation.
         $(
