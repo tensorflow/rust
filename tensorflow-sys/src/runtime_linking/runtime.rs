@@ -79,7 +79,7 @@ macro_rules! link {
 
             let mut static_lib = LIBRARY.write().map_err(|e| {
                 format!( "Failed to acquire global lock for TensorFlow library {}",e)
-            }).unwrap();
+            })?;
 
             *static_lib = Some(library);
             Ok(())
