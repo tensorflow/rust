@@ -75,9 +75,13 @@ macro_rules! link {
             }
         }
         fn load_from(path: PathBuf) -> Result<(), String> {
-            let lib_path = SharedLibrary::load(path)?;
-            let library = Arc::new(lib_path);
-            *LIBRARY.write().unwrap() = Some(library);
+            let library = Arc::new(SharedLibrary::load(path)?);
+
+            let mut static_lib = LIBRARY.write().map_err(|e| {
+                format!( "Failed to acquire global lock for TensorFlow library {}",e)
+            }).unwrap();
+
+            *static_lib = Some(library);
             Ok(())
         }
         impl SharedLibrary {
@@ -89,9 +93,9 @@ macro_rules! link {
                             path.display(),
                             e,
                         )
-                    })?;
+                    });
 
-                    let mut library = SharedLibrary::new(library, path);
+                    let mut library = SharedLibrary::new(library?, path);
                     $(load::$name(&mut library);)+
                     Ok(library)
                 }
