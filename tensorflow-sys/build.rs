@@ -38,6 +38,10 @@ macro_rules! log {
 macro_rules! log_var(($var:ident) => (log!(concat!(stringify!($var), " = {:?}"), $var)));
 
 fn main() {
+    // If we are doing runtime linking, just return.
+    #[cfg(feature = "runtime_linking")]
+    return;
+
     // DO NOT RELY ON THIS
     if cfg!(feature = "private-docs-rs") {
         log!("Returning early because private-docs-rs feature was enabled");
