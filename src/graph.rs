@@ -1029,6 +1029,15 @@ impl Operation {
         }
     }
 
+    /// Returns the given output edge.
+    /// The index argument is the index into the current operation's output array,
+    pub fn output(&self, index: usize) -> Output {
+        crate::Output {
+            operation: self.clone(),
+            index: index as c_int,
+        }
+    }
+
     // TODO: Figure out what this does and document it.
     #[allow(missing_docs)]
     pub fn output_list_length(&self, arg_name: &str) -> Result<usize> {
