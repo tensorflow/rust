@@ -58,6 +58,10 @@ required-features = ["tensorflow_unstable"]
 name = "regression"
 
 [[example]]
+name = "print_big"
+required-features = ["eager"]
+
+[[example]]
 name = "regression_savedmodel"
 
 [[example]]
