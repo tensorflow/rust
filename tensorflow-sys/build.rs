@@ -24,8 +24,8 @@ const REPOSITORY: &str = "https://github.com/tensorflow/tensorflow.git";
 const FRAMEWORK_TARGET: &str = "tensorflow:libtensorflow_framework";
 const TARGET: &str = "tensorflow:libtensorflow";
 // `VERSION` and `TAG` are separate because the tag is not always `'v' + VERSION`.
-const VERSION: &str = "2.8.0";
-const TAG: &str = "v2.8.0";
+const VERSION: &str = "2.9.1";
+const TAG: &str = "v2.9.1";
 const MIN_BAZEL: &str = "3.7.2";
 
 macro_rules! get(($name:expr) => (ok!(env::var($name))));
