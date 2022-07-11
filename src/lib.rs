@@ -653,7 +653,7 @@ pub type Result<T> = std::result::Result<T, Status>;
 /// This trait doesn't require `num::Zero` or `num::One` because some tensor
 /// types (such as `bool` and `String`) don't implement them and we need to
 /// supply custom implementations.
-pub trait TensorType: Default + Clone + Display + Debug + 'static {
+pub trait TensorType: private::Sealed + Default + Clone + Display + Debug + 'static {
     /// Internal only; do not use outside of the tensorflow crate.
     ///
     /// Tensor representation for this type. Normally `TensorDataCRepr` for types
@@ -682,6 +682,25 @@ pub trait TensorType: Default + Clone + Display + Debug + 'static {
     /// Packs data for sending to C.  Returns an error if `is_repr_c()` returns
     /// true for this type or some other error occurred.
     fn pack(data: &[Self], dims: &[u64]) -> Result<*mut tf::TF_Tensor>;
+}
+
+mod private {
+    pub trait Sealed {}
+
+    // impl Sealed for usize {}
+    // impl Sealed for bool {}
+    // impl Sealed for u8 {}
+    // impl Sealed for u16 {}
+    // impl Sealed for u32 {}
+    // impl Sealed for u64 {}
+    // impl Sealed for i8 {}
+    // impl Sealed for i16 {}
+    // impl Sealed for i32 {}
+    // impl Sealed for i64 {}
+    // impl Sealed for f32 {}
+    // impl Sealed for f64 {}
+
+    impl <T> Sealed for T{}
 }
 
 macro_rules! tensor_type {
