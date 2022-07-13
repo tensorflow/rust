@@ -644,11 +644,26 @@ pub type Result<T> = std::result::Result<T, Status>;
 
 ////////////////////////
 
+/// A common implementation of the sealed supertrait programming pattern 
+/// (C-SEALED)
+/// 
+/// With this, implementations of `Sealed` are guarenteed to only exist in the
+/// current crate. This allows modifictation of the underyling traits in ways
+/// that would ordinarily be a breaking change for traits that are not sealed.
+/// 
+/// See https://rust-lang.github.io/api-guidelines/future-proofing.html#sealed-traits-protect-against-downstream-implementations-c-sealed
+ 
+mod private {
+    pub trait Sealed {}
+    
+    impl <T> Sealed for T{}
+}
+
 /// A Rust type that maps to a `DataType`.
 ///
 /// Currently, all implementors must *not* implement Drop (or transitively contain
 /// anything that does) and must be bit-for-bit compatible with the corresponding C
-/// type. Clients must not implement this trait.
+/// type. Clients cannot implement this trait.
 ///
 /// This trait doesn't require `num::Zero` or `num::One` because some tensor
 /// types (such as `bool` and `String`) don't implement them and we need to
@@ -682,25 +697,6 @@ pub trait TensorType: private::Sealed + Default + Clone + Display + Debug + 'sta
     /// Packs data for sending to C.  Returns an error if `is_repr_c()` returns
     /// true for this type or some other error occurred.
     fn pack(data: &[Self], dims: &[u64]) -> Result<*mut tf::TF_Tensor>;
-}
-
-mod private {
-    pub trait Sealed {}
-
-    // impl Sealed for usize {}
-    // impl Sealed for bool {}
-    // impl Sealed for u8 {}
-    // impl Sealed for u16 {}
-    // impl Sealed for u32 {}
-    // impl Sealed for u64 {}
-    // impl Sealed for i8 {}
-    // impl Sealed for i16 {}
-    // impl Sealed for i32 {}
-    // impl Sealed for i64 {}
-    // impl Sealed for f32 {}
-    // impl Sealed for f64 {}
-
-    impl <T> Sealed for T{}
 }
 
 macro_rules! tensor_type {
