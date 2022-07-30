@@ -767,7 +767,6 @@ pub struct TrackableObjectGraph_TrackableObject_SerializedTensor {
     pub name: ::std::string::String,
     pub full_name: ::std::string::String,
     pub checkpoint_key: ::std::string::String,
-    pub optional_restore: bool,
     // special fields
     pub unknown_fields: ::protobuf::UnknownFields,
     pub cached_size: ::protobuf::CachedSize,
@@ -861,21 +860,6 @@ impl TrackableObjectGraph_TrackableObject_SerializedTensor {
     pub fn take_checkpoint_key(&mut self) -> ::std::string::String {
         ::std::mem::replace(&mut self.checkpoint_key, ::std::string::String::new())
     }
-
-    // bool optional_restore = 4;
-
-
-    pub fn get_optional_restore(&self) -> bool {
-        self.optional_restore
-    }
-    pub fn clear_optional_restore(&mut self) {
-        self.optional_restore = false;
-    }
-
-    // Param is passed by value, moved
-    pub fn set_optional_restore(&mut self, v: bool) {
-        self.optional_restore = v;
-    }
 }
 
 impl ::protobuf::Message for TrackableObjectGraph_TrackableObject_SerializedTensor {
@@ -895,13 +879,6 @@ impl ::protobuf::Message for TrackableObjectGraph_TrackableObject_SerializedTens
                 },
                 3 => {
                     ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.checkpoint_key)?;
-                },
-                4 => {
-                    if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
-                    }
-                    let tmp = is.read_bool()?;
-                    self.optional_restore = tmp;
                 },
                 _ => {
                     ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
@@ -924,9 +901,6 @@ impl ::protobuf::Message for TrackableObjectGraph_TrackableObject_SerializedTens
         if !self.checkpoint_key.is_empty() {
             my_size += ::protobuf::rt::string_size(3, &self.checkpoint_key);
         }
-        if self.optional_restore != false {
-            my_size += 2;
-        }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
@@ -941,9 +915,6 @@ impl ::protobuf::Message for TrackableObjectGraph_TrackableObject_SerializedTens
         }
         if !self.checkpoint_key.is_empty() {
             os.write_string(3, &self.checkpoint_key)?;
-        }
-        if self.optional_restore != false {
-            os.write_bool(4, self.optional_restore)?;
         }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
@@ -998,11 +969,6 @@ impl ::protobuf::Message for TrackableObjectGraph_TrackableObject_SerializedTens
                 |m: &TrackableObjectGraph_TrackableObject_SerializedTensor| { &m.checkpoint_key },
                 |m: &mut TrackableObjectGraph_TrackableObject_SerializedTensor| { &mut m.checkpoint_key },
             ));
-            fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
-                "optional_restore",
-                |m: &TrackableObjectGraph_TrackableObject_SerializedTensor| { &m.optional_restore },
-                |m: &mut TrackableObjectGraph_TrackableObject_SerializedTensor| { &mut m.optional_restore },
-            ));
             ::protobuf::reflect::MessageDescriptor::new_pb_name::<TrackableObjectGraph_TrackableObject_SerializedTensor>(
                 "TrackableObjectGraph.TrackableObject.SerializedTensor",
                 fields,
@@ -1022,7 +988,6 @@ impl ::protobuf::Clear for TrackableObjectGraph_TrackableObject_SerializedTensor
         self.name.clear();
         self.full_name.clear();
         self.checkpoint_key.clear();
-        self.optional_restore = false;
         self.unknown_fields.clear();
     }
 }
@@ -1471,9 +1436,9 @@ impl ::protobuf::reflect::ProtobufValue for RegisteredSaver {
 
 static file_descriptor_proto_data: &'static [u8] = b"\
     \n5tensorflow/core/protobuf/trackable_object_graph.proto\x12\ntensorflow\
-    \x1a\x1egoogle/protobuf/wrappers.proto\"\xc2\x07\n\x14TrackableObjectGra\
+    \x1a\x1egoogle/protobuf/wrappers.proto\"\xaf\x07\n\x14TrackableObjectGra\
     ph\x12F\n\x05nodes\x18\x01\x20\x03(\x0b20.tensorflow.TrackableObjectGrap\
-    h.TrackableObjectR\x05nodes\x1a\xe1\x06\n\x0fTrackableObject\x12\\\n\x08\
+    h.TrackableObjectR\x05nodes\x1a\xce\x06\n\x0fTrackableObject\x12\\\n\x08\
     children\x18\x01\x20\x03(\x0b2@.tensorflow.TrackableObjectGraph.Trackabl\
     eObject.ObjectReferenceR\x08children\x12a\n\nattributes\x18\x02\x20\x03(\
     \x0b2A.tensorflow.TrackableObjectGraph.TrackableObject.SerializedTensorR\
@@ -1483,18 +1448,17 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     teredSaverR\x0fregisteredSaver\x12N\n\x15has_checkpoint_values\x18\x05\
     \x20\x01(\x0b2\x1a.google.protobuf.BoolValueR\x13hasCheckpointValues\x1a\
     I\n\x0fObjectReference\x12\x17\n\x07node_id\x18\x01\x20\x01(\x05R\x06nod\
-    eId\x12\x1d\n\nlocal_name\x18\x02\x20\x01(\tR\tlocalName\x1a\x95\x01\n\
+    eId\x12\x1d\n\nlocal_name\x18\x02\x20\x01(\tR\tlocalName\x1a\x82\x01\n\
     \x10SerializedTensor\x12\x12\n\x04name\x18\x01\x20\x01(\tR\x04name\x12\
     \x1b\n\tfull_name\x18\x02\x20\x01(\tR\x08fullName\x12%\n\x0echeckpoint_k\
-    ey\x18\x03\x20\x01(\tR\rcheckpointKey\x12)\n\x10optional_restore\x18\x04\
-    \x20\x01(\x08R\x0foptionalRestore\x1a\xa2\x01\n\x15SlotVariableReference\
-    \x129\n\x19original_variable_node_id\x18\x01\x20\x01(\x05R\x16originalVa\
-    riableNodeId\x12\x1b\n\tslot_name\x18\x02\x20\x01(\tR\x08slotName\x121\n\
-    \x15slot_variable_node_id\x18\x03\x20\x01(\x05R\x12slotVariableNodeId\"F\
-    \n\x0fRegisteredSaver\x12\x12\n\x04name\x18\x01\x20\x01(\tR\x04name\x12\
-    \x1f\n\x0bobject_name\x18\x02\x20\x01(\tR\nobjectNameBZZUgithub.com/tens\
-    orflow/tensorflow/tensorflow/go/core/protobuf/for_core_protos_go_proto\
-    \xf8\x01\x01b\x06proto3\
+    ey\x18\x03\x20\x01(\tR\rcheckpointKeyJ\x04\x08\x04\x10\x05R\x10optional_\
+    restore\x1a\xa2\x01\n\x15SlotVariableReference\x129\n\x19original_variab\
+    le_node_id\x18\x01\x20\x01(\x05R\x16originalVariableNodeId\x12\x1b\n\tsl\
+    ot_name\x18\x02\x20\x01(\tR\x08slotName\x121\n\x15slot_variable_node_id\
+    \x18\x03\x20\x01(\x05R\x12slotVariableNodeId\"F\n\x0fRegisteredSaver\x12\
+    \x12\n\x04name\x18\x01\x20\x01(\tR\x04name\x12\x1f\n\x0bobject_name\x18\
+    \x02\x20\x01(\tR\nobjectNameBZZUgithub.com/tensorflow/tensorflow/tensorf\
+    low/go/core/protobuf/for_core_protos_go_proto\xf8\x01\x01b\x06proto3\
 ";
 
 static file_descriptor_proto_lazy: ::protobuf::rt::LazyV2<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::rt::LazyV2::INIT;

@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 use std::env;
 use std::error::Error;
+use std::fmt::Write as _;
 use std::fs;
 use std::fs::File;
 use std::io;
@@ -23,14 +24,12 @@ struct Attr {
 struct Output {
     rust_name: String,
     number_attr: Option<String>,
-    c_name: String,
 }
 
 #[derive(Clone)]
 struct Input {
     rust_name: String,
     number_attr: Option<String>,
-    c_name: String,
 }
 /// Input and Output shared behaviour
 trait Edge {
@@ -95,13 +94,13 @@ fn write_set_attr<W: Write>(w: &mut W, attr: &Attr, node_var: &str) -> Result<()
         }
         ty => panic!("Unrecognized attribute type for {}: {}", attr.rust_name, ty),
     };
-    write!(
+    writeln!(
         w,
-        "        if let ::std::option::Option::Some(value) = &self.{} {{\n",
+        "        if let ::std::option::Option::Some(value) = &self.{} {{",
         rust_name
     )?;
-    write!(w, "            {};\n", setter)?;
-    write!(w, "        }}\n")?;
+    writeln!(w, "            {};", setter)?;
+    writeln!(w, "        }}")?;
     Ok(())
 }
 
@@ -113,13 +112,13 @@ fn write_short_fn<W: Write>(
     keywords: &HashSet<String>,
 ) -> Result<(), io::Error> {
     let mut escaper = Escaper::new(keywords);
-    let escaped_args: Vec<_> = args.iter().map(|arg| escaper.escape(&arg)).collect();
+    let escaped_args: Vec<_> = args.iter().map(|arg| escaper.escape(arg)).collect();
     write!(w, "/// Shorthand for `{}::new().build(", name)?;
     for arg in &escaped_args {
         write!(w, "{}, ", &arg)?;
     }
     let scope_var = escaper.escape("scope");
-    write!(w, "{})`.\n", scope_var)?;
+    writeln!(w, "{})`.", scope_var)?;
     write!(w, "pub fn {}<", fn_name)?;
     for i in 0..args.len() {
         if i > 0 {
@@ -131,23 +130,23 @@ fn write_short_fn<W: Write>(
     for (i, arg) in escaped_args.iter().enumerate() {
         write!(w, "{}: O{}, ", arg, i)?;
     }
-    write!(
+    writeln!(
         w,
-        "{}: &mut crate::Scope) -> crate::Result<crate::Operation> {{\n",
+        "{}: &mut crate::Scope) -> crate::Result<crate::Operation> {{",
         scope_var
     )?;
     write!(w, "    {}::new().build(", name)?;
     for arg in escaped_args {
         write!(w, "{}, ", arg)?;
     }
-    write!(w, "{})\n", scope_var)?;
-    write!(w, "}}\n")?;
+    writeln!(w, "{})", scope_var)?;
+    writeln!(w, "}}")?;
     Ok(())
 }
 
 fn write_attr_setter<W: Write>(w: &mut W, attr: &Attr) -> Result<(), io::Error> {
-    write!(w, "\n")?;
-    write!(w, "    /// Sets the `{}` attribute.\n", &attr.c_name)?;
+    writeln!(w)?;
+    writeln!(w, "    /// Sets the `{}` attribute.", &attr.c_name)?;
     let rust_name = &attr.rust_name;
     let attr_type = &attr.attr_type;
     let mut value = "value.into()".to_string();
@@ -156,25 +155,25 @@ fn write_attr_setter<W: Write>(w: &mut W, attr: &Attr) -> Result<(), io::Error> 
             "(::std::boxed::Box::new({}) as ::std::boxed::Box<dyn crate::AnyTensor>)",
             value
         );
-        write!(
+        writeln!(
             w,
-            "    pub fn {}<T: crate::TensorType, ArgType: ::std::convert::Into<crate::Tensor<T>>>(mut self, value: ArgType) -> Self {{\n",
+            "    pub fn {}<T: crate::TensorType, ArgType: ::std::convert::Into<crate::Tensor<T>>>(mut self, value: ArgType) -> Self {{",
             rust_name
         )?;
     } else {
-        write!(
+        writeln!(
             w,
-            "    pub fn {}<ArgType: ::std::convert::Into<{}>>(mut self, value: ArgType) -> Self {{\n",
+            "    pub fn {}<ArgType: ::std::convert::Into<{}>>(mut self, value: ArgType) -> Self {{",
             rust_name, attr_type
         )?;
     }
-    write!(
+    writeln!(
         w,
-        "        self.{} = ::std::option::Option::Some({});\n",
+        "        self.{} = ::std::option::Option::Some({});",
         rust_name, value
     )?;
-    write!(w, "        self\n")?;
-    write!(w, "    }}\n")?;
+    writeln!(w, "        self")?;
+    writeln!(w, "    }}")?;
     Ok(())
 }
 
@@ -185,9 +184,9 @@ fn write_build_fn<W: Write>(
     keywords: &HashSet<String>,
 ) -> Result<(), io::Error> {
     let mut escaper = Escaper::new(keywords);
-    let escaped_args: Vec<_> = args.iter().map(|arg| escaper.escape(&arg)).collect();
+    let escaped_args: Vec<_> = args.iter().map(|arg| escaper.escape(arg)).collect();
 
-    write!(w, "    /// Builds the `{}` operation.\n", op_name)?;
+    writeln!(w, "    /// Builds the `{}` operation.", op_name)?;
     write!(w, "    pub fn build<")?;
     for i in 0..args.len() {
         if i > 0 {
@@ -200,18 +199,17 @@ fn write_build_fn<W: Write>(
         write!(w, "{}: O{}, ", arg, i)?;
     }
     let scope_var = escaper.escape("scope");
-    write!(
+    writeln!(
         w,
-        r#"{scope}: &mut crate::Scope) -> crate::Result<crate::Operation> {{
-"#,
+        r#"{scope}: &mut crate::Scope) -> crate::Result<crate::Operation> {{"#,
         scope = scope_var,
     )?;
     write!(w, "        self.build_impl(")?;
     for arg in &escaped_args {
         write!(w, "{}.into(), ", arg)?;
     }
-    write!(w, "{})\n", scope_var)?;
-    write!(w, "    }}\n")?;
+    writeln!(w, "{})", scope_var)?;
+    writeln!(w, "    }}")?;
     Ok(())
 }
 
@@ -223,7 +221,7 @@ fn write_build_impl_fn<W: Write>(
     keywords: &HashSet<String>,
 ) -> Result<(), io::Error> {
     let mut escaper = Escaper::new(keywords);
-    let escaped_args: Vec<_> = args.iter().map(|arg| escaper.escape(&arg)).collect();
+    let escaped_args: Vec<_> = args.iter().map(|arg| escaper.escape(arg)).collect();
     write!(w, "    fn build_impl(&self, ")?;
     for arg in &escaped_args {
         write!(w, "{}: crate::Output, ", arg)?;
@@ -240,31 +238,31 @@ fn write_build_impl_fn<W: Write>(
         node = node_var,
     )?;
     for arg in escaped_args {
-        write!(w, "            {}.add_input({});\n", node_var, arg)?;
+        writeln!(w, "            {}.add_input({});", node_var, arg)?;
     }
-    write!(w, "            for op in &self.control_inputs {{\n")?;
-    write!(w, "                {}.add_control_input(op);\n", node_var)?;
-    write!(w, "            }}\n")?;
+    writeln!(w, "            for op in &self.control_inputs {{")?;
+    writeln!(w, "                {}.add_control_input(op);", node_var)?;
+    writeln!(w, "            }}")?;
     for attr in attrs {
         write_set_attr(w, attr, &node_var)?;
     }
-    write!(w, "            ::std::result::Result::Ok(())\n")?;
-    write!(w, "        }})\n")?;
-    write!(w, "    }}\n")?;
+    writeln!(w, "            ::std::result::Result::Ok(())")?;
+    writeln!(w, "        }})")?;
+    writeln!(w, "    }}")?;
     Ok(())
 }
 
 fn write_attr<W: Write>(w: &mut W, attr: &Attr) -> Result<(), io::Error> {
     if attr.attr_type == "crate::Tensor" {
-        write!(
+        writeln!(
             w,
-            "    {}: ::std::option::Option<::std::boxed::Box<dyn crate::AnyTensor>>,\n",
+            "    {}: ::std::option::Option<::std::boxed::Box<dyn crate::AnyTensor>>,",
             attr.rust_name
         )?;
     } else {
-        write!(
+        writeln!(
             w,
-            "    {}: ::std::option::Option<{}>,\n",
+            "    {}: ::std::option::Option<{}>,",
             attr.rust_name, attr.attr_type
         )?;
     }
@@ -272,21 +270,20 @@ fn write_attr<W: Write>(w: &mut W, attr: &Attr) -> Result<(), io::Error> {
 }
 
 fn write_build_operation_struct<W: Write>(w: &mut W, op_name: &str) -> Result<(), io::Error> {
-    write!(
+    writeln!(
         w,
-        "/// An instance of '{}' Operation with it's Outputs and Inputs exposed as methods.\n",
+        "/// An instance of '{}' Operation with it's Outputs and Inputs exposed as methods.",
         op_name
     )?;
-    write!(w, "#[derive(Debug, Clone)]\n")?;
-    write!(w, "pub struct {}Inst", op_name)?;
-    write!(w, " {{\n")?;
-    write!(
+    writeln!(w, "#[derive(Debug, Clone)]")?;
+    writeln!(w, "pub struct {}Inst {{", op_name)?;
+    writeln!(
         w,
-        "    /// An instance of a fully built {} Operation in a Tensorflow graph.\n",
+        "    /// An instance of a fully built {} Operation in a Tensorflow graph.",
         op_name
     )?;
-    write!(w, "    pub op: crate::Operation,\n")?;
-    write!(w, "}}\n")?;
+    writeln!(w, "    pub op: crate::Operation,")?;
+    writeln!(w, "}}")?;
 
     Ok(())
 }
@@ -294,7 +291,7 @@ fn write_build_operation_struct<W: Write>(w: &mut W, op_name: &str) -> Result<()
 ///Takes a vector of dynamic_offset strings for inputs and outputs and returns a concatenated
 ///string of scalar_offsets to calculate the index of inputs and offsets by extracting the sum with
 ///the distributive property.
-fn scalar_offsets(dynamic_offset: &Vec<String>, i: usize) -> String {
+fn scalar_offsets(dynamic_offset: &[String], i: usize) -> String {
     let scalar_offsets = dynamic_offset
         .iter()
         .fold(HashMap::new(), |mut counts, string| {
@@ -305,9 +302,9 @@ fn scalar_offsets(dynamic_offset: &Vec<String>, i: usize) -> String {
         .fold(String::new(), |mut scalar_offset, (string, count)| {
             //identity property
             if count > &1 {
-                scalar_offset.push_str(&format!("{}*{}+", count, string));
+                write!(scalar_offset, "{}*{}+", count, string).unwrap();
             } else {
-                scalar_offset.push_str(&format!("{}+", string));
+                write!(scalar_offset, "{}+", string).unwrap();
             }
             scalar_offset
         });
@@ -323,19 +320,18 @@ fn write_build_instance_fn<W: Write>(
     op_name: &str,
     attrs: &[Attr],
     inputs: Vec<Input>,
-    outputs: Vec<Output>,
     keywords: &HashSet<String>,
 ) -> Result<(), io::Error> {
     let mut escaper = Escaper::new(keywords);
-    write!(w, "    /// Builds a new instance of '{}' Operation with it's Outputs and Inputs exposed as methods.\n", op_name)?;
+    writeln!(w, "    /// Builds a new instance of '{}' Operation with it's Outputs and Inputs exposed as methods.", op_name)?;
     write!(w, "    pub fn build_instance(&self, ")?;
     let mut seen_number_attr = HashMap::new();
     for input in &inputs {
         if input.number_attr.is_some() {
             write!(w, "{}: Vec<crate::Output>, ", input.clone().rust_name)?;
-            if !seen_number_attr.contains_key(&input.clone().number_attr.unwrap()) {
-                seen_number_attr.insert(input.clone().number_attr.unwrap(), input.clone());
-            }
+            seen_number_attr
+                .entry(input.clone().number_attr.unwrap())
+                .or_insert_with(|| input.clone());
         } else {
             write!(w, "{}: crate::Output, ", input.rust_name)?;
         }
@@ -343,8 +339,8 @@ fn write_build_instance_fn<W: Write>(
     let scope_var = escaper.escape("scope");
     write!(
         w,
-        r#"scope: &mut crate::Scope) -> crate::Result<{op_name}Inst> {{
-        let op = scope.new_operation({op_name:?}, |builder| {{
+        r#"{scope_var}: &mut crate::Scope) -> crate::Result<{op_name}Inst> {{
+        let op = {scope_var}.new_operation({op_name:?}, |builder| {{
 "#,
         op_name = op_name,
     )?;
@@ -352,21 +348,21 @@ fn write_build_instance_fn<W: Write>(
         if input.number_attr.is_some() {
             //TODO: how are multiple lists handled here? may be an error with lower level protobuff
             //      bindings in OperationDescription. Is this ordered parameter wise internally?
-            write!(
+            writeln!(
                 w,
-                "            builder.add_input_list(&{input});\n",
+                "            builder.add_input_list(&{input});",
                 input = input.rust_name,
             )?;
         } else {
-            write!(w, "            builder.add_input({});\n", input.rust_name)?;
+            writeln!(w, "            builder.add_input({});", input.rust_name)?;
         }
     }
 
     for attr in attrs {
         if seen_number_attr.contains_key(&attr.rust_name) {
-            write!(
+            writeln!(
                 w,
-                "            builder.set_attr_int(\"{}\", {}.clone().len() as i64)?;\n",
+                "            builder.set_attr_int(\"{}\", {}.clone().len() as i64)?;",
                 attr.rust_name,
                 seen_number_attr.get(&attr.rust_name).unwrap().rust_name
             )?;
@@ -374,10 +370,10 @@ fn write_build_instance_fn<W: Write>(
             write_set_attr(w, attr, "builder")?;
         }
     }
-    write!(w, "            ::std::result::Result::Ok(())\n")?;
-    write!(w, "        }})?;\n")?;
-    write!(w, "        Ok({}Inst{{op}})\n", op_name)?;
-    write!(w, "    }}\n")?;
+    writeln!(w, "            ::std::result::Result::Ok(())")?;
+    writeln!(w, "        }})?;")?;
+    writeln!(w, "        Ok({}Inst{{op}})", op_name)?;
+    writeln!(w, "    }}")?;
     Ok(())
 }
 
@@ -398,96 +394,96 @@ fn write_edge_method<T: Edge + Clone>(
     }
     if let Some(number_attr) = &edge.number_attr() {
         //create a Vec<Edge> for this index
-        write!(
+        writeln!(
             w,
-            "    /// Returns a Vector of {} for '{}' {} of this {} operation.\n",
+            "    /// Returns a Vector of {} for '{}' {} of this {} operation.",
             rust_name, rust_name, edge_type, op_name
         )?;
-        write!(
+        writeln!(
             w,
-            "    pub fn {}(&self) -> crate::Result<Vec<crate::{}>>{{\n",
+            "    pub fn {}(&self) -> crate::Result<Vec<crate::{}>>{{",
             rust_name, edge_type
         )?;
         if scalar_offsets.contains("self") {
-            write!(
+            writeln!(
                 w,
-                "        let dynamic_offset = ({}) as i32;\n",
+                "        let dynamic_offset = ({}) as i32;",
                 scalar_offsets
             )?;
         }
-        write!(w, "        let mut {}s = vec![];\n", edge_type)?;
+        writeln!(w, "        let mut {}s = vec![];", edge_type)?;
         if dynamic_offset.is_empty() {
-            write!(
+            writeln!(
                 w,
-                "        for i in {}..self.op.get_attr_int({:?})? as i32{{\n",
+                "        for i in {}..self.op.get_attr_int({:?})? as i32{{",
                 i, number_attr
             )?;
-            write!(
+            writeln!(
                 w,
-                "            {edge_type}s.push(crate::{edge_type} {{\n",
+                "            {edge_type}s.push(crate::{edge_type} {{",
                 edge_type = edge_type
             )?;
-            write!(w, "                operation: {},\n", op)?;
-            write!(w, "                index: i\n")?;
-            write!(w, "            }});\n")?;
-            write!(w, "        }}\n")?;
+            writeln!(w, "                operation: {},", op)?;
+            writeln!(w, "                index: i")?;
+            writeln!(w, "            }});")?;
+            writeln!(w, "        }}")?;
         } else {
-            write!(
+            writeln!(
                 w,
-                "        for i in dynamic_offset..dynamic_offset+self.op.get_attr_int(\"{}\")? as i32{{\n",
+                "        for i in dynamic_offset..dynamic_offset+self.op.get_attr_int(\"{}\")? as i32{{",
                 number_attr
             )?;
-            write!(
+            writeln!(
                 w,
-                "            {edge_type}s.push(crate::{edge_type} {{\n",
+                "            {edge_type}s.push(crate::{edge_type} {{",
                 edge_type = edge_type
             )?;
-            write!(w, "                operation: {},\n", op)?;
-            write!(w, "                index: i\n")?;
-            write!(w, "            }});\n")?;
-            write!(w, "        }}\n")?;
+            writeln!(w, "                operation: {},", op)?;
+            writeln!(w, "                index: i")?;
+            writeln!(w, "            }});")?;
+            writeln!(w, "        }}")?;
         }
-        write!(w, "        Ok({}s)\n", edge_type)?;
-        write!(w, "    }}\n")?;
+        writeln!(w, "        Ok({}s)", edge_type)?;
+        writeln!(w, "    }}")?;
         //add the current self.op.get_attr_int(number_attr) to dynamic_offset to keep the current index into the Operations edges
         dynamic_offset.push(format!("self.op.get_attr_int(\"{}\")?", number_attr));
     } else {
         //create a single edge at the current dynamic_offset index
-        write!(
+        writeln!(
             w,
-            "    /// Returns the '{}' {} of this '{}' operation.\n",
+            "    /// Returns the '{}' {} of this '{}' operation.",
             rust_name, edge_type, op_name
         )?;
         //if scalar_offsets is just the i value, we dont return a result since this is statically indexed
         if scalar_offsets == format!("{}", i) {
-            write!(
+            writeln!(
                 w,
-                "    pub fn {}(&self) -> crate::{} {{\n",
+                "    pub fn {}(&self) -> crate::{} {{",
                 rust_name, edge_type
             )?;
-            write!(w, "        crate::{} {{\n", edge_type)?;
-            write!(w, "            operation: {},\n", op)?;
-            write!(w, "            index: {}\n", i)?;
-            write!(w, "        }}\n")?;
-            write!(w, "    }}\n")?;
+            writeln!(w, "        crate::{} {{", edge_type)?;
+            writeln!(w, "            operation: {},", op)?;
+            writeln!(w, "            index: {}", i)?;
+            writeln!(w, "        }}")?;
+            writeln!(w, "    }}")?;
         } else {
-            write!(
+            writeln!(
                 w,
-                "   pub fn {}(&self) -> crate::Result<crate::{}> {{\n",
+                "   pub fn {}(&self) -> crate::Result<crate::{}> {{",
                 rust_name, edge_type
             )?;
             if scalar_offsets.contains("self") {
-                write!(
+                writeln!(
                     w,
-                    "        let dynamic_offset = ({}) as i32;\n",
+                    "        let dynamic_offset = ({}) as i32;",
                     scalar_offsets
                 )?;
             }
-            write!(w, "        Ok(crate::{} {{\n", edge_type)?;
-            write!(w, "            operation: {},\n", op)?;
-            write!(w, "            index: dynamic_offset\n")?;
-            write!(w, "        }})\n")?;
-            write!(w, "    }}\n")?;
+            writeln!(w, "        Ok(crate::{} {{", edge_type)?;
+            writeln!(w, "            operation: {},", op)?;
+            writeln!(w, "            index: dynamic_offset")?;
+            writeln!(w, "        }})")?;
+            writeln!(w, "    }}")?;
         }
     }
     Ok(())
@@ -497,16 +493,10 @@ fn write_edge_method<T: Edge + Clone>(
 fn write_build_instance_struct_impl<W: Write>(
     w: &mut W,
     op_name: &str,
-    attrs: &[Attr],
-    args: &[String],
     outputs: Vec<Output>,
     inputs: Vec<Input>,
-    keywords: &HashSet<String>,
 ) -> Result<(), io::Error> {
-    let mut escaper = Escaper::new(keywords);
-    let escaped_args: Vec<_> = args.iter().map(|arg| escaper.escape(&arg)).collect();
-
-    write!(w, "impl {}Inst {{\n", op_name)?;
+    writeln!(w, "impl {}Inst {{", op_name)?;
 
     let mut dynamic_offset: Vec<String> = vec![];
     //write methods for outputs
@@ -519,12 +509,12 @@ fn write_build_instance_struct_impl<W: Write>(
         write_edge_method(w, op_name.to_string(), input, i, &mut dynamic_offset)?;
     }
 
-    write!(w, "}}\n")?;
-    write!(w, "impl Into<crate::Operation> for {}Inst{{\n", op_name)?;
-    write!(w, "    fn into(self) -> crate::Operation {{\n")?;
-    write!(w, "        self.op\n")?;
-    write!(w, "    }}\n")?;
-    write!(w, "}}\n")?;
+    writeln!(w, "}}")?;
+    writeln!(w, "impl From<{op_name}Inst> for crate::Operation {{")?;
+    writeln!(w, "    fn from(inst: {op_name}Inst) -> crate::Operation {{")?;
+    writeln!(w, "        inst.op")?;
+    writeln!(w, "    }}")?;
+    writeln!(w, "}}")?;
 
     Ok(())
 }
@@ -592,7 +582,6 @@ fn define_op<W: Write>(
         op_outputs.push(Output {
             rust_name: output_escaper.escape(&output.name),
             number_attr: number_attr_opt,
-            c_name: output.name.clone(),
         });
     }
     for input in op.input_arg.iter() {
@@ -604,22 +593,21 @@ fn define_op<W: Write>(
         op_inputs.push(Input {
             rust_name: input_escaper.escape(&input.name),
             number_attr: number_attr_opt,
-            c_name: input.name.clone(),
         });
     }
 
-    write!(w, "/// Builder for the `{}` operation.\n", op_name)?;
-    write!(w, "#[derive(::std::fmt::Debug, ::std::default::Default)]\n")?;
-    write!(w, "pub struct {} {{\n", name)?;
+    writeln!(w, "/// Builder for the `{}` operation.", op_name)?;
+    writeln!(w, "#[derive(::std::fmt::Debug, ::std::default::Default)]")?;
+    writeln!(w, "pub struct {} {{", name)?;
     for attr in &attrs {
-        write_attr(w, &attr)?;
+        write_attr(w, attr)?;
     }
     write!(
         w,
         r#"    control_inputs: ::std::vec::Vec<crate::Operation>,
 }}
 "#
-    );
+    )?;
     write_build_operation_struct(w, &op_name)?;
 
     write!(
@@ -647,21 +635,14 @@ impl {name} {{
 
 "#
     )?;
-    write_build_fn(w, &op_name, &args, &keywords)?;
-    write_build_impl_fn(w, &op_name, &args, &attrs, &keywords)?;
-    write!(w, "\n")?;
-    write_build_instance_fn(
-        w,
-        &op_name,
-        &attrs,
-        op_inputs.clone(),
-        op_outputs.clone(),
-        &keywords,
-    )?;
-    write!(w, "}}\n")?;
-    write_build_instance_struct_impl(w, &op_name, &attrs, &args, op_outputs, op_inputs, &keywords)?;
-    write_short_fn(w, &name, &fn_name, &args, &keywords)?;
-    write!(w, "\n")?;
+    write_build_fn(w, &op_name, &args, keywords)?;
+    write_build_impl_fn(w, &op_name, &args, &attrs, keywords)?;
+    writeln!(w)?;
+    write_build_instance_fn(w, &op_name, &attrs, op_inputs.clone(), keywords)?;
+    writeln!(w, "}}")?;
+    write_build_instance_struct_impl(w, &op_name, op_outputs, op_inputs)?;
+    write_short_fn(w, &name, &fn_name, &args, keywords)?;
+    writeln!(w)?;
     Ok(())
 }
 
@@ -823,7 +804,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     non_snake_case,
     trivial_casts,
     unused_parens,
-    unused_qualifications
+    unused_qualifications,
+    unused_variables
 )]
 
 "#

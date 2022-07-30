@@ -32,6 +32,8 @@ pub struct CoordinationServiceConfig {
     pub cluster_register_timeout_in_ms: i64,
     pub heartbeat_timeout_in_ms: i64,
     pub coordinated_jobs: ::protobuf::RepeatedField<::std::string::String>,
+    pub shutdown_barrier_timeout_in_ms: i64,
+    pub agent_destruction_without_shutdown: bool,
     // special fields
     pub unknown_fields: ::protobuf::UnknownFields,
     pub cached_size: ::protobuf::CachedSize,
@@ -169,6 +171,36 @@ impl CoordinationServiceConfig {
     pub fn take_coordinated_jobs(&mut self) -> ::protobuf::RepeatedField<::std::string::String> {
         ::std::mem::replace(&mut self.coordinated_jobs, ::protobuf::RepeatedField::new())
     }
+
+    // int64 shutdown_barrier_timeout_in_ms = 7;
+
+
+    pub fn get_shutdown_barrier_timeout_in_ms(&self) -> i64 {
+        self.shutdown_barrier_timeout_in_ms
+    }
+    pub fn clear_shutdown_barrier_timeout_in_ms(&mut self) {
+        self.shutdown_barrier_timeout_in_ms = 0;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_shutdown_barrier_timeout_in_ms(&mut self, v: i64) {
+        self.shutdown_barrier_timeout_in_ms = v;
+    }
+
+    // bool agent_destruction_without_shutdown = 8;
+
+
+    pub fn get_agent_destruction_without_shutdown(&self) -> bool {
+        self.agent_destruction_without_shutdown
+    }
+    pub fn clear_agent_destruction_without_shutdown(&mut self) {
+        self.agent_destruction_without_shutdown = false;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_agent_destruction_without_shutdown(&mut self, v: bool) {
+        self.agent_destruction_without_shutdown = v;
+    }
 }
 
 impl ::protobuf::Message for CoordinationServiceConfig {
@@ -210,6 +242,20 @@ impl ::protobuf::Message for CoordinationServiceConfig {
                 6 => {
                     ::protobuf::rt::read_repeated_string_into(wire_type, is, &mut self.coordinated_jobs)?;
                 },
+                7 => {
+                    if wire_type != ::protobuf::wire_format::WireTypeVarint {
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                    }
+                    let tmp = is.read_int64()?;
+                    self.shutdown_barrier_timeout_in_ms = tmp;
+                },
+                8 => {
+                    if wire_type != ::protobuf::wire_format::WireTypeVarint {
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                    }
+                    let tmp = is.read_bool()?;
+                    self.agent_destruction_without_shutdown = tmp;
+                },
                 _ => {
                     ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
                 },
@@ -240,6 +286,12 @@ impl ::protobuf::Message for CoordinationServiceConfig {
         for value in &self.coordinated_jobs {
             my_size += ::protobuf::rt::string_size(6, &value);
         };
+        if self.shutdown_barrier_timeout_in_ms != 0 {
+            my_size += ::protobuf::rt::value_size(7, self.shutdown_barrier_timeout_in_ms, ::protobuf::wire_format::WireTypeVarint);
+        }
+        if self.agent_destruction_without_shutdown != false {
+            my_size += 2;
+        }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
@@ -264,6 +316,12 @@ impl ::protobuf::Message for CoordinationServiceConfig {
         for v in &self.coordinated_jobs {
             os.write_string(6, &v)?;
         };
+        if self.shutdown_barrier_timeout_in_ms != 0 {
+            os.write_int64(7, self.shutdown_barrier_timeout_in_ms)?;
+        }
+        if self.agent_destruction_without_shutdown != false {
+            os.write_bool(8, self.agent_destruction_without_shutdown)?;
+        }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
     }
@@ -332,6 +390,16 @@ impl ::protobuf::Message for CoordinationServiceConfig {
                 |m: &CoordinationServiceConfig| { &m.coordinated_jobs },
                 |m: &mut CoordinationServiceConfig| { &mut m.coordinated_jobs },
             ));
+            fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                "shutdown_barrier_timeout_in_ms",
+                |m: &CoordinationServiceConfig| { &m.shutdown_barrier_timeout_in_ms },
+                |m: &mut CoordinationServiceConfig| { &mut m.shutdown_barrier_timeout_in_ms },
+            ));
+            fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                "agent_destruction_without_shutdown",
+                |m: &CoordinationServiceConfig| { &m.agent_destruction_without_shutdown },
+                |m: &mut CoordinationServiceConfig| { &mut m.agent_destruction_without_shutdown },
+            ));
             ::protobuf::reflect::MessageDescriptor::new_pb_name::<CoordinationServiceConfig>(
                 "CoordinationServiceConfig",
                 fields,
@@ -354,6 +422,8 @@ impl ::protobuf::Clear for CoordinationServiceConfig {
         self.cluster_register_timeout_in_ms = 0;
         self.heartbeat_timeout_in_ms = 0;
         self.coordinated_jobs.clear();
+        self.shutdown_barrier_timeout_in_ms = 0;
+        self.agent_destruction_without_shutdown = false;
         self.unknown_fields.clear();
     }
 }
@@ -372,14 +442,17 @@ impl ::protobuf::reflect::ProtobufValue for CoordinationServiceConfig {
 
 static file_descriptor_proto_data: &'static [u8] = b"\
     \n2tensorflow/core/protobuf/coordination_config.proto\x12\ntensorflow\"\
-    \xbb\x02\n\x19CoordinationServiceConfig\x12!\n\x0cservice_type\x18\x01\
+    \xcc\x03\n\x19CoordinationServiceConfig\x12!\n\x0cservice_type\x18\x01\
     \x20\x01(\tR\x0bserviceType\x12%\n\x0eservice_leader\x18\x02\x20\x01(\tR\
     \rserviceLeader\x12.\n\x13enable_health_check\x18\x03\x20\x01(\x08R\x11e\
     nableHealthCheck\x12B\n\x1ecluster_register_timeout_in_ms\x18\x04\x20\
     \x01(\x03R\x1aclusterRegisterTimeoutInMs\x125\n\x17heartbeat_timeout_in_\
     ms\x18\x05\x20\x01(\x03R\x14heartbeatTimeoutInMs\x12)\n\x10coordinated_j\
-    obs\x18\x06\x20\x03(\tR\x0fcoordinatedJobsBWZUgithub.com/tensorflow/tens\
-    orflow/tensorflow/go/core/protobuf/for_core_protos_go_protob\x06proto3\
+    obs\x18\x06\x20\x03(\tR\x0fcoordinatedJobs\x12B\n\x1eshutdown_barrier_ti\
+    meout_in_ms\x18\x07\x20\x01(\x03R\x1ashutdownBarrierTimeoutInMs\x12K\n\"\
+    agent_destruction_without_shutdown\x18\x08\x20\x01(\x08R\x1fagentDestruc\
+    tionWithoutShutdownBWZUgithub.com/tensorflow/tensorflow/tensorflow/go/co\
+    re/protobuf/for_core_protos_go_protob\x06proto3\
 ";
 
 static file_descriptor_proto_lazy: ::protobuf::rt::LazyV2<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::rt::LazyV2::INIT;
