@@ -70,6 +70,30 @@ use `--features tensorflow_unstable`.
 For now, please see the [Examples](https://github.com/tensorflow/rust/tree/master/examples) for more
 details on how to use this binding.
 
+## Tensor Max Display
+When printing or debugging a tensor, it will print every element by default, this
+can be modified by changing an environment variable:
+```bash
+TF_RUST_DISPLAY_MAX=5
+```
+Which will truncate the values if they exceed the limit:
+
+```rust
+let values: Vec<u64> = (0..100000).collect();
+let t = Tensor::new(&[2, 50000]).with_values(&values).unwrap();
+dbg!(t);
+```
+```
+t = Tensor<u64> {
+    values: [
+        [0, 1, 2, 3, 4, ...],
+        ...
+    ],
+    dtype: uint64,
+    shape: [2, 50000]
+}
+```
+
 ## GPU Support
 
 To enable GPU support, use the `tensorflow_gpu` feature in your Cargo.toml:

@@ -1260,10 +1260,139 @@ impl<T: TensorType> Clone for TensorDataNoCRepr<T> {
 ///   element 1:   index (0, ..., 1)
 ///   ...
 /// ```
-#[derive(Debug, Clone, Eq)]
+#[derive(Clone, Eq)]
 pub struct Tensor<T: TensorType> {
     inner: T::InnerType,
     dims: Vec<u64>,
+}
+
+impl<T: TensorType> Debug for Tensor<T> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        format_tensor(self, "Tensor", self.dims(), f)
+    }
+}
+
+fn format_tensor<T: TensorType, TENSOR: AnyTensor + Deref<Target = [T]>>(
+    tensor: &TENSOR,
+    type_name: &str,
+    dims: &[u64],
+    f: &mut Formatter,
+) -> fmt::Result {
+    let mut counter: i64 = match std::env::var("TF_RUST_DISPLAY_MAX") {
+        Ok(e) => e.parse().unwrap_or(-1),
+        Err(_) => -1,
+    };
+    let values_name = match dims.len() {
+        0 => "scalar_value",
+        _ => "values",
+    };
+    let dtype = tensor.data_type().to_string();
+    if f.alternate() {
+        if tensor.is_empty() {
+            write!(
+                f,
+                "{type_name}<{}> {{\n    values: None,\n    dtype: {dtype},\n    shape: {dims:?}\n}}",
+                std::any::type_name::<T>()
+            )?;
+            return Ok(());
+        }
+        write!(
+            f,
+            "{type_name}<{}> {{\n    {values_name}: ",
+            std::any::type_name::<T>()
+        )?;
+        write_tensor_pretty(f, tensor, dims, &mut counter)?;
+        write!(f, ",\n    dtype: {dtype},\n    shape: {:?}\n}}", dims,)?;
+    } else {
+        if tensor.is_empty() {
+            write!(
+                f,
+                "{type_name}<{}> {{ values: None, dtype: {dtype}, shape: {dims:?} }}",
+                std::any::type_name::<T>()
+            )?;
+            return Ok(());
+        }
+        write!(
+            f,
+            "{type_name}<{}> {{ {values_name}: ",
+            std::any::type_name::<T>()
+        )?;
+        write_tensor_recursive(f, tensor, dims, &mut counter)?;
+        write!(f, ", dtype: {dtype}, shape: {:?} }}", dims)?;
+    }
+    Ok(())
+}
+
+// Each matrix/element following the first dimension creates a newline with indentation and runs
+// through `write_tensor_recursive`
+fn write_tensor_pretty<T: Debug>(
+    f: &mut Formatter<'_>,
+    values: &[T],
+    shape: &[u64],
+    counter: &mut i64,
+) -> std::result::Result<(), std::fmt::Error> {
+    if shape.is_empty() {
+        write!(f, "{:?}", values[0])?;
+        *counter -= 1;
+    } else {
+        write!(f, "[\n        ")?;
+        if shape[0] > 0 {
+            let chunk_size = values.len() / shape[0] as usize;
+            for i in 0..shape[0] as usize {
+                if *counter == 0 {
+                    write!(f, ",\n        ...")?;
+                    break;
+                }
+                if i != 0 {
+                    write!(f, ",\n        ")?;
+                }
+                write_tensor_recursive(
+                    f,
+                    &values[i * chunk_size..(i + 1) * chunk_size],
+                    &shape[1..],
+                    counter,
+                )?;
+            }
+        }
+        write!(f, "\n    ]")?;
+    }
+    Ok(())
+}
+
+fn write_tensor_recursive<T: Debug>(
+    f: &mut Formatter<'_>,
+    values: &[T],
+    shape: &[u64],
+    counter: &mut i64,
+) -> ::std::fmt::Result {
+    if shape.is_empty() {
+        *counter -= 1;
+        write!(f, "{:?}", values[0])
+    } else {
+        write!(f, "[")?;
+        if shape[0] > 0 {
+            let chunk_size = values.len() / shape[0] as usize;
+
+            for i in 0..shape[0] as usize {
+                if *counter == 0 {
+                    write!(f, ", ...")?;
+                    break;
+                }
+                if i != 0 {
+                    write!(f, ", ")?;
+                }
+
+                write_tensor_recursive(
+                    f,
+                    &values[i * chunk_size..(i + 1) * chunk_size],
+                    &shape[1..],
+                    counter,
+                )?;
+            }
+        }
+
+        write!(f, "]")
+    }
 }
 
 #[inline]
@@ -1493,42 +1622,13 @@ impl<T: TensorType + PartialEq> PartialEq for Tensor<T> {
     }
 }
 
-fn write_tensor_recursive<T: Display>(
-    f: &mut Formatter<'_>,
-    shape: &[u64],
-    values: &[T],
-) -> ::std::fmt::Result {
-    if shape.is_empty() {
-        // Handle special case of a scalar tensor.
-        write!(f, "{}", values[0])
-    } else {
-        // Recur with values split into chunks of the next dims size,
-        // Surround with brackets and separate with comma.
-        write!(f, "[")?;
-
-        if shape[0] > 0 {
-            let chunk_size = values.len() / shape[0] as usize;
-
-            for i in 0..shape[0] as usize {
-                if i != 0 {
-                    write!(f, ", ")?;
-                }
-
-                write_tensor_recursive(
-                    f,
-                    &shape[1..],
-                    &values[i * chunk_size..(i + 1) * chunk_size],
-                )?;
-            }
-        }
-
-        write!(f, "]")
-    }
-}
-
 impl<T: TensorType> Display for Tensor<T> {
     fn fmt(&self, f: &mut Formatter<'_>) -> ::std::fmt::Result {
-        write_tensor_recursive(f, &self.dims, self)
+        let mut counter: i64 = match std::env::var("TF_RUST_DISPLAY_MAX") {
+            Ok(e) => e.parse().unwrap_or(-1),
+            Err(_) => -1,
+        };
+        write_tensor_recursive(f, self, self.dims(), &mut counter)
     }
 }
 
@@ -2375,6 +2475,149 @@ mod tests {
             let tensor = Tensor::<i32>::new(shape).with_values(values).unwrap();
             assert_eq!(expected, format!("{}", tensor));
         }
+    }
+
+    #[test]
+    fn tensor_debug() {
+        let values: Vec<i32> = (1..9).collect();
+        let tests = [
+            (
+                "Tensor<i32> { values: [1, 2, 3, 4, 5, 6, 7, 8], dtype: Int32, shape: [8] }",
+                &[8][..],
+                &values,
+            ),
+            (
+                "Tensor<i32> { values: [[1, 2, 3, 4], [5, 6, 7, 8]], dtype: Int32, shape: [2, 4] }",
+                &[2, 4],
+                &values,
+            ),
+            (
+                "Tensor<i32> { values: [[[1, 2], [3, 4]], [[5, 6], [7, 8]]], dtype: Int32, shape: [2, 2, 2] }",
+                &[2, 2, 2],
+                &values,
+            ),
+        ];
+
+        for &(expected, shape, values) in tests.iter() {
+            let tensor = Tensor::<i32>::new(shape).with_values(values).unwrap();
+            assert_eq!(expected, format!("{tensor:?}"));
+        }
+    }
+
+    #[test]
+    fn tensor_debug_scalar() {
+        let tensor = Tensor::from(1);
+        let pretty = "Tensor<i32> {\n    scalar_value: 1,\n    dtype: Int32,\n    shape: []\n}";
+        let standard = "Tensor<i32> { scalar_value: 1, dtype: Int32, shape: [] }";
+        assert_eq!(pretty, format!("{tensor:#?}"));
+        assert_eq!(standard, format!("{tensor:?}"));
+    }
+
+    #[test]
+    fn tensor_debug_zero_elements() {
+        let tensor = Tensor::<f32>::new(&[0, 10]);
+        let pretty = "Tensor<f32> {\n    values: None,\n    dtype: Float,\n    shape: [0, 10]\n}";
+        let standard = "Tensor<f32> { values: None, dtype: Float, shape: [0, 10] }";
+        assert_eq!(pretty, format!("{tensor:#?}"));
+        assert_eq!(standard, format!("{tensor:?}"));
+    }
+
+    #[test]
+    fn tensor_pretty_1_dimension_debug() {
+        let values: Vec<i32> = (1..9).collect();
+        let shape = &[8][..];
+
+        let tensor = Tensor::<i32>::new(shape).with_values(&values).unwrap();
+        let expected = format!(
+            "Tensor<i32> {{
+    values: [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+    ],
+    dtype: Int32,
+    shape: {shape:?}\n}}"
+        );
+
+        assert_eq!(expected, format!("{tensor:#?}"));
+    }
+
+    #[test]
+    fn tensor_pretty_str_2_dimension_debug() {
+        let values: Vec<i32> = (1..9).collect();
+        let shape = &[2, 4][..];
+        let tensor = Tensor::<i32>::new(shape).with_values(&values).unwrap();
+
+        let expected = format!(
+            "Tensor<i32> {{
+    values: [
+        [1, 2, 3, 4],
+        [5, 6, 7, 8]
+    ],
+    dtype: Int32,
+    shape: {shape:?}\n}}"
+        );
+        assert_eq!(expected, format!("{tensor:#?}"));
+    }
+
+    #[test]
+    fn tensor_pretty_3_dimension_debug() {
+        let values: Vec<i32> = (1..9).collect();
+        let shape = &[2, 2, 2][..];
+
+        let tensor = Tensor::<i32>::new(shape).with_values(&values).unwrap();
+
+        let expected = format!(
+            "Tensor<i32> {{
+    values: [
+        [[1, 2], [3, 4]],
+        [[5, 6], [7, 8]]
+    ],
+    dtype: Int32,
+    shape: {shape:?}\n}}"
+        );
+        assert_eq!(expected, format!("{tensor:#?}"));
+    }
+
+    #[test]
+    fn tensor_pretty_max_elements_debug() {
+        std::env::set_var("TF_RUST_DISPLAY_MAX", "10");
+        let values: Vec<i32> = (1..21).collect();
+        let shape = &[5, 2, 2][..];
+
+        let tensor = Tensor::<i32>::new(shape).with_values(&values).unwrap();
+
+        let expected = format!(
+            "Tensor<i32> {{
+    values: [
+        [[1, 2], [3, 4]],
+        [[5, 6], [7, 8]],
+        [[9, 10], ...],
+        ...
+    ],
+    dtype: Int32,
+    shape: {shape:?}\n}}"
+        );
+        assert_eq!(expected, format!("{tensor:#?}"));
+    }
+
+    #[test]
+    fn tensor_max_elements_debug() {
+        std::env::set_var("TF_RUST_DISPLAY_MAX", "10");
+        let values: Vec<i32> = (1..51).collect();
+
+        let tensor = Tensor::<i32>::new(&[5, 10]).with_values(&values).unwrap();
+        let expected = "Tensor<i32> { values: [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10], ...], dtype: Int32, shape: [5, 10] }";
+        assert_eq!(expected, format!("{tensor:?}"));
+
+        let tensor = Tensor::<i32>::new(&[2, 25]).with_values(&values).unwrap();
+        let expected = "Tensor<i32> { values: [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, ...], ...], dtype: Int32, shape: [2, 25] }";
+        assert_eq!(expected, format!("{tensor:?}"));
     }
 
     #[cfg(feature = "ndarray")]

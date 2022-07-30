@@ -1,13 +1,17 @@
+use crate::{
+    write_tensor_pretty, write_tensor_recursive, AnyTensor, DataType, Result, Shape, Tensor,
+    TensorInner, TensorType,
+};
+use core::fmt;
+use fmt::{Debug, Formatter};
 use libc::c_int;
-use std::ops::Deref;
+use std::{fmt::Display, ops::Deref};
 use tensorflow_sys as tf;
-
-use crate::{AnyTensor, DataType, Result, Shape, Tensor, TensorInner, TensorType};
 
 /// A read-only tensor.
 ///
 /// ReadonlyTensor is a [`Tensor`](Tensor) that does not support mutation.
-#[derive(Debug, Clone, Eq)]
+#[derive(Clone, Eq)]
 pub struct ReadonlyTensor<T: TensorType> {
     pub(super) inner: T::InnerType,
     pub(super) dims: Vec<u64>,
@@ -29,6 +33,22 @@ impl<T: TensorType> Deref for ReadonlyTensor<T> {
     #[inline]
     fn deref(&self) -> &[T] {
         self.inner.deref()
+    }
+}
+
+impl<T: TensorType> Display for ReadonlyTensor<T> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> ::std::fmt::Result {
+        let mut counter: i64 = match std::env::var("TF_RUST_DISPLAY_MAX") {
+            Ok(e) => e.parse().unwrap_or(-1),
+            Err(_) => -1,
+        };
+        write_tensor_recursive(f, self, self.dims(), &mut counter)
+    }
+}
+
+impl<T: TensorType> Debug for ReadonlyTensor<T> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        crate::format_tensor(self, "ReadonlyTensor", self.dims(), f)
     }
 }
 
