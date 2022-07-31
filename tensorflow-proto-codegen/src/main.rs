@@ -9,12 +9,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<String> = env::args().collect();
     let tensorflow_folder = &args[1];
     let output_folder = Path::new(&args[2]);
-    protoc_rust::run(protoc_rust::Args {
-        out_dir: output_folder
+    protoc_rust::Codegen::new()
+        .out_dir(output_folder
             .join("src/protos")
             .to_str()
-            .ok_or("Unable to format output path for main crate")?,
-        input: &[
+                 .ok_or("Unable to format output path for main crate")?)
+        .inputs([
             &format!(
                 "{}/tensorflow/core/framework/allocation_description.proto",
                 tensorflow_folder
@@ -121,18 +121,15 @@ fn main() -> Result<(), Box<dyn Error>> {
                 "{}/tensorflow/core/protobuf/verifier_config.proto",
                 tensorflow_folder
             ),
-        ],
-        includes: &[tensorflow_folder],
-        customize: protoc_rust::Customize {
-            ..Default::default()
-        },
-    })?;
-    protoc_rust::run(protoc_rust::Args {
-        out_dir: output_folder
+        ])
+        .include(tensorflow_folder)
+        .run()?;
+    protoc_rust::Codegen::new()
+        .out_dir(output_folder
             .join("tensorflow-op-codegen/src/protos")
             .to_str()
-            .ok_or("Unable to format output path for ops crate")?,
-        input: &[
+                 .ok_or("Unable to format output path for ops crate")?)
+        .inputs([
             &format!(
                 "{}/tensorflow/core/framework/attr_value.proto",
                 tensorflow_folder
@@ -161,11 +158,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                 "{}/tensorflow/core/framework/types.proto",
                 tensorflow_folder
             ),
-        ],
-        includes: &[tensorflow_folder],
-        customize: protoc_rust::Customize {
-            ..Default::default()
-        },
-    })?;
+        ])
+        .include(tensorflow_folder)
+        .run()?;
     Ok(())
 }

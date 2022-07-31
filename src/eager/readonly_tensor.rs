@@ -1,6 +1,5 @@
 use crate::{
-    write_tensor_pretty, write_tensor_recursive, AnyTensor, DataType, Result, Shape, Tensor,
-    TensorInner, TensorType,
+    write_tensor_recursive, AnyTensor, DataType, Result, Shape, Tensor, TensorInner, TensorType,
 };
 use core::fmt;
 use fmt::{Debug, Formatter};

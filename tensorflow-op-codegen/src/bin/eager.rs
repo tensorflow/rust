@@ -210,7 +210,7 @@ fn write_call_fn<W: Write>(
     let mut number_attrs = HashSet::new();
     for arg in escaped_args {
         if !arg.has_number_attr() {
-            write!(w, "    op.add_input(&{}.to_handle(ctx)?)?;\n", arg.name)?;
+            writeln!(w, "    op.add_input(&{}.to_handle(ctx)?)?;", arg.name)?;
         } else {
             let arg_list = format!("{}_list", arg.name);
             writeln!(
@@ -463,7 +463,7 @@ fn define_op<W: Write>(
                 "DT_QUINT16" => write!(w, "Some(crate::DataType::QUInt16)")?,
                 "DT_UINT16" => write!(w, "Some(crate::DataType::UInt16)")?,
                 "DT_COMPLEX128" => write!(w, "Some(crate::DataType::Complex128)")?,
-                "DT_HAFL" => write!(w, "Some(crate::DataType::Hafl)")?,
+                "DT_HALF" => write!(w, "Some(crate::DataType::Half)")?,
                 "DT_UINT32" => write!(w, "Some(crate::DataType::UInt32)")?,
                 "DT_UINT64" => write!(w, "Some(crate::DataType::UInt64)")?,
                 _ => panic!("{} is not supported", t.descriptor().name()),
@@ -570,11 +570,11 @@ fn define_op<W: Write>(
         &input_args,
         &output_args,
         &attrs,
-        &keywords,
+        keywords,
     )?;
     writeln!(w, "}}")?;
     writeln!(w)?;
-    write_short_fn(w, &name, &fn_name, &input_args, &output_args, &keywords)?;
+    write_short_fn(w, &name, &fn_name, &input_args, &output_args, keywords)?;
     Ok(())
 }
 

@@ -504,6 +504,7 @@ pub struct GPUOptions_Experimental {
     pub kernel_tracker_max_pending: i32,
     pub internal_fragmentation_fraction: f64,
     pub use_cuda_malloc_async: bool,
+    pub disallow_retry_on_allocation_failure: bool,
     // special fields
     pub unknown_fields: ::protobuf::UnknownFields,
     pub cached_size: ::protobuf::CachedSize,
@@ -690,6 +691,21 @@ impl GPUOptions_Experimental {
     pub fn set_use_cuda_malloc_async(&mut self, v: bool) {
         self.use_cuda_malloc_async = v;
     }
+
+    // bool disallow_retry_on_allocation_failure = 12;
+
+
+    pub fn get_disallow_retry_on_allocation_failure(&self) -> bool {
+        self.disallow_retry_on_allocation_failure
+    }
+    pub fn clear_disallow_retry_on_allocation_failure(&mut self) {
+        self.disallow_retry_on_allocation_failure = false;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_disallow_retry_on_allocation_failure(&mut self, v: bool) {
+        self.disallow_retry_on_allocation_failure = v;
+    }
 }
 
 impl ::protobuf::Message for GPUOptions_Experimental {
@@ -768,6 +784,13 @@ impl ::protobuf::Message for GPUOptions_Experimental {
                     let tmp = is.read_bool()?;
                     self.use_cuda_malloc_async = tmp;
                 },
+                12 => {
+                    if wire_type != ::protobuf::wire_format::WireTypeVarint {
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                    }
+                    let tmp = is.read_bool()?;
+                    self.disallow_retry_on_allocation_failure = tmp;
+                },
                 _ => {
                     ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
                 },
@@ -811,6 +834,9 @@ impl ::protobuf::Message for GPUOptions_Experimental {
         if self.use_cuda_malloc_async != false {
             my_size += 2;
         }
+        if self.disallow_retry_on_allocation_failure != false {
+            my_size += 2;
+        }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
@@ -848,6 +874,9 @@ impl ::protobuf::Message for GPUOptions_Experimental {
         }
         if self.use_cuda_malloc_async != false {
             os.write_bool(11, self.use_cuda_malloc_async)?;
+        }
+        if self.disallow_retry_on_allocation_failure != false {
+            os.write_bool(12, self.disallow_retry_on_allocation_failure)?;
         }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
@@ -937,6 +966,11 @@ impl ::protobuf::Message for GPUOptions_Experimental {
                 |m: &GPUOptions_Experimental| { &m.use_cuda_malloc_async },
                 |m: &mut GPUOptions_Experimental| { &mut m.use_cuda_malloc_async },
             ));
+            fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                "disallow_retry_on_allocation_failure",
+                |m: &GPUOptions_Experimental| { &m.disallow_retry_on_allocation_failure },
+                |m: &mut GPUOptions_Experimental| { &mut m.disallow_retry_on_allocation_failure },
+            ));
             ::protobuf::reflect::MessageDescriptor::new_pb_name::<GPUOptions_Experimental>(
                 "GPUOptions.Experimental",
                 fields,
@@ -963,6 +997,7 @@ impl ::protobuf::Clear for GPUOptions_Experimental {
         self.kernel_tracker_max_pending = 0;
         self.internal_fragmentation_fraction = 0.;
         self.use_cuda_malloc_async = false;
+        self.disallow_retry_on_allocation_failure = false;
         self.unknown_fields.clear();
     }
 }
@@ -984,6 +1019,7 @@ pub struct GPUOptions_Experimental_VirtualDevices {
     // message fields
     pub memory_limit_mb: ::std::vec::Vec<f32>,
     pub priority: ::std::vec::Vec<i32>,
+    pub device_ordinal: ::std::vec::Vec<i32>,
     // special fields
     pub unknown_fields: ::protobuf::UnknownFields,
     pub cached_size: ::protobuf::CachedSize,
@@ -1049,6 +1085,31 @@ impl GPUOptions_Experimental_VirtualDevices {
     pub fn take_priority(&mut self) -> ::std::vec::Vec<i32> {
         ::std::mem::replace(&mut self.priority, ::std::vec::Vec::new())
     }
+
+    // repeated int32 device_ordinal = 3;
+
+
+    pub fn get_device_ordinal(&self) -> &[i32] {
+        &self.device_ordinal
+    }
+    pub fn clear_device_ordinal(&mut self) {
+        self.device_ordinal.clear();
+    }
+
+    // Param is passed by value, moved
+    pub fn set_device_ordinal(&mut self, v: ::std::vec::Vec<i32>) {
+        self.device_ordinal = v;
+    }
+
+    // Mutable pointer to the field.
+    pub fn mut_device_ordinal(&mut self) -> &mut ::std::vec::Vec<i32> {
+        &mut self.device_ordinal
+    }
+
+    // Take field
+    pub fn take_device_ordinal(&mut self) -> ::std::vec::Vec<i32> {
+        ::std::mem::replace(&mut self.device_ordinal, ::std::vec::Vec::new())
+    }
 }
 
 impl ::protobuf::Message for GPUOptions_Experimental_VirtualDevices {
@@ -1066,6 +1127,9 @@ impl ::protobuf::Message for GPUOptions_Experimental_VirtualDevices {
                 2 => {
                     ::protobuf::rt::read_repeated_int32_into(wire_type, is, &mut self.priority)?;
                 },
+                3 => {
+                    ::protobuf::rt::read_repeated_int32_into(wire_type, is, &mut self.device_ordinal)?;
+                },
                 _ => {
                     ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
                 },
@@ -1082,6 +1146,9 @@ impl ::protobuf::Message for GPUOptions_Experimental_VirtualDevices {
         for value in &self.priority {
             my_size += ::protobuf::rt::value_size(2, *value, ::protobuf::wire_format::WireTypeVarint);
         };
+        for value in &self.device_ordinal {
+            my_size += ::protobuf::rt::value_size(3, *value, ::protobuf::wire_format::WireTypeVarint);
+        };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
@@ -1093,6 +1160,9 @@ impl ::protobuf::Message for GPUOptions_Experimental_VirtualDevices {
         };
         for v in &self.priority {
             os.write_int32(2, *v)?;
+        };
+        for v in &self.device_ordinal {
+            os.write_int32(3, *v)?;
         };
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
@@ -1142,6 +1212,11 @@ impl ::protobuf::Message for GPUOptions_Experimental_VirtualDevices {
                 |m: &GPUOptions_Experimental_VirtualDevices| { &m.priority },
                 |m: &mut GPUOptions_Experimental_VirtualDevices| { &mut m.priority },
             ));
+            fields.push(::protobuf::reflect::accessor::make_vec_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                "device_ordinal",
+                |m: &GPUOptions_Experimental_VirtualDevices| { &m.device_ordinal },
+                |m: &mut GPUOptions_Experimental_VirtualDevices| { &mut m.device_ordinal },
+            ));
             ::protobuf::reflect::MessageDescriptor::new_pb_name::<GPUOptions_Experimental_VirtualDevices>(
                 "GPUOptions.Experimental.VirtualDevices",
                 fields,
@@ -1160,6 +1235,7 @@ impl ::protobuf::Clear for GPUOptions_Experimental_VirtualDevices {
     fn clear(&mut self) {
         self.memory_limit_mb.clear();
         self.priority.clear();
+        self.device_ordinal.clear();
         self.unknown_fields.clear();
     }
 }
@@ -5469,6 +5545,7 @@ pub struct RunMetadata {
     pub cost_graph: ::protobuf::SingularPtrField<super::cost_graph::CostGraphDef>,
     pub partition_graphs: ::protobuf::RepeatedField<super::graph::GraphDef>,
     pub function_graphs: ::protobuf::RepeatedField<RunMetadata_FunctionGraphs>,
+    pub session_metadata: ::protobuf::SingularPtrField<SessionMetadata>,
     // special fields
     pub unknown_fields: ::protobuf::UnknownFields,
     pub cached_size: ::protobuf::CachedSize,
@@ -5600,6 +5677,39 @@ impl RunMetadata {
     pub fn take_function_graphs(&mut self) -> ::protobuf::RepeatedField<RunMetadata_FunctionGraphs> {
         ::std::mem::replace(&mut self.function_graphs, ::protobuf::RepeatedField::new())
     }
+
+    // .tensorflow.SessionMetadata session_metadata = 5;
+
+
+    pub fn get_session_metadata(&self) -> &SessionMetadata {
+        self.session_metadata.as_ref().unwrap_or_else(|| <SessionMetadata as ::protobuf::Message>::default_instance())
+    }
+    pub fn clear_session_metadata(&mut self) {
+        self.session_metadata.clear();
+    }
+
+    pub fn has_session_metadata(&self) -> bool {
+        self.session_metadata.is_some()
+    }
+
+    // Param is passed by value, moved
+    pub fn set_session_metadata(&mut self, v: SessionMetadata) {
+        self.session_metadata = ::protobuf::SingularPtrField::some(v);
+    }
+
+    // Mutable pointer to the field.
+    // If field is not initialized, it is initialized with default value first.
+    pub fn mut_session_metadata(&mut self) -> &mut SessionMetadata {
+        if self.session_metadata.is_none() {
+            self.session_metadata.set_default();
+        }
+        self.session_metadata.as_mut().unwrap()
+    }
+
+    // Take field
+    pub fn take_session_metadata(&mut self) -> SessionMetadata {
+        self.session_metadata.take().unwrap_or_else(|| SessionMetadata::new())
+    }
 }
 
 impl ::protobuf::Message for RunMetadata {
@@ -5624,6 +5734,11 @@ impl ::protobuf::Message for RunMetadata {
                 return false;
             }
         };
+        for v in &self.session_metadata {
+            if !v.is_initialized() {
+                return false;
+            }
+        };
         true
     }
 
@@ -5642,6 +5757,9 @@ impl ::protobuf::Message for RunMetadata {
                 },
                 4 => {
                     ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.function_graphs)?;
+                },
+                5 => {
+                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.session_metadata)?;
                 },
                 _ => {
                     ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
@@ -5671,6 +5789,10 @@ impl ::protobuf::Message for RunMetadata {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         };
+        if let Some(ref v) = self.session_metadata.as_ref() {
+            let len = v.compute_size();
+            my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
+        }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
@@ -5697,6 +5819,11 @@ impl ::protobuf::Message for RunMetadata {
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
         };
+        if let Some(ref v) = self.session_metadata.as_ref() {
+            os.write_tag(5, ::protobuf::wire_format::WireTypeLengthDelimited)?;
+            os.write_raw_varint32(v.get_cached_size())?;
+            v.write_to_with_cached_sizes(os)?;
+        }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
     }
@@ -5755,6 +5882,11 @@ impl ::protobuf::Message for RunMetadata {
                 |m: &RunMetadata| { &m.function_graphs },
                 |m: &mut RunMetadata| { &mut m.function_graphs },
             ));
+            fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<SessionMetadata>>(
+                "session_metadata",
+                |m: &RunMetadata| { &m.session_metadata },
+                |m: &mut RunMetadata| { &mut m.session_metadata },
+            ));
             ::protobuf::reflect::MessageDescriptor::new_pb_name::<RunMetadata>(
                 "RunMetadata",
                 fields,
@@ -5775,6 +5907,7 @@ impl ::protobuf::Clear for RunMetadata {
         self.cost_graph.clear();
         self.partition_graphs.clear();
         self.function_graphs.clear();
+        self.session_metadata.clear();
         self.unknown_fields.clear();
     }
 }
@@ -6733,7 +6866,7 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     o\x1a*tensorflow/core/framework/step_stats.proto\x1a&tensorflow/core/pro\
     tobuf/cluster.proto\x1a2tensorflow/core/protobuf/coordination_config.pro\
     to\x1a$tensorflow/core/protobuf/debug.proto\x1a.tensorflow/core/protobuf\
-    /rewriter_config.proto\"\xc5\t\n\nGPUOptions\x12D\n\x1fper_process_gpu_m\
+    /rewriter_config.proto\"\xbc\n\n\nGPUOptions\x12D\n\x1fper_process_gpu_m\
     emory_fraction\x18\x01\x20\x01(\x01R\x1bperProcessGpuMemoryFraction\x12!\
     \n\x0callow_growth\x18\x04\x20\x01(\x08R\x0ballowGrowth\x12%\n\x0ealloca\
     tor_type\x18\x02\x20\x01(\tR\rallocatorType\x126\n\x17deferred_deletion_\
@@ -6743,7 +6876,7 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     \x1cpolling_inactive_delay_msecs\x18\x07\x20\x01(\x05R\x19pollingInactiv\
     eDelayMsecs\x120\n\x14force_gpu_compatible\x18\x08\x20\x01(\x08R\x12forc\
     eGpuCompatible\x12G\n\x0cexperimental\x18\t\x20\x01(\x0b2#.tensorflow.GP\
-    UOptions.ExperimentalR\x0cexperimental\x1a\xc5\x05\n\x0cExperimental\x12\
+    UOptions.ExperimentalR\x0cexperimental\x1a\xbc\x06\n\x0cExperimental\x12\
     [\n\x0fvirtual_devices\x18\x01\x20\x03(\x0b22.tensorflow.GPUOptions.Expe\
     rimental.VirtualDevicesR\x0evirtualDevices\x12,\n\x12use_unified_memory\
     \x18\x02\x20\x01(\x08R\x10useUnifiedMemory\x12;\n\x1bnum_dev_to_dev_copy\
@@ -6755,130 +6888,134 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     rnelTrackerMaxBytes\x12;\n\x1akernel_tracker_max_pending\x18\t\x20\x01(\
     \x05R\x17kernelTrackerMaxPending\x12F\n\x1finternal_fragmentation_fracti\
     on\x18\n\x20\x01(\x01R\x1dinternalFragmentationFraction\x121\n\x15use_cu\
-    da_malloc_async\x18\x0b\x20\x01(\x08R\x12useCudaMallocAsync\x1aT\n\x0eVi\
-    rtualDevices\x12&\n\x0fmemory_limit_mb\x18\x01\x20\x03(\x02R\rmemoryLimi\
-    tMb\x12\x1a\n\x08priority\x18\x02\x20\x03(\x05R\x08priority\"\xa8\x04\n\
-    \x10OptimizerOptions\x12M\n#do_common_subexpression_elimination\x18\x01\
-    \x20\x01(\x08R\x20doCommonSubexpressionElimination\x12.\n\x13do_constant\
-    _folding\x18\x02\x20\x01(\x08R\x11doConstantFolding\x12>\n\x1cmax_folded\
-    _constant_in_bytes\x18\x06\x20\x01(\x03R\x18maxFoldedConstantInBytes\x12\
-    0\n\x14do_function_inlining\x18\x04\x20\x01(\x08R\x12doFunctionInlining\
-    \x12?\n\topt_level\x18\x03\x20\x01(\x0e2\".tensorflow.OptimizerOptions.L\
-    evelR\x08optLevel\x12U\n\x10global_jit_level\x18\x05\x20\x01(\x0e2+.tens\
-    orflow.OptimizerOptions.GlobalJitLevelR\x0eglobalJitLevel\x12$\n\x0ecpu_\
-    global_jit\x18\x07\x20\x01(\x08R\x0ccpuGlobalJit\"\x20\n\x05Level\x12\
-    \x06\n\x02L1\x10\0\x12\x0f\n\x02L0\x10\xff\xff\xff\xff\xff\xff\xff\xff\
-    \xff\x01\"C\n\x0eGlobalJitLevel\x12\x0b\n\x07DEFAULT\x10\0\x12\x10\n\x03\
-    OFF\x10\xff\xff\xff\xff\xff\xff\xff\xff\xff\x01\x12\x08\n\x04ON_1\x10\
-    \x01\x12\x08\n\x04ON_2\x10\x02\"\x90\x04\n\x0cGraphOptions\x124\n\x16ena\
-    ble_recv_scheduling\x18\x02\x20\x01(\x08R\x14enableRecvScheduling\x12I\n\
-    \x11optimizer_options\x18\x03\x20\x01(\x0b2\x1c.tensorflow.OptimizerOpti\
-    onsR\x10optimizerOptions\x12(\n\x10build_cost_model\x18\x04\x20\x01(\x03\
-    R\x0ebuildCostModel\x123\n\x16build_cost_model_after\x18\t\x20\x01(\x03R\
-    \x13buildCostModelAfter\x12!\n\x0cinfer_shapes\x18\x05\x20\x01(\x08R\x0b\
-    inferShapes\x12,\n\x12place_pruned_graph\x18\x06\x20\x01(\x08R\x10placeP\
-    runedGraph\x128\n\x18enable_bfloat16_sendrecv\x18\x07\x20\x01(\x08R\x16e\
-    nableBfloat16Sendrecv\x12#\n\rtimeline_step\x18\x08\x20\x01(\x05R\x0ctim\
-    elineStep\x12C\n\x0frewrite_options\x18\n\x20\x01(\x0b2\x1a.tensorflow.R\
-    ewriterConfigR\x0erewriteOptionsJ\x04\x08\x01\x10\x02R%skip_common_subex\
-    pression_elimination\"Y\n\x15ThreadPoolOptionProto\x12\x1f\n\x0bnum_thre\
-    ads\x18\x01\x20\x01(\x05R\nnumThreads\x12\x1f\n\x0bglobal_name\x18\x02\
-    \x20\x01(\tR\nglobalName\"\xe0\x02\n\nRPCOptions\x12>\n\x1cuse_rpc_for_i\
-    nprocess_master\x18\x01\x20\x01(\x08R\x18useRpcForInprocessMaster\x123\n\
-    \x15compression_algorithm\x18\x02\x20\x01(\tR\x14compressionAlgorithm\
-    \x12+\n\x11compression_level\x18\x03\x20\x01(\x05R\x10compressionLevel\
-    \x12,\n\x12cache_rpc_response\x18\x04\x20\x01(\x08R\x10cacheRpcResponse\
-    \x12K\n\"disable_session_connection_sharing\x18\x05\x20\x01(\x08R\x1fdis\
-    ableSessionConnectionSharing\x125\n\x17num_channels_per_target\x18\x06\
-    \x20\x01(\x05R\x14numChannelsPerTarget\"?\n\x0fSessionMetadata\x12\x12\n\
-    \x04name\x18\x01\x20\x01(\tR\x04name\x12\x18\n\x07version\x18\x02\x20\
-    \x01(\x03R\x07version\"\xdc\x14\n\x0bConfigProto\x12K\n\x0cdevice_count\
-    \x18\x01\x20\x03(\x0b2(.tensorflow.ConfigProto.DeviceCountEntryR\x0bdevi\
-    ceCount\x12?\n\x1cintra_op_parallelism_threads\x18\x02\x20\x01(\x05R\x19\
-    intraOpParallelismThreads\x12?\n\x1cinter_op_parallelism_threads\x18\x05\
-    \x20\x01(\x05R\x19interOpParallelismThreads\x125\n\x17use_per_session_th\
-    reads\x18\t\x20\x01(\x08R\x14usePerSessionThreads\x12a\n\x1csession_inte\
-    r_op_thread_pool\x18\x0c\x20\x03(\x0b2!.tensorflow.ThreadPoolOptionProto\
-    R\x18sessionInterOpThreadPool\x12)\n\x10placement_period\x18\x03\x20\x01\
-    (\x05R\x0fplacementPeriod\x12%\n\x0edevice_filters\x18\x04\x20\x03(\tR\r\
-    deviceFilters\x127\n\x0bgpu_options\x18\x06\x20\x01(\x0b2\x16.tensorflow\
-    .GPUOptionsR\ngpuOptions\x120\n\x14allow_soft_placement\x18\x07\x20\x01(\
-    \x08R\x12allowSoftPlacement\x120\n\x14log_device_placement\x18\x08\x20\
-    \x01(\x08R\x12logDevicePlacement\x12=\n\rgraph_options\x18\n\x20\x01(\
-    \x0b2\x18.tensorflow.GraphOptionsR\x0cgraphOptions\x125\n\x17operation_t\
-    imeout_in_ms\x18\x0b\x20\x01(\x03R\x14operationTimeoutInMs\x127\n\x0brpc\
-    _options\x18\r\x20\x01(\x0b2\x16.tensorflow.RPCOptionsR\nrpcOptions\x127\
-    \n\x0bcluster_def\x18\x0e\x20\x01(\x0b2\x16.tensorflow.ClusterDefR\nclus\
-    terDef\x122\n\x15isolate_session_state\x18\x0f\x20\x01(\x08R\x13isolateS\
-    essionState\x12F\n\x20share_cluster_devices_in_session\x18\x11\x20\x01(\
-    \x08R\x1cshareClusterDevicesInSession\x12H\n\x0cexperimental\x18\x10\x20\
-    \x01(\x0b2$.tensorflow.ConfigProto.ExperimentalR\x0cexperimental\x1a>\n\
-    \x10DeviceCountEntry\x12\x10\n\x03key\x18\x01\x20\x01(\tR\x03key\x12\x14\
-    \n\x05value\x18\x02\x20\x01(\x05R\x05value:\x028\x01\x1a\x86\x0c\n\x0cEx\
-    perimental\x126\n\x17collective_group_leader\x18\x01\x20\x01(\tR\x15coll\
-    ectiveGroupLeader\x12#\n\rexecutor_type\x18\x03\x20\x01(\tR\x0cexecutorT\
-    ype\x12+\n\x12recv_buf_max_chunk\x18\x04\x20\x01(\x05R\x0frecvBufMaxChun\
-    k\x12*\n\x11use_numa_affinity\x18\x05\x20\x01(\x08R\x0fuseNumaAffinity\
-    \x12a\n-collective_deterministic_sequential_execution\x18\x06\x20\x01(\
-    \x08R*collectiveDeterministicSequentialExecution\x12'\n\x0fcollective_nc\
-    cl\x18\x07\x20\x01(\x08R\x0ecollectiveNccl\x12a\n.share_session_state_in\
-    _clusterspec_propagation\x18\x08\x20\x01(\x08R)shareSessionStateInCluste\
-    rspecPropagation\x126\n\x17disable_thread_spinning\x18\t\x20\x01(\x08R\
-    \x15disableThreadSpinning\x12F\n\x20share_cluster_devices_in_session\x18\
-    \n\x20\x01(\x08R\x1cshareClusterDevicesInSession\x12F\n\x10session_metad\
-    ata\x18\x0b\x20\x01(\x0b2\x1b.tensorflow.SessionMetadataR\x0fsessionMeta\
-    data\x129\n\x19optimize_for_static_graph\x18\x0c\x20\x01(\x08R\x16optimi\
-    zeForStaticGraph\x12,\n\x12enable_mlir_bridge\x18\r\x20\x01(\x08R\x10ena\
-    bleMlirBridge\x12f\n\x13mlir_bridge_rollout\x18\x11\x20\x01(\x0e26.tenso\
-    rflow.ConfigProto.Experimental.MlirBridgeRolloutR\x11mlirBridgeRollout\
-    \x12C\n\x1eenable_mlir_graph_optimization\x18\x10\x20\x01(\x08R\x1benabl\
-    eMlirGraphOptimization\x12E\n\x1fdisable_output_partition_graphs\x18\x0e\
-    \x20\x01(\x08R\x1cdisableOutputPartitionGraphs\x12=\n\x1bxla_fusion_auto\
-    tuner_thresh\x18\x0f\x20\x01(\x03R\x18xlaFusionAutotunerThresh\x12\x19\n\
-    \x08use_tfrt\x18\x12\x20\x01(\x08R\x07useTfrt\x12E\n\x1fdisable_function\
-    al_ops_lowering\x18\x15\x20\x01(\x08R\x1cdisableFunctionalOpsLowering\
-    \x12D\n\x1fxla_prefer_single_graph_cluster\x18\x16\x20\x01(\x08R\x1bxlaP\
-    referSingleGraphCluster\x12V\n\x13coordination_config\x18\x17\x20\x01(\
-    \x0b2%.tensorflow.CoordinationServiceConfigR\x12coordinationConfig\"\xda\
-    \x01\n\x11MlirBridgeRollout\x12#\n\x1fMLIR_BRIDGE_ROLLOUT_UNSPECIFIED\
-    \x10\0\x12\x1f\n\x1bMLIR_BRIDGE_ROLLOUT_ENABLED\x10\x01\x12\x20\n\x1cMLI\
-    R_BRIDGE_ROLLOUT_DISABLED\x10\x02\x12)\n%MLIR_BRIDGE_ROLLOUT_SAFE_MODE_E\
-    NABLED\x10\x03\x122\n.MLIR_BRIDGE_ROLLOUT_SAFE_MODE_FALLBACK_ENABLED\x10\
-    \x04J\x04\x08\x02\x10\x03J\x04\x08\x13\x10\x14J\x04\x08\x14\x10\x15\"\
-    \xa8\x06\n\nRunOptions\x12B\n\x0btrace_level\x18\x01\x20\x01(\x0e2!.tens\
-    orflow.RunOptions.TraceLevelR\ntraceLevel\x12\"\n\rtimeout_in_ms\x18\x02\
-    \x20\x01(\x03R\x0btimeoutInMs\x12/\n\x14inter_op_thread_pool\x18\x03\x20\
-    \x01(\x05R\x11interOpThreadPool\x126\n\x17output_partition_graphs\x18\
-    \x05\x20\x01(\x08R\x15outputPartitionGraphs\x12=\n\rdebug_options\x18\
-    \x06\x20\x01(\x0b2\x18.tensorflow.DebugOptionsR\x0cdebugOptions\x12J\n\"\
-    report_tensor_allocations_upon_oom\x18\x07\x20\x01(\x08R\x1ereportTensor\
-    AllocationsUponOom\x12G\n\x0cexperimental\x18\x08\x20\x01(\x0b2#.tensorf\
-    low.RunOptions.ExperimentalR\x0cexperimental\x1a\x9a\x02\n\x0cExperiment\
-    al\x120\n\x14collective_graph_key\x18\x01\x20\x01(\x03R\x12collectiveGra\
-    phKey\x12/\n\x14use_run_handler_pool\x18\x02\x20\x01(\x08R\x11useRunHand\
-    lerPool\x12r\n\x18run_handler_pool_options\x18\x03\x20\x01(\x0b29.tensor\
-    flow.RunOptions.Experimental.RunHandlerPoolOptionsR\x15runHandlerPoolOpt\
-    ions\x1a3\n\x15RunHandlerPoolOptions\x12\x1a\n\x08priority\x18\x01\x20\
-    \x01(\x03R\x08priority\"R\n\nTraceLevel\x12\x0c\n\x08NO_TRACE\x10\0\x12\
-    \x12\n\x0eSOFTWARE_TRACE\x10\x01\x12\x12\n\x0eHARDWARE_TRACE\x10\x02\x12\
-    \x0e\n\nFULL_TRACE\x10\x03J\x04\x08\x04\x10\x05\"\xfc\x03\n\x0bRunMetada\
-    ta\x124\n\nstep_stats\x18\x01\x20\x01(\x0b2\x15.tensorflow.StepStatsR\ts\
-    tepStats\x127\n\ncost_graph\x18\x02\x20\x01(\x0b2\x18.tensorflow.CostGra\
-    phDefR\tcostGraph\x12?\n\x10partition_graphs\x18\x03\x20\x03(\x0b2\x14.t\
-    ensorflow.GraphDefR\x0fpartitionGraphs\x12O\n\x0ffunction_graphs\x18\x04\
-    \x20\x03(\x0b2&.tensorflow.RunMetadata.FunctionGraphsR\x0efunctionGraphs\
-    \x1a\xeb\x01\n\x0eFunctionGraphs\x12?\n\x10partition_graphs\x18\x01\x20\
-    \x03(\x0b2\x14.tensorflow.GraphDefR\x0fpartitionGraphs\x12J\n\x16pre_opt\
-    imization_graph\x18\x02\x20\x01(\x0b2\x14.tensorflow.GraphDefR\x14preOpt\
-    imizationGraph\x12L\n\x17post_optimization_graph\x18\x03\x20\x01(\x0b2\
-    \x14.tensorflow.GraphDefR\x15postOptimizationGraph\"P\n\x10TensorConnect\
-    ion\x12\x1f\n\x0bfrom_tensor\x18\x01\x20\x01(\tR\nfromTensor\x12\x1b\n\t\
-    to_tensor\x18\x02\x20\x01(\tR\x08toTensor\"\xa5\x04\n\x0fCallableOptions\
-    \x12\x12\n\x04feed\x18\x01\x20\x03(\tR\x04feed\x12\x14\n\x05fetch\x18\
-    \x02\x20\x03(\tR\x05fetch\x12\x16\n\x06target\x18\x03\x20\x03(\tR\x06tar\
-    get\x127\n\x0brun_options\x18\x04\x20\x01(\x0b2\x16.tensorflow.RunOption\
-    sR\nrunOptions\x12I\n\x11tensor_connection\x18\x05\x20\x03(\x0b2\x1c.ten\
-    sorflow.TensorConnectionR\x10tensorConnection\x12O\n\x0cfeed_devices\x18\
+    da_malloc_async\x18\x0b\x20\x01(\x08R\x12useCudaMallocAsync\x12N\n$disal\
+    low_retry_on_allocation_failure\x18\x0c\x20\x01(\x08R\x20disallowRetryOn\
+    AllocationFailure\x1a{\n\x0eVirtualDevices\x12&\n\x0fmemory_limit_mb\x18\
+    \x01\x20\x03(\x02R\rmemoryLimitMb\x12\x1a\n\x08priority\x18\x02\x20\x03(\
+    \x05R\x08priority\x12%\n\x0edevice_ordinal\x18\x03\x20\x03(\x05R\rdevice\
+    Ordinal\"\xa8\x04\n\x10OptimizerOptions\x12M\n#do_common_subexpression_e\
+    limination\x18\x01\x20\x01(\x08R\x20doCommonSubexpressionElimination\x12\
+    .\n\x13do_constant_folding\x18\x02\x20\x01(\x08R\x11doConstantFolding\
+    \x12>\n\x1cmax_folded_constant_in_bytes\x18\x06\x20\x01(\x03R\x18maxFold\
+    edConstantInBytes\x120\n\x14do_function_inlining\x18\x04\x20\x01(\x08R\
+    \x12doFunctionInlining\x12?\n\topt_level\x18\x03\x20\x01(\x0e2\".tensorf\
+    low.OptimizerOptions.LevelR\x08optLevel\x12U\n\x10global_jit_level\x18\
+    \x05\x20\x01(\x0e2+.tensorflow.OptimizerOptions.GlobalJitLevelR\x0egloba\
+    lJitLevel\x12$\n\x0ecpu_global_jit\x18\x07\x20\x01(\x08R\x0ccpuGlobalJit\
+    \"\x20\n\x05Level\x12\x06\n\x02L1\x10\0\x12\x0f\n\x02L0\x10\xff\xff\xff\
+    \xff\xff\xff\xff\xff\xff\x01\"C\n\x0eGlobalJitLevel\x12\x0b\n\x07DEFAULT\
+    \x10\0\x12\x10\n\x03OFF\x10\xff\xff\xff\xff\xff\xff\xff\xff\xff\x01\x12\
+    \x08\n\x04ON_1\x10\x01\x12\x08\n\x04ON_2\x10\x02\"\x90\x04\n\x0cGraphOpt\
+    ions\x124\n\x16enable_recv_scheduling\x18\x02\x20\x01(\x08R\x14enableRec\
+    vScheduling\x12I\n\x11optimizer_options\x18\x03\x20\x01(\x0b2\x1c.tensor\
+    flow.OptimizerOptionsR\x10optimizerOptions\x12(\n\x10build_cost_model\
+    \x18\x04\x20\x01(\x03R\x0ebuildCostModel\x123\n\x16build_cost_model_afte\
+    r\x18\t\x20\x01(\x03R\x13buildCostModelAfter\x12!\n\x0cinfer_shapes\x18\
+    \x05\x20\x01(\x08R\x0binferShapes\x12,\n\x12place_pruned_graph\x18\x06\
+    \x20\x01(\x08R\x10placePrunedGraph\x128\n\x18enable_bfloat16_sendrecv\
+    \x18\x07\x20\x01(\x08R\x16enableBfloat16Sendrecv\x12#\n\rtimeline_step\
+    \x18\x08\x20\x01(\x05R\x0ctimelineStep\x12C\n\x0frewrite_options\x18\n\
+    \x20\x01(\x0b2\x1a.tensorflow.RewriterConfigR\x0erewriteOptionsJ\x04\x08\
+    \x01\x10\x02R%skip_common_subexpression_elimination\"Y\n\x15ThreadPoolOp\
+    tionProto\x12\x1f\n\x0bnum_threads\x18\x01\x20\x01(\x05R\nnumThreads\x12\
+    \x1f\n\x0bglobal_name\x18\x02\x20\x01(\tR\nglobalName\"\xe0\x02\n\nRPCOp\
+    tions\x12>\n\x1cuse_rpc_for_inprocess_master\x18\x01\x20\x01(\x08R\x18us\
+    eRpcForInprocessMaster\x123\n\x15compression_algorithm\x18\x02\x20\x01(\
+    \tR\x14compressionAlgorithm\x12+\n\x11compression_level\x18\x03\x20\x01(\
+    \x05R\x10compressionLevel\x12,\n\x12cache_rpc_response\x18\x04\x20\x01(\
+    \x08R\x10cacheRpcResponse\x12K\n\"disable_session_connection_sharing\x18\
+    \x05\x20\x01(\x08R\x1fdisableSessionConnectionSharing\x125\n\x17num_chan\
+    nels_per_target\x18\x06\x20\x01(\x05R\x14numChannelsPerTarget\"?\n\x0fSe\
+    ssionMetadata\x12\x12\n\x04name\x18\x01\x20\x01(\tR\x04name\x12\x18\n\
+    \x07version\x18\x02\x20\x01(\x03R\x07version\"\xdc\x14\n\x0bConfigProto\
+    \x12K\n\x0cdevice_count\x18\x01\x20\x03(\x0b2(.tensorflow.ConfigProto.De\
+    viceCountEntryR\x0bdeviceCount\x12?\n\x1cintra_op_parallelism_threads\
+    \x18\x02\x20\x01(\x05R\x19intraOpParallelismThreads\x12?\n\x1cinter_op_p\
+    arallelism_threads\x18\x05\x20\x01(\x05R\x19interOpParallelismThreads\
+    \x125\n\x17use_per_session_threads\x18\t\x20\x01(\x08R\x14usePerSessionT\
+    hreads\x12a\n\x1csession_inter_op_thread_pool\x18\x0c\x20\x03(\x0b2!.ten\
+    sorflow.ThreadPoolOptionProtoR\x18sessionInterOpThreadPool\x12)\n\x10pla\
+    cement_period\x18\x03\x20\x01(\x05R\x0fplacementPeriod\x12%\n\x0edevice_\
+    filters\x18\x04\x20\x03(\tR\rdeviceFilters\x127\n\x0bgpu_options\x18\x06\
+    \x20\x01(\x0b2\x16.tensorflow.GPUOptionsR\ngpuOptions\x120\n\x14allow_so\
+    ft_placement\x18\x07\x20\x01(\x08R\x12allowSoftPlacement\x120\n\x14log_d\
+    evice_placement\x18\x08\x20\x01(\x08R\x12logDevicePlacement\x12=\n\rgrap\
+    h_options\x18\n\x20\x01(\x0b2\x18.tensorflow.GraphOptionsR\x0cgraphOptio\
+    ns\x125\n\x17operation_timeout_in_ms\x18\x0b\x20\x01(\x03R\x14operationT\
+    imeoutInMs\x127\n\x0brpc_options\x18\r\x20\x01(\x0b2\x16.tensorflow.RPCO\
+    ptionsR\nrpcOptions\x127\n\x0bcluster_def\x18\x0e\x20\x01(\x0b2\x16.tens\
+    orflow.ClusterDefR\nclusterDef\x122\n\x15isolate_session_state\x18\x0f\
+    \x20\x01(\x08R\x13isolateSessionState\x12F\n\x20share_cluster_devices_in\
+    _session\x18\x11\x20\x01(\x08R\x1cshareClusterDevicesInSession\x12H\n\
+    \x0cexperimental\x18\x10\x20\x01(\x0b2$.tensorflow.ConfigProto.Experimen\
+    talR\x0cexperimental\x1a>\n\x10DeviceCountEntry\x12\x10\n\x03key\x18\x01\
+    \x20\x01(\tR\x03key\x12\x14\n\x05value\x18\x02\x20\x01(\x05R\x05value:\
+    \x028\x01\x1a\x86\x0c\n\x0cExperimental\x126\n\x17collective_group_leade\
+    r\x18\x01\x20\x01(\tR\x15collectiveGroupLeader\x12#\n\rexecutor_type\x18\
+    \x03\x20\x01(\tR\x0cexecutorType\x12+\n\x12recv_buf_max_chunk\x18\x04\
+    \x20\x01(\x05R\x0frecvBufMaxChunk\x12*\n\x11use_numa_affinity\x18\x05\
+    \x20\x01(\x08R\x0fuseNumaAffinity\x12a\n-collective_deterministic_sequen\
+    tial_execution\x18\x06\x20\x01(\x08R*collectiveDeterministicSequentialEx\
+    ecution\x12'\n\x0fcollective_nccl\x18\x07\x20\x01(\x08R\x0ecollectiveNcc\
+    l\x12a\n.share_session_state_in_clusterspec_propagation\x18\x08\x20\x01(\
+    \x08R)shareSessionStateInClusterspecPropagation\x126\n\x17disable_thread\
+    _spinning\x18\t\x20\x01(\x08R\x15disableThreadSpinning\x12F\n\x20share_c\
+    luster_devices_in_session\x18\n\x20\x01(\x08R\x1cshareClusterDevicesInSe\
+    ssion\x12F\n\x10session_metadata\x18\x0b\x20\x01(\x0b2\x1b.tensorflow.Se\
+    ssionMetadataR\x0fsessionMetadata\x129\n\x19optimize_for_static_graph\
+    \x18\x0c\x20\x01(\x08R\x16optimizeForStaticGraph\x12,\n\x12enable_mlir_b\
+    ridge\x18\r\x20\x01(\x08R\x10enableMlirBridge\x12f\n\x13mlir_bridge_roll\
+    out\x18\x11\x20\x01(\x0e26.tensorflow.ConfigProto.Experimental.MlirBridg\
+    eRolloutR\x11mlirBridgeRollout\x12C\n\x1eenable_mlir_graph_optimization\
+    \x18\x10\x20\x01(\x08R\x1benableMlirGraphOptimization\x12E\n\x1fdisable_\
+    output_partition_graphs\x18\x0e\x20\x01(\x08R\x1cdisableOutputPartitionG\
+    raphs\x12=\n\x1bxla_fusion_autotuner_thresh\x18\x0f\x20\x01(\x03R\x18xla\
+    FusionAutotunerThresh\x12\x19\n\x08use_tfrt\x18\x12\x20\x01(\x08R\x07use\
+    Tfrt\x12E\n\x1fdisable_functional_ops_lowering\x18\x15\x20\x01(\x08R\x1c\
+    disableFunctionalOpsLowering\x12D\n\x1fxla_prefer_single_graph_cluster\
+    \x18\x16\x20\x01(\x08R\x1bxlaPreferSingleGraphCluster\x12V\n\x13coordina\
+    tion_config\x18\x17\x20\x01(\x0b2%.tensorflow.CoordinationServiceConfigR\
+    \x12coordinationConfig\"\xda\x01\n\x11MlirBridgeRollout\x12#\n\x1fMLIR_B\
+    RIDGE_ROLLOUT_UNSPECIFIED\x10\0\x12\x1f\n\x1bMLIR_BRIDGE_ROLLOUT_ENABLED\
+    \x10\x01\x12\x20\n\x1cMLIR_BRIDGE_ROLLOUT_DISABLED\x10\x02\x12)\n%MLIR_B\
+    RIDGE_ROLLOUT_SAFE_MODE_ENABLED\x10\x03\x122\n.MLIR_BRIDGE_ROLLOUT_SAFE_\
+    MODE_FALLBACK_ENABLED\x10\x04J\x04\x08\x02\x10\x03J\x04\x08\x13\x10\x14J\
+    \x04\x08\x14\x10\x15\"\xa8\x06\n\nRunOptions\x12B\n\x0btrace_level\x18\
+    \x01\x20\x01(\x0e2!.tensorflow.RunOptions.TraceLevelR\ntraceLevel\x12\"\
+    \n\rtimeout_in_ms\x18\x02\x20\x01(\x03R\x0btimeoutInMs\x12/\n\x14inter_o\
+    p_thread_pool\x18\x03\x20\x01(\x05R\x11interOpThreadPool\x126\n\x17outpu\
+    t_partition_graphs\x18\x05\x20\x01(\x08R\x15outputPartitionGraphs\x12=\n\
+    \rdebug_options\x18\x06\x20\x01(\x0b2\x18.tensorflow.DebugOptionsR\x0cde\
+    bugOptions\x12J\n\"report_tensor_allocations_upon_oom\x18\x07\x20\x01(\
+    \x08R\x1ereportTensorAllocationsUponOom\x12G\n\x0cexperimental\x18\x08\
+    \x20\x01(\x0b2#.tensorflow.RunOptions.ExperimentalR\x0cexperimental\x1a\
+    \x9a\x02\n\x0cExperimental\x120\n\x14collective_graph_key\x18\x01\x20\
+    \x01(\x03R\x12collectiveGraphKey\x12/\n\x14use_run_handler_pool\x18\x02\
+    \x20\x01(\x08R\x11useRunHandlerPool\x12r\n\x18run_handler_pool_options\
+    \x18\x03\x20\x01(\x0b29.tensorflow.RunOptions.Experimental.RunHandlerPoo\
+    lOptionsR\x15runHandlerPoolOptions\x1a3\n\x15RunHandlerPoolOptions\x12\
+    \x1a\n\x08priority\x18\x01\x20\x01(\x03R\x08priority\"R\n\nTraceLevel\
+    \x12\x0c\n\x08NO_TRACE\x10\0\x12\x12\n\x0eSOFTWARE_TRACE\x10\x01\x12\x12\
+    \n\x0eHARDWARE_TRACE\x10\x02\x12\x0e\n\nFULL_TRACE\x10\x03J\x04\x08\x04\
+    \x10\x05\"\xc4\x04\n\x0bRunMetadata\x124\n\nstep_stats\x18\x01\x20\x01(\
+    \x0b2\x15.tensorflow.StepStatsR\tstepStats\x127\n\ncost_graph\x18\x02\
+    \x20\x01(\x0b2\x18.tensorflow.CostGraphDefR\tcostGraph\x12?\n\x10partiti\
+    on_graphs\x18\x03\x20\x03(\x0b2\x14.tensorflow.GraphDefR\x0fpartitionGra\
+    phs\x12O\n\x0ffunction_graphs\x18\x04\x20\x03(\x0b2&.tensorflow.RunMetad\
+    ata.FunctionGraphsR\x0efunctionGraphs\x12F\n\x10session_metadata\x18\x05\
+    \x20\x01(\x0b2\x1b.tensorflow.SessionMetadataR\x0fsessionMetadata\x1a\
+    \xeb\x01\n\x0eFunctionGraphs\x12?\n\x10partition_graphs\x18\x01\x20\x03(\
+    \x0b2\x14.tensorflow.GraphDefR\x0fpartitionGraphs\x12J\n\x16pre_optimiza\
+    tion_graph\x18\x02\x20\x01(\x0b2\x14.tensorflow.GraphDefR\x14preOptimiza\
+    tionGraph\x12L\n\x17post_optimization_graph\x18\x03\x20\x01(\x0b2\x14.te\
+    nsorflow.GraphDefR\x15postOptimizationGraph\"P\n\x10TensorConnection\x12\
+    \x1f\n\x0bfrom_tensor\x18\x01\x20\x01(\tR\nfromTensor\x12\x1b\n\tto_tens\
+    or\x18\x02\x20\x01(\tR\x08toTensor\"\xa5\x04\n\x0fCallableOptions\x12\
+    \x12\n\x04feed\x18\x01\x20\x03(\tR\x04feed\x12\x14\n\x05fetch\x18\x02\
+    \x20\x03(\tR\x05fetch\x12\x16\n\x06target\x18\x03\x20\x03(\tR\x06target\
+    \x127\n\x0brun_options\x18\x04\x20\x01(\x0b2\x16.tensorflow.RunOptionsR\
+    \nrunOptions\x12I\n\x11tensor_connection\x18\x05\x20\x03(\x0b2\x1c.tenso\
+    rflow.TensorConnectionR\x10tensorConnection\x12O\n\x0cfeed_devices\x18\
     \x06\x20\x03(\x0b2,.tensorflow.CallableOptions.FeedDevicesEntryR\x0bfeed\
     Devices\x12R\n\rfetch_devices\x18\x07\x20\x03(\x0b2-.tensorflow.Callable\
     Options.FetchDevicesEntryR\x0cfetchDevices\x12&\n\x0ffetch_skip_sync\x18\

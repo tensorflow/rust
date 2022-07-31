@@ -60,7 +60,7 @@ fn space<'a>() -> impl FnMut(&'a [u8]) -> ParseResult<'a, ()> {
 
 fn eof<'a>() -> impl Fn(&'a [u8]) -> ParseResult<'a, ()> {
     move |input: &[u8]| {
-        if input.len() == 0 {
+        if input.is_empty() {
             Ok((input, ()))
         } else {
             Err(nom::Err::Error(make_error(input, ErrorKind::Eof)))
@@ -68,7 +68,7 @@ fn eof<'a>() -> impl Fn(&'a [u8]) -> ParseResult<'a, ()> {
     }
 }
 
-fn string<'a>(input: &'a [u8]) -> ParseResult<'a, String> {
+fn string(input: &[u8]) -> ParseResult<String> {
     let string_char = alt((
         none_of("\"\\"),
         map(tag("\\n"), |_| '\n'),
@@ -83,39 +83,39 @@ fn string<'a>(input: &'a [u8]) -> ParseResult<'a, String> {
     )(input)
 }
 
-fn boolean<'a>(input: &'a [u8]) -> ParseResult<'a, bool> {
+fn boolean(input: &[u8]) -> ParseResult<bool> {
     alt((map(tag("true"), |_| true), map(tag("false"), |_| false)))(input)
 }
 
-fn int64<'a>(input: &'a [u8]) -> ParseResult<'a, i64> {
+fn int64(input: &[u8]) -> ParseResult<i64> {
     map_res(many1(one_of("0123456789+-")), |v| {
         str::parse::<i64>(&v.iter().collect::<String>())
     })(input)
 }
 
-fn int32<'a>(input: &'a [u8]) -> ParseResult<'a, i32> {
+fn int32(input: &[u8]) -> ParseResult<i32> {
     map_res(many1(one_of("0123456789+-")), |v| {
         str::parse::<i32>(&v.iter().collect::<String>())
     })(input)
 }
 
-fn float_<'a>(input: &'a [u8]) -> ParseResult<'a, f32> {
+fn float_(input: &[u8]) -> ParseResult<f32> {
     map_res(many1(one_of("0123456789+-.aefinAEFIN")), |v| {
         str::parse::<f32>(&v.iter().collect::<String>())
     })(input)
 }
 
-fn identifier<'a>(input: &'a [u8]) -> ParseResult<'a, String> {
+fn identifier(input: &[u8]) -> ParseResult<String> {
     let identifier_start = map_res(anychar, |c| match c {
         'A'..='Z' | 'a'..='z' | '_' => Ok(c),
-        _ => Err(nom::Err::<VerboseError<&'a [u8]>>::Error(make_error(
+        _ => Err(nom::Err::<VerboseError<&[u8]>>::Error(make_error(
             input,
             ErrorKind::OneOf,
         ))),
     });
     let identifier_part = map_res(anychar, |c| match c {
         'A'..='Z' | 'a'..='z' | '_' | '0'..='9' => Ok(c),
-        _ => Err(nom::Err::<VerboseError<&'a [u8]>>::Error(make_error(
+        _ => Err(nom::Err::<VerboseError<&[u8]>>::Error(make_error(
             input,
             ErrorKind::OneOf,
         ))),
@@ -126,7 +126,7 @@ fn identifier<'a>(input: &'a [u8]) -> ParseResult<'a, String> {
     )(input)
 }
 
-fn data_type<'a>(input: &'a [u8]) -> ParseResult<'a, DataType> {
+fn data_type(input: &[u8]) -> ParseResult<DataType> {
     map_res(identifier, |s| match &s as &str {
         "DT_BFLOAT16" => Ok(DataType::DT_BFLOAT16),
         "DT_HALF" => Ok(DataType::DT_HALF),
@@ -151,22 +151,21 @@ fn data_type<'a>(input: &'a [u8]) -> ParseResult<'a, DataType> {
         "DT_VARIANT" => Ok(DataType::DT_VARIANT),
         "DT_BOOL" => Ok(DataType::DT_BOOL),
         "DT_RESOURCE" => Ok(DataType::DT_RESOURCE),
-        _ => Err(nom::Err::<VerboseError<&'a [u8]>>::Error(make_error(
+        _ => Err(nom::Err::<VerboseError<&[u8]>>::Error(make_error(
             input,
             ErrorKind::Alt,
         ))),
     })(input)
 }
 
-fn type_id<'a>(input: &'a [u8]) -> ParseResult<'a, FullTypeId> {
+fn type_id(input: &[u8]) -> ParseResult<FullTypeId> {
     map_res(identifier, |s| {
         match FullTypeId::values()
             .iter()
-            .filter(|d| d.descriptor().name() == s)
-            .next()
+            .find(|d| d.descriptor().name() == s)
         {
             Some(d) => Ok(FullTypeId::from_i32(d.value()).unwrap()),
-            None => Err(nom::Err::<VerboseError<&'a [u8]>>::Error(make_error(
+            None => Err(nom::Err::<VerboseError<&[u8]>>::Error(make_error(
                 input,
                 ErrorKind::Alt,
             ))),
@@ -295,14 +294,14 @@ where
     map_res(separated_list0(space(), field), merge_protos)
 }
 
-fn tensor_shape_proto_dim<'a>(input: &'a [u8]) -> ParseResult<'a, TensorShapeProto_Dim> {
+fn tensor_shape_proto_dim(input: &[u8]) -> ParseResult<TensorShapeProto_Dim> {
     message(alt((
         int64_field("size", TensorShapeProto_Dim::set_size),
         string_field("name", TensorShapeProto_Dim::set_name),
     )))(input)
 }
 
-fn tensor_shape_proto<'a>(input: &'a [u8]) -> ParseResult<'a, TensorShapeProto> {
+fn tensor_shape_proto(input: &[u8]) -> ParseResult<TensorShapeProto> {
     message(alt((
         boolean_field("unknown_rank", TensorShapeProto::set_unknown_rank),
         message_field(
@@ -313,7 +312,7 @@ fn tensor_shape_proto<'a>(input: &'a [u8]) -> ParseResult<'a, TensorShapeProto> 
     )))(input)
 }
 
-fn tensor_proto<'a>(input: &'a [u8]) -> ParseResult<'a, TensorProto> {
+fn tensor_proto(input: &[u8]) -> ParseResult<TensorProto> {
     message(alt((
         data_type_field("dtype", TensorProto::set_dtype),
         message_field(
@@ -326,7 +325,7 @@ fn tensor_proto<'a>(input: &'a [u8]) -> ParseResult<'a, TensorProto> {
     )))(input)
 }
 
-fn attr_value_list_value<'a>(input: &'a [u8]) -> ParseResult<'a, AttrValue_ListValue> {
+fn attr_value_list_value(input: &[u8]) -> ParseResult<AttrValue_ListValue> {
     message(alt((
         data_type_field("type", |m: &mut AttrValue_ListValue, v| {
             m.mut_field_type().push(v)
@@ -339,7 +338,7 @@ fn attr_value_list_value<'a>(input: &'a [u8]) -> ParseResult<'a, AttrValue_ListV
     )))(input)
 }
 
-fn attr_value<'a>(input: &'a [u8]) -> ParseResult<'a, AttrValue> {
+fn attr_value(input: &[u8]) -> ParseResult<AttrValue> {
     message(alt((
         string_field("s", |m: &mut AttrValue, s| m.set_s(s.bytes().collect())),
         boolean_field("b", AttrValue::set_b),
@@ -353,7 +352,7 @@ fn attr_value<'a>(input: &'a [u8]) -> ParseResult<'a, AttrValue> {
     )))(input)
 }
 
-fn attr<'a>(input: &'a [u8]) -> ParseResult<'a, OpDef_AttrDef> {
+fn attr(input: &[u8]) -> ParseResult<OpDef_AttrDef> {
     message(alt((
         string_field("name", OpDef_AttrDef::set_name),
         string_field("description", OpDef_AttrDef::set_description),
@@ -373,7 +372,7 @@ fn attr<'a>(input: &'a [u8]) -> ParseResult<'a, OpDef_AttrDef> {
     )))(input)
 }
 
-fn experimental_full_type<'a>(input: &'a [u8]) -> ParseResult<'a, FullTypeDef> {
+fn experimental_full_type(input: &[u8]) -> ParseResult<FullTypeDef> {
     message(alt((
         type_id_field("type_id", FullTypeDef::set_type_id),
         message_field(
@@ -385,7 +384,7 @@ fn experimental_full_type<'a>(input: &'a [u8]) -> ParseResult<'a, FullTypeDef> {
     )))(input)
 }
 
-fn arg_def<'a>(input: &'a [u8]) -> ParseResult<'a, OpDef_ArgDef> {
+fn arg_def(input: &[u8]) -> ParseResult<OpDef_ArgDef> {
     message(alt((
         string_field("name", OpDef_ArgDef::set_name),
         string_field("description", OpDef_ArgDef::set_description),
@@ -402,14 +401,14 @@ fn arg_def<'a>(input: &'a [u8]) -> ParseResult<'a, OpDef_ArgDef> {
     )))(input)
 }
 
-fn op_deprecation<'a>(input: &'a [u8]) -> ParseResult<'a, OpDeprecation> {
+fn op_deprecation(input: &[u8]) -> ParseResult<OpDeprecation> {
     message(alt((
         int32_field("version", OpDeprecation::set_version),
         string_field("explanation", OpDeprecation::set_explanation),
     )))(input)
 }
 
-fn op_def<'a>(input: &'a [u8]) -> ParseResult<'a, OpDef> {
+fn op_def(input: &[u8]) -> ParseResult<OpDef> {
     context(
         "OpDef",
         message(alt((
@@ -443,7 +442,7 @@ fn op_def<'a>(input: &'a [u8]) -> ParseResult<'a, OpDef> {
     )(input)
 }
 
-fn op_def_array<'a>(input: &'a [u8]) -> ParseResult<'a, Vec<OpDef>> {
+fn op_def_array(input: &[u8]) -> ParseResult<Vec<OpDef>> {
     terminated(
         preceded(
             space(),
@@ -460,20 +459,20 @@ fn op_def_array<'a>(input: &'a [u8]) -> ParseResult<'a, Vec<OpDef>> {
 }
 
 pub fn parse(input: &[u8]) -> Result<Vec<OpDef>, ParseError> {
-    match op_def_array(&input) {
+    match op_def_array(input) {
         Ok(x) => Ok(x.1),
         Err(e) => {
             let pos = match &e {
                 nom::Err::Incomplete(_) => None,
                 nom::Err::Error(e) => {
-                    if e.errors.len() == 0 {
+                    if e.errors.is_empty() {
                         None
                     } else {
                         Some(input.len() - e.errors[0].0.len())
                     }
                 }
                 nom::Err::Failure(e) => {
-                    if e.errors.len() == 0 {
+                    if e.errors.is_empty() {
                         None
                     } else {
                         Some(input.len() - e.errors[0].0.len())

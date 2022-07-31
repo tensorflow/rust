@@ -1554,14 +1554,14 @@ impl<'a, T: TensorType> From<&'a [T]> for Tensor<T> {
 }
 
 #[rustversion::since(1.51)]
-impl<'a, T: TensorType, const N: usize> From<[T; N]> for Tensor<T> {
+impl<T: TensorType, const N: usize> From<[T; N]> for Tensor<T> {
     fn from(data: [T; N]) -> Tensor<T> {
         Tensor::from(&data[..])
     }
 }
 
 #[rustversion::since(1.51)]
-impl<'a, T: TensorType, const N: usize> From<&[T; N]> for Tensor<T> {
+impl<T: TensorType, const N: usize> From<&[T; N]> for Tensor<T> {
     fn from(data: &[T; N]) -> Tensor<T> {
         Tensor::from(&data[..])
     }

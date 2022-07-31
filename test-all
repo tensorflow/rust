@@ -59,6 +59,12 @@ run cargo doc -vv --features tensorflow_unstable,ndarray,eager,private-docs-rs
 (cd tensorflow-sys && run cargo run --example tf_version)
 (cd tensorflow-sys && run cargo doc -vv)
 
+run cargo clippy
+(cd tensorflow-sys && run cargo clippy)
+(cd tensorflow-op-codegen && run cargo clippy)
+(cd tensorflow-proto-codegen && run cargo clippy)
+(cd tensorflow-internal-macros && run cargo clippy)
+
 for file in $(find . -name target -prune -o -name '*.rs' -print); do
     bad_deprecations="$(rustfmt --emit stdout --config max_width=1000 "$file" | grep '#\[deprecated' | grep -E -v '([^"\\]|\\.|"([^"\\]|\\.)*")*since' || true)"
     if [[ "${bad_deprecations}" != "" ]]; then
