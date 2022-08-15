@@ -359,7 +359,6 @@ pub enum FullTypeId {
     TFT_ARRAY = 1001,
     TFT_OPTIONAL = 1002,
     TFT_LITERAL = 1003,
-    TFT_ENCODED = 1004,
     TFT_BOOL = 200,
     TFT_UINT8 = 201,
     TFT_UINT16 = 202,
@@ -378,7 +377,6 @@ pub enum FullTypeId {
     TFT_STRING = 214,
     TFT_DATASET = 10102,
     TFT_RAGGED = 10103,
-    TFT_ITERATOR = 10104,
     TFT_MUTEX_LOCK = 10202,
     TFT_LEGACY_VARIANT = 10203,
 }
@@ -401,7 +399,6 @@ impl ::protobuf::ProtobufEnum for FullTypeId {
             1001 => ::std::option::Option::Some(FullTypeId::TFT_ARRAY),
             1002 => ::std::option::Option::Some(FullTypeId::TFT_OPTIONAL),
             1003 => ::std::option::Option::Some(FullTypeId::TFT_LITERAL),
-            1004 => ::std::option::Option::Some(FullTypeId::TFT_ENCODED),
             200 => ::std::option::Option::Some(FullTypeId::TFT_BOOL),
             201 => ::std::option::Option::Some(FullTypeId::TFT_UINT8),
             202 => ::std::option::Option::Some(FullTypeId::TFT_UINT16),
@@ -420,7 +417,6 @@ impl ::protobuf::ProtobufEnum for FullTypeId {
             214 => ::std::option::Option::Some(FullTypeId::TFT_STRING),
             10102 => ::std::option::Option::Some(FullTypeId::TFT_DATASET),
             10103 => ::std::option::Option::Some(FullTypeId::TFT_RAGGED),
-            10104 => ::std::option::Option::Some(FullTypeId::TFT_ITERATOR),
             10202 => ::std::option::Option::Some(FullTypeId::TFT_MUTEX_LOCK),
             10203 => ::std::option::Option::Some(FullTypeId::TFT_LEGACY_VARIANT),
             _ => ::std::option::Option::None
@@ -440,7 +436,6 @@ impl ::protobuf::ProtobufEnum for FullTypeId {
             FullTypeId::TFT_ARRAY,
             FullTypeId::TFT_OPTIONAL,
             FullTypeId::TFT_LITERAL,
-            FullTypeId::TFT_ENCODED,
             FullTypeId::TFT_BOOL,
             FullTypeId::TFT_UINT8,
             FullTypeId::TFT_UINT16,
@@ -459,7 +454,6 @@ impl ::protobuf::ProtobufEnum for FullTypeId {
             FullTypeId::TFT_STRING,
             FullTypeId::TFT_DATASET,
             FullTypeId::TFT_RAGGED,
-            FullTypeId::TFT_ITERATOR,
             FullTypeId::TFT_MUTEX_LOCK,
             FullTypeId::TFT_LEGACY_VARIANT,
         ];
@@ -494,26 +488,24 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     \x0bFullTypeDef\x12/\n\x07type_id\x18\x01\x20\x01(\x0e2\x16.tensorflow.F\
     ullTypeIdR\x06typeId\x12+\n\x04args\x18\x02\x20\x03(\x0b2\x17.tensorflow\
     .FullTypeDefR\x04args\x12\x0e\n\x01s\x18\x03\x20\x01(\tH\0R\x01s\x12\x0e\
-    \n\x01i\x18\x04\x20\x01(\x03H\0R\x01iB\x06\n\x04attr*\xc3\x04\n\nFullTyp\
+    \n\x01i\x18\x04\x20\x01(\x03H\0R\x01iB\x06\n\x04attr*\x9e\x04\n\nFullTyp\
     eId\x12\r\n\tTFT_UNSET\x10\0\x12\x0b\n\x07TFT_VAR\x10\x01\x12\x0b\n\x07T\
     FT_ANY\x10\x02\x12\x0f\n\x0bTFT_PRODUCT\x10\x03\x12\r\n\tTFT_NAMED\x10\
     \x04\x12\x10\n\x0cTFT_FOR_EACH\x10\x14\x12\x10\n\x0cTFT_CALLABLE\x10d\
     \x12\x0f\n\nTFT_TENSOR\x10\xe8\x07\x12\x0e\n\tTFT_ARRAY\x10\xe9\x07\x12\
     \x11\n\x0cTFT_OPTIONAL\x10\xea\x07\x12\x10\n\x0bTFT_LITERAL\x10\xeb\x07\
-    \x12\x10\n\x0bTFT_ENCODED\x10\xec\x07\x12\r\n\x08TFT_BOOL\x10\xc8\x01\
-    \x12\x0e\n\tTFT_UINT8\x10\xc9\x01\x12\x0f\n\nTFT_UINT16\x10\xca\x01\x12\
-    \x0f\n\nTFT_UINT32\x10\xcb\x01\x12\x0f\n\nTFT_UINT64\x10\xcc\x01\x12\r\n\
-    \x08TFT_INT8\x10\xcd\x01\x12\x0e\n\tTFT_INT16\x10\xce\x01\x12\x0e\n\tTFT\
-    _INT32\x10\xcf\x01\x12\x0e\n\tTFT_INT64\x10\xd0\x01\x12\r\n\x08TFT_HALF\
-    \x10\xd1\x01\x12\x0e\n\tTFT_FLOAT\x10\xd2\x01\x12\x0f\n\nTFT_DOUBLE\x10\
-    \xd3\x01\x12\x11\n\x0cTFT_BFLOAT16\x10\xd7\x01\x12\x12\n\rTFT_COMPLEX64\
-    \x10\xd4\x01\x12\x13\n\x0eTFT_COMPLEX128\x10\xd5\x01\x12\x0f\n\nTFT_STRI\
-    NG\x10\xd6\x01\x12\x10\n\x0bTFT_DATASET\x10\xf6N\x12\x0f\n\nTFT_RAGGED\
-    \x10\xf7N\x12\x11\n\x0cTFT_ITERATOR\x10\xf8N\x12\x13\n\x0eTFT_MUTEX_LOCK\
-    \x10\xdaO\x12\x17\n\x12TFT_LEGACY_VARIANT\x10\xdbOB\x81\x01\n\x18org.ten\
-    sorflow.frameworkB\x0eFullTypeProtosP\x01ZPgithub.com/tensorflow/tensorf\
-    low/tensorflow/go/core/framework/full_type_go_proto\xf8\x01\x01b\x06prot\
-    o3\
+    \x12\r\n\x08TFT_BOOL\x10\xc8\x01\x12\x0e\n\tTFT_UINT8\x10\xc9\x01\x12\
+    \x0f\n\nTFT_UINT16\x10\xca\x01\x12\x0f\n\nTFT_UINT32\x10\xcb\x01\x12\x0f\
+    \n\nTFT_UINT64\x10\xcc\x01\x12\r\n\x08TFT_INT8\x10\xcd\x01\x12\x0e\n\tTF\
+    T_INT16\x10\xce\x01\x12\x0e\n\tTFT_INT32\x10\xcf\x01\x12\x0e\n\tTFT_INT6\
+    4\x10\xd0\x01\x12\r\n\x08TFT_HALF\x10\xd1\x01\x12\x0e\n\tTFT_FLOAT\x10\
+    \xd2\x01\x12\x0f\n\nTFT_DOUBLE\x10\xd3\x01\x12\x11\n\x0cTFT_BFLOAT16\x10\
+    \xd7\x01\x12\x12\n\rTFT_COMPLEX64\x10\xd4\x01\x12\x13\n\x0eTFT_COMPLEX12\
+    8\x10\xd5\x01\x12\x0f\n\nTFT_STRING\x10\xd6\x01\x12\x10\n\x0bTFT_DATASET\
+    \x10\xf6N\x12\x0f\n\nTFT_RAGGED\x10\xf7N\x12\x13\n\x0eTFT_MUTEX_LOCK\x10\
+    \xdaO\x12\x17\n\x12TFT_LEGACY_VARIANT\x10\xdbOB\x81\x01\n\x18org.tensorf\
+    low.frameworkB\x0eFullTypeProtosP\x01ZPgithub.com/tensorflow/tensorflow/\
+    tensorflow/go/core/framework/full_type_go_proto\xf8\x01\x01b\x06proto3\
 ";
 
 static file_descriptor_proto_lazy: ::protobuf::rt::LazyV2<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::rt::LazyV2::INIT;
