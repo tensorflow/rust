@@ -38,14 +38,14 @@ so if you are unsure please [check out the docs](https://www.tensorflow.org/inst
 Some of the examples use TensorFlow code written in Python and require a full TensorFlow
 installation.
 
-The minimum supported Rust version is 1.55.
+The minimum supported Rust version is 1.58.
 
 ### Usage
 Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-tensorflow = "0.18.0"
+tensorflow = "0.19.0"
 ```
 
 and this to your crate root:
@@ -100,7 +100,7 @@ To enable GPU support, use the `tensorflow_gpu` feature in your Cargo.toml:
 
 ```
 [dependencies]
-tensorflow = { version = "0.18.0", features = ["tensorflow_gpu"] }
+tensorflow = { version = "0.19.0", features = ["tensorflow_gpu"] }
 ```
 
 ## Manual TensorFlow Compilation
