@@ -1,5 +1,17 @@
 # Changelog
 
+## Release 0.19.0
+
+### Additions
+
+- Improved debug formatting of tensors
+- Add accessors for operation named inputs and outputs
+- Support loading TensorFlow library dynamically at runtime
+
+### Changes
+
+- Upgrade to TensorFlow 2.9.1
+
 ## Release 0.18.0
 
 ### Additions
