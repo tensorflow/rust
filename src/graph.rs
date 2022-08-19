@@ -669,10 +669,9 @@ impl Graph {
             None => None,
             Some(r) => Some(r?),
         };
-        // Don't use Option::map because the CStrings need to outlive the
-        // pointers and Option::map consumes the Option.
-        let output_names_ptrs: Option<Vec<*const c_char>> =
-            output_names_cstrs.map(|slice| slice.iter().map(|s| s.as_ptr()).collect());
+        let output_names_ptrs: Option<Vec<*const c_char>> = output_names_cstrs
+            .as_ref()
+            .map(|slice| slice.iter().map(|s| s.as_ptr()).collect());
         let output_names_ptrs_ptr = match &output_names_ptrs {
             None => ptr::null(),
             Some(ref v) => v.as_ptr(),
