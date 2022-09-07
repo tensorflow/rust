@@ -1146,6 +1146,12 @@ extern "C" {
     ) -> *mut TF_Library;
 }
 extern "C" {
+    pub fn TF_LoadPluggableDeviceLibrary(
+        library_filename: *const ::std::os::raw::c_char,
+        status: *mut TF_Status,
+    ) -> *mut TF_Library;
+}
+extern "C" {
     pub fn TF_GetOpList(lib_handle: *mut TF_Library) -> TF_Buffer;
 }
 extern "C" {

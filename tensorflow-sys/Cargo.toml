@@ -28,7 +28,7 @@ log = { version = "0.4", optional = true }
 [build-dependencies]
 curl = "0.4.38"
 flate2 = "1.0.20"
-pkg-config = "0.3.19"
+pkg-config = "0.3.25"
 semver = "1.0.3"
 tar = "0.4.35"
 zip = "0.6.2"
