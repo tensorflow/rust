@@ -1,4 +1,4 @@
-extern crate random;
+extern crate rand;
 extern crate tensorflow;
 
 use std::error::Error;
