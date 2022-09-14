@@ -13,11 +13,14 @@ function run {
 # the run-valgrind script.
 version_build_script=`grep "const VERSION" tensorflow-sys/build.rs | sed 's|.*"\([^"]*\)";|\1|g'`
 version_run_valgrind=`grep "tensorflow_version=" run-valgrind | sed "s|.*=\(.*\)|\1|g"`
-if [[ "${version_build_script}" != "${version_run_valgrind}" ]]; then
+version_requirements=`grep "tensorflow\s*=" .github/workflows/requirements.txt | sed "s|.*== \(.*\)|\1|g"`
+if [[ "${version_build_script}" != "${version_run_valgrind}" || \
+    "${version_build_script}" != "${version_requirements}" ]]; then
     echo "ERROR: Tensorflow version specified in build script does not match the one in the"
     echo "       valgrind run script."
     echo "       tensorflow-sys/build.rs: ${version_build_script}"
     echo "       run-valgrind: ${version_run_valgrind}"
+    echo "       ./github/workflows/requirements.txt: ${version_requirements}"
     exit 1
 fi
 
@@ -44,6 +47,7 @@ if [[ "${version_tensorflow_sys_crate}" != "${version_tensorflow_sys_readme}" ]]
     exit 1
 fi
 
+run python3 examples/mobilenetv3/create_model.py
 run cargo fmt --all -- --check
 run cargo test -vv -j 2
 run cargo test -vv -j 2 --features eager
