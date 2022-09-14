@@ -19,18 +19,18 @@ edition = "2018"
 features = ["private-docs-rs"]
 
 [dependencies]
-libc = "0.2.98"
-lazy_static = { version = "1.4", optional = true }
-libloading = { version = "0.7", optional = true }
-cfg-if = { version = "1.0", optional = true }
-log = { version = "0.4", optional = true }
+libc = "0.2.132"
+lazy_static = { version = "1.4.0", optional = true }
+libloading = { version = "0.7.3", optional = true }
+cfg-if = { version = "1.0.0", optional = true }
+log = { version = "0.4.17", optional = true }
 
 [build-dependencies]
-curl = "0.4.38"
-flate2 = "1.0.20"
-pkg-config = "0.3.19"
-semver = "1.0.3"
-tar = "0.4.35"
+curl = "0.4.44"
+flate2 = "1.0.24"
+pkg-config = "0.3.25"
+semver = "1.0.13"
+tar = "0.4.38"
 zip = "0.6.2"
 
 [features]

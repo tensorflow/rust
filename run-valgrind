@@ -46,6 +46,12 @@ for example in addition regression expressions regression_checkpoint regression_
     run valgrind --leak-check=full target/debug/examples/"$example" >> "$valgrind_log" 2>&1
 done
 
+echo "Testing tensorflow eager examples"
+for example in mobilenetv3; do
+    run cargo build --features='examples_system_alloc tensorflow_unstable eager' --example="$example"
+    run valgrind --leak-check=full target/debug/examples/"$example" >> "$valgrind_log" 2>&1
+done
+
 echo "Testing tensorflow-sys examples"
 for example in multiplication; do
     cargo build --features=examples_system_alloc --example="$example" -p tensorflow-sys

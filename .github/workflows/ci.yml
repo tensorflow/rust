@@ -28,6 +28,15 @@ jobs:
           toolchain: stable
           override: true
           components: rustfmt
+      - name: Setup Python # Set Python version
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+      # Install pip and pytest
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r .github/workflows/requirements.txt
       - name: Execute test-all
         run: ./test-all
         shell: bash

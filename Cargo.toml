@@ -9,6 +9,7 @@ readme = "README.md"
 repository = "https://github.com/tensorflow/rust"
 documentation = "https://tensorflow.github.io/rust/tensorflow"
 edition = "2018"
+rust-version = "1.59.0"
 
 [lib]
 # We want to run doctests, but they're broken by https://github.com/rust-lang/cargo/issues/8531.
@@ -19,22 +20,22 @@ doctest = false
 features = ["private-docs-rs", "tensorflow_unstable", "ndarray", "eager"]
 
 [dependencies]
-libc = "0.2.98"
-num-complex = { version = "0.4.0", default-features = false }
+libc = "0.2.132"
+num-complex = { version = "0.4.2", default-features = false }
 tensorflow-internal-macros = { version = "=0.0.3", path = "tensorflow-internal-macros" }
 tensorflow-sys = { version = "0.22.1", path = "tensorflow-sys" }
 byteorder = "1.4.3"
-crc = "2.0.0"
-half = "1.7.1"
+crc = "3.0.0"
+half = "2.1.0"
 # This is used internally but not intended to be exposed through the API.
 protobuf = "=2.27.1"
 # Enables conversions between ndarray::Array objects and tensorflow::Tensor
-ndarray = { version = "0.15.3", optional = true }
-rustversion = "1.0.5"
+ndarray = { version = "0.15.6", optional = true }
+rustversion = "1.0.9"
 
 [dev-dependencies]
 random = "0.12.2"
-serial_test = "0.5.1"
+serial_test = "0.9.0"
 
 [features]
 tensorflow_gpu = ["tensorflow-sys/tensorflow_gpu"]
