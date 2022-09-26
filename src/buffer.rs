@@ -16,7 +16,10 @@ use std::ops::RangeTo;
 use std::os::raw::c_void as std_c_void;
 use std::process;
 use std::slice;
+#[cfg(feature = "default")]
 use tensorflow_sys as tf;
+#[cfg(feature = "tensorflow_runtime_linking")]
+use tensorflow_sys_runtime as tf;
 
 /// Fixed-length heap-allocated vector.
 /// This is basically a `Box<[T]>`, except that that type can't actually be constructed.

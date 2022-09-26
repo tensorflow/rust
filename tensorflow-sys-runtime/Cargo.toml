@@ -1,0 +1,18 @@
+[package]
+name = "tensorflow-sys-runtime"
+version = "0.1.0"
+authors = ["Brian Jones <brian.j.jones@intel.com>"]
+license = "Apache-2.0"
+keywords = ["TensorFlow", "runtime bindings"]
+description = "The package provides runtime bindings to TensorFlow."
+documentation = "https://tensorflow.github.io/rust"
+homepage = "https://github.com/tensorflow/rust"
+repository = "https://github.com/tensorflow/rust"
+edition = "2018"
+
+[dependencies]
+libc = "0.2.132"
+lazy_static = "1.4.0"
+libloading = "0.7.3"
+cfg-if = "1.0.0"
+log = "0.4.17"

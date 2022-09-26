@@ -28,7 +28,10 @@ use std::slice;
 use std::str::FromStr;
 use std::str::Utf8Error;
 use std::sync::Arc;
+#[cfg(feature = "default")]
 use tensorflow_sys as tf;
+#[cfg(feature = "tensorflow_runtime_linking")]
+use tensorflow_sys_runtime as tf;
 
 #[derive(Debug)]
 struct GraphImpl {

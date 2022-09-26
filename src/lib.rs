@@ -49,7 +49,10 @@ use std::process;
 use std::ptr;
 use std::slice;
 use std::str::Utf8Error;
+#[cfg(feature = "default")]
 use tensorflow_sys as tf;
+#[cfg(feature = "tensorflow_runtime_linking")]
+use tensorflow_sys_runtime as tf;
 
 ////////////////////////
 
