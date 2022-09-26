@@ -16,14 +16,12 @@ macro_rules! link {
         // Wrap the loaded functions.
         pub(crate) struct SharedLibrary {
             library: libloading::Library,
-            path: PathBuf,
             pub functions: Functions,
         }
         impl SharedLibrary {
-            fn new(library: libloading::Library, path: PathBuf) -> Self {
+            fn new(library: libloading::Library) -> Self {
                 Self {
                     library,
-                    path,
                     functions: Functions::default(),
                 }
             }
@@ -95,7 +93,7 @@ macro_rules! link {
                         )
                     });
 
-                    let mut library = SharedLibrary::new(library?, path);
+                    let mut library = SharedLibrary::new(library?);
                     $(load::$name(&mut library);)+
                     Ok(library)
                 }
