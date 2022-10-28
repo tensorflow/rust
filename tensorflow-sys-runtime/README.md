@@ -6,6 +6,12 @@ before any other calls so that the linking is completed before use.
 
 ## NOTE
 This crate is meant to be used by [Rust language bindings for Tensorflow][crates-tf]. It is not meant to be used on it's own.
+To use it you will need to disable the default features so you don't also include the tensorflow-sys crate.
+
+```
+[dependencies]
+tensorflow = { version = "0.19.1", default-features = false, features = ["tensorflow_runtime_linking"]}
+```
 
 ## Requirements
 
