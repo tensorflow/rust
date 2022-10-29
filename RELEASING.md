@@ -25,6 +25,11 @@ Note that any crate not mentioned here (e.g. tensorflow-proto-codegen, tensorflo
    1. Bump the version in `tensorflow-sys/Cargo.toml`
    1. Bump the version in `tensorflow-sys/README.md`
    1. Bump the version for `tensorflow-sys` in the root `Cargo.toml`
+1. Bump version number of `tensorflow-sys-runtime` if necessary
+   1. Run `git log v${PREVIOUS_VERSION?}..HEAD tensorflow-sys-runtime` and see if there were any changes. If not, skip.
+   1. Bump the version in `tensorflow-sys-runtime/Cargo.toml`
+   1. Bump the version in `tensorflow-sys-runtime/README.md`
+   1. Bump the version for `tensorflow-sys-runtime` in the root `Cargo.toml`
 1. Bump version number of `tensorflow-internal-macros` if necessary
    1. Run `git log v${PREVIOUS_VERSION?}..HEAD tensorflow-internal-macros` and see if there were any changes. If not, skip.
    1. Bump the version in `tensorflow-internal-macros/Cargo.toml`
@@ -36,6 +41,7 @@ Note that any crate not mentioned here (e.g. tensorflow-proto-codegen, tensorflo
 1. Run `./run-valgrind`
 1. Commit and push the changes. (Push before publishing to ensure that the changes being published are up to date.)
 1. If the version of tensorflow-sys was bumped, run `cargo publish` for tensorflow-sys. (Publish before tagging in case there are problems publishing and we need to add commits to fix them.)
+1. If the version of tensorflow-sys-runtime was bumped, run `cargo publish` for tensorflow-sys-runtime. (Publish before tagging in case there are problems publishing and we need to add commits to fix them.)
 1. If the version of tensorflow-internal-macros was bumped, run `cargo publish` for tensorflow-internal-macros. (Publish before tagging in case there are problems publishing and we need to add commits to fix them.)
 1. Run `cargo publish`. (Publish before tagging in case there are problems publishing and we need to add commits to fix them.)
 1. Add a `v${VERSION?}` tag and push it

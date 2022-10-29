@@ -23,7 +23,8 @@ features = ["private-docs-rs", "tensorflow_unstable", "ndarray", "eager"]
 libc = "0.2.132"
 num-complex = { version = "0.4.2", default-features = false }
 tensorflow-internal-macros = { version = "=0.0.3", path = "tensorflow-internal-macros" }
-tensorflow-sys = { version = "0.22.1", path = "tensorflow-sys" }
+tensorflow-sys = { version = "0.22.1", path = "tensorflow-sys", optional = true }
+tensorflow-sys-runtime = { version = "0.1.0", path = "tensorflow-sys-runtime", optional = true }
 byteorder = "1.4.3"
 crc = "3.0.0"
 half = "2.1.0"
@@ -38,9 +39,10 @@ random = "0.12.2"
 serial_test = "0.9.0"
 
 [features]
+default = ["tensorflow-sys"]
 tensorflow_gpu = ["tensorflow-sys/tensorflow_gpu"]
 tensorflow_unstable = []
-tensorflow_runtime_linking = ["tensorflow-sys/runtime_linking"]
+tensorflow_runtime_linking = ["tensorflow-sys-runtime"]
 eager = ["tensorflow-sys/eager"]
 # This is for testing purposes; users should not use this.
 examples_system_alloc = ["tensorflow-sys/examples_system_alloc"]

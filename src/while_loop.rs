@@ -9,7 +9,10 @@ use std::os::raw::c_int;
 use std::ptr;
 use std::result;
 use std::slice;
+#[cfg(feature = "default")]
 use tensorflow_sys as tf;
+#[cfg(feature = "tensorflow_runtime_linking")]
+use tensorflow_sys_runtime as tf;
 
 // This exists purely to ensure TF_AbortWhile gets called properly, even on panic.
 #[derive(Debug)]
