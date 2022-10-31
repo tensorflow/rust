@@ -46,3 +46,23 @@ fn tfe_tensor_handle() {
         ffi::TF_DeleteTensor(tf_tensor);
     }
 }
+
+/// Test that the experimental API works.
+#[cfg(feature = "experimental")]
+#[test]
+fn load_plugable_device() {
+    let c_filename = std::ffi::CString::new("libmetal_plugin.dylib").expect("CString::new failed");
+    unsafe {
+        let raw_status = ffi::TF_NewStatus();
+        ffi::TF_LoadPluggableDeviceLibrary(c_filename.as_ptr(), raw_status);
+        if ffi::TF_GetCode(raw_status) != ffi::TF_OK {
+            panic!(
+                "{}",
+                std::ffi::CStr::from_ptr(ffi::TF_Message(raw_status))
+                    .to_string_lossy()
+                    .into_owned()
+            );
+        }
+        ffi::TF_DeleteStatus(raw_status);
+    };
+}

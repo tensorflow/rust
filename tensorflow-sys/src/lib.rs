@@ -11,3 +11,8 @@ include!("c_api.rs");
 pub use crate::TF_AttrType::*;
 pub use crate::TF_Code::*;
 pub use crate::TF_DataType::*;
+
+#[cfg(feature = "experimental")]
+mod experimental;
+#[cfg(feature = "experimental")]
+pub use experimental::*;
