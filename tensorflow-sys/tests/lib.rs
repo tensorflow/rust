@@ -54,7 +54,7 @@ fn load_plugable_device() {
     let c_filename = std::ffi::CString::new("libmetal_plugin.dylib").expect("CString::new failed");
     unsafe {
         let raw_status = ffi::TF_NewStatus();
-        ffi::TF_LoadPluggableDeviceLibrary(c_filename.as_ptr(), raw_status);
+        let lib_handle = ffi::TF_LoadPluggableDeviceLibrary(c_filename.as_ptr(), raw_status);
         if ffi::TF_GetCode(raw_status) != ffi::TF_OK {
             panic!(
                 "{}",
@@ -63,6 +63,7 @@ fn load_plugable_device() {
                     .into_owned()
             );
         }
+        ffi::TF_DeletePluggableDeviceLibraryHandle(lib_handle);
         ffi::TF_DeleteStatus(raw_status);
     };
 }
