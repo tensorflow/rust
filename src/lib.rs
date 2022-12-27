@@ -2663,12 +2663,10 @@ mod tests {
         assert!(get_registered_kernels_for_op("Add").unwrap().len() > 0);
     }
 
+    #[cfg(target_os = "linux")]
     #[test]
     fn test_library_load() {
         // This test is implemented for linux only
-        if std::env::consts::OS != "linux" {
-            return;
-        }
         let lib_path = "test_resources/library/test_op.so";
         assert!(
             std::path::Path::new(lib_path).exists(),
