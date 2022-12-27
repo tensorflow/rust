@@ -2665,20 +2665,22 @@ mod tests {
 
     #[test]
     fn test_library_load() {
-        // This test is not yet implemented for Windows
-        let check_path = match std::env::consts::OS {
-            // "linux" => Some("test_resources/library/linux/test_op.so"),
-            // TODO: The test op needs to be recompiled for macos.
-            // "macos" => Some("test_resources/library/macos/test_op.so"),
-            _ => Some("test_resources/library/test_op.so"),
-        };
-        if let Some(path) = check_path {
-            let lib = Library::load(path).unwrap();
-            let ops: Vec<OpDef> = lib.op_list().clone().into();
-            assert!(ops.len() == 1);
-            let op = &ops[0];
-            assert!(op.name() == "TestOpList");
-        };
+        // This test is implemented for linux only
+        if std::env::consts::OS != "linux" {
+            return;
+        }
+        let lib_path = "test_resources/library/test_op.so";
+        assert!(
+            std::path::Path::new(lib_path).exists(),
+            "`{}` was not found. Build the lib and try again : `{}`",
+            lib_path,
+            "(cd test_resources/library && ./build-test-op)"
+        );
+        let lib = Library::load(lib_path).unwrap();
+        let ops: Vec<OpDef> = lib.op_list().clone().into();
+        assert!(ops.len() == 1);
+        let op = &ops[0];
+        assert!(op.name() == "TestOpList");
     }
 
     #[test]
