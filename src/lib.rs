@@ -2667,10 +2667,10 @@ mod tests {
     fn test_library_load() {
         // This test is not yet implemented for Windows
         let check_path = match std::env::consts::OS {
-            "linux" => Some("test_resources/library/linux/test_op.so"),
+            // "linux" => Some("test_resources/library/linux/test_op.so"),
             // TODO: The test op needs to be recompiled for macos.
             // "macos" => Some("test_resources/library/macos/test_op.so"),
-            _ => None,
+            _ => Some("test_resources/library/test_op.so"),
         };
         if let Some(path) = check_path {
             let lib = Library::load(path).unwrap();
