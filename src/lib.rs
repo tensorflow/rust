@@ -2665,8 +2665,9 @@ mod tests {
 
     #[cfg(target_os = "linux")]
     #[test]
+    #[ignore]
     fn test_library_load() {
-        // This test is implemented for linux only
+        // This test is implemented for linux only.
         let lib_path = "test_resources/library/test_op.so";
         assert!(
             std::path::Path::new(lib_path).exists(),
