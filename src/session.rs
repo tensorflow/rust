@@ -284,6 +284,9 @@ pub struct SessionRunArgs<'l> {
     phantom: marker::PhantomData<&'l ()>,
 }
 
+unsafe impl<'l> Send for SessionRunArgs<'l> {}
+unsafe impl<'l> Sync for SessionRunArgs<'l> {}
+
 impl<'l> Default for SessionRunArgs<'l> {
     fn default() -> Self {
         Self::new()
