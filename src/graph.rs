@@ -169,7 +169,7 @@ impl ImportGraphDefOptions {
         unsafe {
             tf::TF_ImportGraphDefOptionsSetUniquifyNames(
                 self.inner,
-                if uniquify_names { 1 } else { 0 },
+                u8::from(uniquify_names),
             );
         }
     }
@@ -181,7 +181,7 @@ impl ImportGraphDefOptions {
         unsafe {
             tf::TF_ImportGraphDefOptionsSetUniquifyPrefix(
                 self.inner,
-                if uniquify_prefix { 1 } else { 0 },
+                u8::from(uniquify_prefix),
             );
         }
     }
@@ -693,7 +693,7 @@ impl Graph {
             tf::TF_GraphToFunction(
                 self.inner(),
                 fn_name_cstr.as_ptr(),
-                if append_hash_to_fn_name { 1 } else { 0 },
+                u8::from(append_hash_to_fn_name),
                 num_opers,
                 c_opers_ptr,
                 c_inputs.len() as c_int,
@@ -2033,7 +2033,7 @@ impl<'a> OperationDescription<'a> {
     ) -> std::result::Result<(), NulError> {
         let c_attr_name = CString::new(attr_name)?;
         unsafe {
-            tf::TF_SetAttrBool(self.inner, c_attr_name.as_ptr(), if value { 1 } else { 0 });
+            tf::TF_SetAttrBool(self.inner, c_attr_name.as_ptr(), u8::from(value));
         }
         Ok(())
     }
@@ -2045,7 +2045,7 @@ impl<'a> OperationDescription<'a> {
         value: &[bool],
     ) -> std::result::Result<(), NulError> {
         let c_attr_name = CString::new(attr_name)?;
-        let c_value: Vec<c_uchar> = value.iter().map(|x| if *x { 1 } else { 0 }).collect();
+        let c_value: Vec<c_uchar> = value.iter().map(|x| u8::from(*x)).collect();
         unsafe {
             tf::TF_SetAttrBoolList(
                 self.inner,
