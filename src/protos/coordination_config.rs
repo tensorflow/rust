@@ -24,6 +24,200 @@
 // const _PROTOBUF_VERSION_CHECK: () = ::protobuf::VERSION_2_27_1;
 
 #[derive(PartialEq,Clone,Default)]
+pub struct CoordinatedJob {
+    // message fields
+    pub name: ::std::string::String,
+    pub num_tasks: i32,
+    // special fields
+    pub unknown_fields: ::protobuf::UnknownFields,
+    pub cached_size: ::protobuf::CachedSize,
+}
+
+impl<'a> ::std::default::Default for &'a CoordinatedJob {
+    fn default() -> &'a CoordinatedJob {
+        <CoordinatedJob as ::protobuf::Message>::default_instance()
+    }
+}
+
+impl CoordinatedJob {
+    pub fn new() -> CoordinatedJob {
+        ::std::default::Default::default()
+    }
+
+    // string name = 1;
+
+
+    pub fn get_name(&self) -> &str {
+        &self.name
+    }
+    pub fn clear_name(&mut self) {
+        self.name.clear();
+    }
+
+    // Param is passed by value, moved
+    pub fn set_name(&mut self, v: ::std::string::String) {
+        self.name = v;
+    }
+
+    // Mutable pointer to the field.
+    // If field is not initialized, it is initialized with default value first.
+    pub fn mut_name(&mut self) -> &mut ::std::string::String {
+        &mut self.name
+    }
+
+    // Take field
+    pub fn take_name(&mut self) -> ::std::string::String {
+        ::std::mem::replace(&mut self.name, ::std::string::String::new())
+    }
+
+    // int32 num_tasks = 2;
+
+
+    pub fn get_num_tasks(&self) -> i32 {
+        self.num_tasks
+    }
+    pub fn clear_num_tasks(&mut self) {
+        self.num_tasks = 0;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_num_tasks(&mut self, v: i32) {
+        self.num_tasks = v;
+    }
+}
+
+impl ::protobuf::Message for CoordinatedJob {
+    fn is_initialized(&self) -> bool {
+        true
+    }
+
+    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream<'_>) -> ::protobuf::ProtobufResult<()> {
+        while !is.eof()? {
+            let (field_number, wire_type) = is.read_tag_unpack()?;
+            match field_number {
+                1 => {
+                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.name)?;
+                },
+                2 => {
+                    if wire_type != ::protobuf::wire_format::WireTypeVarint {
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                    }
+                    let tmp = is.read_int32()?;
+                    self.num_tasks = tmp;
+                },
+                _ => {
+                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
+                },
+            };
+        }
+        ::std::result::Result::Ok(())
+    }
+
+    // Compute sizes of nested messages
+    #[allow(unused_variables)]
+    fn compute_size(&self) -> u32 {
+        let mut my_size = 0;
+        if !self.name.is_empty() {
+            my_size += ::protobuf::rt::string_size(1, &self.name);
+        }
+        if self.num_tasks != 0 {
+            my_size += ::protobuf::rt::value_size(2, self.num_tasks, ::protobuf::wire_format::WireTypeVarint);
+        }
+        my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
+        self.cached_size.set(my_size);
+        my_size
+    }
+
+    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream<'_>) -> ::protobuf::ProtobufResult<()> {
+        if !self.name.is_empty() {
+            os.write_string(1, &self.name)?;
+        }
+        if self.num_tasks != 0 {
+            os.write_int32(2, self.num_tasks)?;
+        }
+        os.write_unknown_fields(self.get_unknown_fields())?;
+        ::std::result::Result::Ok(())
+    }
+
+    fn get_cached_size(&self) -> u32 {
+        self.cached_size.get()
+    }
+
+    fn get_unknown_fields(&self) -> &::protobuf::UnknownFields {
+        &self.unknown_fields
+    }
+
+    fn mut_unknown_fields(&mut self) -> &mut ::protobuf::UnknownFields {
+        &mut self.unknown_fields
+    }
+
+    fn as_any(&self) -> &dyn (::std::any::Any) {
+        self as &dyn (::std::any::Any)
+    }
+    fn as_any_mut(&mut self) -> &mut dyn (::std::any::Any) {
+        self as &mut dyn (::std::any::Any)
+    }
+    fn into_any(self: ::std::boxed::Box<Self>) -> ::std::boxed::Box<dyn (::std::any::Any)> {
+        self
+    }
+
+    fn descriptor(&self) -> &'static ::protobuf::reflect::MessageDescriptor {
+        Self::descriptor_static()
+    }
+
+    fn new() -> CoordinatedJob {
+        CoordinatedJob::new()
+    }
+
+    fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
+        static descriptor: ::protobuf::rt::LazyV2<::protobuf::reflect::MessageDescriptor> = ::protobuf::rt::LazyV2::INIT;
+        descriptor.get(|| {
+            let mut fields = ::std::vec::Vec::new();
+            fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                "name",
+                |m: &CoordinatedJob| { &m.name },
+                |m: &mut CoordinatedJob| { &mut m.name },
+            ));
+            fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                "num_tasks",
+                |m: &CoordinatedJob| { &m.num_tasks },
+                |m: &mut CoordinatedJob| { &mut m.num_tasks },
+            ));
+            ::protobuf::reflect::MessageDescriptor::new_pb_name::<CoordinatedJob>(
+                "CoordinatedJob",
+                fields,
+                file_descriptor_proto()
+            )
+        })
+    }
+
+    fn default_instance() -> &'static CoordinatedJob {
+        static instance: ::protobuf::rt::LazyV2<CoordinatedJob> = ::protobuf::rt::LazyV2::INIT;
+        instance.get(CoordinatedJob::new)
+    }
+}
+
+impl ::protobuf::Clear for CoordinatedJob {
+    fn clear(&mut self) {
+        self.name.clear();
+        self.num_tasks = 0;
+        self.unknown_fields.clear();
+    }
+}
+
+impl ::std::fmt::Debug for CoordinatedJob {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        ::protobuf::text_format::fmt(self, f)
+    }
+}
+
+impl ::protobuf::reflect::ProtobufValue for CoordinatedJob {
+    fn as_ref(&self) -> ::protobuf::reflect::ReflectValueRef {
+        ::protobuf::reflect::ReflectValueRef::Message(self)
+    }
+}
+
+#[derive(PartialEq,Clone,Default)]
 pub struct CoordinationServiceConfig {
     // message fields
     pub service_type: ::std::string::String,
@@ -31,9 +225,10 @@ pub struct CoordinationServiceConfig {
     pub enable_health_check: bool,
     pub cluster_register_timeout_in_ms: i64,
     pub heartbeat_timeout_in_ms: i64,
-    pub coordinated_jobs: ::protobuf::RepeatedField<::std::string::String>,
+    pub coordinated_job_list: ::protobuf::RepeatedField<CoordinatedJob>,
     pub shutdown_barrier_timeout_in_ms: i64,
     pub agent_destruction_without_shutdown: bool,
+    pub recoverable_jobs: ::protobuf::RepeatedField<::std::string::String>,
     // special fields
     pub unknown_fields: ::protobuf::UnknownFields,
     pub cached_size: ::protobuf::CachedSize,
@@ -147,29 +342,29 @@ impl CoordinationServiceConfig {
         self.heartbeat_timeout_in_ms = v;
     }
 
-    // repeated string coordinated_jobs = 6;
+    // repeated .tensorflow.CoordinatedJob coordinated_job_list = 10;
 
 
-    pub fn get_coordinated_jobs(&self) -> &[::std::string::String] {
-        &self.coordinated_jobs
+    pub fn get_coordinated_job_list(&self) -> &[CoordinatedJob] {
+        &self.coordinated_job_list
     }
-    pub fn clear_coordinated_jobs(&mut self) {
-        self.coordinated_jobs.clear();
+    pub fn clear_coordinated_job_list(&mut self) {
+        self.coordinated_job_list.clear();
     }
 
     // Param is passed by value, moved
-    pub fn set_coordinated_jobs(&mut self, v: ::protobuf::RepeatedField<::std::string::String>) {
-        self.coordinated_jobs = v;
+    pub fn set_coordinated_job_list(&mut self, v: ::protobuf::RepeatedField<CoordinatedJob>) {
+        self.coordinated_job_list = v;
     }
 
     // Mutable pointer to the field.
-    pub fn mut_coordinated_jobs(&mut self) -> &mut ::protobuf::RepeatedField<::std::string::String> {
-        &mut self.coordinated_jobs
+    pub fn mut_coordinated_job_list(&mut self) -> &mut ::protobuf::RepeatedField<CoordinatedJob> {
+        &mut self.coordinated_job_list
     }
 
     // Take field
-    pub fn take_coordinated_jobs(&mut self) -> ::protobuf::RepeatedField<::std::string::String> {
-        ::std::mem::replace(&mut self.coordinated_jobs, ::protobuf::RepeatedField::new())
+    pub fn take_coordinated_job_list(&mut self) -> ::protobuf::RepeatedField<CoordinatedJob> {
+        ::std::mem::replace(&mut self.coordinated_job_list, ::protobuf::RepeatedField::new())
     }
 
     // int64 shutdown_barrier_timeout_in_ms = 7;
@@ -201,10 +396,40 @@ impl CoordinationServiceConfig {
     pub fn set_agent_destruction_without_shutdown(&mut self, v: bool) {
         self.agent_destruction_without_shutdown = v;
     }
+
+    // repeated string recoverable_jobs = 9;
+
+
+    pub fn get_recoverable_jobs(&self) -> &[::std::string::String] {
+        &self.recoverable_jobs
+    }
+    pub fn clear_recoverable_jobs(&mut self) {
+        self.recoverable_jobs.clear();
+    }
+
+    // Param is passed by value, moved
+    pub fn set_recoverable_jobs(&mut self, v: ::protobuf::RepeatedField<::std::string::String>) {
+        self.recoverable_jobs = v;
+    }
+
+    // Mutable pointer to the field.
+    pub fn mut_recoverable_jobs(&mut self) -> &mut ::protobuf::RepeatedField<::std::string::String> {
+        &mut self.recoverable_jobs
+    }
+
+    // Take field
+    pub fn take_recoverable_jobs(&mut self) -> ::protobuf::RepeatedField<::std::string::String> {
+        ::std::mem::replace(&mut self.recoverable_jobs, ::protobuf::RepeatedField::new())
+    }
 }
 
 impl ::protobuf::Message for CoordinationServiceConfig {
     fn is_initialized(&self) -> bool {
+        for v in &self.coordinated_job_list {
+            if !v.is_initialized() {
+                return false;
+            }
+        };
         true
     }
 
@@ -239,8 +464,8 @@ impl ::protobuf::Message for CoordinationServiceConfig {
                     let tmp = is.read_int64()?;
                     self.heartbeat_timeout_in_ms = tmp;
                 },
-                6 => {
-                    ::protobuf::rt::read_repeated_string_into(wire_type, is, &mut self.coordinated_jobs)?;
+                10 => {
+                    ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.coordinated_job_list)?;
                 },
                 7 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
@@ -255,6 +480,9 @@ impl ::protobuf::Message for CoordinationServiceConfig {
                     }
                     let tmp = is.read_bool()?;
                     self.agent_destruction_without_shutdown = tmp;
+                },
+                9 => {
+                    ::protobuf::rt::read_repeated_string_into(wire_type, is, &mut self.recoverable_jobs)?;
                 },
                 _ => {
                     ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
@@ -283,8 +511,9 @@ impl ::protobuf::Message for CoordinationServiceConfig {
         if self.heartbeat_timeout_in_ms != 0 {
             my_size += ::protobuf::rt::value_size(5, self.heartbeat_timeout_in_ms, ::protobuf::wire_format::WireTypeVarint);
         }
-        for value in &self.coordinated_jobs {
-            my_size += ::protobuf::rt::string_size(6, &value);
+        for value in &self.coordinated_job_list {
+            let len = value.compute_size();
+            my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         };
         if self.shutdown_barrier_timeout_in_ms != 0 {
             my_size += ::protobuf::rt::value_size(7, self.shutdown_barrier_timeout_in_ms, ::protobuf::wire_format::WireTypeVarint);
@@ -292,6 +521,9 @@ impl ::protobuf::Message for CoordinationServiceConfig {
         if self.agent_destruction_without_shutdown != false {
             my_size += 2;
         }
+        for value in &self.recoverable_jobs {
+            my_size += ::protobuf::rt::string_size(9, &value);
+        };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
@@ -313,8 +545,10 @@ impl ::protobuf::Message for CoordinationServiceConfig {
         if self.heartbeat_timeout_in_ms != 0 {
             os.write_int64(5, self.heartbeat_timeout_in_ms)?;
         }
-        for v in &self.coordinated_jobs {
-            os.write_string(6, &v)?;
+        for v in &self.coordinated_job_list {
+            os.write_tag(10, ::protobuf::wire_format::WireTypeLengthDelimited)?;
+            os.write_raw_varint32(v.get_cached_size())?;
+            v.write_to_with_cached_sizes(os)?;
         };
         if self.shutdown_barrier_timeout_in_ms != 0 {
             os.write_int64(7, self.shutdown_barrier_timeout_in_ms)?;
@@ -322,6 +556,9 @@ impl ::protobuf::Message for CoordinationServiceConfig {
         if self.agent_destruction_without_shutdown != false {
             os.write_bool(8, self.agent_destruction_without_shutdown)?;
         }
+        for v in &self.recoverable_jobs {
+            os.write_string(9, &v)?;
+        };
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
     }
@@ -385,10 +622,10 @@ impl ::protobuf::Message for CoordinationServiceConfig {
                 |m: &CoordinationServiceConfig| { &m.heartbeat_timeout_in_ms },
                 |m: &mut CoordinationServiceConfig| { &mut m.heartbeat_timeout_in_ms },
             ));
-            fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
-                "coordinated_jobs",
-                |m: &CoordinationServiceConfig| { &m.coordinated_jobs },
-                |m: &mut CoordinationServiceConfig| { &mut m.coordinated_jobs },
+            fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<CoordinatedJob>>(
+                "coordinated_job_list",
+                |m: &CoordinationServiceConfig| { &m.coordinated_job_list },
+                |m: &mut CoordinationServiceConfig| { &mut m.coordinated_job_list },
             ));
             fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
                 "shutdown_barrier_timeout_in_ms",
@@ -399,6 +636,11 @@ impl ::protobuf::Message for CoordinationServiceConfig {
                 "agent_destruction_without_shutdown",
                 |m: &CoordinationServiceConfig| { &m.agent_destruction_without_shutdown },
                 |m: &mut CoordinationServiceConfig| { &mut m.agent_destruction_without_shutdown },
+            ));
+            fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                "recoverable_jobs",
+                |m: &CoordinationServiceConfig| { &m.recoverable_jobs },
+                |m: &mut CoordinationServiceConfig| { &mut m.recoverable_jobs },
             ));
             ::protobuf::reflect::MessageDescriptor::new_pb_name::<CoordinationServiceConfig>(
                 "CoordinationServiceConfig",
@@ -421,9 +663,10 @@ impl ::protobuf::Clear for CoordinationServiceConfig {
         self.enable_health_check = false;
         self.cluster_register_timeout_in_ms = 0;
         self.heartbeat_timeout_in_ms = 0;
-        self.coordinated_jobs.clear();
+        self.coordinated_job_list.clear();
         self.shutdown_barrier_timeout_in_ms = 0;
         self.agent_destruction_without_shutdown = false;
+        self.recoverable_jobs.clear();
         self.unknown_fields.clear();
     }
 }
@@ -441,18 +684,22 @@ impl ::protobuf::reflect::ProtobufValue for CoordinationServiceConfig {
 }
 
 static file_descriptor_proto_data: &'static [u8] = b"\
-    \n2tensorflow/core/protobuf/coordination_config.proto\x12\ntensorflow\"\
-    \xcc\x03\n\x19CoordinationServiceConfig\x12!\n\x0cservice_type\x18\x01\
-    \x20\x01(\tR\x0bserviceType\x12%\n\x0eservice_leader\x18\x02\x20\x01(\tR\
-    \rserviceLeader\x12.\n\x13enable_health_check\x18\x03\x20\x01(\x08R\x11e\
-    nableHealthCheck\x12B\n\x1ecluster_register_timeout_in_ms\x18\x04\x20\
-    \x01(\x03R\x1aclusterRegisterTimeoutInMs\x125\n\x17heartbeat_timeout_in_\
-    ms\x18\x05\x20\x01(\x03R\x14heartbeatTimeoutInMs\x12)\n\x10coordinated_j\
-    obs\x18\x06\x20\x03(\tR\x0fcoordinatedJobs\x12B\n\x1eshutdown_barrier_ti\
-    meout_in_ms\x18\x07\x20\x01(\x03R\x1ashutdownBarrierTimeoutInMs\x12K\n\"\
-    agent_destruction_without_shutdown\x18\x08\x20\x01(\x08R\x1fagentDestruc\
-    tionWithoutShutdownBWZUgithub.com/tensorflow/tensorflow/tensorflow/go/co\
-    re/protobuf/for_core_protos_go_protob\x06proto3\
+    \n2tensorflow/core/protobuf/coordination_config.proto\x12\ntensorflow\"A\
+    \n\x0eCoordinatedJob\x12\x12\n\x04name\x18\x01\x20\x01(\tR\x04name\x12\
+    \x1b\n\tnum_tasks\x18\x02\x20\x01(\x05R\x08numTasks\"\xa0\x04\n\x19Coord\
+    inationServiceConfig\x12!\n\x0cservice_type\x18\x01\x20\x01(\tR\x0bservi\
+    ceType\x12%\n\x0eservice_leader\x18\x02\x20\x01(\tR\rserviceLeader\x12.\
+    \n\x13enable_health_check\x18\x03\x20\x01(\x08R\x11enableHealthCheck\x12\
+    B\n\x1ecluster_register_timeout_in_ms\x18\x04\x20\x01(\x03R\x1aclusterRe\
+    gisterTimeoutInMs\x125\n\x17heartbeat_timeout_in_ms\x18\x05\x20\x01(\x03\
+    R\x14heartbeatTimeoutInMs\x12L\n\x14coordinated_job_list\x18\n\x20\x03(\
+    \x0b2\x1a.tensorflow.CoordinatedJobR\x12coordinatedJobList\x12B\n\x1eshu\
+    tdown_barrier_timeout_in_ms\x18\x07\x20\x01(\x03R\x1ashutdownBarrierTime\
+    outInMs\x12K\n\"agent_destruction_without_shutdown\x18\x08\x20\x01(\x08R\
+    \x1fagentDestructionWithoutShutdown\x12)\n\x10recoverable_jobs\x18\t\x20\
+    \x03(\tR\x0frecoverableJobsJ\x04\x08\x06\x10\x07BWZUgithub.com/tensorflo\
+    w/tensorflow/tensorflow/go/core/protobuf/for_core_protos_go_protob\x06pr\
+    oto3\
 ";
 
 static file_descriptor_proto_lazy: ::protobuf::rt::LazyV2<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::rt::LazyV2::INIT;
