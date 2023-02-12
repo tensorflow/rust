@@ -167,10 +167,7 @@ impl ImportGraphDefOptions {
     /// unique. Defaults to false.
     pub fn set_uniquify_names(&mut self, uniquify_names: bool) {
         unsafe {
-            tf::TF_ImportGraphDefOptionsSetUniquifyNames(
-                self.inner,
-                u8::from(uniquify_names),
-            );
+            tf::TF_ImportGraphDefOptionsSetUniquifyNames(self.inner, u8::from(uniquify_names));
         }
     }
 
@@ -179,10 +176,7 @@ impl ImportGraphDefOptions {
     /// treated as an error. This option has no effect if no prefix is specified.
     pub fn set_uniquify_prefix(&mut self, uniquify_prefix: bool) {
         unsafe {
-            tf::TF_ImportGraphDefOptionsSetUniquifyPrefix(
-                self.inner,
-                u8::from(uniquify_prefix),
-            );
+            tf::TF_ImportGraphDefOptionsSetUniquifyPrefix(self.inner, u8::from(uniquify_prefix));
         }
     }
 
