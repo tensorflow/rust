@@ -1,6 +1,6 @@
 [package]
 name = "tensorflow"
-version = "0.19.1"
+version = "0.20.0"
 authors = ["Adam Crume <acrume@google.com>"]
 description = "Rust language bindings for TensorFlow."
 license = "Apache-2.0"
@@ -23,8 +23,8 @@ features = ["private-docs-rs", "tensorflow_unstable", "ndarray", "eager"]
 libc = "0.2.132"
 num-complex = { version = "0.4.2", default-features = false }
 tensorflow-internal-macros = { version = "=0.0.3", path = "tensorflow-internal-macros" }
-tensorflow-sys = { version = "0.22.1", path = "tensorflow-sys", optional = true }
-tensorflow-sys-runtime = { version = "0.1.0", path = "tensorflow-sys-runtime", optional = true }
+tensorflow-sys = { version = "0.23.0", path = "tensorflow-sys", optional = true }
+tensorflow-sys-runtime = { version = "0.2.0", path = "tensorflow-sys-runtime", optional = true }
 byteorder = "1.4.3"
 crc = "3.0.0"
 half = "2.1.0"
