@@ -495,16 +495,11 @@ impl SavedModelSaver {
     ) -> std::result::Result<(), SaveModelError> {
         let mut meta_graph = self.meta_graph.clone();
         let graph_bytes = graph.graph_def()?;
-        let graph_def = match protobuf::Message::parse_from_bytes(&graph_bytes) {
-            Ok(x) => x,
-            Err(e) => {
-                return Err(Status::new_set_lossy(
-                    Code::InvalidArgument,
-                    &format!("Unable to parse graph definition: {}", e),
-                )
-                .into());
-            }
-        };
+        let graph_def= protobuf::Message::parse_from_bytes(&graph_bytes)
+            .map_err(|e| <Status as Into<SaveModelError>>::into(Status::new_set_lossy(
+                Code::InvalidArgument,
+                &format!("Unable to parse graph definition: {}", e),
+            )))?;
         meta_graph.set_graph_def(graph_def);
         let mut saved_model = protos::saved_model::SavedModel::new();
         saved_model.set_saved_model_schema_version(1);
