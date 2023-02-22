@@ -1,7 +1,7 @@
 //! This module supports saving and restoring variables using Tensorflow checkpoints in SaveV2 format
 
 use crate::{Operation, ops, Scope, Session, SessionRunArgs, Status, Tensor};
-use crate::option_insert_result::get_or_insert_with_result;
+use crate::option_insert_result::OptionInsertWithResult;
 
 #[derive(Debug)]
 struct SaveRestoreOps {
@@ -48,7 +48,7 @@ impl CheckpointMaker {
             (prefix_save_op, op)
         } else {
             let all_variable_ops =
-                get_or_insert_with_result(&mut all_variable_ops_opt, || make_all_variable_ops(self))?;
+                all_variable_ops_opt.get_or_insert_with_result(|| make_all_variable_ops(self))?;
             let prefix_save = ops::Placeholder::new()
                 .dtype(crate::DataType::String)
                 .build(&mut self.scope.with_op_name("prefix_save"))?;
@@ -86,8 +86,8 @@ impl CheckpointMaker {
             let the_prefix_restore = self.scope.graph().operation_by_name_required("prefix_restore")?;
             (the_prefix_restore, op)
         } else {
-            let all_variable_ops = get_or_insert_with_result(&mut all_variable_ops_opt, || make_all_variable_ops(self))?;
-            let prefix_restore = crate::ops::Placeholder::new()
+            let all_variable_ops = all_variable_ops_opt.get_or_insert_with_result(|| make_all_variable_ops(self))?;
+            let prefix_restore = ops::Placeholder::new()
                 .dtype(crate::DataType::String)
                 .build(&mut self.scope.with_op_name("prefix_restore"))?;
             let restore_op = {
@@ -123,7 +123,7 @@ impl CheckpointMaker {
                             index: i as i32,
                         }, &mut self.scope.new_sub_scope(format!("restore{}", i).as_str()))?);
                 }
-                let mut no_op = crate::ops::NoOp::new();
+                let mut no_op = ops::NoOp::new();
                 for op in restore_var_ops {
                     no_op = no_op.add_control_input(op);
                 }
@@ -219,7 +219,7 @@ mod tests {
     }
 
     fn assign_variables(session: &Session, scope_data: &MyScopeData, assign_data: &AssignData, values: &[&[f32]] ) -> Result<(), Status> {
-        let mut values_fed: Vec<Tensor<f32>> = Vec::new();
+        let mut values_fed: Vec<Tensor<f32>> = Vec::with_capacity(assign_data.placeholder_ops.len());
         let mut session_run = SessionRunArgs::new();
         for i_var in 0..assign_data.placeholder_ops.len() {
             let value_fed_as_tensor = Tensor::new(
