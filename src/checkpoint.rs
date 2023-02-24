@@ -25,7 +25,7 @@ impl CheckpointMaker {
     ///
     /// In order to provide a scope for the CheckpointMaker one can use scope.new_sub_scope("")
     /// as Scope does not support the Clone trait at present
-    fn new(scope: Scope, variables: Box<[String]>) -> CheckpointMaker {
+    pub fn new(scope: Scope, variables: Box<[String]>) -> CheckpointMaker {
         CheckpointMaker { scope, variables, save_restore_ops: None }
     }
 
