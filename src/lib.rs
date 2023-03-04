@@ -54,6 +54,11 @@ use tensorflow_sys as tf;
 #[cfg(feature = "tensorflow_runtime_linking")]
 use tensorflow_sys_runtime as tf;
 
+#[cfg(feature = "experimental")]
+mod pluggable_device;
+#[cfg(feature = "experimental")]
+pub use pluggable_device::*;
+
 ////////////////////////
 
 /// Will panic if `msg` contains an embedded 0 byte.
