@@ -1,23 +1,3 @@
-//! This module supports saving and restoring variables using Tensorflow checkpoints in SaveV2 format.
-//! First, the user creates a [`CheckpointMaker`] attached to an [`Scope`] indicating the list of variables to be saved/restored.
-//! The CheckpointMaker lazily modifies the graph creating the nodes needed for saving/restoring.
-//! When one wants to save/restore from or into a session, one calls the save/restore  methods
-//! # Example
-//! let mut scope = Scope::new_root_scope();
-//! // add operations to define the graph
-//! // ...
-//! // let w and b the variables that we wish to save
-//! let mut checkpoint_maker = CheckpointMaker::new(scope.new_sub_scope("checkpoint"),
-//!             vec![w.clone(), b.clone()].into_boxed_slice(),
-//!         );
-//! let session = Session::new(&SessionOptions::new(), &scope.graph())?;
-//! // run some training
-//! // ...
-//! // to save the training
-//! checkpoint_maker.save(&session, "data/checkpoint")?;
-//! // then we restore in a different session to continue there
-//! let new_session = Session::new(&SessionOptions::new(), &scope.graph())?;
-//! checkpoint_maker.save(&new_session, "data/checkpoint")?;
 use crate::option_insert_result::OptionInsertWithResult;
 use crate::{ops, Operation, Scope, Session, SessionRunArgs, Status, Tensor, Variable};
 
@@ -29,9 +9,29 @@ struct SaveRestoreOps {
     restore_op: Operation,
 }
 
-/// Checkpointing and restoring support for Tensorflow.
-/// This struct is manages a scope, adds lazily the Tensorflow ops
-/// to perform the save/restore operations
+/// This struct supports saving and restoring variables using Tensorflow checkpoints in SaveV2 format.
+/// First, the user creates a [`CheckpointMaker`] attached to an [`Scope`] indicating the list of variables to be saved/restored.
+/// The CheckpointMaker lazily modifies the graph creating the nodes needed for saving/restoring.
+/// When one wants to save/restore from or into a session, one calls the save/restore  methods
+/// # Example
+/// ```
+/// let mut scope = Scope::new_root_scope();
+/// // add operations to define the graph
+/// // ...
+/// // let w and b the variables that we wish to save
+/// let mut checkpoint_maker = CheckpointMaker::new(scope.new_sub_scope("checkpoint"),
+///             vec![w.clone(), b.clone()].into_boxed_slice(),
+///         );
+/// let session = Session::new(&SessionOptions::new(), &scope.graph())?;
+/// // run some training
+/// // ...
+/// // to save the training
+/// checkpoint_maker.save(&session, "data/checkpoint")?;
+/// // then we restore in a different session to continue there
+/// let new_session = Session::new(&SessionOptions::new(), &scope.graph())?;
+/// checkpoint_maker.save(&new_session, "data/checkpoint")?;
+/// ```
+///
 #[derive(Debug)]
 pub struct CheckpointMaker {
     scope: Scope,
@@ -44,7 +44,7 @@ impl CheckpointMaker {
     /// The scope is used to modify the graph to add the save and restore ops.
     ///
     /// In order to provide a scope for the CheckpointMaker one can use scope.new_sub_scope("checkpoint")
-    /// in order to create the nodes with scoped names
+    /// in order to create the nodes with scoped names.
     pub fn new(scope: Scope, variables: Box<[Variable]>) -> CheckpointMaker {
         CheckpointMaker {
             scope,
@@ -53,18 +53,7 @@ impl CheckpointMaker {
         }
     }
 
-/*    fn make_all_variable_ops(&mut self) -> Result<Vec<Operation>, Status> {
-        let graph = self.scope.graph();
-        Ok(self
-            .variables
-            .iter()
-            .map(|v: &String| -> Result<Operation, Status> {
-                Ok(graph.operation_by_name_required(v.as_str())?.clone())
-            })
-            .collect::<Result<Vec<_>, Status>>()?)
-    }*/
-
-    /// Add save and restore ops to the graph
+    // Add save and restore ops to the graph.
     fn build_save_ops(&mut self) -> Result<SaveRestoreOps, Status> {
         let mut all_variable_ops_opt: Option<Vec<Operation>> = None;
 
@@ -76,18 +65,21 @@ impl CheckpointMaker {
                 .operation_by_name_required("prefix_save")?;
             (prefix_save_op, op)
         } else {
-            let all_variable_ops =
-                all_variable_ops_opt.get_or_insert_with(
-                    || self.variables.iter().map(|v| v.output.operation.clone() ).collect::<Vec<_>>());
+            let all_variable_ops = all_variable_ops_opt.get_or_insert_with(|| {
+                self.variables
+                    .iter()
+                    .map(|v| v.output.operation.clone())
+                    .collect::<Vec<_>>()
+            });
             let prefix_save = ops::Placeholder::new()
                 .dtype(crate::DataType::String)
                 .build(&mut self.scope.with_op_name("prefix_save"))?;
             let tensor_names = ops::constant(
-                self
-                    .variables
+                self.variables
                     .iter()
                     .map(|v| String::from(v.name()))
-                    .collect::<Vec<_>>().as_slice(),
+                    .collect::<Vec<_>>()
+                    .as_slice(),
                 &mut self.scope,
             )?;
             let shape_and_slices = ops::constant(
@@ -126,9 +118,12 @@ impl CheckpointMaker {
                 .operation_by_name_required("prefix_restore")?;
             (the_prefix_restore, op)
         } else {
-            let all_variable_ops =
-                all_variable_ops_opt.get_or_insert_with(
-                    || self.variables.iter().map(|v| v.output.operation.clone() ).collect::<Vec<_>>());
+            let all_variable_ops = all_variable_ops_opt.get_or_insert_with(|| {
+                self.variables
+                    .iter()
+                    .map(|v| v.output.operation.clone())
+                    .collect::<Vec<_>>()
+            });
             let prefix_restore = ops::Placeholder::new()
                 .dtype(crate::DataType::String)
                 .build(&mut self.scope.with_op_name("prefix_restore"))?;
@@ -159,22 +154,22 @@ impl CheckpointMaker {
             let restore_op = nd.finish()?;
             drop(g);
             let mut restore_var_ops = Vec::<Operation>::new();
-                for (i, var) in self.variables.iter().enumerate() {
-                    let var_op = var.output.operation.clone();
-                    restore_var_ops.push(ops::assign(
-                        var_op,
-                        crate::Output {
-                            operation: restore_op.clone(),
-                            index: i as i32,
-                        },
-                        &mut self.scope.new_sub_scope(format!("restore{}", i).as_str()),
-                    )?);
-                }
-                let mut no_op = ops::NoOp::new();
-                for op in restore_var_ops {
-                    no_op = no_op.add_control_input(op);
-                }
-                (prefix_restore, no_op.build(&mut self.scope)?)
+            for (i, var) in self.variables.iter().enumerate() {
+                let var_op = var.output.operation.clone();
+                restore_var_ops.push(ops::assign(
+                    var_op,
+                    crate::Output {
+                        operation: restore_op.clone(),
+                        index: i as i32,
+                    },
+                    &mut self.scope.new_sub_scope(format!("restore{}", i).as_str()),
+                )?);
+            }
+            let mut no_op = ops::NoOp::new();
+            for op in restore_var_ops {
+                no_op = no_op.add_control_input(op);
+            }
+            (prefix_restore, no_op.build(&mut self.scope)?)
         };
         Ok(SaveRestoreOps {
             prefix_save,
@@ -194,7 +189,7 @@ impl CheckpointMaker {
         Ok(save_r_op)
     }
 
-    /// Save the variables listed in this CheckpointMaker to the checkpoint with base filename backup_filename_base
+    /// Save the variables listed in this CheckpointMaker to the checkpoint with base filename backup_filename_base.
     pub fn save(&mut self, session: &Session, backup_filename_base: &str) -> Result<(), Status> {
         let save_restore_ops = self.get_save_operation()?;
         let prefix_arg = Tensor::from(backup_filename_base.to_string());
@@ -206,7 +201,7 @@ impl CheckpointMaker {
     }
 
     /// Restore into the session the variables listed in this CheckpointMaker from the checkpoint
-    /// in path_base
+    /// in path_base.
     pub fn restore(&mut self, session: &Session, path_base: &str) -> Result<(), Status> {
         let save_restore_ops = self.get_save_operation()?;
         let prefix_arg = Tensor::from(path_base.to_string());
@@ -372,7 +367,8 @@ mod tests {
             variables: second_variables,
         } = create_scope()?;
         let second_session = Session::new(&SessionOptions::new(), &second_scope.graph())?;
-        let mut second_checkpoint = CheckpointMaker::new(second_scope, Box::new(second_variables.clone()));
+        let mut second_checkpoint =
+            CheckpointMaker::new(second_scope, Box::new(second_variables.clone()));
         second_checkpoint.restore(&second_session, checkpoint_path_str.as_str())?;
         check_variables(&second_session, &second_variables, &new_values)?;
         Ok(())
