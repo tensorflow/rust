@@ -54,7 +54,7 @@ jobs:
       - name: Setup environment for macOS
         if: matrix.os == 'macos-latest'
         run: |
-          python -m pip install tensorflow-macos
+          python -m pip install tensorflow
           python -m pip install tensorflow-metal
       # Install pip and pytest
       - name: Install dependencies
