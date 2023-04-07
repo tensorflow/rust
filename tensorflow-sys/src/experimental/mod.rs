@@ -1,5 +1,3 @@
-use crate::{
-    TF_Library, TF_Status, TF_DataType,
-};
+use crate::{TF_DataType, TF_Library, TF_Status};
 
 include!("c_api.rs");
