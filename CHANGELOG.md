@@ -1,5 +1,20 @@
 # Changelog
 
+## Release 0.20.0
+
+### Additions
+
+- Implemented Send and Sync for SessionRunArgs
+
+### Changes
+
+- Migrated from random to rand
+- Upgraded to TensorFlow 2.11.0
+
+### Fixes
+
+- Removed binaries from the repository
+
 ## Release 0.19.0
 
 ### Additions

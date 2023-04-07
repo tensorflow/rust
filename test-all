@@ -48,6 +48,7 @@ if [[ "${version_tensorflow_sys_crate}" != "${version_tensorflow_sys_readme}" ]]
 fi
 
 run python3 examples/mobilenetv3/create_model.py
+# TODO(#391): Re-enable: (cd test_resources/library && ./build-test-op)
 run cargo fmt --all -- --check
 run cargo test -vv -j 2
 run cargo test -vv -j 2 --features eager

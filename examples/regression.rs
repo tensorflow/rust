@@ -1,5 +1,4 @@
-use random;
-use random::Source;
+use rand;
 use std::error::Error;
 use std::fs::File;
 use std::io::Read;
@@ -39,11 +38,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     let b = 0.3;
     let num_points = 100;
     let steps = 201;
-    let mut rand = random::default();
     let mut x = Tensor::new(&[num_points as u64]);
     let mut y = Tensor::new(&[num_points as u64]);
     for i in 0..num_points {
-        x[i] = (2.0 * rand.read::<f64>() - 1.0) as f32;
+        x[i] = (2.0 * rand::random::<f64>() - 1.0) as f32;
         y[i] = w * x[i] + b;
     }
 

@@ -23,6 +23,154 @@
 /// of protobuf runtime.
 // const _PROTOBUF_VERSION_CHECK: () = ::protobuf::VERSION_2_27_1;
 
+#[derive(PartialEq,Clone,Default)]
+pub struct SerializedDType {
+    // message fields
+    pub datatype: DataType,
+    // special fields
+    pub unknown_fields: ::protobuf::UnknownFields,
+    pub cached_size: ::protobuf::CachedSize,
+}
+
+impl<'a> ::std::default::Default for &'a SerializedDType {
+    fn default() -> &'a SerializedDType {
+        <SerializedDType as ::protobuf::Message>::default_instance()
+    }
+}
+
+impl SerializedDType {
+    pub fn new() -> SerializedDType {
+        ::std::default::Default::default()
+    }
+
+    // .tensorflow.DataType datatype = 1;
+
+
+    pub fn get_datatype(&self) -> DataType {
+        self.datatype
+    }
+    pub fn clear_datatype(&mut self) {
+        self.datatype = DataType::DT_INVALID;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_datatype(&mut self, v: DataType) {
+        self.datatype = v;
+    }
+}
+
+impl ::protobuf::Message for SerializedDType {
+    fn is_initialized(&self) -> bool {
+        true
+    }
+
+    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream<'_>) -> ::protobuf::ProtobufResult<()> {
+        while !is.eof()? {
+            let (field_number, wire_type) = is.read_tag_unpack()?;
+            match field_number {
+                1 => {
+                    ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(wire_type, is, &mut self.datatype, 1, &mut self.unknown_fields)?
+                },
+                _ => {
+                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
+                },
+            };
+        }
+        ::std::result::Result::Ok(())
+    }
+
+    // Compute sizes of nested messages
+    #[allow(unused_variables)]
+    fn compute_size(&self) -> u32 {
+        let mut my_size = 0;
+        if self.datatype != DataType::DT_INVALID {
+            my_size += ::protobuf::rt::enum_size(1, self.datatype);
+        }
+        my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
+        self.cached_size.set(my_size);
+        my_size
+    }
+
+    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream<'_>) -> ::protobuf::ProtobufResult<()> {
+        if self.datatype != DataType::DT_INVALID {
+            os.write_enum(1, ::protobuf::ProtobufEnum::value(&self.datatype))?;
+        }
+        os.write_unknown_fields(self.get_unknown_fields())?;
+        ::std::result::Result::Ok(())
+    }
+
+    fn get_cached_size(&self) -> u32 {
+        self.cached_size.get()
+    }
+
+    fn get_unknown_fields(&self) -> &::protobuf::UnknownFields {
+        &self.unknown_fields
+    }
+
+    fn mut_unknown_fields(&mut self) -> &mut ::protobuf::UnknownFields {
+        &mut self.unknown_fields
+    }
+
+    fn as_any(&self) -> &dyn (::std::any::Any) {
+        self as &dyn (::std::any::Any)
+    }
+    fn as_any_mut(&mut self) -> &mut dyn (::std::any::Any) {
+        self as &mut dyn (::std::any::Any)
+    }
+    fn into_any(self: ::std::boxed::Box<Self>) -> ::std::boxed::Box<dyn (::std::any::Any)> {
+        self
+    }
+
+    fn descriptor(&self) -> &'static ::protobuf::reflect::MessageDescriptor {
+        Self::descriptor_static()
+    }
+
+    fn new() -> SerializedDType {
+        SerializedDType::new()
+    }
+
+    fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
+        static descriptor: ::protobuf::rt::LazyV2<::protobuf::reflect::MessageDescriptor> = ::protobuf::rt::LazyV2::INIT;
+        descriptor.get(|| {
+            let mut fields = ::std::vec::Vec::new();
+            fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeEnum<DataType>>(
+                "datatype",
+                |m: &SerializedDType| { &m.datatype },
+                |m: &mut SerializedDType| { &mut m.datatype },
+            ));
+            ::protobuf::reflect::MessageDescriptor::new_pb_name::<SerializedDType>(
+                "SerializedDType",
+                fields,
+                file_descriptor_proto()
+            )
+        })
+    }
+
+    fn default_instance() -> &'static SerializedDType {
+        static instance: ::protobuf::rt::LazyV2<SerializedDType> = ::protobuf::rt::LazyV2::INIT;
+        instance.get(SerializedDType::new)
+    }
+}
+
+impl ::protobuf::Clear for SerializedDType {
+    fn clear(&mut self) {
+        self.datatype = DataType::DT_INVALID;
+        self.unknown_fields.clear();
+    }
+}
+
+impl ::std::fmt::Debug for SerializedDType {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        ::protobuf::text_format::fmt(self, f)
+    }
+}
+
+impl ::protobuf::reflect::ProtobufValue for SerializedDType {
+    fn as_ref(&self) -> ::protobuf::reflect::ReflectValueRef {
+        ::protobuf::reflect::ReflectValueRef::Message(self)
+    }
+}
+
 #[derive(Clone,PartialEq,Eq,Debug,Hash)]
 pub enum DataType {
     DT_INVALID = 0,
@@ -209,30 +357,31 @@ impl ::protobuf::reflect::ProtobufValue for DataType {
 }
 
 static file_descriptor_proto_data: &'static [u8] = b"\
-    \n%tensorflow/core/framework/types.proto\x12\ntensorflow*\xaa\x06\n\x08D\
-    ataType\x12\x0e\n\nDT_INVALID\x10\0\x12\x0c\n\x08DT_FLOAT\x10\x01\x12\r\
-    \n\tDT_DOUBLE\x10\x02\x12\x0c\n\x08DT_INT32\x10\x03\x12\x0c\n\x08DT_UINT\
-    8\x10\x04\x12\x0c\n\x08DT_INT16\x10\x05\x12\x0b\n\x07DT_INT8\x10\x06\x12\
-    \r\n\tDT_STRING\x10\x07\x12\x10\n\x0cDT_COMPLEX64\x10\x08\x12\x0c\n\x08D\
-    T_INT64\x10\t\x12\x0b\n\x07DT_BOOL\x10\n\x12\x0c\n\x08DT_QINT8\x10\x0b\
-    \x12\r\n\tDT_QUINT8\x10\x0c\x12\r\n\tDT_QINT32\x10\r\x12\x0f\n\x0bDT_BFL\
-    OAT16\x10\x0e\x12\r\n\tDT_QINT16\x10\x0f\x12\x0e\n\nDT_QUINT16\x10\x10\
-    \x12\r\n\tDT_UINT16\x10\x11\x12\x11\n\rDT_COMPLEX128\x10\x12\x12\x0b\n\
-    \x07DT_HALF\x10\x13\x12\x0f\n\x0bDT_RESOURCE\x10\x14\x12\x0e\n\nDT_VARIA\
-    NT\x10\x15\x12\r\n\tDT_UINT32\x10\x16\x12\r\n\tDT_UINT64\x10\x17\x12\x10\
-    \n\x0cDT_FLOAT_REF\x10e\x12\x11\n\rDT_DOUBLE_REF\x10f\x12\x10\n\x0cDT_IN\
-    T32_REF\x10g\x12\x10\n\x0cDT_UINT8_REF\x10h\x12\x10\n\x0cDT_INT16_REF\
-    \x10i\x12\x0f\n\x0bDT_INT8_REF\x10j\x12\x11\n\rDT_STRING_REF\x10k\x12\
-    \x14\n\x10DT_COMPLEX64_REF\x10l\x12\x10\n\x0cDT_INT64_REF\x10m\x12\x0f\n\
-    \x0bDT_BOOL_REF\x10n\x12\x10\n\x0cDT_QINT8_REF\x10o\x12\x11\n\rDT_QUINT8\
-    _REF\x10p\x12\x11\n\rDT_QINT32_REF\x10q\x12\x13\n\x0fDT_BFLOAT16_REF\x10\
-    r\x12\x11\n\rDT_QINT16_REF\x10s\x12\x12\n\x0eDT_QUINT16_REF\x10t\x12\x11\
-    \n\rDT_UINT16_REF\x10u\x12\x15\n\x11DT_COMPLEX128_REF\x10v\x12\x0f\n\x0b\
-    DT_HALF_REF\x10w\x12\x13\n\x0fDT_RESOURCE_REF\x10x\x12\x12\n\x0eDT_VARIA\
-    NT_REF\x10y\x12\x11\n\rDT_UINT32_REF\x10z\x12\x11\n\rDT_UINT64_REF\x10{B\
-    z\n\x18org.tensorflow.frameworkB\x0bTypesProtosP\x01ZLgithub.com/tensorf\
-    low/tensorflow/tensorflow/go/core/framework/types_go_proto\xf8\x01\x01b\
-    \x06proto3\
+    \n%tensorflow/core/framework/types.proto\x12\ntensorflow\"C\n\x0fSeriali\
+    zedDType\x120\n\x08datatype\x18\x01\x20\x01(\x0e2\x14.tensorflow.DataTyp\
+    eR\x08datatype*\xaa\x06\n\x08DataType\x12\x0e\n\nDT_INVALID\x10\0\x12\
+    \x0c\n\x08DT_FLOAT\x10\x01\x12\r\n\tDT_DOUBLE\x10\x02\x12\x0c\n\x08DT_IN\
+    T32\x10\x03\x12\x0c\n\x08DT_UINT8\x10\x04\x12\x0c\n\x08DT_INT16\x10\x05\
+    \x12\x0b\n\x07DT_INT8\x10\x06\x12\r\n\tDT_STRING\x10\x07\x12\x10\n\x0cDT\
+    _COMPLEX64\x10\x08\x12\x0c\n\x08DT_INT64\x10\t\x12\x0b\n\x07DT_BOOL\x10\
+    \n\x12\x0c\n\x08DT_QINT8\x10\x0b\x12\r\n\tDT_QUINT8\x10\x0c\x12\r\n\tDT_\
+    QINT32\x10\r\x12\x0f\n\x0bDT_BFLOAT16\x10\x0e\x12\r\n\tDT_QINT16\x10\x0f\
+    \x12\x0e\n\nDT_QUINT16\x10\x10\x12\r\n\tDT_UINT16\x10\x11\x12\x11\n\rDT_\
+    COMPLEX128\x10\x12\x12\x0b\n\x07DT_HALF\x10\x13\x12\x0f\n\x0bDT_RESOURCE\
+    \x10\x14\x12\x0e\n\nDT_VARIANT\x10\x15\x12\r\n\tDT_UINT32\x10\x16\x12\r\
+    \n\tDT_UINT64\x10\x17\x12\x10\n\x0cDT_FLOAT_REF\x10e\x12\x11\n\rDT_DOUBL\
+    E_REF\x10f\x12\x10\n\x0cDT_INT32_REF\x10g\x12\x10\n\x0cDT_UINT8_REF\x10h\
+    \x12\x10\n\x0cDT_INT16_REF\x10i\x12\x0f\n\x0bDT_INT8_REF\x10j\x12\x11\n\
+    \rDT_STRING_REF\x10k\x12\x14\n\x10DT_COMPLEX64_REF\x10l\x12\x10\n\x0cDT_\
+    INT64_REF\x10m\x12\x0f\n\x0bDT_BOOL_REF\x10n\x12\x10\n\x0cDT_QINT8_REF\
+    \x10o\x12\x11\n\rDT_QUINT8_REF\x10p\x12\x11\n\rDT_QINT32_REF\x10q\x12\
+    \x13\n\x0fDT_BFLOAT16_REF\x10r\x12\x11\n\rDT_QINT16_REF\x10s\x12\x12\n\
+    \x0eDT_QUINT16_REF\x10t\x12\x11\n\rDT_UINT16_REF\x10u\x12\x15\n\x11DT_CO\
+    MPLEX128_REF\x10v\x12\x0f\n\x0bDT_HALF_REF\x10w\x12\x13\n\x0fDT_RESOURCE\
+    _REF\x10x\x12\x12\n\x0eDT_VARIANT_REF\x10y\x12\x11\n\rDT_UINT32_REF\x10z\
+    \x12\x11\n\rDT_UINT64_REF\x10{Bz\n\x18org.tensorflow.frameworkB\x0bTypes\
+    ProtosP\x01ZLgithub.com/tensorflow/tensorflow/tensorflow/go/core/framewo\
+    rk/types_go_proto\xf8\x01\x01b\x06proto3\
 ";
 
 static file_descriptor_proto_lazy: ::protobuf::rt::LazyV2<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::rt::LazyV2::INIT;

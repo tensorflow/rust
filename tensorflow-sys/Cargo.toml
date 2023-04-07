@@ -1,6 +1,6 @@
 [package]
 name = "tensorflow-sys"
-version = "0.22.1"
+version = "0.23.0"
 license = "Apache-2.0"
 authors = [
   "Adam Crume <acrume@google.com>",
@@ -32,7 +32,7 @@ flate2 = "1.0.24"
 pkg-config = "0.3.25"
 semver = "1.0.13"
 tar = "0.4.38"
-zip = "0.6.2"
+zip = "0.6.4"
 
 [features]
 tensorflow_gpu = []

@@ -24,8 +24,8 @@ const REPOSITORY: &str = "https://github.com/tensorflow/tensorflow.git";
 const FRAMEWORK_TARGET: &str = "tensorflow:libtensorflow_framework";
 const TARGET: &str = "tensorflow:libtensorflow";
 // `VERSION` and `TAG` are separate because the tag is not always `'v' + VERSION`.
-const VERSION: &str = "2.9.1";
-const TAG: &str = "v2.9.1";
+const VERSION: &str = "2.11.0";
+const TAG: &str = "v2.11.0";
 const MIN_BAZEL: &str = "3.7.2";
 
 macro_rules! get(($name:expr) => (ok!(env::var($name))));
@@ -164,7 +164,7 @@ fn extract_zip<P: AsRef<Path>, P2: AsRef<Path>>(archive_path: P, extract_to: P2)
             } else {
                 if let Some(parent) = output_path.parent() {
                     if !parent.exists() {
-                        fs::create_dir_all(&parent)
+                        fs::create_dir_all(parent)
                             .expect("Failed to create parent directory for extracted file.");
                     }
                 }
@@ -266,7 +266,7 @@ fn install_prebuilt() {
     let framework_files = std::fs::read_dir(lib_dir).unwrap();
     for library_entry in framework_files.filter_map(Result::ok) {
         let library_full_path = library_entry.path();
-        let new_library_full_path = output.join(&library_full_path.file_name().unwrap());
+        let new_library_full_path = output.join(library_full_path.file_name().unwrap());
         if new_library_full_path.exists() {
             log!(
                 "{} already exists. Removing",
