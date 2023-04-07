@@ -48,7 +48,7 @@ fn tfe_tensor_handle() {
 }
 
 /// Test that the experimental API works.
-#[cfg(feature = "experimental")]
+#[cfg(all(feature = "experimental", target_os = "macos"))]
 #[test]
 fn load_plugable_device() {
     let c_filename = std::ffi::CString::new("libmetal_plugin.dylib").expect("CString::new failed");
