@@ -45,17 +45,14 @@ jobs:
           bash ~/miniconda.sh -b -p $HOME/miniconda
           source ~/miniconda/bin/activate
           conda install -c apple tensorflow-deps
+          SYSTEM_VERSION_COMPAT=0 pip install tensorflow-macos tensorflow-metal
       - name: Setup environment for AMD
         if: matrix.os == 'macos-latest' && steps.check-arch.outputs.architecture == 'x86_64'
         run: |
           python3 -m venv ~/venv-metal
           source ~/venv-metal/bin/activate
           python -m pip install -U pip
-      - name: Setup environment for macOS
-        if: matrix.os == 'macos-latest'
-        run: |
-          python -m pip install tensorflow
-          python -m pip install tensorflow-metal
+          SYSTEM_VERSION_COMPAT=0 pip install tensorflow-macos tensorflow-metal
       # Install pip and pytest
       - name: Install dependencies
         run: |
