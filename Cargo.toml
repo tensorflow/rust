@@ -2,7 +2,7 @@
 name = "tensorflow"
 version = "0.20.0"
 authors = [
-    "Adam Crume <acrume@google.com>,
+    "Adam Crume <acrume@google.com>",
     "Maciej Maślanka <maciej@contact.apurer.io>"
 ]
 description = "Rust language bindings for TensorFlow."
