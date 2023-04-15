@@ -29,7 +29,7 @@ struct SaveRestoreOps {
 /// checkpoint_maker.save(&session, "data/checkpoint")?;
 /// // then we restore in a different session to continue there
 /// let new_session = Session::new(&SessionOptions::new(), &scope.graph())?;
-/// checkpoint_maker.save(&new_session, "data/checkpoint")?;
+/// checkpoint_maker.restore(&new_session, "data/checkpoint")?;
 /// ```
 ///
 #[derive(Debug)]
