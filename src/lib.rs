@@ -207,6 +207,11 @@ pub mod train;
 mod saved_model;
 pub use saved_model::*;
 
+mod checkpoint;
+pub use checkpoint::*;
+
+mod option_insert_result;
+
 #[cfg(feature = "eager")]
 pub mod eager;
 
