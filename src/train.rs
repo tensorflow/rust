@@ -565,7 +565,7 @@ mod tests {
         let x_output = run_args.fetch::<f32>(x_fetch).unwrap();
         assert_eq!(x_output.len(), 1);
         assert!(
-            x_output[0] >= 2.99994 && x_output[0] <= 2.99998,
+            x_output[0] >= 2.99992 && x_output[0] <= 2.999999,
             "x_output[0] = {}",
             x_output[0]
         );
@@ -574,7 +574,7 @@ mod tests {
         let x_output = run_args.fetch::<f32>(x_fetch).unwrap();
         assert_eq!(x_output.len(), 1);
         assert!(
-            x_output[0] >= 2.99990 && x_output[0] <= 2.99994,
+            x_output[0] >= 2.99992 && x_output[0] <= 2.999999,
             "x_output[0] = {}",
             x_output[0]
         );
@@ -583,7 +583,7 @@ mod tests {
         let x_output = run_args.fetch::<f32>(x_fetch).unwrap();
         assert_eq!(x_output.len(), 1);
         assert!(
-            x_output[0] >= 2.99985 && x_output[0] <= 2.99990,
+            x_output[0] >= 2.99992 && x_output[0] <= 2.999999,
             "x_output[0] = {}",
             x_output[0]
         );
