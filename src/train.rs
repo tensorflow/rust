@@ -278,6 +278,7 @@ pub struct AdamOptimizer {
     beta1_power: Option<Output>,
     beta2_power: Option<Output>,
     epsilon: Option<Output>,
+    local_step: Option<Variable>,
     assign_add_local_step: Option<Operation>,
 }
 
@@ -297,6 +298,7 @@ impl AdamOptimizer {
             beta1_power: None,
             beta2_power: None,
             epsilon: None,
+            local_step: None,
             assign_add_local_step: None,
         }
     }
@@ -323,15 +325,20 @@ impl AdamOptimizer {
 
     /// Sets beta1_power and beta2_power.
     pub fn set_calculated_parameters(&mut self, scope: &mut Scope) -> Result<()> {
-        let local_step = ops::Variable::new().dtype(DataType::Float).build(scope)?;
-        ops::assign(local_step.clone(), ops::constant(1.0f32, scope)?, scope)?;
-        self.assign_add_local_step = Some(ops::assign_add(local_step.clone(), ops::constant(1.0f32, scope)?, scope)?);
+        self.local_step = Some(Variable::builder()
+            .const_initial_value(1.0f32)
+            .data_type(DataType::Float)
+            .build(&mut scope.with_op_name("local_step"))?);
 
-        let beta1 = or_constant(scope, &self.beta1, 0.9f32)?;
-        let beta2 = or_constant(scope, &self.beta2, 0.999f32)?;
+        if let Some( local_step) = &self.local_step {
+            self.assign_add_local_step = Some(ops::assign_add(local_step.output().clone(), ops::constant(1.0f32, scope)?, &mut scope.with_op_name("add_local_step"))?);
 
-        self.beta1_power = Some(ops::pow(beta1, local_step.clone(), scope)?.into());
-        self.beta2_power = Some(ops::pow(beta2, local_step.clone(), scope)?.into());
+            let beta1 = or_constant(scope, &self.beta1, 0.9f32)?;
+            let beta2 = or_constant(scope, &self.beta2, 0.999f32)?;
+
+            self.beta1_power = Some(ops::pow(beta1, local_step.output().clone(), scope)?.into());
+            self.beta2_power = Some(ops::pow(beta2, local_step.output().clone(), scope)?.into());
+        }
 
         Ok(())
     }
@@ -372,6 +379,9 @@ impl Optimizer for AdamOptimizer {
                 variables.push(m.clone());
                 variables.push(v.clone());
             }
+        }
+        if let Some( local_step ) = &self.local_step {
+            variables.push(local_step.clone());
         }
         if let Some( assign_add_local_step ) = &self.assign_add_local_step {
             apply_ops.push(assign_add_local_step.clone());
