@@ -955,7 +955,7 @@ impl TensorType for String {
 
 ////////////////////////
 
-pub(crate) trait AnyTensor: Debug {
+pub trait AnyTensor: Debug {
     fn inner(&self) -> Result<*mut tf::TF_Tensor>;
 
     fn data_type(&self) -> DataType;
@@ -1856,7 +1856,37 @@ impl OpDef {
         })
     }
 }
-
+#[non_exhaustive]
+#[derive(Debug)]
+pub enum AttrValue {
+    S(::std::vec::Vec<u8>),
+    I(i64),
+    F(f32),
+    B(bool),
+    FieldType(DataType),
+    Shape(Shape),
+    Tensor(Box<dyn AnyTensor>),
+    List(AttrValueListValue),
+    Func(NameAttrList),
+    Placeholder(::std::string::String),
+}
+#[derive(Debug)]
+pub struct NameAttrList {
+    pub name: std::string::String,
+    pub attr: std::collections::HashMap<::std::string::String, AttrValue>,
+}
+#[derive(Debug)]
+pub struct AttrValueListValue {
+    // message fields
+    pub s: ::protobuf::RepeatedField<::std::vec::Vec<u8>>,
+    pub i: ::std::vec::Vec<i64>,
+    pub f: ::std::vec::Vec<f32>,
+    pub b: ::std::vec::Vec<bool>,
+    pub field_type: ::std::vec::Vec<DataType>,
+    pub shape: ::protobuf::RepeatedField<Shape>,
+    pub tensor: ::protobuf::RepeatedField<Box<dyn AnyTensor>>,
+    pub func: ::protobuf::RepeatedField<NameAttrList>,
+}
 /// An argument definition for a graph operation.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct OpArgDef {
