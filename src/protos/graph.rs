@@ -30,6 +30,7 @@ pub struct GraphDef {
     pub versions: ::protobuf::SingularPtrField<super::versions::VersionDef>,
     pub version: i32,
     pub library: ::protobuf::SingularPtrField<super::function::FunctionDefLibrary>,
+    pub debug_info: ::protobuf::SingularPtrField<super::graph_debug_info::GraphDebugInfo>,
     // special fields
     pub unknown_fields: ::protobuf::UnknownFields,
     pub cached_size: ::protobuf::CachedSize,
@@ -151,6 +152,39 @@ impl GraphDef {
     pub fn take_library(&mut self) -> super::function::FunctionDefLibrary {
         self.library.take().unwrap_or_else(|| super::function::FunctionDefLibrary::new())
     }
+
+    // .tensorflow.GraphDebugInfo debug_info = 5;
+
+
+    pub fn get_debug_info(&self) -> &super::graph_debug_info::GraphDebugInfo {
+        self.debug_info.as_ref().unwrap_or_else(|| <super::graph_debug_info::GraphDebugInfo as ::protobuf::Message>::default_instance())
+    }
+    pub fn clear_debug_info(&mut self) {
+        self.debug_info.clear();
+    }
+
+    pub fn has_debug_info(&self) -> bool {
+        self.debug_info.is_some()
+    }
+
+    // Param is passed by value, moved
+    pub fn set_debug_info(&mut self, v: super::graph_debug_info::GraphDebugInfo) {
+        self.debug_info = ::protobuf::SingularPtrField::some(v);
+    }
+
+    // Mutable pointer to the field.
+    // If field is not initialized, it is initialized with default value first.
+    pub fn mut_debug_info(&mut self) -> &mut super::graph_debug_info::GraphDebugInfo {
+        if self.debug_info.is_none() {
+            self.debug_info.set_default();
+        }
+        self.debug_info.as_mut().unwrap()
+    }
+
+    // Take field
+    pub fn take_debug_info(&mut self) -> super::graph_debug_info::GraphDebugInfo {
+        self.debug_info.take().unwrap_or_else(|| super::graph_debug_info::GraphDebugInfo::new())
+    }
 }
 
 impl ::protobuf::Message for GraphDef {
@@ -166,6 +200,11 @@ impl ::protobuf::Message for GraphDef {
             }
         };
         for v in &self.library {
+            if !v.is_initialized() {
+                return false;
+            }
+        };
+        for v in &self.debug_info {
             if !v.is_initialized() {
                 return false;
             }
@@ -192,6 +231,9 @@ impl ::protobuf::Message for GraphDef {
                 },
                 2 => {
                     ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.library)?;
+                },
+                5 => {
+                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.debug_info)?;
                 },
                 _ => {
                     ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
@@ -220,6 +262,10 @@ impl ::protobuf::Message for GraphDef {
             let len = v.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         }
+        if let Some(ref v) = self.debug_info.as_ref() {
+            let len = v.compute_size();
+            my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
+        }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
@@ -241,6 +287,11 @@ impl ::protobuf::Message for GraphDef {
         }
         if let Some(ref v) = self.library.as_ref() {
             os.write_tag(2, ::protobuf::wire_format::WireTypeLengthDelimited)?;
+            os.write_raw_varint32(v.get_cached_size())?;
+            v.write_to_with_cached_sizes(os)?;
+        }
+        if let Some(ref v) = self.debug_info.as_ref() {
+            os.write_tag(5, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
         }
@@ -302,6 +353,11 @@ impl ::protobuf::Message for GraphDef {
                 |m: &GraphDef| { &m.library },
                 |m: &mut GraphDef| { &mut m.library },
             ));
+            fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<super::graph_debug_info::GraphDebugInfo>>(
+                "debug_info",
+                |m: &GraphDef| { &m.debug_info },
+                |m: &mut GraphDef| { &mut m.debug_info },
+            ));
             ::protobuf::reflect::MessageDescriptor::new_pb_name::<GraphDef>(
                 "GraphDef",
                 fields,
@@ -322,6 +378,7 @@ impl ::protobuf::Clear for GraphDef {
         self.versions.clear();
         self.version = 0;
         self.library.clear();
+        self.debug_info.clear();
         self.unknown_fields.clear();
     }
 }
@@ -340,15 +397,17 @@ impl ::protobuf::reflect::ProtobufValue for GraphDef {
 
 static file_descriptor_proto_data: &'static [u8] = b"\
     \n%tensorflow/core/framework/graph.proto\x12\ntensorflow\x1a(tensorflow/\
-    core/framework/function.proto\x1a(tensorflow/core/framework/node_def.pro\
-    to\x1a(tensorflow/core/framework/versions.proto\"\xbf\x01\n\x08GraphDef\
-    \x12'\n\x04node\x18\x01\x20\x03(\x0b2\x13.tensorflow.NodeDefR\x04node\
-    \x122\n\x08versions\x18\x04\x20\x01(\x0b2\x16.tensorflow.VersionDefR\x08\
-    versions\x12\x1c\n\x07version\x18\x03\x20\x01(\x05R\x07versionB\x02\x18\
-    \x01\x128\n\x07library\x18\x02\x20\x01(\x0b2\x1e.tensorflow.FunctionDefL\
-    ibraryR\x07libraryBz\n\x18org.tensorflow.frameworkB\x0bGraphProtosP\x01Z\
-    Lgithub.com/tensorflow/tensorflow/tensorflow/go/core/framework/graph_go_\
-    proto\xf8\x01\x01b\x06proto3\
+    core/framework/function.proto\x1a0tensorflow/core/framework/graph_debug_\
+    info.proto\x1a(tensorflow/core/framework/node_def.proto\x1a(tensorflow/c\
+    ore/framework/versions.proto\"\xfa\x01\n\x08GraphDef\x12'\n\x04node\x18\
+    \x01\x20\x03(\x0b2\x13.tensorflow.NodeDefR\x04node\x122\n\x08versions\
+    \x18\x04\x20\x01(\x0b2\x16.tensorflow.VersionDefR\x08versions\x12\x1c\n\
+    \x07version\x18\x03\x20\x01(\x05R\x07versionB\x02\x18\x01\x128\n\x07libr\
+    ary\x18\x02\x20\x01(\x0b2\x1e.tensorflow.FunctionDefLibraryR\x07library\
+    \x129\n\ndebug_info\x18\x05\x20\x01(\x0b2\x1a.tensorflow.GraphDebugInfoR\
+    \tdebugInfoBz\n\x18org.tensorflow.frameworkB\x0bGraphProtosP\x01ZLgithub\
+    .com/tensorflow/tensorflow/tensorflow/go/core/framework/graph_go_proto\
+    \xf8\x01\x01b\x06proto3\
 ";
 
 static file_descriptor_proto_lazy: ::protobuf::rt::LazyV2<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::rt::LazyV2::INIT;

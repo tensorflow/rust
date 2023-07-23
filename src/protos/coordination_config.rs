@@ -17,7 +17,7 @@
 #![allow(trivial_casts)]
 #![allow(unused_imports)]
 #![allow(unused_results)]
-//! Generated file from `tensorflow/core/protobuf/coordination_config.proto`
+//! Generated file from `tensorflow/tsl/protobuf/coordination_config.proto`
 
 /// Generated files are compatible only with the same version
 /// of protobuf runtime.
@@ -229,6 +229,7 @@ pub struct CoordinationServiceConfig {
     pub shutdown_barrier_timeout_in_ms: i64,
     pub agent_destruction_without_shutdown: bool,
     pub recoverable_jobs: ::protobuf::RepeatedField<::std::string::String>,
+    pub allow_new_incarnation_to_reconnect: bool,
     // special fields
     pub unknown_fields: ::protobuf::UnknownFields,
     pub cached_size: ::protobuf::CachedSize,
@@ -421,6 +422,21 @@ impl CoordinationServiceConfig {
     pub fn take_recoverable_jobs(&mut self) -> ::protobuf::RepeatedField<::std::string::String> {
         ::std::mem::replace(&mut self.recoverable_jobs, ::protobuf::RepeatedField::new())
     }
+
+    // bool allow_new_incarnation_to_reconnect = 11;
+
+
+    pub fn get_allow_new_incarnation_to_reconnect(&self) -> bool {
+        self.allow_new_incarnation_to_reconnect
+    }
+    pub fn clear_allow_new_incarnation_to_reconnect(&mut self) {
+        self.allow_new_incarnation_to_reconnect = false;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_allow_new_incarnation_to_reconnect(&mut self, v: bool) {
+        self.allow_new_incarnation_to_reconnect = v;
+    }
 }
 
 impl ::protobuf::Message for CoordinationServiceConfig {
@@ -484,6 +500,13 @@ impl ::protobuf::Message for CoordinationServiceConfig {
                 9 => {
                     ::protobuf::rt::read_repeated_string_into(wire_type, is, &mut self.recoverable_jobs)?;
                 },
+                11 => {
+                    if wire_type != ::protobuf::wire_format::WireTypeVarint {
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                    }
+                    let tmp = is.read_bool()?;
+                    self.allow_new_incarnation_to_reconnect = tmp;
+                },
                 _ => {
                     ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
                 },
@@ -524,6 +547,9 @@ impl ::protobuf::Message for CoordinationServiceConfig {
         for value in &self.recoverable_jobs {
             my_size += ::protobuf::rt::string_size(9, &value);
         };
+        if self.allow_new_incarnation_to_reconnect != false {
+            my_size += 2;
+        }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
@@ -559,6 +585,9 @@ impl ::protobuf::Message for CoordinationServiceConfig {
         for v in &self.recoverable_jobs {
             os.write_string(9, &v)?;
         };
+        if self.allow_new_incarnation_to_reconnect != false {
+            os.write_bool(11, self.allow_new_incarnation_to_reconnect)?;
+        }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
     }
@@ -642,6 +671,11 @@ impl ::protobuf::Message for CoordinationServiceConfig {
                 |m: &CoordinationServiceConfig| { &m.recoverable_jobs },
                 |m: &mut CoordinationServiceConfig| { &mut m.recoverable_jobs },
             ));
+            fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                "allow_new_incarnation_to_reconnect",
+                |m: &CoordinationServiceConfig| { &m.allow_new_incarnation_to_reconnect },
+                |m: &mut CoordinationServiceConfig| { &mut m.allow_new_incarnation_to_reconnect },
+            ));
             ::protobuf::reflect::MessageDescriptor::new_pb_name::<CoordinationServiceConfig>(
                 "CoordinationServiceConfig",
                 fields,
@@ -667,6 +701,7 @@ impl ::protobuf::Clear for CoordinationServiceConfig {
         self.shutdown_barrier_timeout_in_ms = 0;
         self.agent_destruction_without_shutdown = false;
         self.recoverable_jobs.clear();
+        self.allow_new_incarnation_to_reconnect = false;
         self.unknown_fields.clear();
     }
 }
@@ -684,9 +719,9 @@ impl ::protobuf::reflect::ProtobufValue for CoordinationServiceConfig {
 }
 
 static file_descriptor_proto_data: &'static [u8] = b"\
-    \n2tensorflow/core/protobuf/coordination_config.proto\x12\ntensorflow\"A\
+    \n1tensorflow/tsl/protobuf/coordination_config.proto\x12\ntensorflow\"A\
     \n\x0eCoordinatedJob\x12\x12\n\x04name\x18\x01\x20\x01(\tR\x04name\x12\
-    \x1b\n\tnum_tasks\x18\x02\x20\x01(\x05R\x08numTasks\"\xa0\x04\n\x19Coord\
+    \x1b\n\tnum_tasks\x18\x02\x20\x01(\x05R\x08numTasks\"\xec\x04\n\x19Coord\
     inationServiceConfig\x12!\n\x0cservice_type\x18\x01\x20\x01(\tR\x0bservi\
     ceType\x12%\n\x0eservice_leader\x18\x02\x20\x01(\tR\rserviceLeader\x12.\
     \n\x13enable_health_check\x18\x03\x20\x01(\x08R\x11enableHealthCheck\x12\
@@ -697,9 +732,10 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     tdown_barrier_timeout_in_ms\x18\x07\x20\x01(\x03R\x1ashutdownBarrierTime\
     outInMs\x12K\n\"agent_destruction_without_shutdown\x18\x08\x20\x01(\x08R\
     \x1fagentDestructionWithoutShutdown\x12)\n\x10recoverable_jobs\x18\t\x20\
-    \x03(\tR\x0frecoverableJobsJ\x04\x08\x06\x10\x07BWZUgithub.com/tensorflo\
-    w/tensorflow/tensorflow/go/core/protobuf/for_core_protos_go_protob\x06pr\
-    oto3\
+    \x03(\tR\x0frecoverableJobs\x12J\n\"allow_new_incarnation_to_reconnect\
+    \x18\x0b\x20\x01(\x08R\x1eallowNewIncarnationToReconnectJ\x04\x08\x06\
+    \x10\x07BWZUgithub.com/tensorflow/tensorflow/tensorflow/go/core/protobuf\
+    /for_core_protos_go_protob\x06proto3\
 ";
 
 static file_descriptor_proto_lazy: ::protobuf::rt::LazyV2<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::rt::LazyV2::INIT;

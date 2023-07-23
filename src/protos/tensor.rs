@@ -43,6 +43,7 @@ pub struct TensorProto {
     pub variant_val: ::protobuf::RepeatedField<VariantTensorDataProto>,
     pub uint32_val: ::std::vec::Vec<u32>,
     pub uint64_val: ::std::vec::Vec<u64>,
+    pub float8_val: ::std::vec::Vec<u8>,
     // special fields
     pub unknown_fields: ::protobuf::UnknownFields,
     pub cached_size: ::protobuf::CachedSize,
@@ -472,6 +473,32 @@ impl TensorProto {
     pub fn take_uint64_val(&mut self) -> ::std::vec::Vec<u64> {
         ::std::mem::replace(&mut self.uint64_val, ::std::vec::Vec::new())
     }
+
+    // bytes float8_val = 18;
+
+
+    pub fn get_float8_val(&self) -> &[u8] {
+        &self.float8_val
+    }
+    pub fn clear_float8_val(&mut self) {
+        self.float8_val.clear();
+    }
+
+    // Param is passed by value, moved
+    pub fn set_float8_val(&mut self, v: ::std::vec::Vec<u8>) {
+        self.float8_val = v;
+    }
+
+    // Mutable pointer to the field.
+    // If field is not initialized, it is initialized with default value first.
+    pub fn mut_float8_val(&mut self) -> &mut ::std::vec::Vec<u8> {
+        &mut self.float8_val
+    }
+
+    // Take field
+    pub fn take_float8_val(&mut self) -> ::std::vec::Vec<u8> {
+        ::std::mem::replace(&mut self.float8_val, ::std::vec::Vec::new())
+    }
 }
 
 impl ::protobuf::Message for TensorProto {
@@ -553,6 +580,9 @@ impl ::protobuf::Message for TensorProto {
                 17 => {
                     ::protobuf::rt::read_repeated_uint64_into(wire_type, is, &mut self.uint64_val)?;
                 },
+                18 => {
+                    ::protobuf::rt::read_singular_proto3_bytes_into(wire_type, is, &mut self.float8_val)?;
+                },
                 _ => {
                     ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
                 },
@@ -618,6 +648,9 @@ impl ::protobuf::Message for TensorProto {
         }
         if !self.uint64_val.is_empty() {
             my_size += ::protobuf::rt::vec_packed_varint_size(17, &self.uint64_val);
+        }
+        if !self.float8_val.is_empty() {
+            my_size += ::protobuf::rt::bytes_size(18, &self.float8_val);
         }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
@@ -731,6 +764,9 @@ impl ::protobuf::Message for TensorProto {
             for v in &self.uint64_val {
                 os.write_uint64_no_tag(*v)?;
             };
+        }
+        if !self.float8_val.is_empty() {
+            os.write_bytes(18, &self.float8_val)?;
         }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
@@ -855,6 +891,11 @@ impl ::protobuf::Message for TensorProto {
                 |m: &TensorProto| { &m.uint64_val },
                 |m: &mut TensorProto| { &mut m.uint64_val },
             ));
+            fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBytes>(
+                "float8_val",
+                |m: &TensorProto| { &m.float8_val },
+                |m: &mut TensorProto| { &mut m.float8_val },
+            ));
             ::protobuf::reflect::MessageDescriptor::new_pb_name::<TensorProto>(
                 "TensorProto",
                 fields,
@@ -888,6 +929,7 @@ impl ::protobuf::Clear for TensorProto {
         self.variant_val.clear();
         self.uint32_val.clear();
         self.uint64_val.clear();
+        self.float8_val.clear();
         self.unknown_fields.clear();
     }
 }
@@ -1157,7 +1199,7 @@ impl ::protobuf::reflect::ProtobufValue for VariantTensorDataProto {
 static file_descriptor_proto_data: &'static [u8] = b"\
     \n&tensorflow/core/framework/tensor.proto\x12\ntensorflow\x1a/tensorflow\
     /core/framework/resource_handle.proto\x1a,tensorflow/core/framework/tens\
-    or_shape.proto\x1a%tensorflow/core/framework/types.proto\"\xd1\x05\n\x0b\
+    or_shape.proto\x1a%tensorflow/core/framework/types.proto\"\xf0\x05\n\x0b\
     TensorProto\x12*\n\x05dtype\x18\x01\x20\x01(\x0e2\x14.tensorflow.DataTyp\
     eR\x05dtype\x12?\n\x0ctensor_shape\x18\x02\x20\x01(\x0b2\x1c.tensorflow.\
     TensorShapeProtoR\x0btensorShape\x12%\n\x0eversion_number\x18\x03\x20\
@@ -1175,12 +1217,13 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     sourceHandleVal\x12C\n\x0bvariant_val\x18\x0f\x20\x03(\x0b2\".tensorflow\
     .VariantTensorDataProtoR\nvariantVal\x12!\n\nuint32_val\x18\x10\x20\x03(\
     \rR\tuint32ValB\x02\x10\x01\x12!\n\nuint64_val\x18\x11\x20\x03(\x04R\tui\
-    nt64ValB\x02\x10\x01\"\x84\x01\n\x16VariantTensorDataProto\x12\x1b\n\tty\
-    pe_name\x18\x01\x20\x01(\tR\x08typeName\x12\x1a\n\x08metadata\x18\x02\
-    \x20\x01(\x0cR\x08metadata\x121\n\x07tensors\x18\x03\x20\x03(\x0b2\x17.t\
-    ensorflow.TensorProtoR\x07tensorsB|\n\x18org.tensorflow.frameworkB\x0cTe\
-    nsorProtosP\x01ZMgithub.com/tensorflow/tensorflow/tensorflow/go/core/fra\
-    mework/tensor_go_proto\xf8\x01\x01b\x06proto3\
+    nt64ValB\x02\x10\x01\x12\x1d\n\nfloat8_val\x18\x12\x20\x01(\x0cR\tfloat8\
+    Val\"\x84\x01\n\x16VariantTensorDataProto\x12\x1b\n\ttype_name\x18\x01\
+    \x20\x01(\tR\x08typeName\x12\x1a\n\x08metadata\x18\x02\x20\x01(\x0cR\x08\
+    metadata\x121\n\x07tensors\x18\x03\x20\x03(\x0b2\x17.tensorflow.TensorPr\
+    otoR\x07tensorsB|\n\x18org.tensorflow.frameworkB\x0cTensorProtosP\x01ZMg\
+    ithub.com/tensorflow/tensorflow/tensorflow/go/core/framework/tensor_go_p\
+    roto\xf8\x01\x01b\x06proto3\
 ";
 
 static file_descriptor_proto_lazy: ::protobuf::rt::LazyV2<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::rt::LazyV2::INIT;
