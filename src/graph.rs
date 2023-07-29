@@ -1340,6 +1340,7 @@ impl Operation {
             return Err(status);
         }
         #[allow(trivial_numeric_casts)]
+        #[allow(clippy::unnecessary_cast)]
         Ok(value as f32)
     }
 
@@ -1367,6 +1368,7 @@ impl Operation {
                 return Err(status);
             }
             #[allow(trivial_numeric_casts)]
+            #[allow(clippy::unnecessary_cast)]
             Ok(values.iter().map(|f| f.assume_init() as f32).collect())
         }
     }

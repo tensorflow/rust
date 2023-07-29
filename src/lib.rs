@@ -1202,6 +1202,7 @@ where
 {
     // This will panic if `unpacked` is false and `unpacked_data` is already borrowed.
     #[allow(trivial_numeric_casts)]
+    #[allow(clippy::unnecessary_cast)]
     fn unpack(&self) {
         if !self.unpacked.get() {
             let mut data = self.unpacked_data.borrow_mut();

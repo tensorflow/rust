@@ -197,6 +197,8 @@ pub enum DataType {
     DT_VARIANT = 21,
     DT_UINT32 = 22,
     DT_UINT64 = 23,
+    DT_FLOAT8_E5M2 = 24,
+    DT_FLOAT8_E4M3FN = 25,
     DT_FLOAT_REF = 101,
     DT_DOUBLE_REF = 102,
     DT_INT32_REF = 103,
@@ -220,6 +222,8 @@ pub enum DataType {
     DT_VARIANT_REF = 121,
     DT_UINT32_REF = 122,
     DT_UINT64_REF = 123,
+    DT_FLOAT8_E5M2_REF = 124,
+    DT_FLOAT8_E4M3FN_REF = 125,
 }
 
 impl ::protobuf::ProtobufEnum for DataType {
@@ -253,6 +257,8 @@ impl ::protobuf::ProtobufEnum for DataType {
             21 => ::std::option::Option::Some(DataType::DT_VARIANT),
             22 => ::std::option::Option::Some(DataType::DT_UINT32),
             23 => ::std::option::Option::Some(DataType::DT_UINT64),
+            24 => ::std::option::Option::Some(DataType::DT_FLOAT8_E5M2),
+            25 => ::std::option::Option::Some(DataType::DT_FLOAT8_E4M3FN),
             101 => ::std::option::Option::Some(DataType::DT_FLOAT_REF),
             102 => ::std::option::Option::Some(DataType::DT_DOUBLE_REF),
             103 => ::std::option::Option::Some(DataType::DT_INT32_REF),
@@ -276,6 +282,8 @@ impl ::protobuf::ProtobufEnum for DataType {
             121 => ::std::option::Option::Some(DataType::DT_VARIANT_REF),
             122 => ::std::option::Option::Some(DataType::DT_UINT32_REF),
             123 => ::std::option::Option::Some(DataType::DT_UINT64_REF),
+            124 => ::std::option::Option::Some(DataType::DT_FLOAT8_E5M2_REF),
+            125 => ::std::option::Option::Some(DataType::DT_FLOAT8_E4M3FN_REF),
             _ => ::std::option::Option::None
         }
     }
@@ -306,6 +314,8 @@ impl ::protobuf::ProtobufEnum for DataType {
             DataType::DT_VARIANT,
             DataType::DT_UINT32,
             DataType::DT_UINT64,
+            DataType::DT_FLOAT8_E5M2,
+            DataType::DT_FLOAT8_E4M3FN,
             DataType::DT_FLOAT_REF,
             DataType::DT_DOUBLE_REF,
             DataType::DT_INT32_REF,
@@ -329,6 +339,8 @@ impl ::protobuf::ProtobufEnum for DataType {
             DataType::DT_VARIANT_REF,
             DataType::DT_UINT32_REF,
             DataType::DT_UINT64_REF,
+            DataType::DT_FLOAT8_E5M2_REF,
+            DataType::DT_FLOAT8_E4M3FN_REF,
         ];
         values
     }
@@ -359,7 +371,7 @@ impl ::protobuf::reflect::ProtobufValue for DataType {
 static file_descriptor_proto_data: &'static [u8] = b"\
     \n%tensorflow/core/framework/types.proto\x12\ntensorflow\"C\n\x0fSeriali\
     zedDType\x120\n\x08datatype\x18\x01\x20\x01(\x0e2\x14.tensorflow.DataTyp\
-    eR\x08datatype*\xaa\x06\n\x08DataType\x12\x0e\n\nDT_INVALID\x10\0\x12\
+    eR\x08datatype*\x86\x07\n\x08DataType\x12\x0e\n\nDT_INVALID\x10\0\x12\
     \x0c\n\x08DT_FLOAT\x10\x01\x12\r\n\tDT_DOUBLE\x10\x02\x12\x0c\n\x08DT_IN\
     T32\x10\x03\x12\x0c\n\x08DT_UINT8\x10\x04\x12\x0c\n\x08DT_INT16\x10\x05\
     \x12\x0b\n\x07DT_INT8\x10\x06\x12\r\n\tDT_STRING\x10\x07\x12\x10\n\x0cDT\
@@ -369,19 +381,21 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     \x12\x0e\n\nDT_QUINT16\x10\x10\x12\r\n\tDT_UINT16\x10\x11\x12\x11\n\rDT_\
     COMPLEX128\x10\x12\x12\x0b\n\x07DT_HALF\x10\x13\x12\x0f\n\x0bDT_RESOURCE\
     \x10\x14\x12\x0e\n\nDT_VARIANT\x10\x15\x12\r\n\tDT_UINT32\x10\x16\x12\r\
-    \n\tDT_UINT64\x10\x17\x12\x10\n\x0cDT_FLOAT_REF\x10e\x12\x11\n\rDT_DOUBL\
-    E_REF\x10f\x12\x10\n\x0cDT_INT32_REF\x10g\x12\x10\n\x0cDT_UINT8_REF\x10h\
-    \x12\x10\n\x0cDT_INT16_REF\x10i\x12\x0f\n\x0bDT_INT8_REF\x10j\x12\x11\n\
-    \rDT_STRING_REF\x10k\x12\x14\n\x10DT_COMPLEX64_REF\x10l\x12\x10\n\x0cDT_\
-    INT64_REF\x10m\x12\x0f\n\x0bDT_BOOL_REF\x10n\x12\x10\n\x0cDT_QINT8_REF\
-    \x10o\x12\x11\n\rDT_QUINT8_REF\x10p\x12\x11\n\rDT_QINT32_REF\x10q\x12\
-    \x13\n\x0fDT_BFLOAT16_REF\x10r\x12\x11\n\rDT_QINT16_REF\x10s\x12\x12\n\
-    \x0eDT_QUINT16_REF\x10t\x12\x11\n\rDT_UINT16_REF\x10u\x12\x15\n\x11DT_CO\
-    MPLEX128_REF\x10v\x12\x0f\n\x0bDT_HALF_REF\x10w\x12\x13\n\x0fDT_RESOURCE\
-    _REF\x10x\x12\x12\n\x0eDT_VARIANT_REF\x10y\x12\x11\n\rDT_UINT32_REF\x10z\
-    \x12\x11\n\rDT_UINT64_REF\x10{Bz\n\x18org.tensorflow.frameworkB\x0bTypes\
-    ProtosP\x01ZLgithub.com/tensorflow/tensorflow/tensorflow/go/core/framewo\
-    rk/types_go_proto\xf8\x01\x01b\x06proto3\
+    \n\tDT_UINT64\x10\x17\x12\x12\n\x0eDT_FLOAT8_E5M2\x10\x18\x12\x14\n\x10D\
+    T_FLOAT8_E4M3FN\x10\x19\x12\x10\n\x0cDT_FLOAT_REF\x10e\x12\x11\n\rDT_DOU\
+    BLE_REF\x10f\x12\x10\n\x0cDT_INT32_REF\x10g\x12\x10\n\x0cDT_UINT8_REF\
+    \x10h\x12\x10\n\x0cDT_INT16_REF\x10i\x12\x0f\n\x0bDT_INT8_REF\x10j\x12\
+    \x11\n\rDT_STRING_REF\x10k\x12\x14\n\x10DT_COMPLEX64_REF\x10l\x12\x10\n\
+    \x0cDT_INT64_REF\x10m\x12\x0f\n\x0bDT_BOOL_REF\x10n\x12\x10\n\x0cDT_QINT\
+    8_REF\x10o\x12\x11\n\rDT_QUINT8_REF\x10p\x12\x11\n\rDT_QINT32_REF\x10q\
+    \x12\x13\n\x0fDT_BFLOAT16_REF\x10r\x12\x11\n\rDT_QINT16_REF\x10s\x12\x12\
+    \n\x0eDT_QUINT16_REF\x10t\x12\x11\n\rDT_UINT16_REF\x10u\x12\x15\n\x11DT_\
+    COMPLEX128_REF\x10v\x12\x0f\n\x0bDT_HALF_REF\x10w\x12\x13\n\x0fDT_RESOUR\
+    CE_REF\x10x\x12\x12\n\x0eDT_VARIANT_REF\x10y\x12\x11\n\rDT_UINT32_REF\
+    \x10z\x12\x11\n\rDT_UINT64_REF\x10{\x12\x16\n\x12DT_FLOAT8_E5M2_REF\x10|\
+    \x12\x18\n\x14DT_FLOAT8_E4M3FN_REF\x10}Bz\n\x18org.tensorflow.frameworkB\
+    \x0bTypesProtosP\x01ZLgithub.com/tensorflow/tensorflow/tensorflow/go/cor\
+    e/framework/types_go_proto\xf8\x01\x01b\x06proto3\
 ";
 
 static file_descriptor_proto_lazy: ::protobuf::rt::LazyV2<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::rt::LazyV2::INIT;

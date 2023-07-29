@@ -1,4 +1,3 @@
-use crate::option_insert_result::OptionInsertWithResult;
 use crate::{ops, Operation, Scope, Session, SessionRunArgs, Status, Tensor, Variable};
 
 #[derive(Debug)]
@@ -92,7 +91,7 @@ impl CheckpointMaker {
             )?;
             let tensors = all_variable_ops
                 .iter()
-                .map(|v| v.output(0).clone())
+                .map(|v| v.output(0))
                 .collect::<Vec<_>>();
 
             let mut g = self.scope.graph_mut();
@@ -355,7 +354,7 @@ mod tests {
             first_scope_data.scope.new_sub_scope("checkpoint"),
             Box::from(first_scope_data.variables.clone()),
         );
-        let temp_dir = tempdir::TempDir::new("test-tensorflow")?;
+        let temp_dir = tempfile::tempdir()?;
         let checkpoint_path = temp_dir.path().join("checkpoint-vars");
         let checkpoint_path_str = checkpoint_path
             .into_os_string()
