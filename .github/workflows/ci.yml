@@ -32,6 +32,27 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: 3.8
+      - name: Check macOS architecture
+        if: matrix.os == 'macos-latest'
+        id: check-arch
+        run: |
+          arch_name="$(uname -m)"
+          echo "Detected architecture: $arch_name"
+          echo "::set-output name=architecture::$arch_name"
+      - name: Setup environment for Apple Silicon
+        if: matrix.os == 'macos-latest' && steps.check-arch.outputs.architecture == 'arm64'
+        run: |
+          bash ~/miniconda.sh -b -p $HOME/miniconda
+          source ~/miniconda/bin/activate
+          conda install -c apple tensorflow-deps
+          SYSTEM_VERSION_COMPAT=0 pip install tensorflow-macos tensorflow-metal
+      - name: Setup environment for AMD
+        if: matrix.os == 'macos-latest' && steps.check-arch.outputs.architecture == 'x86_64'
+        run: |
+          python3 -m venv ~/venv-metal
+          source ~/venv-metal/bin/activate
+          python -m pip install -U pip
+          SYSTEM_VERSION_COMPAT=0 pip install tensorflow-macos tensorflow-metal
       # Install pip and pytest
       - name: Install dependencies
         run: |
@@ -40,6 +61,7 @@ jobs:
       - name: Execute test-all
         run: ./test-all
         shell: bash
+
 #  clippy:
 #    runs-on: ubuntu-latest
 #    strategy:

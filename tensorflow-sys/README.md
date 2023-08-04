@@ -59,6 +59,7 @@ compiled library will be picked up.
 
 **macOS Note**: Via [Homebrew](https://brew.sh/), you can just run
 `brew install libtensorflow`.
+[tensorflow metal plugin]: https://developer.apple.com/metal/tensorflow-plugin/
 
 ## Resources
 

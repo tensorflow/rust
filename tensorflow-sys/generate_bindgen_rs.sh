@@ -26,3 +26,8 @@ bindgen_options_eager="--allowlist-function TFE_.+ --allowlist-type TFE_.+ --all
 cmd="bindgen ${bindgen_options_eager} ${include_dir}/tensorflow/c/eager/c_api.h --output src/eager/c_api.rs -- -I ${include_dir}"
 echo ${cmd}
 ${cmd}
+
+bindgen_options_experimental="--no-derive-copy --allowlist-function TF_LoadPluggableDeviceLibrary --allowlist-function TF_DeletePluggableDeviceLibraryHandle --allowlist-var TF_Buffer* --allowlist-type TF_ShapeAndTypeList --allowlist-type TF_ShapeAndType --allowlist-type TF_CheckpointReader --allowlist-type TF_AttrBuilder --size_t-is-usize --default-enum-style=rust --generate-inline-functions --blocklist-type TF_Library --blocklist-type TF_DataType --blocklist-type TF_Status"
+cmd="bindgen ${bindgen_options_experimental} ${include_dir}/tensorflow/c/c_api_experimental.h --output src/experimental/c_api.rs --  -I ${include_dir}"
+echo ${cmd}
+${cmd}

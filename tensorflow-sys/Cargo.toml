@@ -5,6 +5,7 @@ license = "Apache-2.0"
 authors = [
   "Adam Crume <acrume@google.com>",
   "Ivan Ukhov <ivan.ukhov@gmail.com>",
+  "Maciej Maślanka <maciej@contact.apurer.io>",
 ]
 description = "The package provides bindings to TensorFlow."
 documentation = "https://tensorflow.github.io/rust"

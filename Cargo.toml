@@ -1,7 +1,10 @@
 [package]
 name = "tensorflow"
 version = "0.20.0"
-authors = ["Adam Crume <acrume@google.com>"]
+authors = [
+    "Adam Crume <acrume@google.com>",
+    "Maciej Maślanka <maciej@contact.apurer.io>"
+]
 description = "Rust language bindings for TensorFlow."
 license = "Apache-2.0"
 keywords = ["TensorFlow", "bindings"]
@@ -46,6 +49,7 @@ tensorflow_gpu = ["tensorflow-sys/tensorflow_gpu"]
 tensorflow_unstable = []
 tensorflow_runtime_linking = ["tensorflow-sys-runtime"]
 eager = ["tensorflow-sys/eager"]
+experimental = ["tensorflow-sys/experimental"]
 # This is for testing purposes; users should not use this.
 examples_system_alloc = ["tensorflow-sys/examples_system_alloc"]
 private-docs-rs = ["tensorflow-sys/private-docs-rs"] # DO NOT RELY ON THIS
