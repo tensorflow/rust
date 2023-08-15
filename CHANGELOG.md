@@ -1,5 +1,16 @@
 # Changelog
 
+## Release 0.21.0
+
+### Additions
+
+- Add PluggableDeviceLibrary
+
+### Changes
+
+- Upgrade to TensorFlow 2.13.0
+- Add support for saving to and restoring from checkpoints
+
 ## Release 0.20.0
 
 ### Additions
