@@ -9,7 +9,7 @@ readme = "README.md"
 repository = "https://github.com/tensorflow/rust"
 documentation = "https://tensorflow.github.io/rust/tensorflow"
 edition = "2018"
-rust-version = "1.59.0"
+rust-version = "1.63.0"
 
 [lib]
 # We want to run doctests, but they're broken by https://github.com/rust-lang/cargo/issues/8531.
