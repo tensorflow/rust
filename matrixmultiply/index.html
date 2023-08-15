@@ -1,0 +1,85 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="General matrix multiplication for f32, f64 matrices. Operates on matrices with general layout (they can use arbitrary row and column stride)."><title>matrixmultiply - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-f3501f0f5ae15dfb.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="matrixmultiply" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.1 (eb26296b5 2023-08-03)" data-search-js="search-4926e5fc22a5646a.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-f0540c1d82cde29b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../matrixmultiply/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../matrixmultiply/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2 class="location"><a href="#">Crate matrixmultiply</a></h2><div class="sidebar-elems"><ul class="block"><li class="version">Version 0.3.2</li><li><a id="all-types" href="all.html">All Items</a></li></ul><section><ul class="block"><li><a href="#enums">Enums</a></li><li><a href="#functions">Functions</a></li></ul></section></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Crate <a class="mod" href="#">matrixmultiply</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="srclink" href="../src/matrixmultiply/lib.rs.html#8-173">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>General matrix multiplication for f32, f64 matrices. Operates on matrices
+with general layout (they can use arbitrary row and column stride).</p>
+<p>This crate uses the same macro/microkernel approach to matrix multiplication as
+the <a href="https://github.com/flame/blis">BLIS</a> project.</p>
+<p>We presently provide a few good microkernels, portable and for x86-64, and
+only one operation: the general matrix-matrix multiplication (“gemm”).</p>
+<h3 id="matrix-representation"><a href="#matrix-representation">Matrix Representation</a></h3>
+<p><strong>matrixmultiply</strong> supports matrices with general stride, so a matrix
+is passed using a pointer and four integers:</p>
+<ul>
+<li><code>a: *const f32</code>, pointer to the first element in the matrix</li>
+<li><code>m: usize</code>, number of rows</li>
+<li><code>k: usize</code>, number of columns</li>
+<li><code>rsa: isize</code>, row stride</li>
+<li><code>csa: isize</code>, column stride</li>
+</ul>
+<p>In this example, A is a m by k matrix. <code>a</code> is a pointer to the element at
+index <em>0, 0</em>.</p>
+<p>The <em>row stride</em> is the pointer offset (in number of elements) to the
+element on the next row. It’s the distance from element <em>i, j</em> to <em>i + 1,
+j</em>.</p>
+<p>The <em>column stride</em> is the pointer offset (in number of elements) to the
+element in the next column. It’s the distance from element <em>i, j</em> to <em>i,
+j + 1</em>.</p>
+<p>For example for a contiguous matrix, row major strides are <em>rsa=k,
+csa=1</em> and column major strides are <em>rsa=1, csa=m</em>.</p>
+<p>Strides can be negative or even zero, but for a mutable matrix elements
+may not alias each other.</p>
+<h3 id="portability-and-performance"><a href="#portability-and-performance">Portability and Performance</a></h3>
+<ul>
+<li>
+<p>The default kernels are written in portable Rust and available
+on all targets. These may depend on autovectorization to perform well.</p>
+</li>
+<li>
+<p><em>x86</em> and <em>x86-64</em> features can be detected at runtime by default or
+compile time (if enabled), and the crate following kernel variants are
+implemented:</p>
+<ul>
+<li><code>fma</code></li>
+<li><code>avx</code></li>
+<li><code>sse2</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="features"><a href="#features">Features</a></h3><h4 id="std"><a href="#std"><code>std</code></a></h4>
+<p><code>std</code> is enabled by default.</p>
+<p>This crate can be used without the standard library (<code>#![no_std]</code>) by
+disabling the default <code>std</code> feature. To do so, use this in your
+<code>Cargo.toml</code>:</p>
+<div class="example-wrap"><pre class="language-toml"><code>matrixmultiply = { version = &quot;0.2&quot;, default-features = false }
+</code></pre></div>
+<p>Runtime CPU feature detection is available only when <code>std</code> is enabled.
+Without the <code>std</code> feature, the crate uses special CPU features only if they
+are enabled at compile time. (To enable CPU features at compile time, pass
+the relevant
+<a href="https://doc.rust-lang.org/rustc/codegen-options/index.html#target-cpu"><code>target-cpu</code></a>
+or
+<a href="https://doc.rust-lang.org/rustc/codegen-options/index.html#target-feature"><code>target-feature</code></a>
+option to <code>rustc</code>.)</p>
+<h4 id="threading"><a href="#threading"><code>threading</code></a></h4>
+<p><code>threading</code> is an optional crate feature</p>
+<p>Threading enables multithreading for the operations. The environment variable
+<code>MATMUL_NUM_THREADS</code> decides how many threads are used at maximum. At the moment 1-4 are
+supported and the default is the number of physical cpus (as detected by <code>num_cpus</code>).</p>
+<h4 id="cgemm"><a href="#cgemm"><code>cgemm</code></a></h4>
+<p><code>cgemm</code> is an optional crate feature.</p>
+<p>It enables the <code>cgemm</code> and <code>zgemm</code> methods for complex matrix multiplication.
+This is an <strong>experimental feature</strong> and not yet as performant as the float kernels on x86.</p>
+<p>The complex representation we use is <code>[f64; 2]</code>.</p>
+<h4 id="constconf"><a href="#constconf"><code>constconf</code></a></h4>
+<p><code>constconf</code> is an optional feature. When enabled, cache-sensitive parameters of
+the gemm implementations can be tweaked <em>at compile time</em> by defining the following variables:</p>
+<ul>
+<li><code>MATMUL_SGEMM_MC</code>
+(And so on, for S, D, C, ZGEMM and with NC, KC or MC).</li>
+</ul>
+<h3 id="other-notes"><a href="#other-notes">Other Notes</a></h3>
+<p>The functions in this crate are thread safe, as long as the destination
+matrix is distinct.</p>
+<h3 id="rust-version"><a href="#rust-version">Rust Version</a></h3>
+<p>This version requires Rust 1.41.1 or later; the crate follows a carefully
+considered upgrade policy, where updating the minimum Rust version is not a breaking
+change.</p>
+</div></details><h2 id="enums" class="small-section-header"><a href="#enums">Enums</a></h2><ul class="item-table"><li><div class="item-name"><a class="enum" href="enum.CGemmOption.html" title="enum matrixmultiply::CGemmOption">CGemmOption</a></div><div class="desc docblock-short">cgemm/zgemm per-operand options</div></li></ul><h2 id="functions" class="small-section-header"><a href="#functions">Functions</a></h2><ul class="item-table"><li><div class="item-name"><a class="fn" href="fn.cgemm.html" title="fn matrixmultiply::cgemm">cgemm</a><sup title="unsafe function">⚠</sup></div><div class="desc docblock-short">General matrix multiplication (complex f32)</div></li><li><div class="item-name"><a class="fn" href="fn.dgemm.html" title="fn matrixmultiply::dgemm">dgemm</a><sup title="unsafe function">⚠</sup></div><div class="desc docblock-short">General matrix multiplication (f64)</div></li><li><div class="item-name"><a class="fn" href="fn.sgemm.html" title="fn matrixmultiply::sgemm">sgemm</a><sup title="unsafe function">⚠</sup></div><div class="desc docblock-short">General matrix multiplication (f32)</div></li><li><div class="item-name"><a class="fn" href="fn.zgemm.html" title="fn matrixmultiply::zgemm">zgemm</a><sup title="unsafe function">⚠</sup></div><div class="desc docblock-short">General matrix multiplication (complex f64)</div></li></ul></section></div></main></body></html>

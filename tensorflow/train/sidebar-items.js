@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["AdadeltaOptimizer","ApplyGradientsOptions","ComputeGradientsOptions","GradientDescentOptimizer","MinimizeOptions"],"trait":["Optimizer"]};

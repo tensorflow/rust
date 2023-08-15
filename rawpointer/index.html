@@ -1,0 +1,46 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Rawpointer adds extra utility methods to raw pointers `*const T`, `*mut T` and `NonNull&lt;T&gt;`."><title>rawpointer - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-f3501f0f5ae15dfb.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="rawpointer" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.1 (eb26296b5 2023-08-03)" data-search-js="search-4926e5fc22a5646a.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-f0540c1d82cde29b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../rawpointer/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../rawpointer/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2 class="location"><a href="#">Crate rawpointer</a></h2><div class="sidebar-elems"><ul class="block"><li class="version">Version 0.2.1</li><li><a id="all-types" href="all.html">All Items</a></li></ul><section><ul class="block"><li><a href="#traits">Traits</a></li><li><a href="#functions">Functions</a></li></ul></section></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Crate <a class="mod" href="#">rawpointer</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="srclink" href="../src/rawpointer/lib.rs.html#8-246">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Rawpointer adds extra utility methods to raw pointers <code>*const T</code>, <code>*mut T</code>
+and <code>NonNull&lt;T&gt;</code>.</p>
+<p>Features include:</p>
+<ul>
+<li>
+<p>Strided offsets - <a href="trait.PointerExt.html#method.stride_offset" title="method rawpointer::PointerExt::stride_offset"><code>.stride_offset(stride, index)</code></a> make it easy to compute
+pointer offsets where the index is unsigned and the stride is signed.</p>
+</li>
+<li>
+<p>Offsetting methods in general for <code>NonNull</code>, since it does not have these
+from libcore</p>
+</li>
+<li>
+<p>Post- and preincrement and post- and predecrement methods</p>
+<ul>
+<li>For <code>p++</code> use <a href="trait.PointerExt.html#method.post_inc" title="method rawpointer::PointerExt::post_inc"><code>p.post_inc()</code></a>.</li>
+<li>For <code>++p</code> use <a href="trait.PointerExt.html#method.pre_inc" title="method rawpointer::PointerExt::pre_inc"><code>p.pre_inc()</code></a>.</li>
+<li>For <code>p--</code> use <a href="trait.PointerExt.html#method.post_dec" title="method rawpointer::PointerExt::post_dec"><code>p.post_dec()</code></a>.</li>
+<li>For <code>--p</code> use <a href="trait.PointerExt.html#method.pre_dec" title="method rawpointer::PointerExt::pre_dec"><code>p.pre_dec()</code></a>.</li>
+</ul>
+</li>
+</ul>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>rawpointer::PointerExt;
+
+<span class="kw">unsafe </span>{
+    <span class="comment">// In this example:
+    // Use .post_inc() to iterate and overwrite the first four
+    // elements of the array.
+
+    </span><span class="kw">let </span><span class="kw-2">mut </span>xs = [<span class="number">0</span>; <span class="number">16</span>];
+    <span class="kw">let </span><span class="kw-2">mut </span>ptr = xs.as_mut_ptr();
+    <span class="kw">let </span>end = ptr.offset(<span class="number">4</span>);
+    <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
+    <span class="kw">while </span>ptr != end {
+        <span class="kw-2">*</span>ptr.post_inc() = i;
+        i += <span class="number">1</span>;
+    }
+    <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>xs[..<span class="number">8</span>], <span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]);
+}</code></pre></div>
+<h3 id="safety"><a href="#safety">Safety</a></h3>
+<p>See the Rust <a href="https://doc.rust-lang.org/1.71.1/core/ptr/index.html" title="mod core::ptr">core::ptr</a> documentation for more information.</p>
+<h3 id="rust-version"><a href="#rust-version">Rust Version</a></h3>
+<p>This version of the crate requires Rust 1.26 or later</p>
+</div></details><h2 id="traits" class="small-section-header"><a href="#traits">Traits</a></h2><ul class="item-table"><li><div class="item-name"><a class="trait" href="trait.PointerExt.html" title="trait rawpointer::PointerExt">PointerExt</a></div><div class="desc docblock-short">Extension methods for raw pointers</div></li></ul><h2 id="functions" class="small-section-header"><a href="#functions">Functions</a></h2><ul class="item-table"><li><div class="item-name"><a class="fn" href="fn.ptrdistance.html" title="fn rawpointer::ptrdistance">ptrdistance</a></div><div class="desc docblock-short">Return the number of elements of <code>T</code> from <code>start</code> to <code>end</code>.<br>
+Return the arithmetic difference if <code>T</code> is zero size.</div></li></ul></section></div></main></body></html>

@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"protobuf":[["impl&lt;T&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/1.71.1/core/borrow/trait.Borrow.html\" title=\"trait core::borrow::Borrow\">Borrow</a>&lt;<a class=\"primitive\" href=\"https://doc.rust-lang.org/1.71.1/std/primitive.slice.html\">[T]</a>&gt; for <a class=\"struct\" href=\"protobuf/struct.RepeatedField.html\" title=\"struct protobuf::RepeatedField\">RepeatedField</a>&lt;T&gt;"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
