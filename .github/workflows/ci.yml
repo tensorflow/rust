@@ -12,7 +12,7 @@ env:
   # RUSTFLAGS: "-D warnings"  # it needs some works to enable this flag
 
 jobs:
-  ubuntu:
+  test-on-ubuntu:
     runs-on: ubuntu-latest
     steps:
       - name: Free Disk Space (Ubuntu)
@@ -49,7 +49,7 @@ jobs:
       - name: Execute test-all
         run: ./test-all
         shell: bash
-  others:
+  test-on-others:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
