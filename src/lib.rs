@@ -657,17 +657,56 @@ pub type Result<T> = std::result::Result<T, Status>;
 
 ////////////////////////
 
+/// A common implementation of the sealed supertrait
+/// 
+/// See https://rust-lang.github.io/api-guidelines/future-proofing.html#sealed-traits-protect-against-downstream-implementations-c-sealed
+mod private {
+    use crate::{BFloat16, QInt16, QInt32, QInt8, QUInt16, QUInt8};
+
+    pub trait Sealed {}
+
+    macro_rules! impl_Sealed {
+        ($($t:ty),+) => {
+            $(impl Sealed for $t {})*
+        }
+    }
+
+    impl_Sealed!(
+        half::f16,
+        f32,
+        f64,
+        i32,
+        u8,
+        u16,
+        u32,
+        u64,
+        i16,
+        i8,
+        num_complex::Complex<f32>,
+        num_complex::Complex<f64>,
+        i64,
+        bool,
+        QInt8,
+        QUInt8,
+        QInt16,
+        QUInt16,
+        QInt32,
+        BFloat16,
+        String
+    );
+}
+
 /// A Rust type that maps to a `DataType`.
 ///
 /// Currently, all implementors must *not* implement Drop (or transitively contain
 /// anything that does) and must be bit-for-bit compatible with the corresponding C
-/// type. Clients must not implement this trait.
+/// type. Clients cannot implement this trait.
 ///
 /// This trait doesn't require `num::Zero` or `num::One` because some tensor
 /// types (such as `bool` and `String`) don't implement them and we need to
 /// supply custom implementations.
-pub trait TensorType: Default + Clone + Display + Debug + 'static {
-    /// Internal only; do not use outside of the tensorflow crate.
+pub trait TensorType: private::Sealed + Default + Clone + Display + Debug + 'static {
+    /// Internal only; can't be used outside of the tensorflow crate.
     ///
     /// Tensor representation for this type. Normally `TensorDataCRepr` for types
     /// that have the same representation in Rust; or `TensorDataNoCRepr` for
