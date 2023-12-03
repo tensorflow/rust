@@ -336,8 +336,10 @@ Code {
 
 c_enum!(TF_DataType,
 /// Type of a single tensor element.
+#[derive(Default)]
 DataType {
   /// 32-bit floating point.
+  #[default]
   Float = 1,
 
   /// 64-bit floating point.
@@ -411,12 +413,6 @@ DataType {
   UInt64 = 23,
 }
 );
-
-impl Default for DataType {
-    fn default() -> DataType {
-        DataType::Float
-    }
-}
 
 impl DataType {
     // We don't use Into, because we don't want this to be public API.
