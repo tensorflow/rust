@@ -168,18 +168,6 @@ macro_rules! c_enum {
       $name:ident = $num:expr,)* }) => {
     c_enum!($c_name, $(#[$enum_attr])* $enum_name { $( $(#[$attr])* $name = $num),* });
   };
-  // Deprecated pattern.
-  ($doc:expr, $c_name:ident, $(#[$enum_attr:meta])* $enum_name:ident { $( $(#[$attr:meta])* value
-      $name:ident = $num:expr),* }) => {
-    c_enum!($c_name, #[doc = $doc] $(#[$enum_attr])*
-            $enum_name { $( $(#[$attr])* $name = $num),* });
-  };
-  // Deprecated pattern.
-  ($doc:expr, $c_name:ident, $(#[$enum_attr:meta])* $enum_name:ident { $( $(#[$attr:meta])* value
-      $name:ident = $num:expr,)* }) => {
-    c_enum!($c_name, #[doc = $doc] $(#[$enum_attr])*
-            $enum_name { $( $(#[$attr])* $name = $num),* });
-  }
 }
 
 ////////////////////////
@@ -225,41 +213,43 @@ pub use tf::library;
 
 ////////////////////////
 
-c_enum!("Error values that can be returned.", TF_Code, Code {
+c_enum!(TF_Code,
+/// Error values that can be returned.
+Code {
   /// Not an error; returned on success.
-  value Ok = 0,
+  Ok = 0,
 
   /// The operation was cancelled (typically by the caller).
-  value Cancelled = 1,
+  Cancelled = 1,
 
   /// Unknown error.  An example of where this error may be returned is
   /// if a Status value received from another address space belongs to
   /// an error-space that is not known in this address space.  Also
   /// errors raised by APIs that do not return enough error information
   /// may be converted to this error.
-  value Unknown = 2,
+  Unknown = 2,
 
   /// Client specified an invalid argument.  Note that this differs
   /// from FAILED_PRECONDITION.  INVALID_ARGUMENT indicates arguments
   /// that are problematic regardless of the state of the system
   /// (e.g., a malformed file name).
-  value InvalidArgument = 3,
+  InvalidArgument = 3,
 
   /// Deadline expired before operation could complete.  For operations
   /// that change the state of the system, this error may be returned
   /// even if the operation has completed successfully.  For example, a
   /// successful response from a server could have been delayed long
   /// enough for the deadline to expire.
-  value DeadlineExceeded = 4,
+  DeadlineExceeded = 4,
 
   /// Some requested entity (e.g., file or directory) was not found.
   /// For privacy reasons, this code *may* be returned when the client
   /// does not have the access right to the entity.
-  value NotFound = 5,
+  NotFound = 5,
 
   /// Some entity that we attempted to create (e.g., file or directory)
   /// already exists.
-  value AlreadyExists = 6,
+  AlreadyExists = 6,
 
   /// The caller does not have permission to execute the specified
   /// operation.  PERMISSION_DENIED must not be used for rejections
@@ -267,11 +257,11 @@ c_enum!("Error values that can be returned.", TF_Code, Code {
   /// instead for those errors).  PERMISSION_DENIED must not be
   /// used if the caller can not be identified (use UNAUTHENTICATED
   /// instead for those errors).
-  value PermissionDenied = 7,
+  PermissionDenied = 7,
 
   /// Some resource has been exhausted, perhaps a per-user quota, or
   /// perhaps the entire file system is out of space.
-  value ResourceExhausted = 8,
+  ResourceExhausted = 8,
 
   /// Operation was rejected because the system is not in a state
   /// required for the operation's execution.  For example, directory
@@ -292,14 +282,14 @@ c_enum!("Error values that can be returned.", TF_Code, Code {
   ///      REST Get/Update/Delete on a resource and the resource on the
   ///      server does not match the condition. E.g., conflicting
   ///      read-modify-write on the same resource.
-  value FailedPrecondition = 9,
+  FailedPrecondition = 9,
 
   /// The operation was aborted, typically due to a concurrency issue
   /// like sequencer check failures, transaction aborts, etc.
   ///
   /// See litmus test above for deciding between FAILED_PRECONDITION,
   /// ABORTED, and UNAVAILABLE.
-  value Aborted = 10,
+  Aborted = 10,
 
   /// Operation tried to iterate past the valid input range.  E.g., seeking or
   /// reading past end of file.
@@ -316,15 +306,15 @@ c_enum!("Error values that can be returned.", TF_Code, Code {
   /// error) when it applies so that callers who are iterating through
   /// a space can easily look for an OUT_OF_RANGE error to detect when
   /// they are done.
-  value OutOfRange = 11,
+  OutOfRange = 11,
 
   /// Operation is not implemented or not supported/enabled in this service.
-  value Unimplemented = 12,
+  Unimplemented = 12,
 
   /// Internal errors.  Means some invariants expected by underlying
   /// system has been broken.  If you see one of these errors,
   /// something is very broken.
-  value Internal = 13,
+  Internal = 13,
 
   /// The service is currently unavailable.  This is a most likely a
   /// transient condition and may be corrected by retrying with
@@ -332,14 +322,14 @@ c_enum!("Error values that can be returned.", TF_Code, Code {
   ///
   /// See litmus test above for deciding between FAILED_PRECONDITION,
   /// ABORTED, and UNAVAILABLE.
-  value Unavailable = 14,
+  Unavailable = 14,
 
   /// Unrecoverable data loss or corruption.
-  value DataLoss = 15,
+  DataLoss = 15,
 
   /// The request does not have valid authentication credentials for the
   /// operation.
-  value Unauthenticated = 16,
+  Unauthenticated = 16,
 });
 
 ////////////////////////
