@@ -658,7 +658,7 @@ pub type Result<T> = std::result::Result<T, Status>;
 ////////////////////////
 
 /// A common implementation of the sealed supertrait
-/// 
+///
 /// See https://rust-lang.github.io/api-guidelines/future-proofing.html#sealed-traits-protect-against-downstream-implementations-c-sealed
 mod private {
     use crate::{BFloat16, QInt16, QInt32, QInt8, QUInt16, QUInt8};
