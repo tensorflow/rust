@@ -245,8 +245,8 @@ fn install_prebuilt() {
     let framework_library_file = format!("{}{}{}", dll_prefix(), FRAMEWORK_LIBRARY, dll_suffix());
     let library_file = format!("{}{}{}", dll_prefix(), LIBRARY, dll_suffix());
 
-    let framework_library_full_path = lib_dir.join(&framework_library_file);
-    let library_full_path = lib_dir.join(&library_file);
+    let framework_library_full_path = lib_dir.join(framework_library_file);
+    let library_full_path = lib_dir.join(library_file);
 
     let download_required =
         (!windows && !framework_library_full_path.exists()) || !library_full_path.exists();

@@ -344,86 +344,85 @@ c_enum!("Error values that can be returned.", TF_Code, Code {
 
 ////////////////////////
 
-c_enum!("Type of a single tensor element.", TF_DataType, DataType {
+c_enum!(
+TF_DataType,
+/// Type of a single tensor element.
+#[derive(Default)]
+DataType {
   /// 32-bit floating point.
-  value Float = 1,
+  #[default]
+  Float = 1,
 
   /// 64-bit floating point.
-  value Double = 2,
+  Double = 2,
 
   /// 32-bit signed integer.
-  value Int32 = 3,
+  Int32 = 3,
 
   /// 8-bit unsigned integer.
-  value UInt8 = 4,
+  UInt8 = 4,
 
   /// 16-bit signed integer.
-  value Int16 = 5,
+  Int16 = 5,
 
   /// 8-bit signed integer.
-  value Int8 = 6,
+  Int8 = 6,
 
   /// String.
-  value String = 7,
+  String = 7,
 
   /// Complex number composed of two 32-bit floats.
-  value Complex64 = 8,
+  Complex64 = 8,
 
   /// 64-bit signed integer.
-  value Int64 = 9,
+  Int64 = 9,
 
   /// Boolean.
-  value Bool = 10,
+  Bool = 10,
 
   /// Quantized 8-bit signed integer.
-  value QInt8 = 11,
+  QInt8 = 11,
 
   /// Quantized 8-bit unsigned integer.
-  value QUInt8 = 12,
+  QUInt8 = 12,
 
   /// Quantized 32-bit signed integer.
-  value QInt32 = 13,
+  QInt32 = 13,
 
   /// Float32 truncated to 16 bits.  Only for cast ops.
   /// Note that this is not the same as Half.  BFloat16 is not an IEEE-754
   /// 16-bit float.  See
   /// <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/framework/bfloat16.h>
   /// for details.
-  value BFloat16 = 14,
+  BFloat16 = 14,
 
   /// Quantized 16-bit signed integer.
-  value QInt16 = 15,
+  QInt16 = 15,
 
   /// Quantized 16-bit unsigned integer.
-  value QUInt16 = 16,
+  QUInt16 = 16,
 
   /// 16-bit unsigned integer.
-  value UInt16 = 17,
+  UInt16 = 17,
 
   /// Complex number composed of two 64-bit floats.
-  value Complex128 = 18,
+  Complex128 = 18,
 
   /// 16-bit floating point.
-  value Half = 19,
+  Half = 19,
 
   /// TensorFlow Resource (name, container, device,...)
-  value Resource = 20,
+  Resource = 20,
 
   /// A dynamic type similar to std::any::Any.
-  value Variant = 21,
+  Variant = 21,
 
   /// 32-bit unsigned integer.
-  value UInt32 = 22,
+  UInt32 = 22,
 
   /// 64-bit unsigned integer.
-  value UInt64 = 23,
+  UInt64 = 23,
 });
-
-impl Default for DataType {
-    fn default() -> DataType {
-        DataType::Float
-    }
-}
 
 impl DataType {
     // We don't use Into, because we don't want this to be public API.
@@ -658,7 +657,7 @@ pub type Result<T> = std::result::Result<T, Status>;
 ////////////////////////
 
 /// A common implementation of the sealed supertrait
-/// 
+///
 /// See https://rust-lang.github.io/api-guidelines/future-proofing.html#sealed-traits-protect-against-downstream-implementations-c-sealed
 mod private {
     use crate::{BFloat16, QInt16, QInt32, QInt8, QUInt16, QUInt8};
@@ -1092,7 +1091,7 @@ where
             // Zero-initialize allocated memory.
             let data = tf::TF_TensorData(inner);
             let byte_size = tf::TF_TensorByteSize(inner);
-            libc::memset(data as *mut libc::c_void, 0, byte_size);
+            libc::memset(data, 0, byte_size);
 
             TensorDataCRepr {
                 inner,
