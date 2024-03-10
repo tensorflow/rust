@@ -24,8 +24,8 @@ const REPOSITORY: &str = "https://github.com/tensorflow/tensorflow.git";
 const FRAMEWORK_TARGET: &str = "tensorflow:libtensorflow_framework";
 const TARGET: &str = "tensorflow:libtensorflow";
 // `VERSION` and `TAG` are separate because the tag is not always `'v' + VERSION`.
-const VERSION: &str = "2.13.0";
-const TAG: &str = "v2.13.0";
+const VERSION: &str = "2.16.1";
+const TAG: &str = "v2.16.1";
 const MIN_BAZEL: &str = "3.7.2";
 
 macro_rules! get(($name:expr) => (ok!(env::var($name))));
@@ -198,11 +198,11 @@ fn install_prebuilt() {
     let windows = target_os() == "windows";
     let ext = if windows { ".zip" } else { ".tar.gz" };
     let binary_url = format!(
-        "https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-{}-{}-{}-{}{}",
+        "https://storage.googleapis.com/tensorflow/versions/{}/libtensorflow-{}-{}-{}{}",
+        VERSION,
         proc_type,
         os,
         target_arch(),
-        VERSION,
         ext
     );
     log_var!(binary_url);

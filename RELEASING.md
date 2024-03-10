@@ -63,5 +63,6 @@ Note that any crate not mentioned here (e.g. tensorflow-proto-codegen, tensorflo
    1. Run `source ~/tensorflow-${TENSORFLOW_VERSION?}/bin/activate` to activate the virtualenv
    1. Run `pip install --upgrade pip`
    1. Run `pip install --upgrade tensorflow==${TENSORFLOW_VERSION?}`
+   1. Run `pip install tf_keras` (required for examples/mobilenetv3)
    1. Run `python examples/addition/addition.py`
    1. Run `deactivate` to exit the virtualenv
