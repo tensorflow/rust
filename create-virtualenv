@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# See https://www.tensorflow.org/install/pip#2-create-a-virtual-environment-recommended
+
+set -euo pipefail
+
+if [ "$#" -lt 1 ]; then
+     echo "Expected first argument to be TensorFlow version"
+     exit 1
+fi
+TENSORFLOW_VERSION="$1"
+
+function run {
+    echo "----------------------------------------------------------------------"
+    echo "Running: $@"
+    "$@"
+    echo
+}
+
+run virtualenv --system-site-packages -p python3 ~/tensorflow-${TENSORFLOW_VERSION?}
+run source ~/tensorflow-${TENSORFLOW_VERSION?}/bin/activate
+run pip install --upgrade pip
+run pip install --upgrade tensorflow==${TENSORFLOW_VERSION?}
+run pip install tf_keras # required for examples/mobilenetv3
+run deactivate

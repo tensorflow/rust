@@ -12,14 +12,11 @@ function run {
 # Make sure the Tensorflow version in the -sys build script matches the one in
 # the run-valgrind script.
 version_build_script=`grep "const VERSION" tensorflow-sys/build.rs | sed 's|.*"\([^"]*\)";|\1|g'`
-version_run_valgrind=`grep "tensorflow_version=" run-valgrind | sed "s|.*=\(.*\)|\1|g"`
 version_requirements=`grep "tensorflow\s*=" .github/workflows/requirements.txt | sed "s|.*== \(.*\)|\1|g"`
-if [[ "${version_build_script}" != "${version_run_valgrind}" || \
-    "${version_build_script}" != "${version_requirements}" ]]; then
-    echo "ERROR: Tensorflow version specified in build script does not match the one in the"
-    echo "       valgrind run script."
+if [[ "${version_build_script}" != "${version_requirements}" ]]; then
+    echo "ERROR: TensorFlow version specified in build script does not match the one in the"
+    echo "       GitHub requirements."
     echo "       tensorflow-sys/build.rs: ${version_build_script}"
-    echo "       run-valgrind: ${version_run_valgrind}"
     echo "       .github/workflows/requirements.txt: ${version_requirements}"
     exit 1
 fi
