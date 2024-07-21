@@ -391,6 +391,7 @@ pub struct RewriterConfig {
     pub auto_mixed_precision_onednn_bfloat16: RewriterConfig_Toggle,
     pub auto_mixed_precision_cpu: RewriterConfig_Toggle,
     pub disable_meta_optimizer: bool,
+    pub disable_tfg_optimizer: bool,
     pub use_plugin_optimizers: RewriterConfig_Toggle,
     pub experimental_conditional_code_motion: RewriterConfig_Toggle,
     pub meta_optimizer_iterations: RewriterConfig_NumIterationsType,
@@ -721,6 +722,21 @@ impl RewriterConfig {
     // Param is passed by value, moved
     pub fn set_disable_meta_optimizer(&mut self, v: bool) {
         self.disable_meta_optimizer = v;
+    }
+
+    // bool disable_tfg_optimizer = 32;
+
+
+    pub fn get_disable_tfg_optimizer(&self) -> bool {
+        self.disable_tfg_optimizer
+    }
+    pub fn clear_disable_tfg_optimizer(&mut self) {
+        self.disable_tfg_optimizer = false;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_disable_tfg_optimizer(&mut self, v: bool) {
+        self.disable_tfg_optimizer = v;
     }
 
     // .tensorflow.RewriterConfig.Toggle use_plugin_optimizers = 28;
@@ -1169,6 +1185,13 @@ impl ::protobuf::Message for RewriterConfig {
                     let tmp = is.read_bool()?;
                     self.disable_meta_optimizer = tmp;
                 },
+                32 => {
+                    if wire_type != ::protobuf::wire_format::WireTypeVarint {
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                    }
+                    let tmp = is.read_bool()?;
+                    self.disable_tfg_optimizer = tmp;
+                },
                 28 => {
                     ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(wire_type, is, &mut self.use_plugin_optimizers, 28, &mut self.unknown_fields)?
                 },
@@ -1309,6 +1332,9 @@ impl ::protobuf::Message for RewriterConfig {
         if self.disable_meta_optimizer != false {
             my_size += 3;
         }
+        if self.disable_tfg_optimizer != false {
+            my_size += 3;
+        }
         if self.use_plugin_optimizers != RewriterConfig_Toggle::DEFAULT {
             my_size += ::protobuf::rt::enum_size(28, self.use_plugin_optimizers);
         }
@@ -1427,6 +1453,9 @@ impl ::protobuf::Message for RewriterConfig {
         }
         if self.disable_meta_optimizer != false {
             os.write_bool(19, self.disable_meta_optimizer)?;
+        }
+        if self.disable_tfg_optimizer != false {
+            os.write_bool(32, self.disable_tfg_optimizer)?;
         }
         if self.use_plugin_optimizers != RewriterConfig_Toggle::DEFAULT {
             os.write_enum(28, ::protobuf::ProtobufEnum::value(&self.use_plugin_optimizers))?;
@@ -1624,6 +1653,11 @@ impl ::protobuf::Message for RewriterConfig {
                 |m: &RewriterConfig| { &m.disable_meta_optimizer },
                 |m: &mut RewriterConfig| { &mut m.disable_meta_optimizer },
             ));
+            fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                "disable_tfg_optimizer",
+                |m: &RewriterConfig| { &m.disable_tfg_optimizer },
+                |m: &mut RewriterConfig| { &mut m.disable_tfg_optimizer },
+            ));
             fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeEnum<RewriterConfig_Toggle>>(
                 "use_plugin_optimizers",
                 |m: &RewriterConfig| { &m.use_plugin_optimizers },
@@ -1740,6 +1774,7 @@ impl ::protobuf::Clear for RewriterConfig {
         self.auto_mixed_precision_onednn_bfloat16 = RewriterConfig_Toggle::DEFAULT;
         self.auto_mixed_precision_cpu = RewriterConfig_Toggle::DEFAULT;
         self.disable_meta_optimizer = false;
+        self.disable_tfg_optimizer = false;
         self.use_plugin_optimizers = RewriterConfig_Toggle::DEFAULT;
         self.experimental_conditional_code_motion = RewriterConfig_Toggle::DEFAULT;
         self.meta_optimizer_iterations = RewriterConfig_NumIterationsType::DEFAULT_NUM_ITERS;
@@ -2207,7 +2242,7 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     rifier_config.proto\"P\n\x13AutoParallelOptions\x12\x16\n\x06enable\x18\
     \x01\x20\x01(\x08R\x06enable\x12!\n\x0cnum_replicas\x18\x02\x20\x01(\x05\
     R\x0bnumReplicas\"5\n\x16ScopedAllocatorOptions\x12\x1b\n\tenable_op\x18\
-    \x01\x20\x03(\tR\x08enableOp\"\xf0\x1c\n\x0eRewriterConfig\x12X\n\x15cpu\
+    \x01\x20\x03(\tR\x08enableOp\"\xa4\x1d\n\x0eRewriterConfig\x12X\n\x15cpu\
     _layout_conversion\x182\x20\x01(\x0e2$.tensorflow.RewriterConfig.CpuLayo\
     utR\x13cpuLayoutConversion\x12L\n\x10layout_optimizer\x18\x01\x20\x01(\
     \x0e2!.tensorflow.RewriterConfig.ToggleR\x0flayoutOptimizer\x12L\n\x10co\
@@ -2238,32 +2273,33 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     \x20autoMixedPrecisionOnednnBfloat16\x12Z\n\x18auto_mixed_precision_cpu\
     \x18\x1d\x20\x01(\x0e2!.tensorflow.RewriterConfig.ToggleR\x15autoMixedPr\
     ecisionCpu\x124\n\x16disable_meta_optimizer\x18\x13\x20\x01(\x08R\x14dis\
-    ableMetaOptimizer\x12U\n\x15use_plugin_optimizers\x18\x1c\x20\x01(\x0e2!\
-    .tensorflow.RewriterConfig.ToggleR\x13usePluginOptimizers\x12r\n$experim\
-    ental_conditional_code_motion\x18\x1e\x20\x01(\x0e2!.tensorflow.Rewriter\
-    Config.ToggleR!experimentalConditionalCodeMotion\x12h\n\x19meta_optimize\
-    r_iterations\x18\x0c\x20\x01(\x0e2,.tensorflow.RewriterConfig.NumIterati\
-    onsTypeR\x17metaOptimizerIterations\x12&\n\x0fmin_graph_nodes\x18\x11\
-    \x20\x01(\x05R\rminGraphNodes\x12l\n3experimental_disable_compressed_ten\
-    sor_optimization\x18\x1a\x20\x01(\x08R/experimentalDisableCompressedTens\
-    orOptimization\x12l\n3experimental_disable_folding_quantization_emulatio\
-    n\x18\x1b\x20\x01(\x08R/experimentalDisableFoldingQuantizationEmulation\
-    \x12V\n\x13memory_optimization\x18\x04\x20\x01(\x0e2%.tensorflow.Rewrite\
-    rConfig.MemOptTypeR\x12memoryOptimization\x12S\n'memory_optimizer_target\
-    _node_name_scope\x18\x06\x20\x01(\tR\"memoryOptimizerTargetNodeNameScope\
-    \x129\n\x19meta_optimizer_timeout_ms\x18\x14\x20\x01(\x03R\x16metaOptimi\
-    zerTimeoutMs\x12D\n\rauto_parallel\x18\x05\x20\x01(\x0b2\x1f.tensorflow.\
-    AutoParallelOptionsR\x0cautoParallel\x127\n\x18fail_on_optimizer_errors\
-    \x18\x15\x20\x01(\x08R\x15failOnOptimizerErrors\x12V\n\x15scoped_allocat\
-    or_opts\x18\x10\x20\x01(\x0b2\".tensorflow.ScopedAllocatorOptionsR\x13sc\
-    opedAllocatorOpts\x12\x1e\n\noptimizers\x18d\x20\x03(\tR\noptimizers\x12\
-    ]\n\x11custom_optimizers\x18\xc8\x01\x20\x03(\x0b2/.tensorflow.RewriterC\
-    onfig.CustomGraphOptimizerR\x10customOptimizers\x12b\n\x1finter_optimize\
-    r_verifier_config\x18\xac\x02\x20\x01(\x0b2\x1a.tensorflow.VerifierConfi\
-    gR\x1cinterOptimizerVerifierConfig\x12f\n!post_optimization_verifier_con\
-    fig\x18\xad\x02\x20\x01(\x0b2\x1a.tensorflow.VerifierConfigR\x1epostOpti\
-    mizationVerifierConfig\x1a\xea\x01\n\x14CustomGraphOptimizer\x12\x12\n\
-    \x04name\x18\x01\x20\x01(\tR\x04name\x12f\n\rparameter_map\x18\x02\x20\
+    ableMetaOptimizer\x122\n\x15disable_tfg_optimizer\x18\x20\x20\x01(\x08R\
+    \x13disableTfgOptimizer\x12U\n\x15use_plugin_optimizers\x18\x1c\x20\x01(\
+    \x0e2!.tensorflow.RewriterConfig.ToggleR\x13usePluginOptimizers\x12r\n$e\
+    xperimental_conditional_code_motion\x18\x1e\x20\x01(\x0e2!.tensorflow.Re\
+    writerConfig.ToggleR!experimentalConditionalCodeMotion\x12h\n\x19meta_op\
+    timizer_iterations\x18\x0c\x20\x01(\x0e2,.tensorflow.RewriterConfig.NumI\
+    terationsTypeR\x17metaOptimizerIterations\x12&\n\x0fmin_graph_nodes\x18\
+    \x11\x20\x01(\x05R\rminGraphNodes\x12l\n3experimental_disable_compressed\
+    _tensor_optimization\x18\x1a\x20\x01(\x08R/experimentalDisableCompressed\
+    TensorOptimization\x12l\n3experimental_disable_folding_quantization_emul\
+    ation\x18\x1b\x20\x01(\x08R/experimentalDisableFoldingQuantizationEmulat\
+    ion\x12V\n\x13memory_optimization\x18\x04\x20\x01(\x0e2%.tensorflow.Rewr\
+    iterConfig.MemOptTypeR\x12memoryOptimization\x12S\n'memory_optimizer_tar\
+    get_node_name_scope\x18\x06\x20\x01(\tR\"memoryOptimizerTargetNodeNameSc\
+    ope\x129\n\x19meta_optimizer_timeout_ms\x18\x14\x20\x01(\x03R\x16metaOpt\
+    imizerTimeoutMs\x12D\n\rauto_parallel\x18\x05\x20\x01(\x0b2\x1f.tensorfl\
+    ow.AutoParallelOptionsR\x0cautoParallel\x127\n\x18fail_on_optimizer_erro\
+    rs\x18\x15\x20\x01(\x08R\x15failOnOptimizerErrors\x12V\n\x15scoped_alloc\
+    ator_opts\x18\x10\x20\x01(\x0b2\".tensorflow.ScopedAllocatorOptionsR\x13\
+    scopedAllocatorOpts\x12\x1e\n\noptimizers\x18d\x20\x03(\tR\noptimizers\
+    \x12]\n\x11custom_optimizers\x18\xc8\x01\x20\x03(\x0b2/.tensorflow.Rewri\
+    terConfig.CustomGraphOptimizerR\x10customOptimizers\x12b\n\x1finter_opti\
+    mizer_verifier_config\x18\xac\x02\x20\x01(\x0b2\x1a.tensorflow.VerifierC\
+    onfigR\x1cinterOptimizerVerifierConfig\x12f\n!post_optimization_verifier\
+    _config\x18\xad\x02\x20\x01(\x0b2\x1a.tensorflow.VerifierConfigR\x1epost\
+    OptimizationVerifierConfig\x1a\xea\x01\n\x14CustomGraphOptimizer\x12\x12\
+    \n\x04name\x18\x01\x20\x01(\tR\x04name\x12f\n\rparameter_map\x18\x02\x20\
     \x03(\x0b2A.tensorflow.RewriterConfig.CustomGraphOptimizer.ParameterMapE\
     ntryR\x0cparameterMap\x1aV\n\x11ParameterMapEntry\x12\x10\n\x03key\x18\
     \x01\x20\x01(\tR\x03key\x12+\n\x05value\x18\x02\x20\x01(\x0b2\x15.tensor\

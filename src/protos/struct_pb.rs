@@ -55,6 +55,7 @@ pub enum StructuredValue_oneof_kind {
     dict_value(DictValue),
     named_tuple_value(NamedTupleValue),
     tensor_value(super::tensor::TensorProto),
+    numpy_value(super::tensor::TensorProto),
 }
 
 impl StructuredValue {
@@ -700,6 +701,55 @@ impl StructuredValue {
             super::tensor::TensorProto::new()
         }
     }
+
+    // .tensorflow.TensorProto numpy_value = 56;
+
+
+    pub fn get_numpy_value(&self) -> &super::tensor::TensorProto {
+        match self.kind {
+            ::std::option::Option::Some(StructuredValue_oneof_kind::numpy_value(ref v)) => v,
+            _ => <super::tensor::TensorProto as ::protobuf::Message>::default_instance(),
+        }
+    }
+    pub fn clear_numpy_value(&mut self) {
+        self.kind = ::std::option::Option::None;
+    }
+
+    pub fn has_numpy_value(&self) -> bool {
+        match self.kind {
+            ::std::option::Option::Some(StructuredValue_oneof_kind::numpy_value(..)) => true,
+            _ => false,
+        }
+    }
+
+    // Param is passed by value, moved
+    pub fn set_numpy_value(&mut self, v: super::tensor::TensorProto) {
+        self.kind = ::std::option::Option::Some(StructuredValue_oneof_kind::numpy_value(v))
+    }
+
+    // Mutable pointer to the field.
+    pub fn mut_numpy_value(&mut self) -> &mut super::tensor::TensorProto {
+        if let ::std::option::Option::Some(StructuredValue_oneof_kind::numpy_value(_)) = self.kind {
+        } else {
+            self.kind = ::std::option::Option::Some(StructuredValue_oneof_kind::numpy_value(super::tensor::TensorProto::new()));
+        }
+        match self.kind {
+            ::std::option::Option::Some(StructuredValue_oneof_kind::numpy_value(ref mut v)) => v,
+            _ => panic!(),
+        }
+    }
+
+    // Take field
+    pub fn take_numpy_value(&mut self) -> super::tensor::TensorProto {
+        if self.has_numpy_value() {
+            match self.kind.take() {
+                ::std::option::Option::Some(StructuredValue_oneof_kind::numpy_value(v)) => v,
+                _ => panic!(),
+            }
+        } else {
+            super::tensor::TensorProto::new()
+        }
+    }
 }
 
 impl ::protobuf::Message for StructuredValue {
@@ -750,6 +800,11 @@ impl ::protobuf::Message for StructuredValue {
             }
         }
         if let Some(StructuredValue_oneof_kind::tensor_value(ref v)) = self.kind {
+            if !v.is_initialized() {
+                return false;
+            }
+        }
+        if let Some(StructuredValue_oneof_kind::numpy_value(ref v)) = self.kind {
             if !v.is_initialized() {
                 return false;
             }
@@ -851,6 +906,12 @@ impl ::protobuf::Message for StructuredValue {
                     }
                     self.kind = ::std::option::Option::Some(StructuredValue_oneof_kind::tensor_value(is.read_message()?));
                 },
+                56 => {
+                    if wire_type != ::protobuf::wire_format::WireTypeLengthDelimited {
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                    }
+                    self.kind = ::std::option::Option::Some(StructuredValue_oneof_kind::numpy_value(is.read_message()?));
+                },
                 _ => {
                     ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
                 },
@@ -917,6 +978,10 @@ impl ::protobuf::Message for StructuredValue {
                     my_size += 2 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
                 },
                 &StructuredValue_oneof_kind::tensor_value(ref v) => {
+                    let len = v.compute_size();
+                    my_size += 2 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
+                },
+                &StructuredValue_oneof_kind::numpy_value(ref v) => {
                     let len = v.compute_size();
                     my_size += 2 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
                 },
@@ -992,6 +1057,11 @@ impl ::protobuf::Message for StructuredValue {
                 },
                 &StructuredValue_oneof_kind::tensor_value(ref v) => {
                     os.write_tag(55, ::protobuf::wire_format::WireTypeLengthDelimited)?;
+                    os.write_raw_varint32(v.get_cached_size())?;
+                    v.write_to_with_cached_sizes(os)?;
+                },
+                &StructuredValue_oneof_kind::numpy_value(ref v) => {
+                    os.write_tag(56, ::protobuf::wire_format::WireTypeLengthDelimited)?;
                     os.write_raw_varint32(v.get_cached_size())?;
                     v.write_to_with_cached_sizes(os)?;
                 },
@@ -1110,6 +1180,11 @@ impl ::protobuf::Message for StructuredValue {
                 StructuredValue::has_tensor_value,
                 StructuredValue::get_tensor_value,
             ));
+            fields.push(::protobuf::reflect::accessor::make_singular_message_accessor::<_, super::tensor::TensorProto>(
+                "numpy_value",
+                StructuredValue::has_numpy_value,
+                StructuredValue::get_numpy_value,
+            ));
             ::protobuf::reflect::MessageDescriptor::new_pb_name::<StructuredValue>(
                 "StructuredValue",
                 fields,
@@ -1126,6 +1201,7 @@ impl ::protobuf::Message for StructuredValue {
 
 impl ::protobuf::Clear for StructuredValue {
     fn clear(&mut self) {
+        self.kind = ::std::option::Option::None;
         self.kind = ::std::option::Option::None;
         self.kind = ::std::option::Option::None;
         self.kind = ::std::option::Option::None;
@@ -3159,7 +3235,7 @@ impl ::protobuf::reflect::ProtobufValue for TypeSpecProto_TypeSpecClass {
 static file_descriptor_proto_data: &'static [u8] = b"\
     \n%tensorflow/core/protobuf/struct.proto\x12\ntensorflow\x1a&tensorflow/\
     core/framework/tensor.proto\x1a,tensorflow/core/framework/tensor_shape.p\
-    roto\x1a%tensorflow/core/framework/types.proto\"\x9a\x07\n\x0fStructured\
+    roto\x1a%tensorflow/core/framework/types.proto\"\xd6\x07\n\x0fStructured\
     Value\x126\n\nnone_value\x18\x01\x20\x01(\x0b2\x15.tensorflow.NoneValueH\
     \0R\tnoneValue\x12%\n\rfloat64_value\x18\x0b\x20\x01(\x01H\0R\x0cfloat64\
     Value\x12!\n\x0bint64_value\x18\x0c\x20\x01(\x12H\0R\nint64Value\x12#\n\
@@ -3177,41 +3253,42 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     alue\x126\n\ndict_value\x185\x20\x01(\x0b2\x15.tensorflow.DictValueH\0R\
     \tdictValue\x12I\n\x11named_tuple_value\x186\x20\x01(\x0b2\x1b.tensorflo\
     w.NamedTupleValueH\0R\x0fnamedTupleValue\x12<\n\x0ctensor_value\x187\x20\
-    \x01(\x0b2\x17.tensorflow.TensorProtoH\0R\x0btensorValueB\x06\n\x04kind\
-    \"\x0b\n\tNoneValue\"@\n\tListValue\x123\n\x06values\x18\x01\x20\x03(\
-    \x0b2\x1b.tensorflow.StructuredValueR\x06values\"A\n\nTupleValue\x123\n\
-    \x06values\x18\x01\x20\x03(\x0b2\x1b.tensorflow.StructuredValueR\x06valu\
-    es\"\x9e\x01\n\tDictValue\x129\n\x06fields\x18\x01\x20\x03(\x0b2!.tensor\
-    flow.DictValue.FieldsEntryR\x06fields\x1aV\n\x0bFieldsEntry\x12\x10\n\
-    \x03key\x18\x01\x20\x01(\tR\x03key\x121\n\x05value\x18\x02\x20\x01(\x0b2\
-    \x1b.tensorflow.StructuredValueR\x05value:\x028\x01\"P\n\tPairValue\x12\
-    \x10\n\x03key\x18\x01\x20\x01(\tR\x03key\x121\n\x05value\x18\x02\x20\x01\
-    (\x0b2\x1b.tensorflow.StructuredValueR\x05value\"T\n\x0fNamedTupleValue\
-    \x12\x12\n\x04name\x18\x01\x20\x01(\tR\x04name\x12-\n\x06values\x18\x02\
-    \x20\x03(\x0b2\x15.tensorflow.PairValueR\x06values\"\x85\x01\n\x0fTensor\
-    SpecProto\x12\x12\n\x04name\x18\x01\x20\x01(\tR\x04name\x122\n\x05shape\
-    \x18\x02\x20\x01(\x0b2\x1c.tensorflow.TensorShapeProtoR\x05shape\x12*\n\
-    \x05dtype\x18\x03\x20\x01(\x0e2\x14.tensorflow.DataTypeR\x05dtype\"\xf2\
-    \x01\n\x16BoundedTensorSpecProto\x12\x12\n\x04name\x18\x01\x20\x01(\tR\
-    \x04name\x122\n\x05shape\x18\x02\x20\x01(\x0b2\x1c.tensorflow.TensorShap\
-    eProtoR\x05shape\x12*\n\x05dtype\x18\x03\x20\x01(\x0e2\x14.tensorflow.Da\
-    taTypeR\x05dtype\x121\n\x07minimum\x18\x04\x20\x01(\x0b2\x17.tensorflow.\
-    TensorProtoR\x07minimum\x121\n\x07maximum\x18\x05\x20\x01(\x0b2\x17.tens\
-    orflow.TensorProtoR\x07maximum\"\xb8\x04\n\rTypeSpecProto\x12O\n\x0ftype\
-    _spec_class\x18\x01\x20\x01(\x0e2'.tensorflow.TypeSpecProto.TypeSpecClas\
-    sR\rtypeSpecClass\x12:\n\ntype_state\x18\x02\x20\x01(\x0b2\x1b.tensorflo\
-    w.StructuredValueR\ttypeState\x12/\n\x14type_spec_class_name\x18\x03\x20\
-    \x01(\tR\x11typeSpecClassName\x12.\n\x13num_flat_components\x18\x04\x20\
-    \x01(\x05R\x11numFlatComponents\"\xb8\x02\n\rTypeSpecClass\x12\x0b\n\x07\
-    UNKNOWN\x10\0\x12\x16\n\x12SPARSE_TENSOR_SPEC\x10\x01\x12\x17\n\x13INDEX\
-    ED_SLICES_SPEC\x10\x02\x12\x16\n\x12RAGGED_TENSOR_SPEC\x10\x03\x12\x15\n\
-    \x11TENSOR_ARRAY_SPEC\x10\x04\x12\x15\n\x11DATA_DATASET_SPEC\x10\x05\x12\
-    \x16\n\x12DATA_ITERATOR_SPEC\x10\x06\x12\x11\n\rOPTIONAL_SPEC\x10\x07\
-    \x12\x14\n\x10PER_REPLICA_SPEC\x10\x08\x12\x11\n\rVARIABLE_SPEC\x10\t\
-    \x12\x16\n\x12ROW_PARTITION_SPEC\x10\n\x12\x18\n\x14REGISTERED_TYPE_SPEC\
-    \x10\x0c\x12\x17\n\x13EXTENSION_TYPE_SPEC\x10\r\"\x04\x08\x0b\x10\x0bBWZ\
-    Ugithub.com/tensorflow/tensorflow/tensorflow/go/core/protobuf/for_core_p\
-    rotos_go_protob\x06proto3\
+    \x01(\x0b2\x17.tensorflow.TensorProtoH\0R\x0btensorValue\x12:\n\x0bnumpy\
+    _value\x188\x20\x01(\x0b2\x17.tensorflow.TensorProtoH\0R\nnumpyValueB\
+    \x06\n\x04kind\"\x0b\n\tNoneValue\"@\n\tListValue\x123\n\x06values\x18\
+    \x01\x20\x03(\x0b2\x1b.tensorflow.StructuredValueR\x06values\"A\n\nTuple\
+    Value\x123\n\x06values\x18\x01\x20\x03(\x0b2\x1b.tensorflow.StructuredVa\
+    lueR\x06values\"\x9e\x01\n\tDictValue\x129\n\x06fields\x18\x01\x20\x03(\
+    \x0b2!.tensorflow.DictValue.FieldsEntryR\x06fields\x1aV\n\x0bFieldsEntry\
+    \x12\x10\n\x03key\x18\x01\x20\x01(\tR\x03key\x121\n\x05value\x18\x02\x20\
+    \x01(\x0b2\x1b.tensorflow.StructuredValueR\x05value:\x028\x01\"P\n\tPair\
+    Value\x12\x10\n\x03key\x18\x01\x20\x01(\tR\x03key\x121\n\x05value\x18\
+    \x02\x20\x01(\x0b2\x1b.tensorflow.StructuredValueR\x05value\"T\n\x0fName\
+    dTupleValue\x12\x12\n\x04name\x18\x01\x20\x01(\tR\x04name\x12-\n\x06valu\
+    es\x18\x02\x20\x03(\x0b2\x15.tensorflow.PairValueR\x06values\"\x85\x01\n\
+    \x0fTensorSpecProto\x12\x12\n\x04name\x18\x01\x20\x01(\tR\x04name\x122\n\
+    \x05shape\x18\x02\x20\x01(\x0b2\x1c.tensorflow.TensorShapeProtoR\x05shap\
+    e\x12*\n\x05dtype\x18\x03\x20\x01(\x0e2\x14.tensorflow.DataTypeR\x05dtyp\
+    e\"\xf2\x01\n\x16BoundedTensorSpecProto\x12\x12\n\x04name\x18\x01\x20\
+    \x01(\tR\x04name\x122\n\x05shape\x18\x02\x20\x01(\x0b2\x1c.tensorflow.Te\
+    nsorShapeProtoR\x05shape\x12*\n\x05dtype\x18\x03\x20\x01(\x0e2\x14.tenso\
+    rflow.DataTypeR\x05dtype\x121\n\x07minimum\x18\x04\x20\x01(\x0b2\x17.ten\
+    sorflow.TensorProtoR\x07minimum\x121\n\x07maximum\x18\x05\x20\x01(\x0b2\
+    \x17.tensorflow.TensorProtoR\x07maximum\"\xb8\x04\n\rTypeSpecProto\x12O\
+    \n\x0ftype_spec_class\x18\x01\x20\x01(\x0e2'.tensorflow.TypeSpecProto.Ty\
+    peSpecClassR\rtypeSpecClass\x12:\n\ntype_state\x18\x02\x20\x01(\x0b2\x1b\
+    .tensorflow.StructuredValueR\ttypeState\x12/\n\x14type_spec_class_name\
+    \x18\x03\x20\x01(\tR\x11typeSpecClassName\x12.\n\x13num_flat_components\
+    \x18\x04\x20\x01(\x05R\x11numFlatComponents\"\xb8\x02\n\rTypeSpecClass\
+    \x12\x0b\n\x07UNKNOWN\x10\0\x12\x16\n\x12SPARSE_TENSOR_SPEC\x10\x01\x12\
+    \x17\n\x13INDEXED_SLICES_SPEC\x10\x02\x12\x16\n\x12RAGGED_TENSOR_SPEC\
+    \x10\x03\x12\x15\n\x11TENSOR_ARRAY_SPEC\x10\x04\x12\x15\n\x11DATA_DATASE\
+    T_SPEC\x10\x05\x12\x16\n\x12DATA_ITERATOR_SPEC\x10\x06\x12\x11\n\rOPTION\
+    AL_SPEC\x10\x07\x12\x14\n\x10PER_REPLICA_SPEC\x10\x08\x12\x11\n\rVARIABL\
+    E_SPEC\x10\t\x12\x16\n\x12ROW_PARTITION_SPEC\x10\n\x12\x18\n\x14REGISTER\
+    ED_TYPE_SPEC\x10\x0c\x12\x17\n\x13EXTENSION_TYPE_SPEC\x10\r\"\x04\x08\
+    \x0b\x10\x0bBWZUgithub.com/tensorflow/tensorflow/tensorflow/go/core/prot\
+    obuf/for_core_protos_go_protob\x06proto3\
 ";
 
 static file_descriptor_proto_lazy: ::protobuf::rt::LazyV2<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::rt::LazyV2::INIT;

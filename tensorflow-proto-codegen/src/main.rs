@@ -18,6 +18,24 @@ fn main() -> Result<(), Box<dyn Error>> {
         )
         .inputs(
             [
+                "third_party/xla/third_party/tsl/tsl/protobuf/coordination_config.proto",
+                "third_party/xla/third_party/tsl/tsl/protobuf/rpc_options.proto",
+            ]
+            .iter()
+            .map(|p| format!("{}/{}", tensorflow_folder, p))
+            .collect::<Vec<_>>(),
+        )
+        .include(Path::new(tensorflow_folder).join("third_party/xla/third_party/tsl"))
+        .run()?;
+    protoc_rust::Codegen::new()
+        .out_dir(
+            output_folder
+                .join("src/protos")
+                .to_str()
+                .ok_or("Unable to format output path for main crate")?,
+        )
+        .inputs(
+            [
                 "tensorflow/core/framework/allocation_description.proto",
                 "tensorflow/core/framework/attr_value.proto",
                 "tensorflow/core/framework/cost_graph.proto",
@@ -46,14 +64,13 @@ fn main() -> Result<(), Box<dyn Error>> {
                 "tensorflow/core/protobuf/struct.proto",
                 "tensorflow/core/protobuf/trackable_object_graph.proto",
                 "tensorflow/core/protobuf/verifier_config.proto",
-                "third_party/xla/third_party/tsl/tsl/protobuf/coordination_config.proto",
-                "third_party/xla/third_party/tsl/tsl/protobuf/rpc_options.proto",
             ]
             .iter()
             .map(|p| format!("{}/{}", tensorflow_folder, p))
             .collect::<Vec<_>>(),
         )
         .include(tensorflow_folder)
+        .include(Path::new(tensorflow_folder).join("third_party/xla/third_party/tsl"))
         .run()?;
     protoc_rust::Codegen::new()
         .out_dir(
