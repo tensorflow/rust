@@ -1,1 +1,2 @@
 tensorflow == 2.17.0
+tf_keras == 2.17.0
