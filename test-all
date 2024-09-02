@@ -44,6 +44,9 @@ if [[ "${version_tensorflow_sys_crate}" != "${version_tensorflow_sys_readme}" ]]
     exit 1
 fi
 
+# GitHub seems to choke on the large number of warnings from dependencies.
+export RUSTFLAGS="-Awarnings"
+
 # Legacy Keras required for now because Keras 3 requires exporting models as
 # Keras format, which the C API can't read:
 # https://github.com/tensorflow/tensorflow/issues/70514
@@ -58,8 +61,8 @@ run cargo run --example regression
 run cargo run --example xor
 run cargo run --features tensorflow_unstable --example expressions
 run cargo run --features eager --example mobilenetv3
-run cargo doc -vv --features experimental,tensorflow_unstable,ndarray,eager
-run cargo doc -vv --features experimental,tensorflow_unstable,ndarray,eager,private-docs-rs
+run cargo doc --features experimental,tensorflow_unstable,ndarray,eager
+run cargo doc --features experimental,tensorflow_unstable,ndarray,eager,private-docs-rs
 # TODO(#66): Re-enable: (cd tensorflow-sys && cargo test -vv -j 1)
 (cd tensorflow-sys && run cargo run --example multiplication)
 (cd tensorflow-sys && run cargo run --example tf_version)
