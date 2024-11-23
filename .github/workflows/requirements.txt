@@ -1,2 +1,2 @@
-tensorflow == 2.17.1
-tf_keras == 2.17.1
+tensorflow == 2.18.0
+tf_keras == 2.18.0
