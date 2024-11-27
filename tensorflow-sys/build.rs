@@ -381,14 +381,15 @@ fn build_from_src() {
             "".to_string()
         };
         run("bazel", |command| {
-            command
+            let mut cmd = command
                 .current_dir(&source)
                 .arg("build")
                 .arg(format!("--jobs={}", get!("NUM_JOBS")))
-                .arg("--compilation_mode=opt")
-                .arg("--copt=-march=native")
-                .args(bazel_args_string.split_whitespace())
-                .arg(&target)
+                .arg("--compilation_mode=opt");
+            if target_os() != "macos" {
+                cmd = cmd.arg("--copt=-march=native");
+            }
+            cmd.args(bazel_args_string.split_whitespace()).arg(&target)
         });
         let framework_target_bazel_bin = source.join("bazel-bin").join(framework_target_path);
         log!(
