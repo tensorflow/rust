@@ -24,7 +24,7 @@ const REPOSITORY: &str = "https://github.com/tensorflow/tensorflow.git";
 const FRAMEWORK_TARGET: &str = "tensorflow:libtensorflow_framework";
 const TARGET: &str = "tensorflow:libtensorflow";
 // `VERSION` and `TAG` are separate because the tag is not always `'v' + VERSION`.
-const VERSION: &str = "2.13.0";
+const VERSION: &str = "2.18.0";
 const TAG: &str = "v2.13.0";
 const MIN_BAZEL: &str = "3.7.2";
 
@@ -67,13 +67,17 @@ fn main() {
 
     let target_os = target_os();
     if !force_src
-        && target_arch() == "x86_64"
-        && (target_os == "linux" || target_os == "macos" || target_os == "windows")
+        && has_prebuilt_bin(&target_os, &target_arch())
     {
         install_prebuilt();
     } else {
         build_from_src();
     }
+}
+
+fn has_prebuilt_bin(target_os: &str, target_arch: &str) -> bool {
+    (target_arch == "x86_64" && (target_os == "linux" || target_os == "windows"))
+        || (target_os == "macos" && target_arch == "aarch64")
 }
 
 fn target_arch() -> String {
@@ -82,6 +86,15 @@ fn target_arch() -> String {
 
 fn target_os() -> String {
     get!("CARGO_CFG_TARGET_OS")
+}
+
+fn get_target_arch_and_os_for_binary() -> (String, String) {
+    let arch = target_arch();
+    let os = target_os();
+    if arch == "aarch64" && os == "macos" {
+        return ("arm64".to_string(), "darwin".to_string());
+    }
+    (arch, os)
 }
 
 fn dll_prefix() -> &'static str {
@@ -186,10 +199,6 @@ fn extract<P: AsRef<Path>, P2: AsRef<Path>>(archive_path: P, extract_to: P2) {
 // Downloads and unpacks a prebuilt binary. Only works for certain platforms.
 fn install_prebuilt() {
     // Figure out the file names.
-    let os = match &target_os() as &str {
-        "macos" => "darwin".to_string(),
-        x => x.to_string(),
-    };
     let proc_type = if cfg!(feature = "tensorflow_gpu") {
         "gpu"
     } else {
@@ -197,12 +206,13 @@ fn install_prebuilt() {
     };
     let windows = target_os() == "windows";
     let ext = if windows { ".zip" } else { ".tar.gz" };
+    let (arch, os) = get_target_arch_and_os_for_binary();
     let binary_url = format!(
-        "https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-{}-{}-{}-{}{}",
+        "https://storage.googleapis.com/tensorflow/versions/{}/libtensorflow-{}-{}-{}{}",
+        VERSION,
         proc_type,
         os,
-        target_arch(),
-        VERSION,
+        arch,
         ext
     );
     log_var!(binary_url);
