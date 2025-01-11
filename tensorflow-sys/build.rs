@@ -398,15 +398,23 @@ fn build_from_src() {
             framework_library_path
         );
         if framework_library_path.exists() {
-            fs::remove_file(&framework_library_path).unwrap();
+            fs::remove_file(&framework_library_path)
+                .expect(&format!("{:?} should be removable", framework_library_path));
         }
-        fs::copy(framework_target_bazel_bin, &framework_library_path).unwrap();
+        fs::copy(&framework_target_bazel_bin, &framework_library_path).expect(&format!(
+            "{:?} should be copyable to {:?}",
+            framework_target_bazel_bin, framework_library_path
+        ));
         let target_bazel_bin = source.join("bazel-bin").join(target_path);
         log!("Copying {:?} to {:?}", target_bazel_bin, library_path);
         if library_path.exists() {
-            fs::remove_file(&library_path).unwrap();
+            fs::remove_file(&library_path)
+                .expect(&format!("{:?} should be removable", library_path));
         }
-        fs::copy(target_bazel_bin, &library_path).unwrap();
+        fs::copy(&target_bazel_bin, &library_path).expect(&format!(
+            "{:?} should be copyable to {:?}",
+            target_bazel_bin, library_path
+        ));
     }
     symlink(
         framework_library_path.file_name().unwrap(),
