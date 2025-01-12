@@ -64,12 +64,15 @@ fn main() {
         Ok(s) => s == "true",
         Err(_) => false,
     };
+    log_var!(force_src);
 
-    let target_os = target_os();
-    if !force_src
-        && target_arch() == "x86_64"
-        && (target_os == "linux" || target_os == "macos" || target_os == "windows")
-    {
+    let prebuilt_supported = match (&target_arch() as &str, &target_os() as &str) {
+        ("x86_64", "linux") => true,
+        ("x86_64", "windows") => true,
+        ("aarch64", "macos") => true,
+        _ => false,
+    };
+    if !force_src && prebuilt_supported {
         install_prebuilt();
     } else {
         build_from_src();
@@ -185,11 +188,17 @@ fn extract<P: AsRef<Path>, P2: AsRef<Path>>(archive_path: P, extract_to: P2) {
 
 // Downloads and unpacks a prebuilt binary. Only works for certain platforms.
 fn install_prebuilt() {
+    log!("Installing prebuilt");
     // Figure out the file names.
     let os = match &target_os() as &str {
         "macos" => "darwin".to_string(),
         x => x.to_string(),
     };
+    let arch = match &target_arch() as &str {
+        "aarch64" => "arm64",
+        x => x,
+    }
+    .to_string();
     let proc_type = if cfg!(feature = "tensorflow_gpu") {
         "gpu"
     } else {
@@ -199,11 +208,7 @@ fn install_prebuilt() {
     let ext = if windows { ".zip" } else { ".tar.gz" };
     let binary_url = format!(
         "https://storage.googleapis.com/tensorflow/versions/{}/libtensorflow-{}-{}-{}{}",
-        VERSION,
-        proc_type,
-        os,
-        target_arch(),
-        ext
+        VERSION, proc_type, os, arch, ext
     );
     log_var!(binary_url);
     let short_file_name = binary_url.split('/').last().unwrap();
@@ -301,6 +306,7 @@ fn symlink<P: AsRef<Path>, P2: AsRef<Path>>(target: P, link: P2) {
 }
 
 fn build_from_src() {
+    log!("Building from source");
     let dll_suffix = dll_suffix();
     let framework_target = FRAMEWORK_TARGET.to_string() + dll_suffix;
     let target = TARGET.to_string() + dll_suffix;
