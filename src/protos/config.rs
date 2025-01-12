@@ -495,6 +495,7 @@ impl ::protobuf::reflect::ProtobufValue for GPUOptions {
 pub struct GPUOptions_Experimental {
     // message fields
     pub virtual_devices: ::protobuf::RepeatedField<GPUOptions_Experimental_VirtualDevices>,
+    pub num_virtual_devices_per_gpu: i32,
     pub use_unified_memory: bool,
     pub num_dev_to_dev_copy_streams: i32,
     pub collective_ring_order: ::std::string::String,
@@ -507,6 +508,10 @@ pub struct GPUOptions_Experimental {
     pub disallow_retry_on_allocation_failure: bool,
     pub gpu_host_mem_limit_in_mb: f32,
     pub gpu_host_mem_disallow_growth: bool,
+    pub gpu_system_memory_size_in_mb: i32,
+    pub populate_pjrt_gpu_client_creation_info: bool,
+    pub node_id: i32,
+    pub stream_merge_options: ::protobuf::SingularPtrField<GPUOptions_Experimental_StreamMergeOptions>,
     // special fields
     pub unknown_fields: ::protobuf::UnknownFields,
     pub cached_size: ::protobuf::CachedSize,
@@ -546,6 +551,21 @@ impl GPUOptions_Experimental {
     // Take field
     pub fn take_virtual_devices(&mut self) -> ::protobuf::RepeatedField<GPUOptions_Experimental_VirtualDevices> {
         ::std::mem::replace(&mut self.virtual_devices, ::protobuf::RepeatedField::new())
+    }
+
+    // int32 num_virtual_devices_per_gpu = 15;
+
+
+    pub fn get_num_virtual_devices_per_gpu(&self) -> i32 {
+        self.num_virtual_devices_per_gpu
+    }
+    pub fn clear_num_virtual_devices_per_gpu(&mut self) {
+        self.num_virtual_devices_per_gpu = 0;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_num_virtual_devices_per_gpu(&mut self, v: i32) {
+        self.num_virtual_devices_per_gpu = v;
     }
 
     // bool use_unified_memory = 2;
@@ -738,11 +758,94 @@ impl GPUOptions_Experimental {
     pub fn set_gpu_host_mem_disallow_growth(&mut self, v: bool) {
         self.gpu_host_mem_disallow_growth = v;
     }
+
+    // int32 gpu_system_memory_size_in_mb = 16;
+
+
+    pub fn get_gpu_system_memory_size_in_mb(&self) -> i32 {
+        self.gpu_system_memory_size_in_mb
+    }
+    pub fn clear_gpu_system_memory_size_in_mb(&mut self) {
+        self.gpu_system_memory_size_in_mb = 0;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_gpu_system_memory_size_in_mb(&mut self, v: i32) {
+        self.gpu_system_memory_size_in_mb = v;
+    }
+
+    // bool populate_pjrt_gpu_client_creation_info = 17;
+
+
+    pub fn get_populate_pjrt_gpu_client_creation_info(&self) -> bool {
+        self.populate_pjrt_gpu_client_creation_info
+    }
+    pub fn clear_populate_pjrt_gpu_client_creation_info(&mut self) {
+        self.populate_pjrt_gpu_client_creation_info = false;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_populate_pjrt_gpu_client_creation_info(&mut self, v: bool) {
+        self.populate_pjrt_gpu_client_creation_info = v;
+    }
+
+    // int32 node_id = 18;
+
+
+    pub fn get_node_id(&self) -> i32 {
+        self.node_id
+    }
+    pub fn clear_node_id(&mut self) {
+        self.node_id = 0;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_node_id(&mut self, v: i32) {
+        self.node_id = v;
+    }
+
+    // .tensorflow.GPUOptions.Experimental.StreamMergeOptions stream_merge_options = 19;
+
+
+    pub fn get_stream_merge_options(&self) -> &GPUOptions_Experimental_StreamMergeOptions {
+        self.stream_merge_options.as_ref().unwrap_or_else(|| <GPUOptions_Experimental_StreamMergeOptions as ::protobuf::Message>::default_instance())
+    }
+    pub fn clear_stream_merge_options(&mut self) {
+        self.stream_merge_options.clear();
+    }
+
+    pub fn has_stream_merge_options(&self) -> bool {
+        self.stream_merge_options.is_some()
+    }
+
+    // Param is passed by value, moved
+    pub fn set_stream_merge_options(&mut self, v: GPUOptions_Experimental_StreamMergeOptions) {
+        self.stream_merge_options = ::protobuf::SingularPtrField::some(v);
+    }
+
+    // Mutable pointer to the field.
+    // If field is not initialized, it is initialized with default value first.
+    pub fn mut_stream_merge_options(&mut self) -> &mut GPUOptions_Experimental_StreamMergeOptions {
+        if self.stream_merge_options.is_none() {
+            self.stream_merge_options.set_default();
+        }
+        self.stream_merge_options.as_mut().unwrap()
+    }
+
+    // Take field
+    pub fn take_stream_merge_options(&mut self) -> GPUOptions_Experimental_StreamMergeOptions {
+        self.stream_merge_options.take().unwrap_or_else(|| GPUOptions_Experimental_StreamMergeOptions::new())
+    }
 }
 
 impl ::protobuf::Message for GPUOptions_Experimental {
     fn is_initialized(&self) -> bool {
         for v in &self.virtual_devices {
+            if !v.is_initialized() {
+                return false;
+            }
+        };
+        for v in &self.stream_merge_options {
             if !v.is_initialized() {
                 return false;
             }
@@ -756,6 +859,13 @@ impl ::protobuf::Message for GPUOptions_Experimental {
             match field_number {
                 1 => {
                     ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.virtual_devices)?;
+                },
+                15 => {
+                    if wire_type != ::protobuf::wire_format::WireTypeVarint {
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                    }
+                    let tmp = is.read_int32()?;
+                    self.num_virtual_devices_per_gpu = tmp;
                 },
                 2 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
@@ -837,6 +947,30 @@ impl ::protobuf::Message for GPUOptions_Experimental {
                     let tmp = is.read_bool()?;
                     self.gpu_host_mem_disallow_growth = tmp;
                 },
+                16 => {
+                    if wire_type != ::protobuf::wire_format::WireTypeVarint {
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                    }
+                    let tmp = is.read_int32()?;
+                    self.gpu_system_memory_size_in_mb = tmp;
+                },
+                17 => {
+                    if wire_type != ::protobuf::wire_format::WireTypeVarint {
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                    }
+                    let tmp = is.read_bool()?;
+                    self.populate_pjrt_gpu_client_creation_info = tmp;
+                },
+                18 => {
+                    if wire_type != ::protobuf::wire_format::WireTypeVarint {
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                    }
+                    let tmp = is.read_int32()?;
+                    self.node_id = tmp;
+                },
+                19 => {
+                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.stream_merge_options)?;
+                },
                 _ => {
                     ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
                 },
@@ -853,6 +987,9 @@ impl ::protobuf::Message for GPUOptions_Experimental {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         };
+        if self.num_virtual_devices_per_gpu != 0 {
+            my_size += ::protobuf::rt::value_size(15, self.num_virtual_devices_per_gpu, ::protobuf::wire_format::WireTypeVarint);
+        }
         if self.use_unified_memory != false {
             my_size += 2;
         }
@@ -889,6 +1026,19 @@ impl ::protobuf::Message for GPUOptions_Experimental {
         if self.gpu_host_mem_disallow_growth != false {
             my_size += 2;
         }
+        if self.gpu_system_memory_size_in_mb != 0 {
+            my_size += ::protobuf::rt::value_size(16, self.gpu_system_memory_size_in_mb, ::protobuf::wire_format::WireTypeVarint);
+        }
+        if self.populate_pjrt_gpu_client_creation_info != false {
+            my_size += 3;
+        }
+        if self.node_id != 0 {
+            my_size += ::protobuf::rt::value_size(18, self.node_id, ::protobuf::wire_format::WireTypeVarint);
+        }
+        if let Some(ref v) = self.stream_merge_options.as_ref() {
+            let len = v.compute_size();
+            my_size += 2 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
+        }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
@@ -900,6 +1050,9 @@ impl ::protobuf::Message for GPUOptions_Experimental {
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
         };
+        if self.num_virtual_devices_per_gpu != 0 {
+            os.write_int32(15, self.num_virtual_devices_per_gpu)?;
+        }
         if self.use_unified_memory != false {
             os.write_bool(2, self.use_unified_memory)?;
         }
@@ -935,6 +1088,20 @@ impl ::protobuf::Message for GPUOptions_Experimental {
         }
         if self.gpu_host_mem_disallow_growth != false {
             os.write_bool(14, self.gpu_host_mem_disallow_growth)?;
+        }
+        if self.gpu_system_memory_size_in_mb != 0 {
+            os.write_int32(16, self.gpu_system_memory_size_in_mb)?;
+        }
+        if self.populate_pjrt_gpu_client_creation_info != false {
+            os.write_bool(17, self.populate_pjrt_gpu_client_creation_info)?;
+        }
+        if self.node_id != 0 {
+            os.write_int32(18, self.node_id)?;
+        }
+        if let Some(ref v) = self.stream_merge_options.as_ref() {
+            os.write_tag(19, ::protobuf::wire_format::WireTypeLengthDelimited)?;
+            os.write_raw_varint32(v.get_cached_size())?;
+            v.write_to_with_cached_sizes(os)?;
         }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
@@ -978,6 +1145,11 @@ impl ::protobuf::Message for GPUOptions_Experimental {
                 "virtual_devices",
                 |m: &GPUOptions_Experimental| { &m.virtual_devices },
                 |m: &mut GPUOptions_Experimental| { &mut m.virtual_devices },
+            ));
+            fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                "num_virtual_devices_per_gpu",
+                |m: &GPUOptions_Experimental| { &m.num_virtual_devices_per_gpu },
+                |m: &mut GPUOptions_Experimental| { &mut m.num_virtual_devices_per_gpu },
             ));
             fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
                 "use_unified_memory",
@@ -1039,6 +1211,26 @@ impl ::protobuf::Message for GPUOptions_Experimental {
                 |m: &GPUOptions_Experimental| { &m.gpu_host_mem_disallow_growth },
                 |m: &mut GPUOptions_Experimental| { &mut m.gpu_host_mem_disallow_growth },
             ));
+            fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                "gpu_system_memory_size_in_mb",
+                |m: &GPUOptions_Experimental| { &m.gpu_system_memory_size_in_mb },
+                |m: &mut GPUOptions_Experimental| { &mut m.gpu_system_memory_size_in_mb },
+            ));
+            fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                "populate_pjrt_gpu_client_creation_info",
+                |m: &GPUOptions_Experimental| { &m.populate_pjrt_gpu_client_creation_info },
+                |m: &mut GPUOptions_Experimental| { &mut m.populate_pjrt_gpu_client_creation_info },
+            ));
+            fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                "node_id",
+                |m: &GPUOptions_Experimental| { &m.node_id },
+                |m: &mut GPUOptions_Experimental| { &mut m.node_id },
+            ));
+            fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<GPUOptions_Experimental_StreamMergeOptions>>(
+                "stream_merge_options",
+                |m: &GPUOptions_Experimental| { &m.stream_merge_options },
+                |m: &mut GPUOptions_Experimental| { &mut m.stream_merge_options },
+            ));
             ::protobuf::reflect::MessageDescriptor::new_pb_name::<GPUOptions_Experimental>(
                 "GPUOptions.Experimental",
                 fields,
@@ -1056,6 +1248,7 @@ impl ::protobuf::Message for GPUOptions_Experimental {
 impl ::protobuf::Clear for GPUOptions_Experimental {
     fn clear(&mut self) {
         self.virtual_devices.clear();
+        self.num_virtual_devices_per_gpu = 0;
         self.use_unified_memory = false;
         self.num_dev_to_dev_copy_streams = 0;
         self.collective_ring_order.clear();
@@ -1068,6 +1261,10 @@ impl ::protobuf::Clear for GPUOptions_Experimental {
         self.disallow_retry_on_allocation_failure = false;
         self.gpu_host_mem_limit_in_mb = 0.;
         self.gpu_host_mem_disallow_growth = false;
+        self.gpu_system_memory_size_in_mb = 0;
+        self.populate_pjrt_gpu_client_creation_info = false;
+        self.node_id = 0;
+        self.stream_merge_options.clear();
         self.unknown_fields.clear();
     }
 }
@@ -1317,6 +1514,228 @@ impl ::std::fmt::Debug for GPUOptions_Experimental_VirtualDevices {
 }
 
 impl ::protobuf::reflect::ProtobufValue for GPUOptions_Experimental_VirtualDevices {
+    fn as_ref(&self) -> ::protobuf::reflect::ReflectValueRef {
+        ::protobuf::reflect::ReflectValueRef::Message(self)
+    }
+}
+
+#[derive(PartialEq,Clone,Default)]
+pub struct GPUOptions_Experimental_StreamMergeOptions {
+    // message fields
+    pub merge_host_to_device_stream: bool,
+    pub merge_device_to_host_stream: bool,
+    pub merge_device_to_device_stream: bool,
+    // special fields
+    pub unknown_fields: ::protobuf::UnknownFields,
+    pub cached_size: ::protobuf::CachedSize,
+}
+
+impl<'a> ::std::default::Default for &'a GPUOptions_Experimental_StreamMergeOptions {
+    fn default() -> &'a GPUOptions_Experimental_StreamMergeOptions {
+        <GPUOptions_Experimental_StreamMergeOptions as ::protobuf::Message>::default_instance()
+    }
+}
+
+impl GPUOptions_Experimental_StreamMergeOptions {
+    pub fn new() -> GPUOptions_Experimental_StreamMergeOptions {
+        ::std::default::Default::default()
+    }
+
+    // bool merge_host_to_device_stream = 1;
+
+
+    pub fn get_merge_host_to_device_stream(&self) -> bool {
+        self.merge_host_to_device_stream
+    }
+    pub fn clear_merge_host_to_device_stream(&mut self) {
+        self.merge_host_to_device_stream = false;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_merge_host_to_device_stream(&mut self, v: bool) {
+        self.merge_host_to_device_stream = v;
+    }
+
+    // bool merge_device_to_host_stream = 2;
+
+
+    pub fn get_merge_device_to_host_stream(&self) -> bool {
+        self.merge_device_to_host_stream
+    }
+    pub fn clear_merge_device_to_host_stream(&mut self) {
+        self.merge_device_to_host_stream = false;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_merge_device_to_host_stream(&mut self, v: bool) {
+        self.merge_device_to_host_stream = v;
+    }
+
+    // bool merge_device_to_device_stream = 3;
+
+
+    pub fn get_merge_device_to_device_stream(&self) -> bool {
+        self.merge_device_to_device_stream
+    }
+    pub fn clear_merge_device_to_device_stream(&mut self) {
+        self.merge_device_to_device_stream = false;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_merge_device_to_device_stream(&mut self, v: bool) {
+        self.merge_device_to_device_stream = v;
+    }
+}
+
+impl ::protobuf::Message for GPUOptions_Experimental_StreamMergeOptions {
+    fn is_initialized(&self) -> bool {
+        true
+    }
+
+    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream<'_>) -> ::protobuf::ProtobufResult<()> {
+        while !is.eof()? {
+            let (field_number, wire_type) = is.read_tag_unpack()?;
+            match field_number {
+                1 => {
+                    if wire_type != ::protobuf::wire_format::WireTypeVarint {
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                    }
+                    let tmp = is.read_bool()?;
+                    self.merge_host_to_device_stream = tmp;
+                },
+                2 => {
+                    if wire_type != ::protobuf::wire_format::WireTypeVarint {
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                    }
+                    let tmp = is.read_bool()?;
+                    self.merge_device_to_host_stream = tmp;
+                },
+                3 => {
+                    if wire_type != ::protobuf::wire_format::WireTypeVarint {
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                    }
+                    let tmp = is.read_bool()?;
+                    self.merge_device_to_device_stream = tmp;
+                },
+                _ => {
+                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
+                },
+            };
+        }
+        ::std::result::Result::Ok(())
+    }
+
+    // Compute sizes of nested messages
+    #[allow(unused_variables)]
+    fn compute_size(&self) -> u32 {
+        let mut my_size = 0;
+        if self.merge_host_to_device_stream != false {
+            my_size += 2;
+        }
+        if self.merge_device_to_host_stream != false {
+            my_size += 2;
+        }
+        if self.merge_device_to_device_stream != false {
+            my_size += 2;
+        }
+        my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
+        self.cached_size.set(my_size);
+        my_size
+    }
+
+    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream<'_>) -> ::protobuf::ProtobufResult<()> {
+        if self.merge_host_to_device_stream != false {
+            os.write_bool(1, self.merge_host_to_device_stream)?;
+        }
+        if self.merge_device_to_host_stream != false {
+            os.write_bool(2, self.merge_device_to_host_stream)?;
+        }
+        if self.merge_device_to_device_stream != false {
+            os.write_bool(3, self.merge_device_to_device_stream)?;
+        }
+        os.write_unknown_fields(self.get_unknown_fields())?;
+        ::std::result::Result::Ok(())
+    }
+
+    fn get_cached_size(&self) -> u32 {
+        self.cached_size.get()
+    }
+
+    fn get_unknown_fields(&self) -> &::protobuf::UnknownFields {
+        &self.unknown_fields
+    }
+
+    fn mut_unknown_fields(&mut self) -> &mut ::protobuf::UnknownFields {
+        &mut self.unknown_fields
+    }
+
+    fn as_any(&self) -> &dyn (::std::any::Any) {
+        self as &dyn (::std::any::Any)
+    }
+    fn as_any_mut(&mut self) -> &mut dyn (::std::any::Any) {
+        self as &mut dyn (::std::any::Any)
+    }
+    fn into_any(self: ::std::boxed::Box<Self>) -> ::std::boxed::Box<dyn (::std::any::Any)> {
+        self
+    }
+
+    fn descriptor(&self) -> &'static ::protobuf::reflect::MessageDescriptor {
+        Self::descriptor_static()
+    }
+
+    fn new() -> GPUOptions_Experimental_StreamMergeOptions {
+        GPUOptions_Experimental_StreamMergeOptions::new()
+    }
+
+    fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
+        static descriptor: ::protobuf::rt::LazyV2<::protobuf::reflect::MessageDescriptor> = ::protobuf::rt::LazyV2::INIT;
+        descriptor.get(|| {
+            let mut fields = ::std::vec::Vec::new();
+            fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                "merge_host_to_device_stream",
+                |m: &GPUOptions_Experimental_StreamMergeOptions| { &m.merge_host_to_device_stream },
+                |m: &mut GPUOptions_Experimental_StreamMergeOptions| { &mut m.merge_host_to_device_stream },
+            ));
+            fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                "merge_device_to_host_stream",
+                |m: &GPUOptions_Experimental_StreamMergeOptions| { &m.merge_device_to_host_stream },
+                |m: &mut GPUOptions_Experimental_StreamMergeOptions| { &mut m.merge_device_to_host_stream },
+            ));
+            fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                "merge_device_to_device_stream",
+                |m: &GPUOptions_Experimental_StreamMergeOptions| { &m.merge_device_to_device_stream },
+                |m: &mut GPUOptions_Experimental_StreamMergeOptions| { &mut m.merge_device_to_device_stream },
+            ));
+            ::protobuf::reflect::MessageDescriptor::new_pb_name::<GPUOptions_Experimental_StreamMergeOptions>(
+                "GPUOptions.Experimental.StreamMergeOptions",
+                fields,
+                file_descriptor_proto()
+            )
+        })
+    }
+
+    fn default_instance() -> &'static GPUOptions_Experimental_StreamMergeOptions {
+        static instance: ::protobuf::rt::LazyV2<GPUOptions_Experimental_StreamMergeOptions> = ::protobuf::rt::LazyV2::INIT;
+        instance.get(GPUOptions_Experimental_StreamMergeOptions::new)
+    }
+}
+
+impl ::protobuf::Clear for GPUOptions_Experimental_StreamMergeOptions {
+    fn clear(&mut self) {
+        self.merge_host_to_device_stream = false;
+        self.merge_device_to_host_stream = false;
+        self.merge_device_to_device_stream = false;
+        self.unknown_fields.clear();
+    }
+}
+
+impl ::std::fmt::Debug for GPUOptions_Experimental_StreamMergeOptions {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        ::protobuf::text_format::fmt(self, f)
+    }
+}
+
+impl ::protobuf::reflect::ProtobufValue for GPUOptions_Experimental_StreamMergeOptions {
     fn as_ref(&self) -> ::protobuf::reflect::ReflectValueRef {
         ::protobuf::reflect::ReflectValueRef::Message(self)
     }
@@ -3510,10 +3929,16 @@ pub struct ConfigProto_Experimental {
     pub disable_output_partition_graphs: bool,
     pub xla_fusion_autotuner_thresh: i64,
     pub use_tfrt: bool,
+    pub enable_multi_host: bool,
+    pub backend_server_port: i32,
+    pub target_tpu: bool,
+    pub target_gpu: bool,
+    pub stream_merge_threshold: i32,
     pub disable_functional_ops_lowering: bool,
     pub xla_prefer_single_graph_cluster: bool,
     pub coordination_config: ::protobuf::SingularPtrField<super::coordination_config::CoordinationServiceConfig>,
     pub disable_optimize_for_static_graph: bool,
+    pub disable_eager_executor_streaming_enqueue: bool,
     // special fields
     pub unknown_fields: ::protobuf::UnknownFields,
     pub cached_size: ::protobuf::CachedSize,
@@ -3825,6 +4250,81 @@ impl ConfigProto_Experimental {
         self.use_tfrt = v;
     }
 
+    // bool enable_multi_host = 27;
+
+
+    pub fn get_enable_multi_host(&self) -> bool {
+        self.enable_multi_host
+    }
+    pub fn clear_enable_multi_host(&mut self) {
+        self.enable_multi_host = false;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_enable_multi_host(&mut self, v: bool) {
+        self.enable_multi_host = v;
+    }
+
+    // int32 backend_server_port = 28;
+
+
+    pub fn get_backend_server_port(&self) -> i32 {
+        self.backend_server_port
+    }
+    pub fn clear_backend_server_port(&mut self) {
+        self.backend_server_port = 0;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_backend_server_port(&mut self, v: i32) {
+        self.backend_server_port = v;
+    }
+
+    // bool target_tpu = 29;
+
+
+    pub fn get_target_tpu(&self) -> bool {
+        self.target_tpu
+    }
+    pub fn clear_target_tpu(&mut self) {
+        self.target_tpu = false;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_target_tpu(&mut self, v: bool) {
+        self.target_tpu = v;
+    }
+
+    // bool target_gpu = 30;
+
+
+    pub fn get_target_gpu(&self) -> bool {
+        self.target_gpu
+    }
+    pub fn clear_target_gpu(&mut self) {
+        self.target_gpu = false;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_target_gpu(&mut self, v: bool) {
+        self.target_gpu = v;
+    }
+
+    // int32 stream_merge_threshold = 31;
+
+
+    pub fn get_stream_merge_threshold(&self) -> i32 {
+        self.stream_merge_threshold
+    }
+    pub fn clear_stream_merge_threshold(&mut self) {
+        self.stream_merge_threshold = 0;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_stream_merge_threshold(&mut self, v: i32) {
+        self.stream_merge_threshold = v;
+    }
+
     // bool disable_functional_ops_lowering = 21;
 
 
@@ -3901,6 +4401,21 @@ impl ConfigProto_Experimental {
     // Param is passed by value, moved
     pub fn set_disable_optimize_for_static_graph(&mut self, v: bool) {
         self.disable_optimize_for_static_graph = v;
+    }
+
+    // bool disable_eager_executor_streaming_enqueue = 26;
+
+
+    pub fn get_disable_eager_executor_streaming_enqueue(&self) -> bool {
+        self.disable_eager_executor_streaming_enqueue
+    }
+    pub fn clear_disable_eager_executor_streaming_enqueue(&mut self) {
+        self.disable_eager_executor_streaming_enqueue = false;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_disable_eager_executor_streaming_enqueue(&mut self, v: bool) {
+        self.disable_eager_executor_streaming_enqueue = v;
     }
 }
 
@@ -4026,6 +4541,41 @@ impl ::protobuf::Message for ConfigProto_Experimental {
                     let tmp = is.read_bool()?;
                     self.use_tfrt = tmp;
                 },
+                27 => {
+                    if wire_type != ::protobuf::wire_format::WireTypeVarint {
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                    }
+                    let tmp = is.read_bool()?;
+                    self.enable_multi_host = tmp;
+                },
+                28 => {
+                    if wire_type != ::protobuf::wire_format::WireTypeVarint {
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                    }
+                    let tmp = is.read_int32()?;
+                    self.backend_server_port = tmp;
+                },
+                29 => {
+                    if wire_type != ::protobuf::wire_format::WireTypeVarint {
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                    }
+                    let tmp = is.read_bool()?;
+                    self.target_tpu = tmp;
+                },
+                30 => {
+                    if wire_type != ::protobuf::wire_format::WireTypeVarint {
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                    }
+                    let tmp = is.read_bool()?;
+                    self.target_gpu = tmp;
+                },
+                31 => {
+                    if wire_type != ::protobuf::wire_format::WireTypeVarint {
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                    }
+                    let tmp = is.read_int32()?;
+                    self.stream_merge_threshold = tmp;
+                },
                 21 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
                         return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
@@ -4049,6 +4599,13 @@ impl ::protobuf::Message for ConfigProto_Experimental {
                     }
                     let tmp = is.read_bool()?;
                     self.disable_optimize_for_static_graph = tmp;
+                },
+                26 => {
+                    if wire_type != ::protobuf::wire_format::WireTypeVarint {
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                    }
+                    let tmp = is.read_bool()?;
+                    self.disable_eager_executor_streaming_enqueue = tmp;
                 },
                 _ => {
                     ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
@@ -4114,6 +4671,21 @@ impl ::protobuf::Message for ConfigProto_Experimental {
         if self.use_tfrt != false {
             my_size += 3;
         }
+        if self.enable_multi_host != false {
+            my_size += 3;
+        }
+        if self.backend_server_port != 0 {
+            my_size += ::protobuf::rt::value_size(28, self.backend_server_port, ::protobuf::wire_format::WireTypeVarint);
+        }
+        if self.target_tpu != false {
+            my_size += 3;
+        }
+        if self.target_gpu != false {
+            my_size += 3;
+        }
+        if self.stream_merge_threshold != 0 {
+            my_size += ::protobuf::rt::value_size(31, self.stream_merge_threshold, ::protobuf::wire_format::WireTypeVarint);
+        }
         if self.disable_functional_ops_lowering != false {
             my_size += 3;
         }
@@ -4125,6 +4697,9 @@ impl ::protobuf::Message for ConfigProto_Experimental {
             my_size += 2 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         }
         if self.disable_optimize_for_static_graph != false {
+            my_size += 3;
+        }
+        if self.disable_eager_executor_streaming_enqueue != false {
             my_size += 3;
         }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
@@ -4186,6 +4761,21 @@ impl ::protobuf::Message for ConfigProto_Experimental {
         if self.use_tfrt != false {
             os.write_bool(18, self.use_tfrt)?;
         }
+        if self.enable_multi_host != false {
+            os.write_bool(27, self.enable_multi_host)?;
+        }
+        if self.backend_server_port != 0 {
+            os.write_int32(28, self.backend_server_port)?;
+        }
+        if self.target_tpu != false {
+            os.write_bool(29, self.target_tpu)?;
+        }
+        if self.target_gpu != false {
+            os.write_bool(30, self.target_gpu)?;
+        }
+        if self.stream_merge_threshold != 0 {
+            os.write_int32(31, self.stream_merge_threshold)?;
+        }
         if self.disable_functional_ops_lowering != false {
             os.write_bool(21, self.disable_functional_ops_lowering)?;
         }
@@ -4199,6 +4789,9 @@ impl ::protobuf::Message for ConfigProto_Experimental {
         }
         if self.disable_optimize_for_static_graph != false {
             os.write_bool(24, self.disable_optimize_for_static_graph)?;
+        }
+        if self.disable_eager_executor_streaming_enqueue != false {
+            os.write_bool(26, self.disable_eager_executor_streaming_enqueue)?;
         }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
@@ -4324,6 +4917,31 @@ impl ::protobuf::Message for ConfigProto_Experimental {
                 |m: &mut ConfigProto_Experimental| { &mut m.use_tfrt },
             ));
             fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                "enable_multi_host",
+                |m: &ConfigProto_Experimental| { &m.enable_multi_host },
+                |m: &mut ConfigProto_Experimental| { &mut m.enable_multi_host },
+            ));
+            fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                "backend_server_port",
+                |m: &ConfigProto_Experimental| { &m.backend_server_port },
+                |m: &mut ConfigProto_Experimental| { &mut m.backend_server_port },
+            ));
+            fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                "target_tpu",
+                |m: &ConfigProto_Experimental| { &m.target_tpu },
+                |m: &mut ConfigProto_Experimental| { &mut m.target_tpu },
+            ));
+            fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                "target_gpu",
+                |m: &ConfigProto_Experimental| { &m.target_gpu },
+                |m: &mut ConfigProto_Experimental| { &mut m.target_gpu },
+            ));
+            fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                "stream_merge_threshold",
+                |m: &ConfigProto_Experimental| { &m.stream_merge_threshold },
+                |m: &mut ConfigProto_Experimental| { &mut m.stream_merge_threshold },
+            ));
+            fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
                 "disable_functional_ops_lowering",
                 |m: &ConfigProto_Experimental| { &m.disable_functional_ops_lowering },
                 |m: &mut ConfigProto_Experimental| { &mut m.disable_functional_ops_lowering },
@@ -4342,6 +4960,11 @@ impl ::protobuf::Message for ConfigProto_Experimental {
                 "disable_optimize_for_static_graph",
                 |m: &ConfigProto_Experimental| { &m.disable_optimize_for_static_graph },
                 |m: &mut ConfigProto_Experimental| { &mut m.disable_optimize_for_static_graph },
+            ));
+            fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                "disable_eager_executor_streaming_enqueue",
+                |m: &ConfigProto_Experimental| { &m.disable_eager_executor_streaming_enqueue },
+                |m: &mut ConfigProto_Experimental| { &mut m.disable_eager_executor_streaming_enqueue },
             ));
             ::protobuf::reflect::MessageDescriptor::new_pb_name::<ConfigProto_Experimental>(
                 "ConfigProto.Experimental",
@@ -4376,10 +4999,16 @@ impl ::protobuf::Clear for ConfigProto_Experimental {
         self.disable_output_partition_graphs = false;
         self.xla_fusion_autotuner_thresh = 0;
         self.use_tfrt = false;
+        self.enable_multi_host = false;
+        self.backend_server_port = 0;
+        self.target_tpu = false;
+        self.target_gpu = false;
+        self.stream_merge_threshold = 0;
         self.disable_functional_ops_lowering = false;
         self.xla_prefer_single_graph_cluster = false;
         self.coordination_config.clear();
         self.disable_optimize_for_static_graph = false;
+        self.disable_eager_executor_streaming_enqueue = false;
         self.unknown_fields.clear();
     }
 }
@@ -6631,164 +7260,180 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     o\x1a*tensorflow/core/framework/step_stats.proto\x1a&tensorflow/core/pro\
     tobuf/cluster.proto\x1a$tensorflow/core/protobuf/debug.proto\x1a.tensorf\
     low/core/protobuf/rewriter_config.proto\x1a*tensorflow/core/protobuf/rpc\
-    _options.proto\x1a1tensorflow/tsl/protobuf/coordination_config.proto\"\
-    \xb3\x0b\n\nGPUOptions\x12D\n\x1fper_process_gpu_memory_fraction\x18\x01\
-    \x20\x01(\x01R\x1bperProcessGpuMemoryFraction\x12!\n\x0callow_growth\x18\
-    \x04\x20\x01(\x08R\x0ballowGrowth\x12%\n\x0eallocator_type\x18\x02\x20\
-    \x01(\tR\rallocatorType\x126\n\x17deferred_deletion_bytes\x18\x03\x20\
-    \x01(\x03R\x15deferredDeletionBytes\x12.\n\x13visible_device_list\x18\
-    \x05\x20\x01(\tR\x11visibleDeviceList\x12;\n\x1apolling_active_delay_use\
-    cs\x18\x06\x20\x01(\x05R\x17pollingActiveDelayUsecs\x12?\n\x1cpolling_in\
-    active_delay_msecs\x18\x07\x20\x01(\x05R\x19pollingInactiveDelayMsecs\
-    \x120\n\x14force_gpu_compatible\x18\x08\x20\x01(\x08R\x12forceGpuCompati\
-    ble\x12G\n\x0cexperimental\x18\t\x20\x01(\x0b2#.tensorflow.GPUOptions.Ex\
-    perimentalR\x0cexperimental\x1a\xb3\x07\n\x0cExperimental\x12[\n\x0fvirt\
-    ual_devices\x18\x01\x20\x03(\x0b22.tensorflow.GPUOptions.Experimental.Vi\
-    rtualDevicesR\x0evirtualDevices\x12,\n\x12use_unified_memory\x18\x02\x20\
-    \x01(\x08R\x10useUnifiedMemory\x12;\n\x1bnum_dev_to_dev_copy_streams\x18\
-    \x03\x20\x01(\x05R\x16numDevToDevCopyStreams\x122\n\x15collective_ring_o\
-    rder\x18\x04\x20\x01(\tR\x13collectiveRingOrder\x123\n\x15timestamped_al\
-    locator\x18\x05\x20\x01(\x08R\x14timestampedAllocator\x12=\n\x1bkernel_t\
-    racker_max_interval\x18\x07\x20\x01(\x05R\x18kernelTrackerMaxInterval\
-    \x127\n\x18kernel_tracker_max_bytes\x18\x08\x20\x01(\x05R\x15kernelTrack\
-    erMaxBytes\x12;\n\x1akernel_tracker_max_pending\x18\t\x20\x01(\x05R\x17k\
-    ernelTrackerMaxPending\x12F\n\x1finternal_fragmentation_fraction\x18\n\
-    \x20\x01(\x01R\x1dinternalFragmentationFraction\x121\n\x15use_cuda_mallo\
-    c_async\x18\x0b\x20\x01(\x08R\x12useCudaMallocAsync\x12N\n$disallow_retr\
-    y_on_allocation_failure\x18\x0c\x20\x01(\x08R\x20disallowRetryOnAllocati\
-    onFailure\x125\n\x18gpu_host_mem_limit_in_mb\x18\r\x20\x01(\x02R\x13gpuH\
-    ostMemLimitInMb\x12>\n\x1cgpu_host_mem_disallow_growth\x18\x0e\x20\x01(\
-    \x08R\x18gpuHostMemDisallowGrowth\x1a{\n\x0eVirtualDevices\x12&\n\x0fmem\
-    ory_limit_mb\x18\x01\x20\x03(\x02R\rmemoryLimitMb\x12\x1a\n\x08priority\
-    \x18\x02\x20\x03(\x05R\x08priority\x12%\n\x0edevice_ordinal\x18\x03\x20\
-    \x03(\x05R\rdeviceOrdinal\"\xa8\x04\n\x10OptimizerOptions\x12M\n#do_comm\
-    on_subexpression_elimination\x18\x01\x20\x01(\x08R\x20doCommonSubexpress\
-    ionElimination\x12.\n\x13do_constant_folding\x18\x02\x20\x01(\x08R\x11do\
-    ConstantFolding\x12>\n\x1cmax_folded_constant_in_bytes\x18\x06\x20\x01(\
-    \x03R\x18maxFoldedConstantInBytes\x120\n\x14do_function_inlining\x18\x04\
-    \x20\x01(\x08R\x12doFunctionInlining\x12?\n\topt_level\x18\x03\x20\x01(\
-    \x0e2\".tensorflow.OptimizerOptions.LevelR\x08optLevel\x12U\n\x10global_\
-    jit_level\x18\x05\x20\x01(\x0e2+.tensorflow.OptimizerOptions.GlobalJitLe\
-    velR\x0eglobalJitLevel\x12$\n\x0ecpu_global_jit\x18\x07\x20\x01(\x08R\
-    \x0ccpuGlobalJit\"\x20\n\x05Level\x12\x06\n\x02L1\x10\0\x12\x0f\n\x02L0\
-    \x10\xff\xff\xff\xff\xff\xff\xff\xff\xff\x01\"C\n\x0eGlobalJitLevel\x12\
-    \x0b\n\x07DEFAULT\x10\0\x12\x10\n\x03OFF\x10\xff\xff\xff\xff\xff\xff\xff\
-    \xff\xff\x01\x12\x08\n\x04ON_1\x10\x01\x12\x08\n\x04ON_2\x10\x02\"\x90\
-    \x04\n\x0cGraphOptions\x124\n\x16enable_recv_scheduling\x18\x02\x20\x01(\
-    \x08R\x14enableRecvScheduling\x12I\n\x11optimizer_options\x18\x03\x20\
-    \x01(\x0b2\x1c.tensorflow.OptimizerOptionsR\x10optimizerOptions\x12(\n\
-    \x10build_cost_model\x18\x04\x20\x01(\x03R\x0ebuildCostModel\x123\n\x16b\
-    uild_cost_model_after\x18\t\x20\x01(\x03R\x13buildCostModelAfter\x12!\n\
-    \x0cinfer_shapes\x18\x05\x20\x01(\x08R\x0binferShapes\x12,\n\x12place_pr\
-    uned_graph\x18\x06\x20\x01(\x08R\x10placePrunedGraph\x128\n\x18enable_bf\
-    loat16_sendrecv\x18\x07\x20\x01(\x08R\x16enableBfloat16Sendrecv\x12#\n\r\
-    timeline_step\x18\x08\x20\x01(\x05R\x0ctimelineStep\x12C\n\x0frewrite_op\
-    tions\x18\n\x20\x01(\x0b2\x1a.tensorflow.RewriterConfigR\x0erewriteOptio\
-    nsJ\x04\x08\x01\x10\x02R%skip_common_subexpression_elimination\"Y\n\x15T\
-    hreadPoolOptionProto\x12\x1f\n\x0bnum_threads\x18\x01\x20\x01(\x05R\nnum\
-    Threads\x12\x1f\n\x0bglobal_name\x18\x02\x20\x01(\tR\nglobalName\"?\n\
-    \x0fSessionMetadata\x12\x12\n\x04name\x18\x01\x20\x01(\tR\x04name\x12\
-    \x18\n\x07version\x18\x02\x20\x01(\x03R\x07version\"\xb0\x15\n\x0bConfig\
-    Proto\x12K\n\x0cdevice_count\x18\x01\x20\x03(\x0b2(.tensorflow.ConfigPro\
-    to.DeviceCountEntryR\x0bdeviceCount\x12?\n\x1cintra_op_parallelism_threa\
-    ds\x18\x02\x20\x01(\x05R\x19intraOpParallelismThreads\x12?\n\x1cinter_op\
-    _parallelism_threads\x18\x05\x20\x01(\x05R\x19interOpParallelismThreads\
-    \x125\n\x17use_per_session_threads\x18\t\x20\x01(\x08R\x14usePerSessionT\
-    hreads\x12a\n\x1csession_inter_op_thread_pool\x18\x0c\x20\x03(\x0b2!.ten\
-    sorflow.ThreadPoolOptionProtoR\x18sessionInterOpThreadPool\x12)\n\x10pla\
-    cement_period\x18\x03\x20\x01(\x05R\x0fplacementPeriod\x12%\n\x0edevice_\
-    filters\x18\x04\x20\x03(\tR\rdeviceFilters\x127\n\x0bgpu_options\x18\x06\
-    \x20\x01(\x0b2\x16.tensorflow.GPUOptionsR\ngpuOptions\x120\n\x14allow_so\
-    ft_placement\x18\x07\x20\x01(\x08R\x12allowSoftPlacement\x120\n\x14log_d\
-    evice_placement\x18\x08\x20\x01(\x08R\x12logDevicePlacement\x12=\n\rgrap\
-    h_options\x18\n\x20\x01(\x0b2\x18.tensorflow.GraphOptionsR\x0cgraphOptio\
-    ns\x125\n\x17operation_timeout_in_ms\x18\x0b\x20\x01(\x03R\x14operationT\
-    imeoutInMs\x127\n\x0brpc_options\x18\r\x20\x01(\x0b2\x16.tensorflow.RPCO\
-    ptionsR\nrpcOptions\x127\n\x0bcluster_def\x18\x0e\x20\x01(\x0b2\x16.tens\
-    orflow.ClusterDefR\nclusterDef\x122\n\x15isolate_session_state\x18\x0f\
-    \x20\x01(\x08R\x13isolateSessionState\x12F\n\x20share_cluster_devices_in\
-    _session\x18\x11\x20\x01(\x08R\x1cshareClusterDevicesInSession\x12H\n\
-    \x0cexperimental\x18\x10\x20\x01(\x0b2$.tensorflow.ConfigProto.Experimen\
-    talR\x0cexperimental\x1a>\n\x10DeviceCountEntry\x12\x10\n\x03key\x18\x01\
-    \x20\x01(\tR\x03key\x12\x14\n\x05value\x18\x02\x20\x01(\x05R\x05value:\
-    \x028\x01\x1a\xda\x0c\n\x0cExperimental\x126\n\x17collective_group_leade\
-    r\x18\x01\x20\x01(\tR\x15collectiveGroupLeader\x12#\n\rexecutor_type\x18\
-    \x03\x20\x01(\tR\x0cexecutorType\x12+\n\x12recv_buf_max_chunk\x18\x04\
-    \x20\x01(\x05R\x0frecvBufMaxChunk\x12*\n\x11use_numa_affinity\x18\x05\
-    \x20\x01(\x08R\x0fuseNumaAffinity\x12a\n-collective_deterministic_sequen\
-    tial_execution\x18\x06\x20\x01(\x08R*collectiveDeterministicSequentialEx\
-    ecution\x12'\n\x0fcollective_nccl\x18\x07\x20\x01(\x08R\x0ecollectiveNcc\
-    l\x12a\n.share_session_state_in_clusterspec_propagation\x18\x08\x20\x01(\
-    \x08R)shareSessionStateInClusterspecPropagation\x126\n\x17disable_thread\
-    _spinning\x18\t\x20\x01(\x08R\x15disableThreadSpinning\x12F\n\x20share_c\
-    luster_devices_in_session\x18\n\x20\x01(\x08R\x1cshareClusterDevicesInSe\
-    ssion\x12F\n\x10session_metadata\x18\x0b\x20\x01(\x0b2\x1b.tensorflow.Se\
-    ssionMetadataR\x0fsessionMetadata\x129\n\x19optimize_for_static_graph\
-    \x18\x0c\x20\x01(\x08R\x16optimizeForStaticGraph\x12,\n\x12enable_mlir_b\
-    ridge\x18\r\x20\x01(\x08R\x10enableMlirBridge\x12f\n\x13mlir_bridge_roll\
-    out\x18\x11\x20\x01(\x0e26.tensorflow.ConfigProto.Experimental.MlirBridg\
-    eRolloutR\x11mlirBridgeRollout\x12C\n\x1eenable_mlir_graph_optimization\
-    \x18\x10\x20\x01(\x08R\x1benableMlirGraphOptimization\x12E\n\x1fdisable_\
-    output_partition_graphs\x18\x0e\x20\x01(\x08R\x1cdisableOutputPartitionG\
-    raphs\x12=\n\x1bxla_fusion_autotuner_thresh\x18\x0f\x20\x01(\x03R\x18xla\
-    FusionAutotunerThresh\x12\x19\n\x08use_tfrt\x18\x12\x20\x01(\x08R\x07use\
-    Tfrt\x12E\n\x1fdisable_functional_ops_lowering\x18\x15\x20\x01(\x08R\x1c\
-    disableFunctionalOpsLowering\x12D\n\x1fxla_prefer_single_graph_cluster\
-    \x18\x16\x20\x01(\x08R\x1bxlaPreferSingleGraphCluster\x12V\n\x13coordina\
-    tion_config\x18\x17\x20\x01(\x0b2%.tensorflow.CoordinationServiceConfigR\
-    \x12coordinationConfig\x12H\n!disable_optimize_for_static_graph\x18\x18\
-    \x20\x01(\x08R\x1ddisableOptimizeForStaticGraph\"\xde\x01\n\x11MlirBridg\
-    eRollout\x12#\n\x1fMLIR_BRIDGE_ROLLOUT_UNSPECIFIED\x10\0\x12\x1f\n\x1bML\
-    IR_BRIDGE_ROLLOUT_ENABLED\x10\x01\x12\x20\n\x1cMLIR_BRIDGE_ROLLOUT_DISAB\
-    LED\x10\x02\"\x04\x08\x03\x10\x03\"\x04\x08\x04\x10\x04*%MLIR_BRIDGE_ROL\
-    LOUT_SAFE_MODE_ENABLED*.MLIR_BRIDGE_ROLLOUT_SAFE_MODE_FALLBACK_ENABLEDJ\
-    \x04\x08\x02\x10\x03J\x04\x08\x13\x10\x14J\x04\x08\x14\x10\x15J\x04\x08\
-    \x19\x10\x1a\"\xa8\x06\n\nRunOptions\x12B\n\x0btrace_level\x18\x01\x20\
-    \x01(\x0e2!.tensorflow.RunOptions.TraceLevelR\ntraceLevel\x12\"\n\rtimeo\
-    ut_in_ms\x18\x02\x20\x01(\x03R\x0btimeoutInMs\x12/\n\x14inter_op_thread_\
-    pool\x18\x03\x20\x01(\x05R\x11interOpThreadPool\x126\n\x17output_partiti\
-    on_graphs\x18\x05\x20\x01(\x08R\x15outputPartitionGraphs\x12=\n\rdebug_o\
-    ptions\x18\x06\x20\x01(\x0b2\x18.tensorflow.DebugOptionsR\x0cdebugOption\
-    s\x12J\n\"report_tensor_allocations_upon_oom\x18\x07\x20\x01(\x08R\x1ere\
-    portTensorAllocationsUponOom\x12G\n\x0cexperimental\x18\x08\x20\x01(\x0b\
-    2#.tensorflow.RunOptions.ExperimentalR\x0cexperimental\x1a\x9a\x02\n\x0c\
-    Experimental\x120\n\x14collective_graph_key\x18\x01\x20\x01(\x03R\x12col\
-    lectiveGraphKey\x12/\n\x14use_run_handler_pool\x18\x02\x20\x01(\x08R\x11\
-    useRunHandlerPool\x12r\n\x18run_handler_pool_options\x18\x03\x20\x01(\
-    \x0b29.tensorflow.RunOptions.Experimental.RunHandlerPoolOptionsR\x15runH\
-    andlerPoolOptions\x1a3\n\x15RunHandlerPoolOptions\x12\x1a\n\x08priority\
-    \x18\x01\x20\x01(\x03R\x08priority\"R\n\nTraceLevel\x12\x0c\n\x08NO_TRAC\
-    E\x10\0\x12\x12\n\x0eSOFTWARE_TRACE\x10\x01\x12\x12\n\x0eHARDWARE_TRACE\
-    \x10\x02\x12\x0e\n\nFULL_TRACE\x10\x03J\x04\x08\x04\x10\x05\"\xc4\x04\n\
-    \x0bRunMetadata\x124\n\nstep_stats\x18\x01\x20\x01(\x0b2\x15.tensorflow.\
-    StepStatsR\tstepStats\x127\n\ncost_graph\x18\x02\x20\x01(\x0b2\x18.tenso\
-    rflow.CostGraphDefR\tcostGraph\x12?\n\x10partition_graphs\x18\x03\x20\
-    \x03(\x0b2\x14.tensorflow.GraphDefR\x0fpartitionGraphs\x12O\n\x0ffunctio\
-    n_graphs\x18\x04\x20\x03(\x0b2&.tensorflow.RunMetadata.FunctionGraphsR\
-    \x0efunctionGraphs\x12F\n\x10session_metadata\x18\x05\x20\x01(\x0b2\x1b.\
-    tensorflow.SessionMetadataR\x0fsessionMetadata\x1a\xeb\x01\n\x0eFunction\
-    Graphs\x12?\n\x10partition_graphs\x18\x01\x20\x03(\x0b2\x14.tensorflow.G\
-    raphDefR\x0fpartitionGraphs\x12J\n\x16pre_optimization_graph\x18\x02\x20\
-    \x01(\x0b2\x14.tensorflow.GraphDefR\x14preOptimizationGraph\x12L\n\x17po\
-    st_optimization_graph\x18\x03\x20\x01(\x0b2\x14.tensorflow.GraphDefR\x15\
-    postOptimizationGraph\"P\n\x10TensorConnection\x12\x1f\n\x0bfrom_tensor\
-    \x18\x01\x20\x01(\tR\nfromTensor\x12\x1b\n\tto_tensor\x18\x02\x20\x01(\t\
-    R\x08toTensor\"\xa5\x04\n\x0fCallableOptions\x12\x12\n\x04feed\x18\x01\
-    \x20\x03(\tR\x04feed\x12\x14\n\x05fetch\x18\x02\x20\x03(\tR\x05fetch\x12\
-    \x16\n\x06target\x18\x03\x20\x03(\tR\x06target\x127\n\x0brun_options\x18\
-    \x04\x20\x01(\x0b2\x16.tensorflow.RunOptionsR\nrunOptions\x12I\n\x11tens\
-    or_connection\x18\x05\x20\x03(\x0b2\x1c.tensorflow.TensorConnectionR\x10\
-    tensorConnection\x12O\n\x0cfeed_devices\x18\x06\x20\x03(\x0b2,.tensorflo\
-    w.CallableOptions.FeedDevicesEntryR\x0bfeedDevices\x12R\n\rfetch_devices\
-    \x18\x07\x20\x03(\x0b2-.tensorflow.CallableOptions.FetchDevicesEntryR\
-    \x0cfetchDevices\x12&\n\x0ffetch_skip_sync\x18\x08\x20\x01(\x08R\rfetchS\
-    kipSync\x1a>\n\x10FeedDevicesEntry\x12\x10\n\x03key\x18\x01\x20\x01(\tR\
-    \x03key\x12\x14\n\x05value\x18\x02\x20\x01(\tR\x05value:\x028\x01\x1a?\n\
-    \x11FetchDevicesEntry\x12\x10\n\x03key\x18\x01\x20\x01(\tR\x03key\x12\
-    \x14\n\x05value\x18\x02\x20\x01(\tR\x05value:\x028\x01B\x84\x01\n\x18org\
-    .tensorflow.frameworkB\x0cConfigProtosP\x01ZUgithub.com/tensorflow/tenso\
-    rflow/tensorflow/go/core/protobuf/for_core_protos_go_proto\xf8\x01\x01b\
-    \x06proto3\
+    _options.proto\x1a&tsl/protobuf/coordination_config.proto\"\xdb\x0f\n\nG\
+    PUOptions\x12D\n\x1fper_process_gpu_memory_fraction\x18\x01\x20\x01(\x01\
+    R\x1bperProcessGpuMemoryFraction\x12!\n\x0callow_growth\x18\x04\x20\x01(\
+    \x08R\x0ballowGrowth\x12%\n\x0eallocator_type\x18\x02\x20\x01(\tR\ralloc\
+    atorType\x126\n\x17deferred_deletion_bytes\x18\x03\x20\x01(\x03R\x15defe\
+    rredDeletionBytes\x12.\n\x13visible_device_list\x18\x05\x20\x01(\tR\x11v\
+    isibleDeviceList\x12;\n\x1apolling_active_delay_usecs\x18\x06\x20\x01(\
+    \x05R\x17pollingActiveDelayUsecs\x12?\n\x1cpolling_inactive_delay_msecs\
+    \x18\x07\x20\x01(\x05R\x19pollingInactiveDelayMsecs\x120\n\x14force_gpu_\
+    compatible\x18\x08\x20\x01(\x08R\x12forceGpuCompatible\x12G\n\x0cexperim\
+    ental\x18\t\x20\x01(\x0b2#.tensorflow.GPUOptions.ExperimentalR\x0cexperi\
+    mental\x1a\xdb\x0b\n\x0cExperimental\x12[\n\x0fvirtual_devices\x18\x01\
+    \x20\x03(\x0b22.tensorflow.GPUOptions.Experimental.VirtualDevicesR\x0evi\
+    rtualDevices\x12<\n\x1bnum_virtual_devices_per_gpu\x18\x0f\x20\x01(\x05R\
+    \x17numVirtualDevicesPerGpu\x12,\n\x12use_unified_memory\x18\x02\x20\x01\
+    (\x08R\x10useUnifiedMemory\x12;\n\x1bnum_dev_to_dev_copy_streams\x18\x03\
+    \x20\x01(\x05R\x16numDevToDevCopyStreams\x122\n\x15collective_ring_order\
+    \x18\x04\x20\x01(\tR\x13collectiveRingOrder\x123\n\x15timestamped_alloca\
+    tor\x18\x05\x20\x01(\x08R\x14timestampedAllocator\x12=\n\x1bkernel_track\
+    er_max_interval\x18\x07\x20\x01(\x05R\x18kernelTrackerMaxInterval\x127\n\
+    \x18kernel_tracker_max_bytes\x18\x08\x20\x01(\x05R\x15kernelTrackerMaxBy\
+    tes\x12;\n\x1akernel_tracker_max_pending\x18\t\x20\x01(\x05R\x17kernelTr\
+    ackerMaxPending\x12F\n\x1finternal_fragmentation_fraction\x18\n\x20\x01(\
+    \x01R\x1dinternalFragmentationFraction\x121\n\x15use_cuda_malloc_async\
+    \x18\x0b\x20\x01(\x08R\x12useCudaMallocAsync\x12N\n$disallow_retry_on_al\
+    location_failure\x18\x0c\x20\x01(\x08R\x20disallowRetryOnAllocationFailu\
+    re\x125\n\x18gpu_host_mem_limit_in_mb\x18\r\x20\x01(\x02R\x13gpuHostMemL\
+    imitInMb\x12>\n\x1cgpu_host_mem_disallow_growth\x18\x0e\x20\x01(\x08R\
+    \x18gpuHostMemDisallowGrowth\x12=\n\x1cgpu_system_memory_size_in_mb\x18\
+    \x10\x20\x01(\x05R\x17gpuSystemMemorySizeInMb\x12Q\n&populate_pjrt_gpu_c\
+    lient_creation_info\x18\x11\x20\x01(\x08R!populatePjrtGpuClientCreationI\
+    nfo\x12\x17\n\x07node_id\x18\x12\x20\x01(\x05R\x06nodeId\x12h\n\x14strea\
+    m_merge_options\x18\x13\x20\x01(\x0b26.tensorflow.GPUOptions.Experimenta\
+    l.StreamMergeOptionsR\x12streamMergeOptions\x1a{\n\x0eVirtualDevices\x12\
+    &\n\x0fmemory_limit_mb\x18\x01\x20\x03(\x02R\rmemoryLimitMb\x12\x1a\n\
+    \x08priority\x18\x02\x20\x03(\x05R\x08priority\x12%\n\x0edevice_ordinal\
+    \x18\x03\x20\x03(\x05R\rdeviceOrdinal\x1a\xd2\x01\n\x12StreamMergeOption\
+    s\x12<\n\x1bmerge_host_to_device_stream\x18\x01\x20\x01(\x08R\x17mergeHo\
+    stToDeviceStream\x12<\n\x1bmerge_device_to_host_stream\x18\x02\x20\x01(\
+    \x08R\x17mergeDeviceToHostStream\x12@\n\x1dmerge_device_to_device_stream\
+    \x18\x03\x20\x01(\x08R\x19mergeDeviceToDeviceStream\"\xa8\x04\n\x10Optim\
+    izerOptions\x12M\n#do_common_subexpression_elimination\x18\x01\x20\x01(\
+    \x08R\x20doCommonSubexpressionElimination\x12.\n\x13do_constant_folding\
+    \x18\x02\x20\x01(\x08R\x11doConstantFolding\x12>\n\x1cmax_folded_constan\
+    t_in_bytes\x18\x06\x20\x01(\x03R\x18maxFoldedConstantInBytes\x120\n\x14d\
+    o_function_inlining\x18\x04\x20\x01(\x08R\x12doFunctionInlining\x12?\n\t\
+    opt_level\x18\x03\x20\x01(\x0e2\".tensorflow.OptimizerOptions.LevelR\x08\
+    optLevel\x12U\n\x10global_jit_level\x18\x05\x20\x01(\x0e2+.tensorflow.Op\
+    timizerOptions.GlobalJitLevelR\x0eglobalJitLevel\x12$\n\x0ecpu_global_ji\
+    t\x18\x07\x20\x01(\x08R\x0ccpuGlobalJit\"\x20\n\x05Level\x12\x06\n\x02L1\
+    \x10\0\x12\x0f\n\x02L0\x10\xff\xff\xff\xff\xff\xff\xff\xff\xff\x01\"C\n\
+    \x0eGlobalJitLevel\x12\x0b\n\x07DEFAULT\x10\0\x12\x10\n\x03OFF\x10\xff\
+    \xff\xff\xff\xff\xff\xff\xff\xff\x01\x12\x08\n\x04ON_1\x10\x01\x12\x08\n\
+    \x04ON_2\x10\x02\"\x90\x04\n\x0cGraphOptions\x124\n\x16enable_recv_sched\
+    uling\x18\x02\x20\x01(\x08R\x14enableRecvScheduling\x12I\n\x11optimizer_\
+    options\x18\x03\x20\x01(\x0b2\x1c.tensorflow.OptimizerOptionsR\x10optimi\
+    zerOptions\x12(\n\x10build_cost_model\x18\x04\x20\x01(\x03R\x0ebuildCost\
+    Model\x123\n\x16build_cost_model_after\x18\t\x20\x01(\x03R\x13buildCostM\
+    odelAfter\x12!\n\x0cinfer_shapes\x18\x05\x20\x01(\x08R\x0binferShapes\
+    \x12,\n\x12place_pruned_graph\x18\x06\x20\x01(\x08R\x10placePrunedGraph\
+    \x128\n\x18enable_bfloat16_sendrecv\x18\x07\x20\x01(\x08R\x16enableBfloa\
+    t16Sendrecv\x12#\n\rtimeline_step\x18\x08\x20\x01(\x05R\x0ctimelineStep\
+    \x12C\n\x0frewrite_options\x18\n\x20\x01(\x0b2\x1a.tensorflow.RewriterCo\
+    nfigR\x0erewriteOptionsJ\x04\x08\x01\x10\x02R%skip_common_subexpression_\
+    elimination\"Y\n\x15ThreadPoolOptionProto\x12\x1f\n\x0bnum_threads\x18\
+    \x01\x20\x01(\x05R\nnumThreads\x12\x1f\n\x0bglobal_name\x18\x02\x20\x01(\
+    \tR\nglobalName\"?\n\x0fSessionMetadata\x12\x12\n\x04name\x18\x01\x20\
+    \x01(\tR\x04name\x12\x18\n\x07version\x18\x02\x20\x01(\x03R\x07version\"\
+    \xd8\x17\n\x0bConfigProto\x12K\n\x0cdevice_count\x18\x01\x20\x03(\x0b2(.\
+    tensorflow.ConfigProto.DeviceCountEntryR\x0bdeviceCount\x12?\n\x1cintra_\
+    op_parallelism_threads\x18\x02\x20\x01(\x05R\x19intraOpParallelismThread\
+    s\x12?\n\x1cinter_op_parallelism_threads\x18\x05\x20\x01(\x05R\x19interO\
+    pParallelismThreads\x125\n\x17use_per_session_threads\x18\t\x20\x01(\x08\
+    R\x14usePerSessionThreads\x12a\n\x1csession_inter_op_thread_pool\x18\x0c\
+    \x20\x03(\x0b2!.tensorflow.ThreadPoolOptionProtoR\x18sessionInterOpThrea\
+    dPool\x12)\n\x10placement_period\x18\x03\x20\x01(\x05R\x0fplacementPerio\
+    d\x12%\n\x0edevice_filters\x18\x04\x20\x03(\tR\rdeviceFilters\x127\n\x0b\
+    gpu_options\x18\x06\x20\x01(\x0b2\x16.tensorflow.GPUOptionsR\ngpuOptions\
+    \x120\n\x14allow_soft_placement\x18\x07\x20\x01(\x08R\x12allowSoftPlacem\
+    ent\x120\n\x14log_device_placement\x18\x08\x20\x01(\x08R\x12logDevicePla\
+    cement\x12=\n\rgraph_options\x18\n\x20\x01(\x0b2\x18.tensorflow.GraphOpt\
+    ionsR\x0cgraphOptions\x125\n\x17operation_timeout_in_ms\x18\x0b\x20\x01(\
+    \x03R\x14operationTimeoutInMs\x127\n\x0brpc_options\x18\r\x20\x01(\x0b2\
+    \x16.tensorflow.RPCOptionsR\nrpcOptions\x127\n\x0bcluster_def\x18\x0e\
+    \x20\x01(\x0b2\x16.tensorflow.ClusterDefR\nclusterDef\x122\n\x15isolate_\
+    session_state\x18\x0f\x20\x01(\x08R\x13isolateSessionState\x12F\n\x20sha\
+    re_cluster_devices_in_session\x18\x11\x20\x01(\x08R\x1cshareClusterDevic\
+    esInSession\x12H\n\x0cexperimental\x18\x10\x20\x01(\x0b2$.tensorflow.Con\
+    figProto.ExperimentalR\x0cexperimental\x1a>\n\x10DeviceCountEntry\x12\
+    \x10\n\x03key\x18\x01\x20\x01(\tR\x03key\x12\x14\n\x05value\x18\x02\x20\
+    \x01(\x05R\x05value:\x028\x01\x1a\x82\x0f\n\x0cExperimental\x126\n\x17co\
+    llective_group_leader\x18\x01\x20\x01(\tR\x15collectiveGroupLeader\x12#\
+    \n\rexecutor_type\x18\x03\x20\x01(\tR\x0cexecutorType\x12+\n\x12recv_buf\
+    _max_chunk\x18\x04\x20\x01(\x05R\x0frecvBufMaxChunk\x12*\n\x11use_numa_a\
+    ffinity\x18\x05\x20\x01(\x08R\x0fuseNumaAffinity\x12a\n-collective_deter\
+    ministic_sequential_execution\x18\x06\x20\x01(\x08R*collectiveDeterminis\
+    ticSequentialExecution\x12'\n\x0fcollective_nccl\x18\x07\x20\x01(\x08R\
+    \x0ecollectiveNccl\x12a\n.share_session_state_in_clusterspec_propagation\
+    \x18\x08\x20\x01(\x08R)shareSessionStateInClusterspecPropagation\x126\n\
+    \x17disable_thread_spinning\x18\t\x20\x01(\x08R\x15disableThreadSpinning\
+    \x12F\n\x20share_cluster_devices_in_session\x18\n\x20\x01(\x08R\x1cshare\
+    ClusterDevicesInSession\x12F\n\x10session_metadata\x18\x0b\x20\x01(\x0b2\
+    \x1b.tensorflow.SessionMetadataR\x0fsessionMetadata\x129\n\x19optimize_f\
+    or_static_graph\x18\x0c\x20\x01(\x08R\x16optimizeForStaticGraph\x12,\n\
+    \x12enable_mlir_bridge\x18\r\x20\x01(\x08R\x10enableMlirBridge\x12f\n\
+    \x13mlir_bridge_rollout\x18\x11\x20\x01(\x0e26.tensorflow.ConfigProto.Ex\
+    perimental.MlirBridgeRolloutR\x11mlirBridgeRollout\x12C\n\x1eenable_mlir\
+    _graph_optimization\x18\x10\x20\x01(\x08R\x1benableMlirGraphOptimization\
+    \x12E\n\x1fdisable_output_partition_graphs\x18\x0e\x20\x01(\x08R\x1cdisa\
+    bleOutputPartitionGraphs\x12=\n\x1bxla_fusion_autotuner_thresh\x18\x0f\
+    \x20\x01(\x03R\x18xlaFusionAutotunerThresh\x12\x19\n\x08use_tfrt\x18\x12\
+    \x20\x01(\x08R\x07useTfrt\x12*\n\x11enable_multi_host\x18\x1b\x20\x01(\
+    \x08R\x0fenableMultiHost\x12.\n\x13backend_server_port\x18\x1c\x20\x01(\
+    \x05R\x11backendServerPort\x12\x1d\n\ntarget_tpu\x18\x1d\x20\x01(\x08R\t\
+    targetTpu\x12\x1d\n\ntarget_gpu\x18\x1e\x20\x01(\x08R\ttargetGpu\x124\n\
+    \x16stream_merge_threshold\x18\x1f\x20\x01(\x05R\x14streamMergeThreshold\
+    \x12E\n\x1fdisable_functional_ops_lowering\x18\x15\x20\x01(\x08R\x1cdisa\
+    bleFunctionalOpsLowering\x12D\n\x1fxla_prefer_single_graph_cluster\x18\
+    \x16\x20\x01(\x08R\x1bxlaPreferSingleGraphCluster\x12V\n\x13coordination\
+    _config\x18\x17\x20\x01(\x0b2%.tensorflow.CoordinationServiceConfigR\x12\
+    coordinationConfig\x12H\n!disable_optimize_for_static_graph\x18\x18\x20\
+    \x01(\x08R\x1ddisableOptimizeForStaticGraph\x12V\n(disable_eager_executo\
+    r_streaming_enqueue\x18\x1a\x20\x01(\x08R$disableEagerExecutorStreamingE\
+    nqueue\"\xde\x01\n\x11MlirBridgeRollout\x12#\n\x1fMLIR_BRIDGE_ROLLOUT_UN\
+    SPECIFIED\x10\0\x12\x1f\n\x1bMLIR_BRIDGE_ROLLOUT_ENABLED\x10\x01\x12\x20\
+    \n\x1cMLIR_BRIDGE_ROLLOUT_DISABLED\x10\x02\"\x04\x08\x03\x10\x03\"\x04\
+    \x08\x04\x10\x04*%MLIR_BRIDGE_ROLLOUT_SAFE_MODE_ENABLED*.MLIR_BRIDGE_ROL\
+    LOUT_SAFE_MODE_FALLBACK_ENABLEDJ\x04\x08\x02\x10\x03J\x04\x08\x13\x10\
+    \x14J\x04\x08\x14\x10\x15J\x04\x08\x19\x10\x1a\"\xa8\x06\n\nRunOptions\
+    \x12B\n\x0btrace_level\x18\x01\x20\x01(\x0e2!.tensorflow.RunOptions.Trac\
+    eLevelR\ntraceLevel\x12\"\n\rtimeout_in_ms\x18\x02\x20\x01(\x03R\x0btime\
+    outInMs\x12/\n\x14inter_op_thread_pool\x18\x03\x20\x01(\x05R\x11interOpT\
+    hreadPool\x126\n\x17output_partition_graphs\x18\x05\x20\x01(\x08R\x15out\
+    putPartitionGraphs\x12=\n\rdebug_options\x18\x06\x20\x01(\x0b2\x18.tenso\
+    rflow.DebugOptionsR\x0cdebugOptions\x12J\n\"report_tensor_allocations_up\
+    on_oom\x18\x07\x20\x01(\x08R\x1ereportTensorAllocationsUponOom\x12G\n\
+    \x0cexperimental\x18\x08\x20\x01(\x0b2#.tensorflow.RunOptions.Experiment\
+    alR\x0cexperimental\x1a\x9a\x02\n\x0cExperimental\x120\n\x14collective_g\
+    raph_key\x18\x01\x20\x01(\x03R\x12collectiveGraphKey\x12/\n\x14use_run_h\
+    andler_pool\x18\x02\x20\x01(\x08R\x11useRunHandlerPool\x12r\n\x18run_han\
+    dler_pool_options\x18\x03\x20\x01(\x0b29.tensorflow.RunOptions.Experimen\
+    tal.RunHandlerPoolOptionsR\x15runHandlerPoolOptions\x1a3\n\x15RunHandler\
+    PoolOptions\x12\x1a\n\x08priority\x18\x01\x20\x01(\x03R\x08priority\"R\n\
+    \nTraceLevel\x12\x0c\n\x08NO_TRACE\x10\0\x12\x12\n\x0eSOFTWARE_TRACE\x10\
+    \x01\x12\x12\n\x0eHARDWARE_TRACE\x10\x02\x12\x0e\n\nFULL_TRACE\x10\x03J\
+    \x04\x08\x04\x10\x05\"\xc4\x04\n\x0bRunMetadata\x124\n\nstep_stats\x18\
+    \x01\x20\x01(\x0b2\x15.tensorflow.StepStatsR\tstepStats\x127\n\ncost_gra\
+    ph\x18\x02\x20\x01(\x0b2\x18.tensorflow.CostGraphDefR\tcostGraph\x12?\n\
+    \x10partition_graphs\x18\x03\x20\x03(\x0b2\x14.tensorflow.GraphDefR\x0fp\
+    artitionGraphs\x12O\n\x0ffunction_graphs\x18\x04\x20\x03(\x0b2&.tensorfl\
+    ow.RunMetadata.FunctionGraphsR\x0efunctionGraphs\x12F\n\x10session_metad\
+    ata\x18\x05\x20\x01(\x0b2\x1b.tensorflow.SessionMetadataR\x0fsessionMeta\
+    data\x1a\xeb\x01\n\x0eFunctionGraphs\x12?\n\x10partition_graphs\x18\x01\
+    \x20\x03(\x0b2\x14.tensorflow.GraphDefR\x0fpartitionGraphs\x12J\n\x16pre\
+    _optimization_graph\x18\x02\x20\x01(\x0b2\x14.tensorflow.GraphDefR\x14pr\
+    eOptimizationGraph\x12L\n\x17post_optimization_graph\x18\x03\x20\x01(\
+    \x0b2\x14.tensorflow.GraphDefR\x15postOptimizationGraph\"P\n\x10TensorCo\
+    nnection\x12\x1f\n\x0bfrom_tensor\x18\x01\x20\x01(\tR\nfromTensor\x12\
+    \x1b\n\tto_tensor\x18\x02\x20\x01(\tR\x08toTensor\"\xa5\x04\n\x0fCallabl\
+    eOptions\x12\x12\n\x04feed\x18\x01\x20\x03(\tR\x04feed\x12\x14\n\x05fetc\
+    h\x18\x02\x20\x03(\tR\x05fetch\x12\x16\n\x06target\x18\x03\x20\x03(\tR\
+    \x06target\x127\n\x0brun_options\x18\x04\x20\x01(\x0b2\x16.tensorflow.Ru\
+    nOptionsR\nrunOptions\x12I\n\x11tensor_connection\x18\x05\x20\x03(\x0b2\
+    \x1c.tensorflow.TensorConnectionR\x10tensorConnection\x12O\n\x0cfeed_dev\
+    ices\x18\x06\x20\x03(\x0b2,.tensorflow.CallableOptions.FeedDevicesEntryR\
+    \x0bfeedDevices\x12R\n\rfetch_devices\x18\x07\x20\x03(\x0b2-.tensorflow.\
+    CallableOptions.FetchDevicesEntryR\x0cfetchDevices\x12&\n\x0ffetch_skip_\
+    sync\x18\x08\x20\x01(\x08R\rfetchSkipSync\x1a>\n\x10FeedDevicesEntry\x12\
+    \x10\n\x03key\x18\x01\x20\x01(\tR\x03key\x12\x14\n\x05value\x18\x02\x20\
+    \x01(\tR\x05value:\x028\x01\x1a?\n\x11FetchDevicesEntry\x12\x10\n\x03key\
+    \x18\x01\x20\x01(\tR\x03key\x12\x14\n\x05value\x18\x02\x20\x01(\tR\x05va\
+    lue:\x028\x01B\x84\x01\n\x18org.tensorflow.frameworkB\x0cConfigProtosP\
+    \x01ZUgithub.com/tensorflow/tensorflow/tensorflow/go/core/protobuf/for_c\
+    ore_protos_go_proto\xf8\x01\x01b\x06proto3\
 ";
 
 static file_descriptor_proto_lazy: ::protobuf::rt::LazyV2<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::rt::LazyV2::INIT;

@@ -19,8 +19,6 @@ function run {
     echo
 }
 
-tensorflow_version=2.13.0
-
 valgrind_log=valgrind.log
 truncate --size=0 "$valgrind_log"
 

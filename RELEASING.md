@@ -36,7 +36,7 @@ Note that any crate not mentioned here (e.g. tensorflow-proto-codegen, tensorflo
    1. Bump the version for `tensorflow-internal-macros` in the root `Cargo.toml`
 1. Bump the version number in `Cargo.toml`
 1. Bump the version number in `README.md`
-1. Run `./test-all`
+1. Inside a virtualenv, run `./test-all`.  (See "Running in a virtualenv" section.)
 1. Double-check that addition.py is built using the version of TensorFlow being linked against.  (See "Upgrading TensorFlow" section.)
 1. Run `./run-valgrind`
 1. Commit and push the changes. (Push before publishing to ensure that the changes being published are up to date.)
@@ -56,12 +56,12 @@ Note that any crate not mentioned here (e.g. tensorflow-proto-codegen, tensorflo
 ## Upgrading TensorFlow
 
 1. Update version and tag in tensorflow-sys/build.rs
-1. Update version in run-valgrind
-1. Run `python examples/addition/addition.py` using the version of TensorFlow being linked against.
-   (Use pip in a virtualenv, see https://www.tensorflow.org/install/pip#2-create-a-virtual-environment-recommended)
-   1. Run `virtualenv --system-site-packages -p python3 ~/tensorflow-${TENSORFLOW_VERSION?}`
-   1. Run `source ~/tensorflow-${TENSORFLOW_VERSION?}/bin/activate` to activate the virtualenv
-   1. Run `pip install --upgrade pip`
-   1. Run `pip install --upgrade tensorflow==${TENSORFLOW_VERSION?}`
-   1. Run `python examples/addition/addition.py`
-   1. Run `deactivate` to exit the virtualenv
+1. Update version in .github/workflow/requirements.txt
+1. Inside a virtualenv using the version of TensorFlow being linked against, run `python examples/addition/addition.py`.  (See "Running in a virtualenv" section.)
+
+## Running in a virtualenv
+
+1. If you haven't set it up, run `./create-virtualenv ${TENSORFLOW_VERSION?}`
+1. Run `source ~/tensorflow-${TENSORFLOW_VERSION?}/bin/activate` to activate the virtualenv
+1. Do whatever you need to do in the virtual env
+1. Run `deactivate` to exit the virtualenv

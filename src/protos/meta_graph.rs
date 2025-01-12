@@ -3190,6 +3190,7 @@ pub struct SignatureDef {
     pub inputs: ::std::collections::HashMap<::std::string::String, TensorInfo>,
     pub outputs: ::std::collections::HashMap<::std::string::String, TensorInfo>,
     pub method_name: ::std::string::String,
+    pub defaults: ::std::collections::HashMap<::std::string::String, super::tensor::TensorProto>,
     // special fields
     pub unknown_fields: ::protobuf::UnknownFields,
     pub cached_size: ::protobuf::CachedSize,
@@ -3281,6 +3282,31 @@ impl SignatureDef {
     pub fn take_method_name(&mut self) -> ::std::string::String {
         ::std::mem::replace(&mut self.method_name, ::std::string::String::new())
     }
+
+    // repeated .tensorflow.SignatureDef.DefaultsEntry defaults = 4;
+
+
+    pub fn get_defaults(&self) -> &::std::collections::HashMap<::std::string::String, super::tensor::TensorProto> {
+        &self.defaults
+    }
+    pub fn clear_defaults(&mut self) {
+        self.defaults.clear();
+    }
+
+    // Param is passed by value, moved
+    pub fn set_defaults(&mut self, v: ::std::collections::HashMap<::std::string::String, super::tensor::TensorProto>) {
+        self.defaults = v;
+    }
+
+    // Mutable pointer to the field.
+    pub fn mut_defaults(&mut self) -> &mut ::std::collections::HashMap<::std::string::String, super::tensor::TensorProto> {
+        &mut self.defaults
+    }
+
+    // Take field
+    pub fn take_defaults(&mut self) -> ::std::collections::HashMap<::std::string::String, super::tensor::TensorProto> {
+        ::std::mem::replace(&mut self.defaults, ::std::collections::HashMap::new())
+    }
 }
 
 impl ::protobuf::Message for SignatureDef {
@@ -3301,6 +3327,9 @@ impl ::protobuf::Message for SignatureDef {
                 3 => {
                     ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.method_name)?;
                 },
+                4 => {
+                    ::protobuf::rt::read_map_into::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<super::tensor::TensorProto>>(wire_type, is, &mut self.defaults)?;
+                },
                 _ => {
                     ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
                 },
@@ -3318,6 +3347,7 @@ impl ::protobuf::Message for SignatureDef {
         if !self.method_name.is_empty() {
             my_size += ::protobuf::rt::string_size(3, &self.method_name);
         }
+        my_size += ::protobuf::rt::compute_map_size::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<super::tensor::TensorProto>>(4, &self.defaults);
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
@@ -3329,6 +3359,7 @@ impl ::protobuf::Message for SignatureDef {
         if !self.method_name.is_empty() {
             os.write_string(3, &self.method_name)?;
         }
+        ::protobuf::rt::write_map_with_cached_sizes::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<super::tensor::TensorProto>>(4, &self.defaults, os)?;
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
     }
@@ -3382,6 +3413,11 @@ impl ::protobuf::Message for SignatureDef {
                 |m: &SignatureDef| { &m.method_name },
                 |m: &mut SignatureDef| { &mut m.method_name },
             ));
+            fields.push(::protobuf::reflect::accessor::make_map_accessor::<_, ::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<super::tensor::TensorProto>>(
+                "defaults",
+                |m: &SignatureDef| { &m.defaults },
+                |m: &mut SignatureDef| { &mut m.defaults },
+            ));
             ::protobuf::reflect::MessageDescriptor::new_pb_name::<SignatureDef>(
                 "SignatureDef",
                 fields,
@@ -3401,6 +3437,7 @@ impl ::protobuf::Clear for SignatureDef {
         self.inputs.clear();
         self.outputs.clear();
         self.method_name.clear();
+        self.defaults.clear();
         self.unknown_fields.clear();
     }
 }
@@ -3636,73 +3673,77 @@ impl ::protobuf::reflect::ProtobufValue for AssetFileDef {
 static file_descriptor_proto_data: &'static [u8] = b"\
     \n)tensorflow/core/protobuf/meta_graph.proto\x12\ntensorflow\x1a\x19goog\
     le/protobuf/any.proto\x1a%tensorflow/core/framework/graph.proto\x1a&tens\
-    orflow/core/framework/op_def.proto\x1a,tensorflow/core/framework/tensor_\
-    shape.proto\x1a%tensorflow/core/framework/types.proto\x1a1tensorflow/cor\
-    e/protobuf/saved_object_graph.proto\x1a$tensorflow/core/protobuf/saver.p\
-    roto\x1a%tensorflow/core/protobuf/struct.proto\"\xa9\t\n\x0cMetaGraphDef\
-    \x12H\n\rmeta_info_def\x18\x01\x20\x01(\x0b2$.tensorflow.MetaGraphDef.Me\
-    taInfoDefR\x0bmetaInfoDef\x121\n\tgraph_def\x18\x02\x20\x01(\x0b2\x14.te\
-    nsorflow.GraphDefR\x08graphDef\x121\n\tsaver_def\x18\x03\x20\x01(\x0b2\
-    \x14.tensorflow.SaverDefR\x08saverDef\x12R\n\x0ecollection_def\x18\x04\
-    \x20\x03(\x0b2+.tensorflow.MetaGraphDef.CollectionDefEntryR\rcollectionD\
-    ef\x12O\n\rsignature_def\x18\x05\x20\x03(\x0b2*.tensorflow.MetaGraphDef.\
-    SignatureDefEntryR\x0csignatureDef\x12>\n\x0easset_file_def\x18\x06\x20\
-    \x03(\x0b2\x18.tensorflow.AssetFileDefR\x0cassetFileDef\x12F\n\x10object\
-    _graph_def\x18\x07\x20\x01(\x0b2\x1c.tensorflow.SavedObjectGraphR\x0eobj\
-    ectGraphDef\x1a\x83\x04\n\x0bMetaInfoDef\x12,\n\x12meta_graph_version\
-    \x18\x01\x20\x01(\tR\x10metaGraphVersion\x12<\n\x10stripped_op_list\x18\
-    \x02\x20\x01(\x0b2\x12.tensorflow.OpListR\x0estrippedOpList\x12/\n\x08an\
-    y_info\x18\x03\x20\x01(\x0b2\x14.google.protobuf.AnyR\x07anyInfo\x12\x12\
-    \n\x04tags\x18\x04\x20\x03(\tR\x04tags\x12-\n\x12tensorflow_version\x18\
-    \x05\x20\x01(\tR\x11tensorflowVersion\x124\n\x16tensorflow_git_version\
-    \x18\x06\x20\x01(\tR\x14tensorflowGitVersion\x124\n\x16stripped_default_\
-    attrs\x18\x07\x20\x01(\x08R\x14strippedDefaultAttrs\x12d\n\x10function_a\
-    liases\x18\x08\x20\x03(\x0b29.tensorflow.MetaGraphDef.MetaInfoDef.Functi\
-    onAliasesEntryR\x0ffunctionAliases\x1aB\n\x14FunctionAliasesEntry\x12\
-    \x10\n\x03key\x18\x01\x20\x01(\tR\x03key\x12\x14\n\x05value\x18\x02\x20\
-    \x01(\tR\x05value:\x028\x01\x1a[\n\x12CollectionDefEntry\x12\x10\n\x03ke\
-    y\x18\x01\x20\x01(\tR\x03key\x12/\n\x05value\x18\x02\x20\x01(\x0b2\x19.t\
-    ensorflow.CollectionDefR\x05value:\x028\x01\x1aY\n\x11SignatureDefEntry\
-    \x12\x10\n\x03key\x18\x01\x20\x01(\tR\x03key\x12.\n\x05value\x18\x02\x20\
-    \x01(\x0b2\x18.tensorflow.SignatureDefR\x05value:\x028\x01\"\xb6\x04\n\r\
-    CollectionDef\x12A\n\tnode_list\x18\x01\x20\x01(\x0b2\".tensorflow.Colle\
-    ctionDef.NodeListH\0R\x08nodeList\x12D\n\nbytes_list\x18\x02\x20\x01(\
-    \x0b2#.tensorflow.CollectionDef.BytesListH\0R\tbytesList\x12D\n\nint64_l\
-    ist\x18\x03\x20\x01(\x0b2#.tensorflow.CollectionDef.Int64ListH\0R\tint64\
-    List\x12D\n\nfloat_list\x18\x04\x20\x01(\x0b2#.tensorflow.CollectionDef.\
-    FloatListH\0R\tfloatList\x12>\n\x08any_list\x18\x05\x20\x01(\x0b2!.tenso\
-    rflow.CollectionDef.AnyListH\0R\x07anyList\x1a\x20\n\x08NodeList\x12\x14\
-    \n\x05value\x18\x01\x20\x03(\tR\x05value\x1a!\n\tBytesList\x12\x14\n\x05\
-    value\x18\x01\x20\x03(\x0cR\x05value\x1a%\n\tInt64List\x12\x18\n\x05valu\
-    e\x18\x01\x20\x03(\x03R\x05valueB\x02\x10\x01\x1a%\n\tFloatList\x12\x18\
-    \n\x05value\x18\x01\x20\x03(\x02R\x05valueB\x02\x10\x01\x1a5\n\x07AnyLis\
-    t\x12*\n\x05value\x18\x01\x20\x03(\x0b2\x14.google.protobuf.AnyR\x05valu\
-    eB\x06\n\x04kind\"\xda\x04\n\nTensorInfo\x12\x14\n\x04name\x18\x01\x20\
-    \x01(\tH\0R\x04name\x12A\n\ncoo_sparse\x18\x04\x20\x01(\x0b2\x20.tensorf\
-    low.TensorInfo.CooSparseH\0R\tcooSparse\x12S\n\x10composite_tensor\x18\
-    \x05\x20\x01(\x0b2&.tensorflow.TensorInfo.CompositeTensorH\0R\x0fcomposi\
-    teTensor\x12*\n\x05dtype\x18\x02\x20\x01(\x0e2\x14.tensorflow.DataTypeR\
-    \x05dtype\x12?\n\x0ctensor_shape\x18\x03\x20\x01(\x0b2\x1c.tensorflow.Te\
-    nsorShapeProtoR\x0btensorShape\x1a\xa0\x01\n\tCooSparse\x12,\n\x12values\
-    _tensor_name\x18\x01\x20\x01(\tR\x10valuesTensorName\x12.\n\x13indices_t\
-    ensor_name\x18\x02\x20\x01(\tR\x11indicesTensorName\x125\n\x17dense_shap\
-    e_tensor_name\x18\x03\x20\x01(\tR\x14denseShapeTensorName\x1a\x81\x01\n\
-    \x0fCompositeTensor\x126\n\ttype_spec\x18\x01\x20\x01(\x0b2\x19.tensorfl\
-    ow.TypeSpecProtoR\x08typeSpec\x126\n\ncomponents\x18\x02\x20\x03(\x0b2\
-    \x16.tensorflow.TensorInfoR\ncomponentsB\n\n\x08encoding\"\xd5\x02\n\x0c\
-    SignatureDef\x12<\n\x06inputs\x18\x01\x20\x03(\x0b2$.tensorflow.Signatur\
-    eDef.InputsEntryR\x06inputs\x12?\n\x07outputs\x18\x02\x20\x03(\x0b2%.ten\
-    sorflow.SignatureDef.OutputsEntryR\x07outputs\x12\x1f\n\x0bmethod_name\
-    \x18\x03\x20\x01(\tR\nmethodName\x1aQ\n\x0bInputsEntry\x12\x10\n\x03key\
-    \x18\x01\x20\x01(\tR\x03key\x12,\n\x05value\x18\x02\x20\x01(\x0b2\x16.te\
-    nsorflow.TensorInfoR\x05value:\x028\x01\x1aR\n\x0cOutputsEntry\x12\x10\n\
-    \x03key\x18\x01\x20\x01(\tR\x03key\x12,\n\x05value\x18\x02\x20\x01(\x0b2\
-    \x16.tensorflow.TensorInfoR\x05value:\x028\x01\"c\n\x0cAssetFileDef\x127\
-    \n\x0btensor_info\x18\x01\x20\x01(\x0b2\x16.tensorflow.TensorInfoR\ntens\
-    orInfo\x12\x1a\n\x08filename\x18\x02\x20\x01(\tR\x08filenameB\x87\x01\n\
-    \x18org.tensorflow.frameworkB\x0fMetaGraphProtosP\x01ZUgithub.com/tensor\
-    flow/tensorflow/tensorflow/go/core/protobuf/for_core_protos_go_proto\xf8\
-    \x01\x01b\x06proto3\
+    orflow/core/framework/op_def.proto\x1a&tensorflow/core/framework/tensor.\
+    proto\x1a,tensorflow/core/framework/tensor_shape.proto\x1a%tensorflow/co\
+    re/framework/types.proto\x1a1tensorflow/core/protobuf/saved_object_graph\
+    .proto\x1a$tensorflow/core/protobuf/saver.proto\x1a%tensorflow/core/prot\
+    obuf/struct.proto\"\xa9\t\n\x0cMetaGraphDef\x12H\n\rmeta_info_def\x18\
+    \x01\x20\x01(\x0b2$.tensorflow.MetaGraphDef.MetaInfoDefR\x0bmetaInfoDef\
+    \x121\n\tgraph_def\x18\x02\x20\x01(\x0b2\x14.tensorflow.GraphDefR\x08gra\
+    phDef\x121\n\tsaver_def\x18\x03\x20\x01(\x0b2\x14.tensorflow.SaverDefR\
+    \x08saverDef\x12R\n\x0ecollection_def\x18\x04\x20\x03(\x0b2+.tensorflow.\
+    MetaGraphDef.CollectionDefEntryR\rcollectionDef\x12O\n\rsignature_def\
+    \x18\x05\x20\x03(\x0b2*.tensorflow.MetaGraphDef.SignatureDefEntryR\x0csi\
+    gnatureDef\x12>\n\x0easset_file_def\x18\x06\x20\x03(\x0b2\x18.tensorflow\
+    .AssetFileDefR\x0cassetFileDef\x12F\n\x10object_graph_def\x18\x07\x20\
+    \x01(\x0b2\x1c.tensorflow.SavedObjectGraphR\x0eobjectGraphDef\x1a\x83\
+    \x04\n\x0bMetaInfoDef\x12,\n\x12meta_graph_version\x18\x01\x20\x01(\tR\
+    \x10metaGraphVersion\x12<\n\x10stripped_op_list\x18\x02\x20\x01(\x0b2\
+    \x12.tensorflow.OpListR\x0estrippedOpList\x12/\n\x08any_info\x18\x03\x20\
+    \x01(\x0b2\x14.google.protobuf.AnyR\x07anyInfo\x12\x12\n\x04tags\x18\x04\
+    \x20\x03(\tR\x04tags\x12-\n\x12tensorflow_version\x18\x05\x20\x01(\tR\
+    \x11tensorflowVersion\x124\n\x16tensorflow_git_version\x18\x06\x20\x01(\
+    \tR\x14tensorflowGitVersion\x124\n\x16stripped_default_attrs\x18\x07\x20\
+    \x01(\x08R\x14strippedDefaultAttrs\x12d\n\x10function_aliases\x18\x08\
+    \x20\x03(\x0b29.tensorflow.MetaGraphDef.MetaInfoDef.FunctionAliasesEntry\
+    R\x0ffunctionAliases\x1aB\n\x14FunctionAliasesEntry\x12\x10\n\x03key\x18\
+    \x01\x20\x01(\tR\x03key\x12\x14\n\x05value\x18\x02\x20\x01(\tR\x05value:\
+    \x028\x01\x1a[\n\x12CollectionDefEntry\x12\x10\n\x03key\x18\x01\x20\x01(\
+    \tR\x03key\x12/\n\x05value\x18\x02\x20\x01(\x0b2\x19.tensorflow.Collecti\
+    onDefR\x05value:\x028\x01\x1aY\n\x11SignatureDefEntry\x12\x10\n\x03key\
+    \x18\x01\x20\x01(\tR\x03key\x12.\n\x05value\x18\x02\x20\x01(\x0b2\x18.te\
+    nsorflow.SignatureDefR\x05value:\x028\x01\"\xb6\x04\n\rCollectionDef\x12\
+    A\n\tnode_list\x18\x01\x20\x01(\x0b2\".tensorflow.CollectionDef.NodeList\
+    H\0R\x08nodeList\x12D\n\nbytes_list\x18\x02\x20\x01(\x0b2#.tensorflow.Co\
+    llectionDef.BytesListH\0R\tbytesList\x12D\n\nint64_list\x18\x03\x20\x01(\
+    \x0b2#.tensorflow.CollectionDef.Int64ListH\0R\tint64List\x12D\n\nfloat_l\
+    ist\x18\x04\x20\x01(\x0b2#.tensorflow.CollectionDef.FloatListH\0R\tfloat\
+    List\x12>\n\x08any_list\x18\x05\x20\x01(\x0b2!.tensorflow.CollectionDef.\
+    AnyListH\0R\x07anyList\x1a\x20\n\x08NodeList\x12\x14\n\x05value\x18\x01\
+    \x20\x03(\tR\x05value\x1a!\n\tBytesList\x12\x14\n\x05value\x18\x01\x20\
+    \x03(\x0cR\x05value\x1a%\n\tInt64List\x12\x18\n\x05value\x18\x01\x20\x03\
+    (\x03R\x05valueB\x02\x10\x01\x1a%\n\tFloatList\x12\x18\n\x05value\x18\
+    \x01\x20\x03(\x02R\x05valueB\x02\x10\x01\x1a5\n\x07AnyList\x12*\n\x05val\
+    ue\x18\x01\x20\x03(\x0b2\x14.google.protobuf.AnyR\x05valueB\x06\n\x04kin\
+    d\"\xda\x04\n\nTensorInfo\x12\x14\n\x04name\x18\x01\x20\x01(\tH\0R\x04na\
+    me\x12A\n\ncoo_sparse\x18\x04\x20\x01(\x0b2\x20.tensorflow.TensorInfo.Co\
+    oSparseH\0R\tcooSparse\x12S\n\x10composite_tensor\x18\x05\x20\x01(\x0b2&\
+    .tensorflow.TensorInfo.CompositeTensorH\0R\x0fcompositeTensor\x12*\n\x05\
+    dtype\x18\x02\x20\x01(\x0e2\x14.tensorflow.DataTypeR\x05dtype\x12?\n\x0c\
+    tensor_shape\x18\x03\x20\x01(\x0b2\x1c.tensorflow.TensorShapeProtoR\x0bt\
+    ensorShape\x1a\xa0\x01\n\tCooSparse\x12,\n\x12values_tensor_name\x18\x01\
+    \x20\x01(\tR\x10valuesTensorName\x12.\n\x13indices_tensor_name\x18\x02\
+    \x20\x01(\tR\x11indicesTensorName\x125\n\x17dense_shape_tensor_name\x18\
+    \x03\x20\x01(\tR\x14denseShapeTensorName\x1a\x81\x01\n\x0fCompositeTenso\
+    r\x126\n\ttype_spec\x18\x01\x20\x01(\x0b2\x19.tensorflow.TypeSpecProtoR\
+    \x08typeSpec\x126\n\ncomponents\x18\x02\x20\x03(\x0b2\x16.tensorflow.Ten\
+    sorInfoR\ncomponentsB\n\n\x08encoding\"\xef\x03\n\x0cSignatureDef\x12<\n\
+    \x06inputs\x18\x01\x20\x03(\x0b2$.tensorflow.SignatureDef.InputsEntryR\
+    \x06inputs\x12?\n\x07outputs\x18\x02\x20\x03(\x0b2%.tensorflow.Signature\
+    Def.OutputsEntryR\x07outputs\x12\x1f\n\x0bmethod_name\x18\x03\x20\x01(\t\
+    R\nmethodName\x12B\n\x08defaults\x18\x04\x20\x03(\x0b2&.tensorflow.Signa\
+    tureDef.DefaultsEntryR\x08defaults\x1aQ\n\x0bInputsEntry\x12\x10\n\x03ke\
+    y\x18\x01\x20\x01(\tR\x03key\x12,\n\x05value\x18\x02\x20\x01(\x0b2\x16.t\
+    ensorflow.TensorInfoR\x05value:\x028\x01\x1aR\n\x0cOutputsEntry\x12\x10\
+    \n\x03key\x18\x01\x20\x01(\tR\x03key\x12,\n\x05value\x18\x02\x20\x01(\
+    \x0b2\x16.tensorflow.TensorInfoR\x05value:\x028\x01\x1aT\n\rDefaultsEntr\
+    y\x12\x10\n\x03key\x18\x01\x20\x01(\tR\x03key\x12-\n\x05value\x18\x02\
+    \x20\x01(\x0b2\x17.tensorflow.TensorProtoR\x05value:\x028\x01\"c\n\x0cAs\
+    setFileDef\x127\n\x0btensor_info\x18\x01\x20\x01(\x0b2\x16.tensorflow.Te\
+    nsorInfoR\ntensorInfo\x12\x1a\n\x08filename\x18\x02\x20\x01(\tR\x08filen\
+    ameB\x87\x01\n\x18org.tensorflow.frameworkB\x0fMetaGraphProtosP\x01ZUgit\
+    hub.com/tensorflow/tensorflow/tensorflow/go/core/protobuf/for_core_proto\
+    s_go_proto\xf8\x01\x01b\x06proto3\
 ";
 
 static file_descriptor_proto_lazy: ::protobuf::rt::LazyV2<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::rt::LazyV2::INIT;

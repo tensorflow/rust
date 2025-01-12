@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -euo pipefail
+
+df -h || true
+du -sh || true
+du -sh /* || true

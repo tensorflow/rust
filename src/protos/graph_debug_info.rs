@@ -27,7 +27,10 @@
 pub struct GraphDebugInfo {
     // message fields
     pub files: ::protobuf::RepeatedField<::std::string::String>,
+    pub frames_by_id: ::std::collections::HashMap<u64, GraphDebugInfo_FileLineCol>,
+    pub traces_by_id: ::std::collections::HashMap<u64, GraphDebugInfo_StackTrace>,
     pub traces: ::std::collections::HashMap<::std::string::String, GraphDebugInfo_StackTrace>,
+    pub name_to_trace_id: ::std::collections::HashMap<::std::string::String, u64>,
     // special fields
     pub unknown_fields: ::protobuf::UnknownFields,
     pub cached_size: ::protobuf::CachedSize,
@@ -69,6 +72,56 @@ impl GraphDebugInfo {
         ::std::mem::replace(&mut self.files, ::protobuf::RepeatedField::new())
     }
 
+    // repeated .tensorflow.GraphDebugInfo.FramesByIdEntry frames_by_id = 4;
+
+
+    pub fn get_frames_by_id(&self) -> &::std::collections::HashMap<u64, GraphDebugInfo_FileLineCol> {
+        &self.frames_by_id
+    }
+    pub fn clear_frames_by_id(&mut self) {
+        self.frames_by_id.clear();
+    }
+
+    // Param is passed by value, moved
+    pub fn set_frames_by_id(&mut self, v: ::std::collections::HashMap<u64, GraphDebugInfo_FileLineCol>) {
+        self.frames_by_id = v;
+    }
+
+    // Mutable pointer to the field.
+    pub fn mut_frames_by_id(&mut self) -> &mut ::std::collections::HashMap<u64, GraphDebugInfo_FileLineCol> {
+        &mut self.frames_by_id
+    }
+
+    // Take field
+    pub fn take_frames_by_id(&mut self) -> ::std::collections::HashMap<u64, GraphDebugInfo_FileLineCol> {
+        ::std::mem::replace(&mut self.frames_by_id, ::std::collections::HashMap::new())
+    }
+
+    // repeated .tensorflow.GraphDebugInfo.TracesByIdEntry traces_by_id = 6;
+
+
+    pub fn get_traces_by_id(&self) -> &::std::collections::HashMap<u64, GraphDebugInfo_StackTrace> {
+        &self.traces_by_id
+    }
+    pub fn clear_traces_by_id(&mut self) {
+        self.traces_by_id.clear();
+    }
+
+    // Param is passed by value, moved
+    pub fn set_traces_by_id(&mut self, v: ::std::collections::HashMap<u64, GraphDebugInfo_StackTrace>) {
+        self.traces_by_id = v;
+    }
+
+    // Mutable pointer to the field.
+    pub fn mut_traces_by_id(&mut self) -> &mut ::std::collections::HashMap<u64, GraphDebugInfo_StackTrace> {
+        &mut self.traces_by_id
+    }
+
+    // Take field
+    pub fn take_traces_by_id(&mut self) -> ::std::collections::HashMap<u64, GraphDebugInfo_StackTrace> {
+        ::std::mem::replace(&mut self.traces_by_id, ::std::collections::HashMap::new())
+    }
+
     // repeated .tensorflow.GraphDebugInfo.TracesEntry traces = 2;
 
 
@@ -93,6 +146,31 @@ impl GraphDebugInfo {
     pub fn take_traces(&mut self) -> ::std::collections::HashMap<::std::string::String, GraphDebugInfo_StackTrace> {
         ::std::mem::replace(&mut self.traces, ::std::collections::HashMap::new())
     }
+
+    // repeated .tensorflow.GraphDebugInfo.NameToTraceIdEntry name_to_trace_id = 5;
+
+
+    pub fn get_name_to_trace_id(&self) -> &::std::collections::HashMap<::std::string::String, u64> {
+        &self.name_to_trace_id
+    }
+    pub fn clear_name_to_trace_id(&mut self) {
+        self.name_to_trace_id.clear();
+    }
+
+    // Param is passed by value, moved
+    pub fn set_name_to_trace_id(&mut self, v: ::std::collections::HashMap<::std::string::String, u64>) {
+        self.name_to_trace_id = v;
+    }
+
+    // Mutable pointer to the field.
+    pub fn mut_name_to_trace_id(&mut self) -> &mut ::std::collections::HashMap<::std::string::String, u64> {
+        &mut self.name_to_trace_id
+    }
+
+    // Take field
+    pub fn take_name_to_trace_id(&mut self) -> ::std::collections::HashMap<::std::string::String, u64> {
+        ::std::mem::replace(&mut self.name_to_trace_id, ::std::collections::HashMap::new())
+    }
 }
 
 impl ::protobuf::Message for GraphDebugInfo {
@@ -107,8 +185,17 @@ impl ::protobuf::Message for GraphDebugInfo {
                 1 => {
                     ::protobuf::rt::read_repeated_string_into(wire_type, is, &mut self.files)?;
                 },
+                4 => {
+                    ::protobuf::rt::read_map_into::<::protobuf::types::ProtobufTypeFixed64, ::protobuf::types::ProtobufTypeMessage<GraphDebugInfo_FileLineCol>>(wire_type, is, &mut self.frames_by_id)?;
+                },
+                6 => {
+                    ::protobuf::rt::read_map_into::<::protobuf::types::ProtobufTypeFixed64, ::protobuf::types::ProtobufTypeMessage<GraphDebugInfo_StackTrace>>(wire_type, is, &mut self.traces_by_id)?;
+                },
                 2 => {
                     ::protobuf::rt::read_map_into::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<GraphDebugInfo_StackTrace>>(wire_type, is, &mut self.traces)?;
+                },
+                5 => {
+                    ::protobuf::rt::read_map_into::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeFixed64>(wire_type, is, &mut self.name_to_trace_id)?;
                 },
                 _ => {
                     ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
@@ -125,7 +212,10 @@ impl ::protobuf::Message for GraphDebugInfo {
         for value in &self.files {
             my_size += ::protobuf::rt::string_size(1, &value);
         };
+        my_size += ::protobuf::rt::compute_map_size::<::protobuf::types::ProtobufTypeFixed64, ::protobuf::types::ProtobufTypeMessage<GraphDebugInfo_FileLineCol>>(4, &self.frames_by_id);
+        my_size += ::protobuf::rt::compute_map_size::<::protobuf::types::ProtobufTypeFixed64, ::protobuf::types::ProtobufTypeMessage<GraphDebugInfo_StackTrace>>(6, &self.traces_by_id);
         my_size += ::protobuf::rt::compute_map_size::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<GraphDebugInfo_StackTrace>>(2, &self.traces);
+        my_size += ::protobuf::rt::compute_map_size::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeFixed64>(5, &self.name_to_trace_id);
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
@@ -135,7 +225,10 @@ impl ::protobuf::Message for GraphDebugInfo {
         for v in &self.files {
             os.write_string(1, &v)?;
         };
+        ::protobuf::rt::write_map_with_cached_sizes::<::protobuf::types::ProtobufTypeFixed64, ::protobuf::types::ProtobufTypeMessage<GraphDebugInfo_FileLineCol>>(4, &self.frames_by_id, os)?;
+        ::protobuf::rt::write_map_with_cached_sizes::<::protobuf::types::ProtobufTypeFixed64, ::protobuf::types::ProtobufTypeMessage<GraphDebugInfo_StackTrace>>(6, &self.traces_by_id, os)?;
         ::protobuf::rt::write_map_with_cached_sizes::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<GraphDebugInfo_StackTrace>>(2, &self.traces, os)?;
+        ::protobuf::rt::write_map_with_cached_sizes::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeFixed64>(5, &self.name_to_trace_id, os)?;
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
     }
@@ -179,10 +272,25 @@ impl ::protobuf::Message for GraphDebugInfo {
                 |m: &GraphDebugInfo| { &m.files },
                 |m: &mut GraphDebugInfo| { &mut m.files },
             ));
+            fields.push(::protobuf::reflect::accessor::make_map_accessor::<_, ::protobuf::types::ProtobufTypeFixed64, ::protobuf::types::ProtobufTypeMessage<GraphDebugInfo_FileLineCol>>(
+                "frames_by_id",
+                |m: &GraphDebugInfo| { &m.frames_by_id },
+                |m: &mut GraphDebugInfo| { &mut m.frames_by_id },
+            ));
+            fields.push(::protobuf::reflect::accessor::make_map_accessor::<_, ::protobuf::types::ProtobufTypeFixed64, ::protobuf::types::ProtobufTypeMessage<GraphDebugInfo_StackTrace>>(
+                "traces_by_id",
+                |m: &GraphDebugInfo| { &m.traces_by_id },
+                |m: &mut GraphDebugInfo| { &mut m.traces_by_id },
+            ));
             fields.push(::protobuf::reflect::accessor::make_map_accessor::<_, ::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<GraphDebugInfo_StackTrace>>(
                 "traces",
                 |m: &GraphDebugInfo| { &m.traces },
                 |m: &mut GraphDebugInfo| { &mut m.traces },
+            ));
+            fields.push(::protobuf::reflect::accessor::make_map_accessor::<_, ::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeFixed64>(
+                "name_to_trace_id",
+                |m: &GraphDebugInfo| { &m.name_to_trace_id },
+                |m: &mut GraphDebugInfo| { &mut m.name_to_trace_id },
             ));
             ::protobuf::reflect::MessageDescriptor::new_pb_name::<GraphDebugInfo>(
                 "GraphDebugInfo",
@@ -201,7 +309,10 @@ impl ::protobuf::Message for GraphDebugInfo {
 impl ::protobuf::Clear for GraphDebugInfo {
     fn clear(&mut self) {
         self.files.clear();
+        self.frames_by_id.clear();
+        self.traces_by_id.clear();
         self.traces.clear();
+        self.name_to_trace_id.clear();
         self.unknown_fields.clear();
     }
 }
@@ -221,11 +332,11 @@ impl ::protobuf::reflect::ProtobufValue for GraphDebugInfo {
 #[derive(PartialEq,Clone,Default)]
 pub struct GraphDebugInfo_FileLineCol {
     // message fields
-    pub file_index: i32,
-    pub line: i32,
-    pub col: i32,
-    pub func: ::std::string::String,
-    pub code: ::std::string::String,
+    file_index: ::std::option::Option<i32>,
+    line: ::std::option::Option<i32>,
+    col: ::std::option::Option<i32>,
+    func: ::protobuf::SingularField<::std::string::String>,
+    code: ::protobuf::SingularField<::std::string::String>,
     // special fields
     pub unknown_fields: ::protobuf::UnknownFields,
     pub cached_size: ::protobuf::CachedSize,
@@ -242,101 +353,133 @@ impl GraphDebugInfo_FileLineCol {
         ::std::default::Default::default()
     }
 
-    // int32 file_index = 1;
+    // optional int32 file_index = 1;
 
 
     pub fn get_file_index(&self) -> i32 {
-        self.file_index
+        self.file_index.unwrap_or(0)
     }
     pub fn clear_file_index(&mut self) {
-        self.file_index = 0;
+        self.file_index = ::std::option::Option::None;
+    }
+
+    pub fn has_file_index(&self) -> bool {
+        self.file_index.is_some()
     }
 
     // Param is passed by value, moved
     pub fn set_file_index(&mut self, v: i32) {
-        self.file_index = v;
+        self.file_index = ::std::option::Option::Some(v);
     }
 
-    // int32 line = 2;
+    // optional int32 line = 2;
 
 
     pub fn get_line(&self) -> i32 {
-        self.line
+        self.line.unwrap_or(0)
     }
     pub fn clear_line(&mut self) {
-        self.line = 0;
+        self.line = ::std::option::Option::None;
+    }
+
+    pub fn has_line(&self) -> bool {
+        self.line.is_some()
     }
 
     // Param is passed by value, moved
     pub fn set_line(&mut self, v: i32) {
-        self.line = v;
+        self.line = ::std::option::Option::Some(v);
     }
 
-    // int32 col = 3;
+    // optional int32 col = 3;
 
 
     pub fn get_col(&self) -> i32 {
-        self.col
+        self.col.unwrap_or(0)
     }
     pub fn clear_col(&mut self) {
-        self.col = 0;
+        self.col = ::std::option::Option::None;
+    }
+
+    pub fn has_col(&self) -> bool {
+        self.col.is_some()
     }
 
     // Param is passed by value, moved
     pub fn set_col(&mut self, v: i32) {
-        self.col = v;
+        self.col = ::std::option::Option::Some(v);
     }
 
-    // string func = 4;
+    // optional string func = 4;
 
 
     pub fn get_func(&self) -> &str {
-        &self.func
+        match self.func.as_ref() {
+            Some(v) => &v,
+            None => "",
+        }
     }
     pub fn clear_func(&mut self) {
         self.func.clear();
     }
 
+    pub fn has_func(&self) -> bool {
+        self.func.is_some()
+    }
+
     // Param is passed by value, moved
     pub fn set_func(&mut self, v: ::std::string::String) {
-        self.func = v;
+        self.func = ::protobuf::SingularField::some(v);
     }
 
     // Mutable pointer to the field.
     // If field is not initialized, it is initialized with default value first.
     pub fn mut_func(&mut self) -> &mut ::std::string::String {
-        &mut self.func
+        if self.func.is_none() {
+            self.func.set_default();
+        }
+        self.func.as_mut().unwrap()
     }
 
     // Take field
     pub fn take_func(&mut self) -> ::std::string::String {
-        ::std::mem::replace(&mut self.func, ::std::string::String::new())
+        self.func.take().unwrap_or_else(|| ::std::string::String::new())
     }
 
-    // string code = 5;
+    // optional string code = 5;
 
 
     pub fn get_code(&self) -> &str {
-        &self.code
+        match self.code.as_ref() {
+            Some(v) => &v,
+            None => "",
+        }
     }
     pub fn clear_code(&mut self) {
         self.code.clear();
     }
 
+    pub fn has_code(&self) -> bool {
+        self.code.is_some()
+    }
+
     // Param is passed by value, moved
     pub fn set_code(&mut self, v: ::std::string::String) {
-        self.code = v;
+        self.code = ::protobuf::SingularField::some(v);
     }
 
     // Mutable pointer to the field.
     // If field is not initialized, it is initialized with default value first.
     pub fn mut_code(&mut self) -> &mut ::std::string::String {
-        &mut self.code
+        if self.code.is_none() {
+            self.code.set_default();
+        }
+        self.code.as_mut().unwrap()
     }
 
     // Take field
     pub fn take_code(&mut self) -> ::std::string::String {
-        ::std::mem::replace(&mut self.code, ::std::string::String::new())
+        self.code.take().unwrap_or_else(|| ::std::string::String::new())
     }
 }
 
@@ -354,27 +497,27 @@ impl ::protobuf::Message for GraphDebugInfo_FileLineCol {
                         return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
                     }
                     let tmp = is.read_int32()?;
-                    self.file_index = tmp;
+                    self.file_index = ::std::option::Option::Some(tmp);
                 },
                 2 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
                         return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
                     }
                     let tmp = is.read_int32()?;
-                    self.line = tmp;
+                    self.line = ::std::option::Option::Some(tmp);
                 },
                 3 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
                         return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
                     }
                     let tmp = is.read_int32()?;
-                    self.col = tmp;
+                    self.col = ::std::option::Option::Some(tmp);
                 },
                 4 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.func)?;
+                    ::protobuf::rt::read_singular_string_into(wire_type, is, &mut self.func)?;
                 },
                 5 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.code)?;
+                    ::protobuf::rt::read_singular_string_into(wire_type, is, &mut self.code)?;
                 },
                 _ => {
                     ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
@@ -388,20 +531,20 @@ impl ::protobuf::Message for GraphDebugInfo_FileLineCol {
     #[allow(unused_variables)]
     fn compute_size(&self) -> u32 {
         let mut my_size = 0;
-        if self.file_index != 0 {
-            my_size += ::protobuf::rt::value_size(1, self.file_index, ::protobuf::wire_format::WireTypeVarint);
+        if let Some(v) = self.file_index {
+            my_size += ::protobuf::rt::value_size(1, v, ::protobuf::wire_format::WireTypeVarint);
         }
-        if self.line != 0 {
-            my_size += ::protobuf::rt::value_size(2, self.line, ::protobuf::wire_format::WireTypeVarint);
+        if let Some(v) = self.line {
+            my_size += ::protobuf::rt::value_size(2, v, ::protobuf::wire_format::WireTypeVarint);
         }
-        if self.col != 0 {
-            my_size += ::protobuf::rt::value_size(3, self.col, ::protobuf::wire_format::WireTypeVarint);
+        if let Some(v) = self.col {
+            my_size += ::protobuf::rt::value_size(3, v, ::protobuf::wire_format::WireTypeVarint);
         }
-        if !self.func.is_empty() {
-            my_size += ::protobuf::rt::string_size(4, &self.func);
+        if let Some(ref v) = self.func.as_ref() {
+            my_size += ::protobuf::rt::string_size(4, &v);
         }
-        if !self.code.is_empty() {
-            my_size += ::protobuf::rt::string_size(5, &self.code);
+        if let Some(ref v) = self.code.as_ref() {
+            my_size += ::protobuf::rt::string_size(5, &v);
         }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
@@ -409,20 +552,20 @@ impl ::protobuf::Message for GraphDebugInfo_FileLineCol {
     }
 
     fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream<'_>) -> ::protobuf::ProtobufResult<()> {
-        if self.file_index != 0 {
-            os.write_int32(1, self.file_index)?;
+        if let Some(v) = self.file_index {
+            os.write_int32(1, v)?;
         }
-        if self.line != 0 {
-            os.write_int32(2, self.line)?;
+        if let Some(v) = self.line {
+            os.write_int32(2, v)?;
         }
-        if self.col != 0 {
-            os.write_int32(3, self.col)?;
+        if let Some(v) = self.col {
+            os.write_int32(3, v)?;
         }
-        if !self.func.is_empty() {
-            os.write_string(4, &self.func)?;
+        if let Some(ref v) = self.func.as_ref() {
+            os.write_string(4, &v)?;
         }
-        if !self.code.is_empty() {
-            os.write_string(5, &self.code)?;
+        if let Some(ref v) = self.code.as_ref() {
+            os.write_string(5, &v)?;
         }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
@@ -462,27 +605,27 @@ impl ::protobuf::Message for GraphDebugInfo_FileLineCol {
         static descriptor: ::protobuf::rt::LazyV2<::protobuf::reflect::MessageDescriptor> = ::protobuf::rt::LazyV2::INIT;
         descriptor.get(|| {
             let mut fields = ::std::vec::Vec::new();
-            fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+            fields.push(::protobuf::reflect::accessor::make_option_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
                 "file_index",
                 |m: &GraphDebugInfo_FileLineCol| { &m.file_index },
                 |m: &mut GraphDebugInfo_FileLineCol| { &mut m.file_index },
             ));
-            fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+            fields.push(::protobuf::reflect::accessor::make_option_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
                 "line",
                 |m: &GraphDebugInfo_FileLineCol| { &m.line },
                 |m: &mut GraphDebugInfo_FileLineCol| { &mut m.line },
             ));
-            fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+            fields.push(::protobuf::reflect::accessor::make_option_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
                 "col",
                 |m: &GraphDebugInfo_FileLineCol| { &m.col },
                 |m: &mut GraphDebugInfo_FileLineCol| { &mut m.col },
             ));
-            fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+            fields.push(::protobuf::reflect::accessor::make_singular_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
                 "func",
                 |m: &GraphDebugInfo_FileLineCol| { &m.func },
                 |m: &mut GraphDebugInfo_FileLineCol| { &mut m.func },
             ));
-            fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+            fields.push(::protobuf::reflect::accessor::make_singular_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
                 "code",
                 |m: &GraphDebugInfo_FileLineCol| { &m.code },
                 |m: &mut GraphDebugInfo_FileLineCol| { &mut m.code },
@@ -503,9 +646,9 @@ impl ::protobuf::Message for GraphDebugInfo_FileLineCol {
 
 impl ::protobuf::Clear for GraphDebugInfo_FileLineCol {
     fn clear(&mut self) {
-        self.file_index = 0;
-        self.line = 0;
-        self.col = 0;
+        self.file_index = ::std::option::Option::None;
+        self.line = ::std::option::Option::None;
+        self.col = ::std::option::Option::None;
         self.func.clear();
         self.code.clear();
         self.unknown_fields.clear();
@@ -528,6 +671,7 @@ impl ::protobuf::reflect::ProtobufValue for GraphDebugInfo_FileLineCol {
 pub struct GraphDebugInfo_StackTrace {
     // message fields
     pub file_line_cols: ::protobuf::RepeatedField<GraphDebugInfo_FileLineCol>,
+    pub frame_id: ::std::vec::Vec<u64>,
     // special fields
     pub unknown_fields: ::protobuf::UnknownFields,
     pub cached_size: ::protobuf::CachedSize,
@@ -568,6 +712,31 @@ impl GraphDebugInfo_StackTrace {
     pub fn take_file_line_cols(&mut self) -> ::protobuf::RepeatedField<GraphDebugInfo_FileLineCol> {
         ::std::mem::replace(&mut self.file_line_cols, ::protobuf::RepeatedField::new())
     }
+
+    // repeated fixed64 frame_id = 2;
+
+
+    pub fn get_frame_id(&self) -> &[u64] {
+        &self.frame_id
+    }
+    pub fn clear_frame_id(&mut self) {
+        self.frame_id.clear();
+    }
+
+    // Param is passed by value, moved
+    pub fn set_frame_id(&mut self, v: ::std::vec::Vec<u64>) {
+        self.frame_id = v;
+    }
+
+    // Mutable pointer to the field.
+    pub fn mut_frame_id(&mut self) -> &mut ::std::vec::Vec<u64> {
+        &mut self.frame_id
+    }
+
+    // Take field
+    pub fn take_frame_id(&mut self) -> ::std::vec::Vec<u64> {
+        ::std::mem::replace(&mut self.frame_id, ::std::vec::Vec::new())
+    }
 }
 
 impl ::protobuf::Message for GraphDebugInfo_StackTrace {
@@ -587,6 +756,9 @@ impl ::protobuf::Message for GraphDebugInfo_StackTrace {
                 1 => {
                     ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.file_line_cols)?;
                 },
+                2 => {
+                    ::protobuf::rt::read_repeated_fixed64_into(wire_type, is, &mut self.frame_id)?;
+                },
                 _ => {
                     ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
                 },
@@ -603,6 +775,9 @@ impl ::protobuf::Message for GraphDebugInfo_StackTrace {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         };
+        if !self.frame_id.is_empty() {
+            my_size += 1 + ::protobuf::rt::compute_raw_varint32_size((self.frame_id.len() * 8) as u32) + (self.frame_id.len() * 8) as u32;
+        }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
@@ -614,6 +789,14 @@ impl ::protobuf::Message for GraphDebugInfo_StackTrace {
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
         };
+        if !self.frame_id.is_empty() {
+            os.write_tag(2, ::protobuf::wire_format::WireTypeLengthDelimited)?;
+            // TODO: Data size is computed again, it should be cached
+            os.write_raw_varint32((self.frame_id.len() * 8) as u32)?;
+            for v in &self.frame_id {
+                os.write_fixed64_no_tag(*v)?;
+            };
+        }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
     }
@@ -657,6 +840,11 @@ impl ::protobuf::Message for GraphDebugInfo_StackTrace {
                 |m: &GraphDebugInfo_StackTrace| { &m.file_line_cols },
                 |m: &mut GraphDebugInfo_StackTrace| { &mut m.file_line_cols },
             ));
+            fields.push(::protobuf::reflect::accessor::make_vec_accessor::<_, ::protobuf::types::ProtobufTypeFixed64>(
+                "frame_id",
+                |m: &GraphDebugInfo_StackTrace| { &m.frame_id },
+                |m: &mut GraphDebugInfo_StackTrace| { &mut m.frame_id },
+            ));
             ::protobuf::reflect::MessageDescriptor::new_pb_name::<GraphDebugInfo_StackTrace>(
                 "GraphDebugInfo.StackTrace",
                 fields,
@@ -674,6 +862,7 @@ impl ::protobuf::Message for GraphDebugInfo_StackTrace {
 impl ::protobuf::Clear for GraphDebugInfo_StackTrace {
     fn clear(&mut self) {
         self.file_line_cols.clear();
+        self.frame_id.clear();
         self.unknown_fields.clear();
     }
 }
@@ -692,19 +881,31 @@ impl ::protobuf::reflect::ProtobufValue for GraphDebugInfo_StackTrace {
 
 static file_descriptor_proto_data: &'static [u8] = b"\
     \n0tensorflow/core/framework/graph_debug_info.proto\x12\ntensorflow\"\
-    \xa0\x03\n\x0eGraphDebugInfo\x12\x14\n\x05files\x18\x01\x20\x03(\tR\x05f\
-    iles\x12>\n\x06traces\x18\x02\x20\x03(\x0b2&.tensorflow.GraphDebugInfo.T\
-    racesEntryR\x06traces\x1az\n\x0bFileLineCol\x12\x1d\n\nfile_index\x18\
-    \x01\x20\x01(\x05R\tfileIndex\x12\x12\n\x04line\x18\x02\x20\x01(\x05R\
-    \x04line\x12\x10\n\x03col\x18\x03\x20\x01(\x05R\x03col\x12\x12\n\x04func\
-    \x18\x04\x20\x01(\tR\x04func\x12\x12\n\x04code\x18\x05\x20\x01(\tR\x04co\
-    de\x1aZ\n\nStackTrace\x12L\n\x0efile_line_cols\x18\x01\x20\x03(\x0b2&.te\
-    nsorflow.GraphDebugInfo.FileLineColR\x0cfileLineCols\x1a`\n\x0bTracesEnt\
-    ry\x12\x10\n\x03key\x18\x01\x20\x01(\tR\x03key\x12;\n\x05value\x18\x02\
-    \x20\x01(\x0b2%.tensorflow.GraphDebugInfo.StackTraceR\x05value:\x028\x01\
-    B\x8c\x01\n\x18org.tensorflow.frameworkB\x14GraphDebugInfoProtosP\x01ZUg\
-    ithub.com/tensorflow/tensorflow/tensorflow/go/core/protobuf/for_core_pro\
-    tos_go_proto\xf8\x01\x01b\x06proto3\
+    \xc2\x07\n\x0eGraphDebugInfo\x12\x14\n\x05files\x18\x01\x20\x03(\tR\x05f\
+    iles\x12L\n\x0cframes_by_id\x18\x04\x20\x03(\x0b2*.tensorflow.GraphDebug\
+    Info.FramesByIdEntryR\nframesById\x12L\n\x0ctraces_by_id\x18\x06\x20\x03\
+    (\x0b2*.tensorflow.GraphDebugInfo.TracesByIdEntryR\ntracesById\x12>\n\
+    \x06traces\x18\x02\x20\x03(\x0b2&.tensorflow.GraphDebugInfo.TracesEntryR\
+    \x06traces\x12V\n\x10name_to_trace_id\x18\x05\x20\x03(\x0b2-.tensorflow.\
+    GraphDebugInfo.NameToTraceIdEntryR\rnameToTraceId\x1az\n\x0bFileLineCol\
+    \x12\x1d\n\nfile_index\x18\x01\x20\x01(\x05R\tfileIndex\x12\x12\n\x04lin\
+    e\x18\x02\x20\x01(\x05R\x04line\x12\x10\n\x03col\x18\x03\x20\x01(\x05R\
+    \x03col\x12\x12\n\x04func\x18\x04\x20\x01(\tR\x04func\x12\x12\n\x04code\
+    \x18\x05\x20\x01(\tR\x04code\x1ay\n\nStackTrace\x12L\n\x0efile_line_cols\
+    \x18\x01\x20\x03(\x0b2&.tensorflow.GraphDebugInfo.FileLineColR\x0cfileLi\
+    neCols\x12\x1d\n\x08frame_id\x18\x02\x20\x03(\x06R\x07frameIdB\x02\x10\
+    \x01\x1ae\n\x0fFramesByIdEntry\x12\x10\n\x03key\x18\x01\x20\x01(\x06R\
+    \x03key\x12<\n\x05value\x18\x02\x20\x01(\x0b2&.tensorflow.GraphDebugInfo\
+    .FileLineColR\x05value:\x028\x01\x1ad\n\x0fTracesByIdEntry\x12\x10\n\x03\
+    key\x18\x01\x20\x01(\x06R\x03key\x12;\n\x05value\x18\x02\x20\x01(\x0b2%.\
+    tensorflow.GraphDebugInfo.StackTraceR\x05value:\x028\x01\x1a`\n\x0bTrace\
+    sEntry\x12\x10\n\x03key\x18\x01\x20\x01(\tR\x03key\x12;\n\x05value\x18\
+    \x02\x20\x01(\x0b2%.tensorflow.GraphDebugInfo.StackTraceR\x05value:\x028\
+    \x01\x1a@\n\x12NameToTraceIdEntry\x12\x10\n\x03key\x18\x01\x20\x01(\tR\
+    \x03key\x12\x14\n\x05value\x18\x02\x20\x01(\x06R\x05value:\x028\x01B\x8c\
+    \x01\n\x18org.tensorflow.frameworkB\x14GraphDebugInfoProtosP\x01ZUgithub\
+    .com/tensorflow/tensorflow/tensorflow/go/core/protobuf/for_core_protos_g\
+    o_proto\xf8\x01\x01\
 ";
 
 static file_descriptor_proto_lazy: ::protobuf::rt::LazyV2<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::rt::LazyV2::INIT;

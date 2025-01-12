@@ -437,7 +437,7 @@ fn define_op<W: Write>(
                     write!(w, "Some(f32::INFINITY)")?;
                 } else if f == &f32::NEG_INFINITY {
                     write!(w, "Some(f32::NEG_INFINITY)")?;
-                } else if f == &f32::NAN {
+                } else if f.is_nan() {
                     write!(w, "Some(f32::NAN)")?;
                 } else {
                     write!(w, "Some({}f32)", f)?;

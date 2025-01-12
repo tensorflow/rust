@@ -17,7 +17,7 @@
 #![allow(trivial_casts)]
 #![allow(unused_imports)]
 #![allow(unused_results)]
-//! Generated file from `tensorflow/tsl/protobuf/rpc_options.proto`
+//! Generated file from `tsl/protobuf/rpc_options.proto`
 
 /// Generated files are compatible only with the same version
 /// of protobuf runtime.
@@ -358,16 +358,15 @@ impl ::protobuf::reflect::ProtobufValue for RPCOptions {
 }
 
 static file_descriptor_proto_data: &'static [u8] = b"\
-    \n)tensorflow/tsl/protobuf/rpc_options.proto\x12\ntensorflow\"\xe0\x02\n\
-    \nRPCOptions\x12>\n\x1cuse_rpc_for_inprocess_master\x18\x01\x20\x01(\x08\
-    R\x18useRpcForInprocessMaster\x123\n\x15compression_algorithm\x18\x02\
-    \x20\x01(\tR\x14compressionAlgorithm\x12+\n\x11compression_level\x18\x03\
-    \x20\x01(\x05R\x10compressionLevel\x12,\n\x12cache_rpc_response\x18\x04\
-    \x20\x01(\x08R\x10cacheRpcResponse\x12K\n\"disable_session_connection_sh\
-    aring\x18\x05\x20\x01(\x08R\x1fdisableSessionConnectionSharing\x125\n\
-    \x17num_channels_per_target\x18\x06\x20\x01(\x05R\x14numChannelsPerTarge\
-    tB@Z>github.com/google/tsl/tsl/go/protobuf/for_core_protos_go_protob\x06\
-    proto3\
+    \n\x1etsl/protobuf/rpc_options.proto\x12\ntensorflow\"\xe0\x02\n\nRPCOpt\
+    ions\x12>\n\x1cuse_rpc_for_inprocess_master\x18\x01\x20\x01(\x08R\x18use\
+    RpcForInprocessMaster\x123\n\x15compression_algorithm\x18\x02\x20\x01(\t\
+    R\x14compressionAlgorithm\x12+\n\x11compression_level\x18\x03\x20\x01(\
+    \x05R\x10compressionLevel\x12,\n\x12cache_rpc_response\x18\x04\x20\x01(\
+    \x08R\x10cacheRpcResponse\x12K\n\"disable_session_connection_sharing\x18\
+    \x05\x20\x01(\x08R\x1fdisableSessionConnectionSharing\x125\n\x17num_chan\
+    nels_per_target\x18\x06\x20\x01(\x05R\x14numChannelsPerTargetB@Z>github.\
+    com/google/tsl/tsl/go/protobuf/for_core_protos_go_protob\x06proto3\
 ";
 
 static file_descriptor_proto_lazy: ::protobuf::rt::LazyV2<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::rt::LazyV2::INIT;

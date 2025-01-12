@@ -22,7 +22,6 @@ use std::fmt;
 use std::fmt::Display;
 use std::fmt::Formatter;
 use std::mem::MaybeUninit;
-use std::os::raw::c_void as std_c_void;
 use std::ptr;
 use std::slice;
 use std::str::FromStr;
@@ -1906,7 +1905,7 @@ impl<'a> OperationDescription<'a> {
             tf::TF_SetAttrString(
                 self.inner,
                 c_attr_name.as_ptr(),
-                c_value.as_ptr() as *const std_c_void,
+                c_value.as_ptr() as *const c_void,
                 c_value.len() as size_t,
             );
         }
@@ -1928,7 +1927,7 @@ impl<'a> OperationDescription<'a> {
             tf::TF_SetAttrStringList(
                 self.inner,
                 c_attr_name.as_ptr(),
-                ptrs.as_ptr() as *const *const std_c_void,
+                ptrs.as_ptr(),
                 lens.as_ptr(),
                 ptrs.len() as c_int,
             );
@@ -2159,7 +2158,7 @@ impl<'a> OperationDescription<'a> {
             tf::TF_SetAttrTensorShapeProto(
                 self.inner,
                 c_attr_name.as_ptr(),
-                value.as_ptr() as *const std_c_void,
+                value.as_ptr() as *const c_void,
                 value.len() as size_t,
                 status.inner(),
             );
@@ -2185,7 +2184,7 @@ impl<'a> OperationDescription<'a> {
             tf::TF_SetAttrTensorShapeProtoList(
                 self.inner,
                 c_attr_name.as_ptr(),
-                ptrs.as_ptr() as *const *const std_c_void,
+                ptrs.as_ptr(),
                 lens.as_ptr(),
                 ptrs.len() as c_int,
                 status.inner(),
@@ -2238,7 +2237,7 @@ impl<'a> OperationDescription<'a> {
             tf::TF_SetAttrTensorList(
                 self.inner,
                 c_attr_name.as_ptr(),
-                ptrs.as_ptr() as *const *mut tf::TF_Tensor,
+                ptrs.as_ptr(),
                 ptrs.len() as c_int,
                 status.inner(),
             );
@@ -2261,7 +2260,7 @@ impl<'a> OperationDescription<'a> {
             tf::TF_SetAttrValueProto(
                 self.inner,
                 c_attr_name.as_ptr(),
-                value.as_ptr() as *const std_c_void,
+                value.as_ptr() as *const c_void,
                 // Allow trivial_numeric_casts because usize is not
                 // necessarily size_t.
                 value.len() as size_t,
@@ -2329,7 +2328,7 @@ impl Function {
         let status = Status::new();
         unsafe {
             let inner = tf::TF_FunctionImportFunctionDef(
-                proto.as_ptr() as *const std_c_void,
+                proto.as_ptr() as *const c_void,
                 proto.len(),
                 status.inner,
             );
@@ -2349,7 +2348,7 @@ impl Function {
             tf::TF_FunctionSetAttrValueProto(
                 self.inner,
                 attr_name_cstr.as_ptr(),
-                proto.as_ptr() as *const std_c_void,
+                proto.as_ptr() as *const c_void,
                 proto.len(),
                 status.inner,
             );

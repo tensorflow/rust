@@ -18,42 +18,59 @@ fn main() -> Result<(), Box<dyn Error>> {
         )
         .inputs(
             [
-                "core/framework/allocation_description.proto",
-                "core/framework/attr_value.proto",
-                "core/framework/cost_graph.proto",
-                "core/framework/full_type.proto",
-                "core/framework/function.proto",
-                "core/framework/graph.proto",
-                "core/framework/graph_debug_info.proto",
-                "core/framework/node_def.proto",
-                "core/framework/op_def.proto",
-                "core/framework/resource_handle.proto",
-                "core/framework/step_stats.proto",
-                "core/framework/tensor.proto",
-                "core/framework/tensor_description.proto",
-                "core/framework/tensor_shape.proto",
-                "core/framework/types.proto",
-                "core/framework/variable.proto",
-                "core/framework/versions.proto",
-                "core/protobuf/cluster.proto",
-                "core/protobuf/config.proto",
-                "core/protobuf/debug.proto",
-                "core/protobuf/meta_graph.proto",
-                "core/protobuf/rewriter_config.proto",
-                "core/protobuf/saved_model.proto",
-                "core/protobuf/saved_object_graph.proto",
-                "core/protobuf/saver.proto",
-                "core/protobuf/struct.proto",
-                "core/protobuf/trackable_object_graph.proto",
-                "core/protobuf/verifier_config.proto",
-                "tsl/protobuf/coordination_config.proto",
-                "tsl/protobuf/rpc_options.proto",
+                "third_party/xla/third_party/tsl/tsl/protobuf/coordination_config.proto",
+                "third_party/xla/third_party/tsl/tsl/protobuf/rpc_options.proto",
             ]
             .iter()
-            .map(|p| format!("{}/tensorflow/{}", tensorflow_folder, p))
+            .map(|p| format!("{}/{}", tensorflow_folder, p))
+            .collect::<Vec<_>>(),
+        )
+        .include(Path::new(tensorflow_folder).join("third_party/xla/third_party/tsl"))
+        .run()?;
+    protoc_rust::Codegen::new()
+        .out_dir(
+            output_folder
+                .join("src/protos")
+                .to_str()
+                .ok_or("Unable to format output path for main crate")?,
+        )
+        .inputs(
+            [
+                "tensorflow/core/framework/allocation_description.proto",
+                "tensorflow/core/framework/attr_value.proto",
+                "tensorflow/core/framework/cost_graph.proto",
+                "tensorflow/core/framework/full_type.proto",
+                "tensorflow/core/framework/function.proto",
+                "tensorflow/core/framework/graph.proto",
+                "tensorflow/core/framework/graph_debug_info.proto",
+                "tensorflow/core/framework/node_def.proto",
+                "tensorflow/core/framework/op_def.proto",
+                "tensorflow/core/framework/resource_handle.proto",
+                "tensorflow/core/framework/step_stats.proto",
+                "tensorflow/core/framework/tensor.proto",
+                "tensorflow/core/framework/tensor_description.proto",
+                "tensorflow/core/framework/tensor_shape.proto",
+                "tensorflow/core/framework/types.proto",
+                "tensorflow/core/framework/variable.proto",
+                "tensorflow/core/framework/versions.proto",
+                "tensorflow/core/protobuf/cluster.proto",
+                "tensorflow/core/protobuf/config.proto",
+                "tensorflow/core/protobuf/debug.proto",
+                "tensorflow/core/protobuf/meta_graph.proto",
+                "tensorflow/core/protobuf/rewriter_config.proto",
+                "tensorflow/core/protobuf/saved_model.proto",
+                "tensorflow/core/protobuf/saved_object_graph.proto",
+                "tensorflow/core/protobuf/saver.proto",
+                "tensorflow/core/protobuf/struct.proto",
+                "tensorflow/core/protobuf/trackable_object_graph.proto",
+                "tensorflow/core/protobuf/verifier_config.proto",
+            ]
+            .iter()
+            .map(|p| format!("{}/{}", tensorflow_folder, p))
             .collect::<Vec<_>>(),
         )
         .include(tensorflow_folder)
+        .include(Path::new(tensorflow_folder).join("third_party/xla/third_party/tsl"))
         .run()?;
     protoc_rust::Codegen::new()
         .out_dir(

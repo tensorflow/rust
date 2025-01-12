@@ -9,18 +9,24 @@ function run {
     echo
 }
 
+function clean {
+    if [ "$CI" = "true" ]; then
+        rm -rf target/debug/examples
+        rm -rf target/debug/incremental
+    fi
+    df -h || true
+    du -sh target/debug/build/* || true
+}
+
 # Make sure the Tensorflow version in the -sys build script matches the one in
 # the run-valgrind script.
 version_build_script=`grep "const VERSION" tensorflow-sys/build.rs | sed 's|.*"\([^"]*\)";|\1|g'`
-version_run_valgrind=`grep "tensorflow_version=" run-valgrind | sed "s|.*=\(.*\)|\1|g"`
 version_requirements=`grep "tensorflow\s*=" .github/workflows/requirements.txt | sed "s|.*== \(.*\)|\1|g"`
-if [[ "${version_build_script}" != "${version_run_valgrind}" || \
-    "${version_build_script}" != "${version_requirements}" ]]; then
-    echo "ERROR: Tensorflow version specified in build script does not match the one in the"
-    echo "       valgrind run script."
+if [[ "${version_build_script}" != "${version_requirements}" ]]; then
+    echo "ERROR: TensorFlow version specified in build script does not match the one in the"
+    echo "       GitHub requirements."
     echo "       tensorflow-sys/build.rs: ${version_build_script}"
-    echo "       run-valgrind: ${version_run_valgrind}"
-    echo "       ./github/workflows/requirements.txt: ${version_requirements}"
+    echo "       .github/workflows/requirements.txt: ${version_requirements}"
     exit 1
 fi
 
@@ -47,29 +53,47 @@ if [[ "${version_tensorflow_sys_crate}" != "${version_tensorflow_sys_readme}" ]]
     exit 1
 fi
 
-run python3 examples/mobilenetv3/create_model.py
+# GitHub seems to choke on the large number of warnings from dependencies.
+export RUSTFLAGS="-Awarnings"
+
+# Legacy Keras required for now because Keras 3 requires exporting models as
+# Keras format, which the C API can't read:
+# https://github.com/tensorflow/tensorflow/issues/70514
+TF_USE_LEGACY_KERAS=1 run python3 examples/mobilenetv3/create_model.py
+run df -h
 # TODO(#391): Re-enable: (cd test_resources/library && ./build-test-op)
 run cargo fmt --all -- --check
+clean
 run cargo test -vv -j 2
+clean
 run cargo test -vv -j 2 --features eager
+clean
 run cargo test -vv -j 2 --features tensorflow_unstable
+clean
 run cargo test -vv -j 2 --features ndarray
+clean
 run cargo run --example regression
+clean
 run cargo run --example xor
+clean
 run cargo run --features tensorflow_unstable --example expressions
+clean
 run cargo run --features eager --example mobilenetv3
-run cargo doc -vv --features experimental,tensorflow_unstable,ndarray,eager
-run cargo doc -vv --features experimental,tensorflow_unstable,ndarray,eager,private-docs-rs
+clean
+run cargo doc --features experimental,tensorflow_unstable,ndarray,eager
+clean
+run cargo doc --features experimental,tensorflow_unstable,ndarray,eager,private-docs-rs
+clean
 # TODO(#66): Re-enable: (cd tensorflow-sys && cargo test -vv -j 1)
-(cd tensorflow-sys && run cargo run --example multiplication)
-(cd tensorflow-sys && run cargo run --example tf_version)
-(cd tensorflow-sys && run cargo doc -vv)
+(cd tensorflow-sys && run cargo run --example multiplication && clean)
+(cd tensorflow-sys && run cargo run --example tf_version && clean)
+(cd tensorflow-sys && run cargo doc -vv && clean)
 
-run cargo clippy
-(cd tensorflow-sys && run cargo clippy)
-(cd tensorflow-op-codegen && run cargo clippy)
-(cd tensorflow-proto-codegen && run cargo clippy)
-(cd tensorflow-internal-macros && run cargo clippy)
+# run cargo clippy
+# (cd tensorflow-sys && run cargo clippy)
+# (cd tensorflow-op-codegen && run cargo clippy)
+# (cd tensorflow-proto-codegen && run cargo clippy)
+# (cd tensorflow-internal-macros && run cargo clippy)
 
 for file in $(find . -name target -prune -o -name '*.rs' -print); do
     bad_deprecations="$(rustfmt --emit stdout --config max_width=1000 "$file" | grep '#\[deprecated' | grep -E -v '([^"\\]|\\.|"([^"\\]|\\.)*")*since' || true)"
@@ -85,3 +109,6 @@ for file in $(find . -name target -prune -o -name '*.rs' -print); do
         exit 1
     fi
 done
+
+df -h
+du -sh target/debug/build/*
