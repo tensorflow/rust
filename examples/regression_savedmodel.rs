@@ -21,7 +21,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             Status::new_set(
                 Code::NotFound,
                 &format!(
-                    "Run 'python regression_savedmodel.py' to generate \
+                    "Run 'python examples/regression_savedmodel/regression_savedmodel.py' to generate \
                      {} and try again.",
                     export_dir
                 ),
