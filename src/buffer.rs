@@ -53,12 +53,17 @@ impl<T: TensorType> Buffer<T> {
         let inner = tf::TF_NewBuffer();
         let align = mem::align_of::<T>();
         let size = mem::size_of::<T>();
-        let ptr = alloc::alloc(alloc::Layout::from_size_align(size * len, align).unwrap());
+        let byte_len =
+            size.checked_mul(len)
+                .expect("buffer byte length overflows usize");
+        let layout = alloc::Layout::from_size_align(byte_len, align)
+            .expect("failed to create memory layout");
+        let ptr = alloc::alloc(layout);
         assert!(!ptr.is_null(), "allocation failure");
 
         (*inner).data_deallocator = Some(deallocator::<T>);
         (*inner).data = ptr as *mut std_c_void;
-        (*inner).length = len;
+        (*inner).length = byte_len;
         Buffer {
             inner,
             owned: true,
@@ -82,7 +87,10 @@ impl<T: TensorType> Buffer<T> {
     pub unsafe fn from_ptr(ptr: *mut T, len: usize) -> Self {
         let inner = tf::TF_NewBuffer();
         (*inner).data = ptr as *const std_c_void;
-        (*inner).length = len;
+        (*inner).length =
+            mem::size_of::<T>()
+                .checked_mul(len)
+                .expect("buffer byte length overflows usize");
         Buffer {
             inner,
             owned: true,
@@ -102,7 +110,14 @@ impl<T: TensorType> Buffer<T> {
 
     #[inline]
     fn length(&self) -> usize {
-        unsafe { (*self.inner).length }
+        let size = mem::size_of::<T>();
+        if size == 0 {
+            // For Zero-Sized Types, element count is ambiguous from byte length.
+            // Assuming non-ZSTs for tensor data, which is a safe assumption.
+            // If byte length is 0, element count is 0. Otherwise, it's an invalid state.
+            return 0;
+        }
+        unsafe { (*self.inner).length / size }
     }
 
     /// Creates a buffer from data owned by the C API.
@@ -129,8 +144,7 @@ impl<T: TensorType> Buffer<T> {
 
 unsafe extern "C" fn deallocator<T>(data: *mut std_c_void, length: size_t) {
     let align = mem::align_of::<T>();
-    let size = mem::size_of::<T>();
-    let layout = alloc::Layout::from_size_align(size * length, align).unwrap_or_else(|_| {
+    let layout = alloc::Layout::from_size_align(length, align).unwrap_or_else(|_| {
         eprintln!("internal error: failed to construct layout");
         // make sure not to unwind
         process::abort();
@@ -151,14 +165,14 @@ impl<T: TensorType> Drop for Buffer<T> {
 impl<T: TensorType> AsRef<[T]> for Buffer<T> {
     #[inline]
     fn as_ref(&self) -> &[T] {
-        unsafe { slice::from_raw_parts(self.data(), (*self.inner).length) }
+        unsafe { slice::from_raw_parts(self.data(), self.length()) }
     }
 }
 
 impl<T: TensorType> AsMut<[T]> for Buffer<T> {
     #[inline]
     fn as_mut(&mut self) -> &mut [T] {
-        unsafe { slice::from_raw_parts_mut(self.data_mut(), (*self.inner).length) }
+        unsafe { slice::from_raw_parts_mut(self.data_mut(), self.length()) }
     }
 }
 
@@ -198,9 +212,10 @@ where
 {
     #[inline]
     fn clone(&self) -> Buffer<T> {
-        let mut b = unsafe { Buffer::new_uninitialized((*self.inner).length) };
+        let len = self.length();
+        let mut b = unsafe { Buffer::new_uninitialized(len) };
         // TODO: Use std::ptr::copy for primitives once we have impl specialization
-        for i in 0..self.length() {
+        for i in 0..len {
             b[i] = self[i].clone();
         }
         b
@@ -384,10 +399,33 @@ impl<'a, T: TensorType> From<&'a Vec<T>> for Buffer<T> {
 }
 
 impl<T: TensorType> From<Buffer<T>> for Vec<T> {
-    fn from(buffer: Buffer<T>) -> Vec<T> {
-        let mut vec = Vec::with_capacity(buffer.len());
-        vec.extend_from_slice(&buffer);
-        vec
+    fn from(mut buffer: Buffer<T>) -> Vec<T> {
+        // If we own the buffer and it uses our custom deallocator,
+        // we can take ownership of the memory without copying.
+        if buffer.owned && unsafe { (*buffer.inner).data_deallocator } == Some(deallocator::<T>) {
+            let len = buffer.len();
+            let capacity = len; // Buffer doesn't have a separate capacity concept.
+            let ptr = buffer.data_mut();
+
+            // To prevent the buffer's Drop from freeing the memory, we null out the
+            // data pointer and deallocator in the TF_Buffer.
+            // This is safe because `buffer` is consumed and `Vec::from_raw_parts`
+            // now owns the allocation.
+            unsafe {
+                (*buffer.inner).data_deallocator = None;
+                (*buffer.inner).data = std::ptr::null_mut();
+                (*buffer.inner).length = 0;
+            }
+
+            // The now-empty TF_Buffer struct will be freed by Buffer's Drop,
+            // but the data pointer will not.
+            unsafe { Vec::from_raw_parts(ptr, len, capacity) }
+        } else {
+            // Fallback for non-owned buffers or buffers with unknown deallocators.
+            let mut vec = Vec::with_capacity(buffer.len());
+            vec.extend_from_slice(&buffer);
+            vec
+        }
     }
 }
 
