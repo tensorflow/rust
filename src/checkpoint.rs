@@ -1,5 +1,14 @@
 use crate::{ops, Operation, Scope, Session, SessionRunArgs, Status, Tensor, Variable};
 
+fn full_op_name(scope: &Scope, base_name: &str) -> String {
+    let prefix = scope.name();
+    if prefix.is_empty() {
+        base_name.to_string()
+    } else {
+        format!("{}/{}", prefix, base_name)
+    }
+}
+
 #[derive(Debug)]
 struct SaveRestoreOps {
     prefix_save: Operation,
@@ -56,12 +65,15 @@ impl CheckpointMaker {
     fn build_save_ops(&mut self) -> Result<SaveRestoreOps, Status> {
         let mut all_variable_ops_opt: Option<Vec<Operation>> = None;
 
-        let existing_save_op = self.scope.graph().operation_by_name("save")?;
+        let save_op_name = full_op_name(&self.scope, "save");
+        let prefix_save_op_name = full_op_name(&self.scope, "prefix_save");
+
+        let existing_save_op = self.scope.graph().operation_by_name(&save_op_name)?;
         let (prefix_save, save_op) = if let Some(op) = existing_save_op {
             let prefix_save_op = self
                 .scope
                 .graph()
-                .operation_by_name_required("prefix_save")?;
+                .operation_by_name_required(&prefix_save_op_name)?;
             (prefix_save_op, op)
         } else {
             let all_variable_ops = all_variable_ops_opt.get_or_insert_with(|| {
@@ -95,7 +107,7 @@ impl CheckpointMaker {
                 .collect::<Vec<_>>();
 
             let mut g = self.scope.graph_mut();
-            let mut nd = g.new_operation("SaveV2", "save")?;
+            let mut nd = g.new_operation("SaveV2", &save_op_name)?;
             nd.add_input(prefix_save.clone());
             nd.add_input(tensor_names);
             nd.add_input(shape_and_slices);
@@ -109,12 +121,15 @@ impl CheckpointMaker {
             let save_op = nd.finish()?;
             (prefix_save, save_op)
         };
-        let opt_restore_op = self.scope.graph().operation_by_name("restore")?;
+
+        let restore_op_name = full_op_name(&self.scope, "restore");
+        let prefix_restore_op_name = full_op_name(&self.scope, "prefix_restore");
+        let opt_restore_op = self.scope.graph().operation_by_name(&restore_op_name)?;
         let (prefix_restore, restore_op) = if let Some(op) = opt_restore_op {
             let the_prefix_restore = self
                 .scope
                 .graph()
-                .operation_by_name_required("prefix_restore")?;
+                .operation_by_name_required(&prefix_restore_op_name)?;
             (the_prefix_restore, op)
         } else {
             let all_variable_ops = all_variable_ops_opt.get_or_insert_with(|| {
@@ -141,7 +156,7 @@ impl CheckpointMaker {
                 &mut self.scope,
             )?;
             let mut g = self.scope.graph_mut();
-            let mut nd = g.new_operation("RestoreV2", "restore")?;
+            let mut nd = g.new_operation("RestoreV2", &restore_op_name)?;
             nd.add_input(prefix_restore.clone());
             nd.add_input(tensor_names);
             nd.add_input(shape_and_slices);
@@ -168,7 +183,8 @@ impl CheckpointMaker {
             for op in restore_var_ops {
                 no_op = no_op.add_control_input(op);
             }
-            (prefix_restore, no_op.build(&mut self.scope)?)
+            let final_restore_op = no_op.build(&mut self.scope.with_op_name("restore_all"))?;
+            (prefix_restore, final_restore_op)
         };
         Ok(SaveRestoreOps {
             prefix_save,
@@ -182,10 +198,7 @@ impl CheckpointMaker {
         if self.save_restore_ops.is_none() {
             self.save_restore_ops = Some(self.build_save_ops()?);
         }
-        let save_r_op_ref = self.save_restore_ops.as_ref();
-        // SAFETY: the condition above has ensured that self.save_restore_ops is Some(_)
-        let save_r_op = unsafe { save_r_op_ref.unwrap_unchecked() };
-        Ok(save_r_op)
+        Ok(self.save_restore_ops.as_ref().unwrap())
     }
 
     /// Save the variables listed in this CheckpointMaker to the checkpoint with base filename backup_filename_base.
