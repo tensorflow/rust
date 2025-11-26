@@ -7,7 +7,7 @@ use libc::c_void;
 use libc::size_t;
 use std::ffi::{CStr, CString};
 use std::marker::PhantomData;
-use std::mem::{self, ManuallyDrop};
+use std::mem::ManuallyDrop;
 use std::os::raw::c_void as std_c_void;
 use std::ptr;
 
@@ -15,9 +15,6 @@ use crate::eager::{Context, TensorHandle};
 use crate::{AnyTensor, Code, DataType, Result, Shape, Status};
 
 use tensorflow_sys as tf;
-
-#[cfg(test)]
-mod op_test_util;
 
 #[allow(
     non_snake_case,
@@ -160,18 +157,26 @@ impl<'a> Op<'a> {
     /// Sets the value of an attribute which holds a list of strings.
     fn set_attr_string_list<S: AsRef<str>>(&mut self, attr_name: &str, values: &[S]) -> Result<()> {
         let c_attr_name = CString::new(attr_name)?;
-        let bytes: Vec<&[u8]> = values.iter().map(|x| x.as_ref().as_bytes()).collect();
-        let ptrs: Vec<*const c_void> = bytes.iter().map(|x| x.as_ptr() as *const c_void).collect();
-        let lens: Vec<size_t> = bytes.iter().map(|x| x.len() as size_t).collect();
+        let (ptrs, lens): (Vec<*const c_void>, Vec<size_t>) = values
+            .iter()
+            .map(|entry| {
+                (
+                    entry.as_ref().as_ptr() as *const std_c_void,
+                    entry.as_ref().len() as size_t,
+                )
+            })
+            .unzip();
+
         unsafe {
             tf::TFE_OpSetAttrStringList(
                 self.inner,
                 c_attr_name.as_ptr(),
-                ptrs.as_ptr() as *const *const std_c_void,
+                ptrs.as_ptr(),
                 lens.as_ptr(),
                 ptrs.len() as c_int,
             );
         }
+
         Ok(())
     }
 
@@ -365,7 +370,7 @@ impl<'a> Op<'a> {
     /// For sync execution, if any of the inputs to `op` are not ready, this call
     /// will block till they become ready and then return when the kernel execution
     /// is done.
-    fn execute<const N: usize>(self, ctx: &'a Context) -> Result<[TensorHandle; N]> {
+    fn execute<const N: usize>(self, ctx: &'a Context) -> Result<[TensorHandle<'a>; N]> {
         let status = Status::new();
 
         let mut num_retvals = N as i32;
@@ -389,11 +394,9 @@ impl<'a> Op<'a> {
 
         // If the 'num_retvals' was updated, we treat that as an error. See comment above.
         if num_retvals != N as i32 {
-            for i in 0..num_retvals as usize {
-                unsafe {
-                    tf::TFE_DeleteTensorHandle(retvals[i]);
-                }
-            }
+            retvals
+                .iter()
+                .for_each(|retval| unsafe { tf::TFE_DeleteTensorHandle(*retval) });
             let status = Status::new_set_lossy(
                 Code::InvalidArgument,
                 &format!("Expected {} outputs, got {}", N, num_retvals),
@@ -401,23 +404,8 @@ impl<'a> Op<'a> {
             return Err(status);
         }
 
-        let mut handles_uninit: [mem::MaybeUninit<TensorHandle>; N] =
-            unsafe { mem::MaybeUninit::uninit().assume_init() };
-
-        for i in 0..N {
-            let t = unsafe { TensorHandle::from_tensor_handle(ctx, retvals[i]) };
-            handles_uninit[i].write(t);
-        }
-
-        // Transmute uninitialized handles to initialized handles. Ideally, we would use
-        // `mem::transmute` here, but it is not stable yet for generic sized arrays.
-        // ref : https://github.com/rust-lang/rust/issues/61956
-        //
-        // Following is a workaround for this issue:
-        // Using &mut as an assertion of unique "ownership"
-        let ptr = &mut handles_uninit as *mut _ as *mut [TensorHandle; N];
-        let handles: [TensorHandle; N] = unsafe { ptr.read() };
-        mem::forget(handles_uninit);
+        let handles: [TensorHandle; N] =
+            std::array::from_fn(|i| unsafe { TensorHandle::from_tensor_handle(ctx, retvals[i]) });
 
         Ok(handles)
     }
@@ -426,9 +414,8 @@ impl<'a> Op<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::eager::{Context, ContextOptions, TensorHandle};
+    use crate::eager::{Context, ContextOptions, TensorHandle, ToTensorHandle};
     use crate::Tensor;
-    use op_test_util::add as add_ut;
     use raw_ops::{add, concat_v2};
 
     #[cfg(feature = "ndarray")]
@@ -490,6 +477,26 @@ mod tests {
         let h_x = TensorHandle::new(&ctx, &x).unwrap();
         let h_y = h_x.copy_sharing_tensor().unwrap();
         let expected = Tensor::new(&[2, 2]).with_values(&[2i32, 4, 6, 8]).unwrap();
+
+        fn add_ut<'a, T0, T1>(
+            ctx: &'a crate::eager::Context,
+            x: &T0,
+            y: &T1,
+        ) -> Result<TensorHandle<'a>>
+        where
+            T0: ToTensorHandle<'a>,
+            T1: ToTensorHandle<'a>,
+        {
+            let op_name = "Add";
+            let mut op = Op::new(ctx, op_name)?;
+
+            // Required input arguments
+            op.add_input(&x.to_handle(ctx)?)?;
+            op.add_input(&y.to_handle(ctx)?)?;
+
+            let [h] = op.execute::<1>(ctx)?;
+            Ok(h)
+        }
 
         // tensor and tensor
         let h_z = add_ut(&ctx, &x, &x).unwrap();

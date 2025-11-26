@@ -1,3 +1,4 @@
+use crate::tf;
 use crate::{
     write_tensor_recursive, AnyTensor, DataType, Result, Shape, Tensor, TensorInner, TensorType,
 };
@@ -5,7 +6,6 @@ use core::fmt;
 use fmt::{Debug, Formatter};
 use libc::c_int;
 use std::{fmt::Display, ops::Deref};
-use tensorflow_sys as tf;
 
 /// A read-only tensor.
 ///

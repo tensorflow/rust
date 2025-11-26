@@ -12,7 +12,7 @@ use std::{
 };
 
 fn mask_crc(crc: u32) -> u32 {
-    ((crc >> 15) | (crc << 17)).wrapping_add(0xa282_ead8u32)
+    crc.rotate_right(15).wrapping_add(0xa282_ead8u32)
 }
 
 const CASTAGNOLI: Crc<u32> = Crc::<u32>::new(&CRC_32_ISCSI);
@@ -372,6 +372,7 @@ mod tests {
             let f = ::std::fs::OpenOptions::new()
                 .write(true)
                 .create(true)
+                .truncate(true)
                 .open(actual_filename)
                 .unwrap();
 
@@ -398,7 +399,7 @@ mod tests {
         use std::{io::Cursor, rc::Rc};
         let mut buf = Vec::new();
         let mut rc = Rc::new(&mut buf);
-        let records = vec!["foo", "barr", "baz"];
+        let records = ["foo", "barr", "baz"];
         {
             let mut writer = RecordWriter::new(Rc::get_mut(&mut rc).unwrap());
             for rec in records.iter() {
@@ -426,7 +427,7 @@ mod tests {
                     Some(len) => assert_eq!(&ary[0..len], records[i].as_bytes()),
                     None => break,
                 },
-                Err(e @ _) => {
+                Err(e) => {
                     panic!("Received an unexpected error: {:?}", e);
                 }
             }
@@ -439,7 +440,7 @@ mod tests {
         use std::{io::Cursor, rc::Rc};
         let mut buf = Vec::new();
         let mut rc = Rc::new(&mut buf);
-        let records = vec!["foo", "barr", "baz"];
+        let records = ["foo", "barr", "baz"];
         {
             let mut writer = RecordWriter::new(Rc::get_mut(&mut rc).unwrap());
             for rec in records.iter() {

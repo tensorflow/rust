@@ -12,6 +12,7 @@ use std::io::{BufWriter, Write};
 use std::path::{Path, PathBuf};
 use std::process::{self, Command};
 
+use anyhow::Context;
 use curl::easy::Easy;
 use flate2::read::GzDecoder;
 use semver::Version;
@@ -39,7 +40,7 @@ macro_rules! log_var(($var:ident) => (log!(concat!(stringify!($var), " = {:?}"),
 
 fn main() {
     // If we are doing runtime linking, just return.
-    #[cfg(feature = "runtime_linking")]
+    #[cfg(feature = "tensorflow_runtime_linking")]
     return;
 
     // DO NOT RELY ON THIS
@@ -53,10 +54,15 @@ fn main() {
         return;
     }
 
-    // Note that pkg_config will print cargo:rustc-link-lib and cargo:rustc-link-search as
-    // appropriate if the library is found.
-    if pkg_config::probe_library(LIBRARY).is_ok() {
-        log!("Returning early because {} was already found", LIBRARY);
+    if let Ok(library) = pkg_config::probe_library(LIBRARY) {
+        for library_directory in library.link_paths {
+            println!("cargo:rustc-link-search={}", library_directory.display());
+        }
+        if target_os() != "windows" {
+            // There is no tensorflow_framework.dll
+            println!("cargo:rustc-link-lib=dylib={}", FRAMEWORK_LIBRARY);
+        }
+        println!("cargo:rustc-link-lib=dylib={}", LIBRARY);
         return;
     }
 
@@ -66,12 +72,10 @@ fn main() {
     };
     log_var!(force_src);
 
-    let prebuilt_supported = match (&target_arch() as &str, &target_os() as &str) {
-        ("x86_64", "linux") => true,
-        ("x86_64", "windows") => true,
-        ("aarch64", "macos") => true,
-        _ => false,
-    };
+    let prebuilt_supported = matches!(
+        (target_arch().as_str(), target_os().as_str()),
+        ("x86_64", "linux") | ("x86_64", "windows") | ("aarch64", "macos")
+    );
     if !force_src && prebuilt_supported {
         install_prebuilt();
     } else {
@@ -211,7 +215,7 @@ fn install_prebuilt() {
         VERSION, proc_type, os, arch, ext
     );
     log_var!(binary_url);
-    let short_file_name = binary_url.split('/').last().unwrap();
+    let short_file_name = binary_url.split('/').next_back().unwrap();
     let mut base_name = short_file_name.to_string();
     remove_suffix(&mut base_name, ext);
     log_var!(base_name);
@@ -405,22 +409,32 @@ fn build_from_src() {
         );
         if framework_library_path.exists() {
             fs::remove_file(&framework_library_path)
-                .expect(&format!("{:?} should be removable", framework_library_path));
+                .with_context(|| format!("{:?} should be removable", framework_library_path))
+                .unwrap();
         }
-        fs::copy(&framework_target_bazel_bin, &framework_library_path).expect(&format!(
-            "{:?} should be copyable to {:?}",
-            framework_target_bazel_bin, framework_library_path
-        ));
+        fs::copy(&framework_target_bazel_bin, &framework_library_path)
+            .with_context(|| {
+                format!(
+                    "{:?} should be copyable to {:?}",
+                    framework_target_bazel_bin, framework_library_path
+                )
+            })
+            .unwrap();
         let target_bazel_bin = source.join("bazel-bin").join(target_path);
         log!("Copying {:?} to {:?}", target_bazel_bin, library_path);
         if library_path.exists() {
             fs::remove_file(&library_path)
-                .expect(&format!("{:?} should be removable", library_path));
+                .with_context(|| format!("{:?} should be removable", library_path))
+                .unwrap()
         }
-        fs::copy(&target_bazel_bin, &library_path).expect(&format!(
-            "{:?} should be copyable to {:?}",
-            target_bazel_bin, library_path
-        ));
+        fs::copy(&target_bazel_bin, &library_path)
+            .with_context(|| {
+                format!(
+                    "{:?} should be copyable to {:?}",
+                    target_bazel_bin, library_path
+                )
+            })
+            .unwrap();
     }
     symlink(
         framework_library_path.file_name().unwrap(),

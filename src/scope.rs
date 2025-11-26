@@ -144,7 +144,20 @@ impl Scope {
     /// Return a new scope. Ops created with this scope will have
     /// `name/child_scope_name` as the prefix. The actual name will be unique
     /// in the current scope. All other properties are inherited from the current
-    /// scope. If `child_scope_name` is empty, the `/` is elided.
+    /// scope.
+    ///
+    /// ```
+    /// # use tensorflow::Scope;
+    /// let scope = Scope::new_root_scope();
+    /// assert_eq!(scope.get_unique_name_for_op("MyOp"), "MyOp");
+    ///
+    /// let subscope = scope.new_sub_scope("subscope");
+    /// assert_eq!(subscope.get_unique_name_for_op("MyOp"), "subscope/MyOp");
+    ///
+    /// // If `child_scope_name` is empty, the previous scope is elided.
+    /// let empty_subscope = scope.new_sub_scope("");
+    /// assert_eq!(empty_subscope.get_unique_name_for_op("MyOp"), "MyOp_1");
+    /// ```
     pub fn new_sub_scope(&self, name: &str) -> Scope {
         let self_name: &str = &self.name;
         let (new_name, copy_names) = match (self_name, name) {
@@ -169,8 +182,15 @@ impl Scope {
         }
     }
 
-    /// Return a new scope. All ops created within the returned scope will have
-    /// names of the form `scope_name/name[_suffix]`
+    /// Return a new scope. All ops created will have a modified name.
+    ///
+    /// ```
+    /// # use tensorflow::Scope;
+    /// let scope = Scope::new_root_scope();
+    /// let new_scope = scope.with_op_name("the_name");
+    /// assert_eq!(new_scope.get_unique_name_for_op("MyOp"), "the_name");
+    /// assert_eq!(new_scope.get_unique_name_for_op("MyOp"), "the_name_1");
+    /// ```
     pub fn with_op_name(&self, name: &str) -> Scope {
         Scope {
             graph: self.graph.clone(),

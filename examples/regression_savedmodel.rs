@@ -1,4 +1,3 @@
-use rand;
 use std::error::Error;
 use std::path::Path;
 use std::result::Result;
@@ -44,8 +43,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // Load the saved model exported by regression_savedmodel.py.
     let mut graph = Graph::new();
-    let bundle =
-        SavedModelBundle::load(&SessionOptions::new(), &["serve"], &mut graph, export_dir)?;
+    let bundle = SavedModelBundle::load(&SessionOptions::new(), ["serve"], &mut graph, export_dir)?;
     let session = &bundle.session;
 
     // train

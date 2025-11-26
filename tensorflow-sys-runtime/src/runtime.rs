@@ -47,7 +47,7 @@ macro_rules! link {
         #[derive(Default)]
         pub(crate) struct Functions {
             $(
-                pub $name: Option<unsafe extern fn($($pname: $pty), *) $(-> $ret)*>,
+                pub $name: Option<unsafe extern "C" fn($($pname: $pty), *) $(-> $ret)*>,
             )+
         }
 
@@ -108,7 +108,7 @@ macro_rules! link {
                         "`libtensorflow` function not loaded: `",
                         stringify!($name)
                     ))
-                }).expect("an `libtensorflow` shared library is not loaded on this thread");
+                }).expect("A `libtensorflow` shared library is not loaded on this thread. Did you call `load()`?");
                 f($($pname), *)
             }
         )+

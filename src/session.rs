@@ -641,7 +641,7 @@ mod tests {
         let mut graph = Graph::new();
         let bundle = SavedModelBundle::load(
             &SessionOptions::new(),
-            &["train", "serve"],
+            ["train", "serve"],
             &mut graph,
             "test_resources/regression-model",
         )

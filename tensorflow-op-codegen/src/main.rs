@@ -12,7 +12,7 @@ use std::io::Write;
 use std::path::Path;
 use std::result::Result;
 use tensorflow_op_codegen::parser;
-use tensorflow_op_codegen::protos::OpDef;
+use tensorflow_op_codegen::protos::op_def::OpDef;
 
 #[derive(Clone)]
 struct Attr {

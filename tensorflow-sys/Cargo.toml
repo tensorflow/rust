@@ -32,6 +32,7 @@ pkg-config = "0.3.25"
 semver = "1.0.13"
 tar = "0.4.38"
 zip = "0.6.4"
+anyhow = "1.0.100"
 
 [features]
 tensorflow_gpu = []
@@ -40,3 +41,4 @@ experimental = []
 # This is for testing purposes; users should not use this.
 examples_system_alloc = []
 private-docs-rs = [] # DO NOT RELY ON THIS
+tensorflow_runtime_linking= []

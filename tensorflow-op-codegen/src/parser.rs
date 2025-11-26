@@ -2,18 +2,18 @@
 // currently implemented directly with nom to parse the text proto, but ideally this would use a
 // proto library with support for parsing text protos.
 
-use crate::protos::AttrValue;
-use crate::protos::AttrValue_ListValue;
-use crate::protos::DataType;
-use crate::protos::FullTypeDef;
-use crate::protos::FullTypeId;
-use crate::protos::OpDef;
-use crate::protos::OpDef_ArgDef;
-use crate::protos::OpDef_AttrDef;
-use crate::protos::OpDeprecation;
-use crate::protos::TensorProto;
-use crate::protos::TensorShapeProto;
-use crate::protos::TensorShapeProto_Dim;
+use crate::protos::attr_value::AttrValue;
+use crate::protos::attr_value::AttrValue_ListValue;
+use crate::protos::full_type::FullTypeDef;
+use crate::protos::full_type::FullTypeId;
+use crate::protos::op_def::OpDef;
+use crate::protos::op_def::OpDef_ArgDef;
+use crate::protos::op_def::OpDef_AttrDef;
+use crate::protos::op_def::OpDeprecation;
+use crate::protos::tensor::TensorProto;
+use crate::protos::tensor_shape::TensorShapeProto;
+use crate::protos::tensor_shape::TensorShapeProto_Dim;
+use crate::protos::types::DataType;
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::character::complete::anychar;

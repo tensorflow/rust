@@ -1,20 +1,13 @@
-mod attr_value;
-pub use attr_value::*;
+pub mod attr_value;
 
-mod full_type;
-pub use full_type::*;
+pub mod full_type;
 
-mod op_def;
-pub use op_def::*;
+pub mod op_def;
 
-mod resource_handle;
-pub use resource_handle::*;
+pub mod resource_handle;
 
-mod tensor;
-pub use tensor::*;
+pub mod tensor;
 
-mod tensor_shape;
-pub use tensor_shape::*;
+pub mod tensor_shape;
 
-mod types;
-pub use types::*;
+pub mod types;

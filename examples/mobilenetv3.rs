@@ -47,8 +47,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // Load the model.
     let mut graph = Graph::new();
-    let bundle =
-        SavedModelBundle::load(&SessionOptions::new(), &["serve"], &mut graph, export_dir)?;
+    let bundle = SavedModelBundle::load(&SessionOptions::new(), ["serve"], &mut graph, export_dir)?;
     let session = &bundle.session;
 
     // get in/out operations

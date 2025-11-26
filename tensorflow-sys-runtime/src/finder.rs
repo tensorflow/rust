@@ -51,32 +51,31 @@ pub fn find(library_name: &str) -> Option<PathBuf> {
     None
 }
 
-const ENV_TENSORFLOW_DIR: &'static str = "TENSORFLOW_DIR";
+const ENV_TENSORFLOW_DIR: &str = "TENSORFLOW_DIR";
 
 cfg_if! {
     if #[cfg(any(target_os = "linux"))] {
-        const ENV_LIBRARY_PATH: &'static str = "LD_LIBRARY_PATH";
+        const ENV_LIBRARY_PATH: &str = "LD_LIBRARY_PATH";
     } else if #[cfg(target_os = "macos")] {
-        const ENV_LIBRARY_PATH: &'static str = "DYLD_LIBRARY_PATH";
+        const ENV_LIBRARY_PATH: &str = "DYLD_LIBRARY_PATH";
     } else if #[cfg(target_os = "windows")] {
-        const ENV_LIBRARY_PATH: &'static str = "PATH";
+        const ENV_LIBRARY_PATH: &str = "PATH";
     } else {
         // This may not work but seems like a sane default for target OS' not listed above.
-        const ENV_LIBRARY_PATH: &'static str = "LD_LIBRARY_PATH";
+        const ENV_LIBRARY_PATH: &str = "LD_LIBRARY_PATH";
     }
 }
 
 cfg_if! {
     if #[cfg(any(target_os = "linux", target_os = "macos"))] {
-        const DEFAULT_INSTALLATION_DIRECTORIES: &'static [&'static str] =
+        const DEFAULT_INSTALLATION_DIRECTORIES: &[&str] =
             &["/usr/local/lib", "/usr/local/lib/libtensorflow"];
     } else if #[cfg(target_os = "windows")] {
-        const DEFAULT_INSTALLATION_DIRECTORIES: &'static [&'static str] = &[
+        const DEFAULT_INSTALLATION_DIRECTORIES: &[&str] = &[
             "C:\\Program Files (x86)\\Tensorflow",
             "C:\\Program Files (x86)\\tensorflow",
         ];
     } else {
-        const DEFAULT_INSTALLATION_DIRECTORIES: &'static [&'static str] = &[];
+        const DEFAULT_INSTALLATION_DIRECTORIES: &[&str] = &[];
     }
 }
-

@@ -10,11 +10,11 @@ use std::io::Write;
 use std::path::Path;
 use std::result::Result;
 use tensorflow_op_codegen::parser;
-use tensorflow_op_codegen::protos::OpDef;
+use tensorflow_op_codegen::protos::op_def::OpDef;
 
 use ::protobuf::ProtobufEnum;
-use tensorflow_op_codegen::protos::AttrValue_oneof_value;
-use tensorflow_op_codegen::protos::OpDef_ArgDef;
+use tensorflow_op_codegen::protos::attr_value::AttrValue_oneof_value;
+use tensorflow_op_codegen::protos::op_def::OpDef_ArgDef;
 
 #[derive(Clone)]
 struct Attr {
@@ -337,7 +337,7 @@ fn define_op<W: Write>(
     let mut attr_escaper = Escaper::new(keywords);
     for attr in op.attr.iter() {
         // skip if the attr is for type annotation
-        if skip_attrs.contains(&attr.get_name().to_string()) {
+        if skip_attrs.contains(attr.get_name()) {
             continue;
         }
 
@@ -637,14 +637,13 @@ fn main() -> Result<(), Box<dyn Error>> {
             .to_str()
             .ok_or("Unable to format path for tensorflow folder")?,
     )?;
-    let ops = parser::parse(&ops_bytes).map_err(|e| {
+    let ops = parser::parse(&ops_bytes).inspect_err(|e| {
         println!("Parse error at {:?}", e.pos);
         if let Some(p) = &e.pos {
             let input = String::from_utf8_lossy(&ops_bytes);
             println!("Previous: {}", &input[0..*p]);
             println!("Next: {}", &input[*p..]);
         }
-        e
     })?;
     let keywords: HashSet<String> = [
         "abstract",

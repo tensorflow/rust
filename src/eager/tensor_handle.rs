@@ -64,7 +64,7 @@ use crate::{AnyTensor, DataType, Result, Status, TensorType};
 #[derive(Debug)]
 pub struct TensorHandle<'a> {
     pub(super) inner: *mut tf::TFE_TensorHandle,
-    // TensorHandle should not live longer than a given context.
+    // TensorHandle canjot outlive its associated context
     ctx: PhantomData<&'a Context>,
 }
 

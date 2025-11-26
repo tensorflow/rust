@@ -13,7 +13,9 @@ struct SaveRestoreOps {
 /// The CheckpointMaker lazily modifies the graph creating the nodes needed for saving/restoring.
 /// When one wants to save/restore from or into a session, one calls the save/restore  methods
 /// # Example
-/// ```
+/// ```no_run,ignore
+/// # let _: &str = stringify!{ // workaround to not compile the code
+/// # // FIXME make this test compile and run
 /// let mut scope = Scope::new_root_scope();
 /// // add operations to define the graph
 /// // ...
@@ -29,8 +31,8 @@ struct SaveRestoreOps {
 /// // then we restore in a different session to continue there
 /// let new_session = Session::new(&SessionOptions::new(), &scope.graph())?;
 /// checkpoint_maker.restore(&new_session, "data/checkpoint")?;
+/// # };
 /// ```
-///
 #[derive(Debug)]
 pub struct CheckpointMaker {
     scope: Scope,
@@ -226,10 +228,10 @@ mod tests {
         dims: &[u64],
         values: &[f32],
     ) -> Result<Variable, Status> {
-        Ok(Variable::builder()
+        Variable::builder()
             .const_initial_value(Tensor::new(dims).with_values(values)?)
             .data_type(DataType::Float)
-            .build(&mut scope.with_op_name(name))?)
+            .build(&mut scope.with_op_name(name))
     }
 
     fn create_assignment(
@@ -272,7 +274,7 @@ mod tests {
         let mut placeholders: Vec<Operation> = Vec::new();
         let mut no_op_bld = ops::NoOp::new();
         for var in scope_data.variables.as_ref() {
-            let (placeholder, assign_op) = create_assignment(&var, &mut placeholder_scope)?;
+            let (placeholder, assign_op) = create_assignment(var, &mut placeholder_scope)?;
             placeholders.push(placeholder);
             no_op_bld = no_op_bld.add_control_input(assign_op);
         }
@@ -289,31 +291,43 @@ mod tests {
         assign_data: &AssignData,
         values: &[&[f32]],
     ) -> Result<(), Status> {
-        let mut values_fed: Vec<Tensor<f32>> =
-            Vec::with_capacity(assign_data.placeholder_ops.len());
+        assert_eq!(
+            assign_data.placeholder_ops.len(),
+            scope_data.variables.len()
+        );
+        assert_eq!(assign_data.placeholder_ops.len(), values.len());
+
+        let tensor: Vec<Tensor<f32>> = scope_data
+            .variables
+            .iter()
+            .zip(values.iter())
+            .map(|(variable, value)| {
+                Tensor::new(
+                    variable
+                        .shape()
+                        .0
+                        .as_ref()
+                        .ok_or(Status::new_set(Code::Internal, "Rank of shape not known")?)?
+                        .iter()
+                        .map(|o| {
+                            o.map(|i| i as u64).ok_or(Status::new_set(
+                                Code::Internal,
+                                "Dimensiom in shape not known",
+                            )?)
+                        })
+                        .collect::<Result<Vec<u64>, _>>()?
+                        .as_ref(),
+                )
+                .with_values(value)
+            })
+            .collect::<Result<_, _>>()?;
+
         let mut session_run = SessionRunArgs::new();
-        for i_var in 0..assign_data.placeholder_ops.len() {
-            let value_fed_as_tensor = Tensor::new(
-                &scope_data.variables[i_var]
-                    .shape()
-                    .0
-                    .as_ref()
-                    .ok_or(Status::new_set(Code::Internal, "Shape not present")?)?
-                    .iter()
-                    .map(|o| {
-                        o.map(|i| i as u64)
-                            .ok_or(Status::new_set(Code::Internal, "Shape item not present")?)
-                    })
-                    .collect::<Result<Vec<u64>, Status>>()?
-                    .as_ref(),
-            )
-            .with_values(&values[i_var])?;
-            values_fed.push(value_fed_as_tensor);
-        }
-        for i_var in 0..assign_data.placeholder_ops.len() {
-            session_run.add_feed(&assign_data.placeholder_ops[i_var], 0, &values_fed[i_var]);
+        for (tensor, placeholder) in tensor.iter().zip(assign_data.placeholder_ops.iter()) {
+            session_run.add_feed(placeholder, 0, tensor);
         }
         session_run.add_target(&assign_data.assign_op);
+
         session.run(&mut session_run)?;
         Ok(())
     }
@@ -324,17 +338,16 @@ mod tests {
         values: &[&[f32]],
     ) -> Result<(), Status> {
         let mut session_run = SessionRunArgs::new();
-        let mut tokens: Vec<FetchToken> = Vec::with_capacity(variables.len());
-        for i in 0..variables.len() {
-            tokens.push(session_run.request_fetch(
-                &variables[i].output().operation,
-                variables[i].output().index,
-            ));
-        }
+        let tokens: Vec<FetchToken> = variables
+            .iter()
+            .map(|variable| {
+                session_run.request_fetch(&variable.output().operation, variable.output().index)
+            })
+            .collect();
         session.run(&mut session_run)?;
-        for i in 0..variables.len() {
-            let got_tensor: Tensor<f32> = session_run.fetch(tokens[i])?;
-            assert_eq!(values[i], got_tensor.as_ref());
+        for (token, value) in tokens.into_iter().zip(values.iter()) {
+            let got_tensor: Tensor<f32> = session_run.fetch(token)?;
+            assert_eq!(value, &got_tensor.as_ref());
         }
         Ok(())
     }

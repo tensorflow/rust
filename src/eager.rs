@@ -5,7 +5,7 @@
 //!
 //! This API requires the `eager` feature to be enabled as follows:
 //!
-//! ```
+//! ```toml
 //! [dependencies]
 //! tensorflow = { version = "0.18", features = ["eager"] }
 //! ```
